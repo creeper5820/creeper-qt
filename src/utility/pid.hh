@@ -12,7 +12,9 @@ public:
 
     float update(float target, float current) {
         float error = target - current;
-        float output = kp_ * error + ki_ * last_error_ + kd_ * (error - last_error_);
+        float output = kp_ * error
+            + ki_ * last_error_
+            + kd_ * (error - last_error_);
         last_error_ = error;
         return output;
     }

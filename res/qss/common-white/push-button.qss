@@ -1,0 +1,62 @@
+QPushButton {
+    /* Basic card-like appearance */
+    background-color: #F4F0F9;
+    /* Light purple background */
+    color: #1C1B1F;
+    /* Material dark text color */
+    border: none;
+    border-radius: 16px;
+    /* Rounded corners */
+    padding: 20px;
+    text-align: center;
+
+    /* Text styling */
+    font-size: 22px;
+    font-weight: bold;
+    font-family: monospace;
+
+    /* Minimum size to match card-like appearance */
+    min-width: 300px;
+    min-height: 80px;
+}
+
+/* Add description text using pseudo-element */
+QPushButton[description]::after {
+    content: attr(description);
+    color: #49454F;
+    /* Material secondary text color */
+    font-size: 14px;
+    font-weight: normal;
+}
+
+QPushButton:hover {
+    background-color: #E8DEF8;
+    /* Slightly darker purple on hover */
+}
+
+QPushButton:pressed {
+    background-color: #DED3F7;
+    /* Even darker when pressed */
+    padding-top: 21px;
+    /* Slight adjustment for pressed state */
+}
+
+QPushButton:disabled {
+    background-color: #E6E1E5;
+    color: #1C1B1F;
+    opacity: 0.38;
+    /* Material Design disabled state opacity */
+}
+
+/* For buttons that should have the pink tint instead of purple */
+QPushButton[color="pink"] {
+    background-color: #FFF1F5;
+}
+
+QPushButton[color="pink"]:hover {
+    background-color: #FFE3E9;
+}
+
+QPushButton[color="pink"]:pressed {
+    background-color: #FFD8E0;
+}

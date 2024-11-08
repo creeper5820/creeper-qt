@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>qss/button/common.qss</file>
+        <file>qss/common-white/push-button.qss</file>
+        <file>qss/common-white/main-window.qss</file>
     </qresource>
 </RCC>

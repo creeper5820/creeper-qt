@@ -17,9 +17,11 @@ public:
 
         setMinimumWidth(1440);
         setMinimumHeight(720);
+
+        loadStyleFromFile(":qss/common-white/main-window.qss");
     }
 
-    void moveCenter() override {
+    void moveCenter() {
         const auto screenCenter = screen()->geometry().center();
         const auto frameCenter = frameGeometry().center();
         QMainWindow::move(screenCenter - frameCenter);

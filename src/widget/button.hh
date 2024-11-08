@@ -11,7 +11,7 @@ class Button : public Extension<QPushButton> {
 public:
     explicit Button(QWidget* parent = nullptr)
         : Extension("default", parent) {
-        loadStyleFromFile(":qss/button/common.qss");
+        loadStyleFromFile(":qss/common-white/push-button.qss");
     }
 
 private:

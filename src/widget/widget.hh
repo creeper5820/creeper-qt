@@ -14,7 +14,7 @@ public:
         : Widget(std::forward<Args>(args)...) {
     }
 
-    virtual void moveCenter() {
+    void moveCenter() {
         if (widget->parentWidget() == nullptr)
             return;
         const auto parentCenter = widget->parentWidget()->geometry().center();
@@ -22,7 +22,7 @@ public:
         widget->move(parentCenter - frameCenter);
     }
 
-    virtual void loadStyleFromFile(const QString& file) {
+    void loadStyleFromFile(const QString& file) {
         QFile styleFile(file);
         styleFile.open(QFile::ReadOnly | QFile::Text);
         const auto style = styleFile.readAll();
