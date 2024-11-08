@@ -1,7 +1,7 @@
 #include <qapplication.h>
 
-#include "widget/button.hh"
 #include "widget/main-window.hh"
+#include "widget/push-button.hh"
 
 int main(int argc, char* argv[]) {
     auto app = std::make_unique<QApplication>(argc, argv);

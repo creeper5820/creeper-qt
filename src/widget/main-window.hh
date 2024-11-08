@@ -5,6 +5,7 @@
 #include <qmainwindow.h>
 #include <qscreen.h>
 
+#include "setting/theme.hh"
 #include "widget/widget.hh"
 
 namespace creeper {
@@ -18,7 +19,8 @@ public:
         setMinimumWidth(1440);
         setMinimumHeight(720);
 
-        loadStyleFromFile(":qss/common-white/main-window.qss");
+        auto& theme = Theme::instance();
+        loadStyleFromFile(theme.qss("main-window"));
     }
 
     void moveCenter() {

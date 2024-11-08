@@ -1,5 +1,6 @@
 #pragma once
 
+#include "setting/theme.hh"
 #include "widget/widget.hh"
 
 #include <qpushbutton.h>
@@ -11,7 +12,8 @@ class Button : public Extension<QPushButton> {
 public:
     explicit Button(QWidget* parent = nullptr)
         : Extension("default", parent) {
-        loadStyleFromFile(":qss/common-white/push-button.qss");
+        auto& theme = Theme::instance();
+        loadStyleFromFile(theme.qss("push-button"));
     }
 
 private:
