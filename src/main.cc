@@ -1,6 +1,6 @@
-#include "qlayoutitem.h"
 #include <qapplication.h>
 #include <qlayout.h>
+#include <qlayoutitem.h>
 
 #include "widget/main-window.hh"
 #include "widget/push-button.hh"
@@ -18,8 +18,9 @@ public:
         using namespace creeper;
 
         auto verticalLayout = new QVBoxLayout;
+        verticalLayout->setAlignment(Qt::AlignCenter);
         verticalLayout->setSpacing(10);
-        auto buttons = std::array<PushButton*, 5> {};
+        auto buttons = std::array<PushButton*, 3> {};
         for (int index = 0; auto& button : buttons) {
             button = new creeper::PushButton;
             button->setText("Button" + QString::number(index++));
@@ -27,17 +28,32 @@ public:
             verticalLayout->addWidget(button);
         }
 
-        auto switchButton = new SwitchButton;
-        switchButton->setFixedWidth(50);
-        verticalLayout->addWidget(switchButton);
+        auto switchButton0 = new SwitchButton;
+        switchButton0->setFixedSize({ 80, 30 });
+        verticalLayout->addWidget(switchButton0);
 
-        auto horizontalLayout = new QHBoxLayout;
-        horizontalLayout->setStretch(0, 1);
-        horizontalLayout->setStretch(1, 5);
-        horizontalLayout->addLayout(verticalLayout);
+        auto switchButton3 = new SwitchButton;
+        switchButton3->setFixedSize({ 100, 60 });
+        verticalLayout->addWidget(switchButton3);
+
+        auto switchButton1 = new SwitchButton;
+        switchButton1->setFixedSize({ 200, 60 });
+        verticalLayout->addWidget(switchButton1);
+
+        auto switchButton2 = new SwitchButton;
+        switchButton2->setFixedSize({ 100, 30 });
+        verticalLayout->addWidget(switchButton2);
+
+        auto switchButton4 = new SwitchButton;
+        switchButton4->setFixedSize({ 80, 30 });
+        verticalLayout->addWidget(switchButton4);
+
+        auto switchButton5 = new SwitchButton;
+        switchButton5->setFixedSize({ 80, 10 });
+        verticalLayout->addWidget(switchButton5);
 
         auto mainWidget = new QWidget;
-        mainWidget->setLayout(horizontalLayout);
+        mainWidget->setLayout(verticalLayout);
         setCentralWidget(mainWidget);
     }
 

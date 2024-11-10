@@ -1,119 +1,130 @@
 #pragma once
 
 #include "setting/theme.hh"
+#include "widget/widget.hh"
 
-#include <QtWidgets>
+#include <qabstractbutton.h>
+#include <qdebug.h>
+#include <qevent.h>
+#include <qpainter.h>
+#include <qpropertyanimation.h>
 
 namespace creeper {
 
-class SwitchButton : public QAbstractButton {
+// thanks to https://stackoverflow.com/a/38102598
+// modify a lot
+class SwitchButton : public Extension<QAbstractButton> {
     Q_OBJECT
-    Q_PROPERTY(int offset READ offset WRITE setOffset)
-    Q_PROPERTY(QBrush brush READ brush WRITE setBrush)
+    Q_PROPERTY(int Progress READ readProgress WRITE writeProgress)
 public:
     SwitchButton(QWidget* parent = nullptr)
-        : QAbstractButton(parent)
-        , height_(16)
-        , switch_(false)
-        , opacity_(0.000)
-        , margin_(3)
-        , thumb_(0xd5d5d5)
-        , animation_(new QPropertyAnimation(this, "offset", this)) {
-        setOffset(height_ / 2);
-        y_ = height_ / 2;
-        setBrush(QColor(0x009688));
+        : Extension(parent) {
+        animation_ = std::make_unique<QPropertyAnimation>(this, "Progress", this);
+        animation_->setEasingCurve(QEasingCurve::OutCubic);
+        animation_->setDuration(100);
+        setFixedSize({ 100, 30 });
     }
 
-    SwitchButton(const QBrush& brush, QWidget* parent = nullptr)
-        : QAbstractButton(parent)
-        , height_(16)
-        , switch_(false)
-        , opacity_(0.000)
-        , margin_(3)
-        , thumb_(0xd5d5d5)
-        , animation_(new QPropertyAnimation(this, "offset", this)) {
-        setOffset(height_ / 2);
-        y_ = height_ / 2;
-        setBrush(brush);
-    }
-
-    QSize sizeHint() const override {
-        return QSize(2 * (height_ + margin_), height_ + 2 * margin_);
-    }
-
-    QBrush brush() const {
-        return brush_;
-    }
-    void setBrush(const QBrush& brush) {
-        brush_ = brush;
-    }
-
-    int offset() const {
-        return x_;
-    }
-    void setOffset(int o) {
-        x_ = o;
-        update();
-    }
-
-protected:
     void paintEvent(QPaintEvent* event) override {
-        QPainter painter(this);
+        const auto primary200 = Theme::color("primary200");
+        const auto primary600 = Theme::color("primary600");
+        const auto black = Qt::black;
+
+        const auto enabled = QWidget::isEnabled();
+
+        const auto ballRadius = QWidget::height() * 0.45;
+        const auto lineRadius = ballRadius * 0.75;
+
+        const auto leftCenter = QPoint(QWidget::height() / 2, QWidget::height() / 2);
+        const auto rightCenter = QPoint(QWidget::width() - QWidget::height() / 2, QWidget::height() / 2);
+        const auto currentCenter = QPoint(progress_, QWidget::height() / 2);
+
+        auto painter = QPainter(this);
+        painter.setRenderHint(QPainter::Antialiasing, true);
         painter.setPen(Qt::NoPen);
-        if (isEnabled()) {
-            painter.setBrush(switch_ ? brush() : Qt::black);
-            painter.setOpacity(switch_ ? 0.5 : 0.38);
-            painter.setRenderHint(QPainter::Antialiasing, true);
-            painter.drawRoundedRect(QRect(margin_, margin_, width() - 2 * margin_, height() - 2 * margin_), 8.0, 8.0);
-            painter.setBrush(thumb_);
-            painter.setOpacity(1.0);
-            painter.drawEllipse(QRectF(offset() - (height_ / 2.), y_ - (height_ / 2.), height(), height()));
-        } else {
-            painter.setBrush(Qt::black);
+
+        if (!enabled) {
+            const auto point0 = leftCenter - QPoint(lineRadius, lineRadius);
+            const auto point1 = rightCenter + QPoint(lineRadius, lineRadius);
+            painter.setBrush(black);
             painter.setOpacity(0.12);
-            painter.drawRoundedRect(QRect(margin_, margin_, width() - 2 * margin_, height() - 2 * margin_), 8.0, 8.0);
+            painter.drawRoundedRect(QRect(point0, point1), lineRadius, lineRadius);
+
+            const auto point2 = currentCenter - QPoint(ballRadius, ballRadius);
+            const auto point3 = currentCenter + QPoint(ballRadius, ballRadius);
             painter.setOpacity(1.0);
-            painter.setBrush(QColor(0xBDBDBD));
-            painter.drawEllipse(QRectF(offset() - (height_ / 2.), y_ - (height_ / 2.), height(), height()));
+            painter.setBrush({ disableGrey });
+            painter.drawEllipse(QRect(point2, point3));
+
+            return;
         }
+
+        painter.setOpacity(0.75);
+
+        const auto lineLeft = leftCenter - QPoint(lineRadius, lineRadius);
+        const auto lineCurrentLeft = currentCenter + QPoint(lineRadius, lineRadius);
+        painter.setBrush(QColor(primary200));
+        painter.drawRoundedRect(QRect(lineLeft, lineCurrentLeft), lineRadius, lineRadius);
+
+        const auto lineRight = rightCenter + QPoint(lineRadius, lineRadius);
+        const auto lineCurrentRight = currentCenter - QPoint(lineRadius, lineRadius);
+        painter.setBrush(QColor(enableGrey));
+        painter.drawRoundedRect(QRect(lineCurrentRight, lineRight), lineRadius, lineRadius);
+
+        painter.setOpacity(1.0);
+
+        const auto ballLeft = currentCenter - QPoint(ballRadius, ballRadius);
+        const auto ballRight = currentCenter + QPoint(ballRadius, ballRadius);
+        const auto ballColor = switchStatus_ ? primary600 : enableGrey;
+        painter.setBrush(QColor(ballColor));
+        painter.drawEllipse(QRect(ballLeft, ballRight));
     }
 
-    void mouseReleaseEvent(QMouseEvent* e) override {
-        if (e->button() & Qt::LeftButton) {
-            switch_ = switch_ ? false : true;
-            thumb_ = switch_ ? brush_ : QBrush(0xd5d5d5);
-            if (switch_) {
-                animation_->setStartValue(height_ / 2);
-                animation_->setEndValue(width() - height_);
-                animation_->setDuration(120);
-                animation_->start();
-            } else {
-                animation_->setStartValue(offset());
-                animation_->setEndValue(height_ / 2);
-                animation_->setDuration(120);
-                animation_->start();
-            }
+    void mouseReleaseEvent(QMouseEvent* event) override {
+        if (event->button() & Qt::LeftButton) {
+            switchStatus_ = !switchStatus_;
+
+            const auto left = QWidget::height() / 2;
+            const auto right = QWidget::width() - QWidget::height() / 2;
+
+            animation_->setStartValue(readProgress());
+            animation_->setEndValue(switchStatus_ ? right : left);
+            animation_->start();
         }
-        QAbstractButton::mouseReleaseEvent(e);
+        QAbstractButton::mouseReleaseEvent(event);
     }
 
-    inline void enterEvent(QEvent* e) {
-        setCursor(Qt::PointingHandCursor);
-        QAbstractButton::enterEvent(static_cast<QEnterEvent*>(e));
+    void setFixedSize(QSize size) {
+        progress_ = switchStatus_ ? size.width() - size.height() / 2 : size.height() / 2;
+        QWidget::setFixedSize(size);
+    }
+
+    void enterEvent(QEvent* event) {
+        QWidget::setCursor(Qt::PointingHandCursor);
+        QWidget::enterEvent(static_cast<QEnterEvent*>(event));
+    }
+
+    bool switched() const {
+        return switchStatus_;
     }
 
 private:
-    bool switch_;
-    qreal opacity_;
+    std::unique_ptr<QPropertyAnimation> animation_;
 
-    int x_, y_;
-    int height_;
-    int margin_;
+    bool switchStatus_ = false;
+    uint16_t progress_ = 0;
 
-    QBrush thumb_;
-    QBrush brush_;
+    constexpr static inline auto disableGrey = 0xbdbdbd;
+    constexpr static inline auto enableGrey = 0xd5d5d5;
 
-    QPropertyAnimation* animation_ = nullptr;
+    int readProgress() const {
+        return progress_;
+    }
+
+    void writeProgress(int offset) {
+        progress_ = offset;
+        update();
+    }
 };
 
 }

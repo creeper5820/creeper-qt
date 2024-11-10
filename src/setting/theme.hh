@@ -24,26 +24,26 @@ public:
     static inline const QString qss(const QString& name) {
         return ":" + theme() + "/qss/" + name + ".qss";
     }
-    static inline auto color(const QString& name) {
-        if (name == "primary050")
+    static inline constexpr auto color(const char* name) {
+        if (strcmp(name, "primary050") == 0)
             return primary050;
-        else if (name == "primary100")
+        else if (strcmp(name, "primary100") == 0)
             return primary100;
-        else if (name == "primary200")
+        else if (strcmp(name, "primary200") == 0)
             return primary200;
-        else if (name == "primary300")
+        else if (strcmp(name, "primary300") == 0)
             return primary300;
-        else if (name == "primary400")
+        else if (strcmp(name, "primary400") == 0)
             return primary400;
-        else if (name == "primary500")
+        else if (strcmp(name, "primary500") == 0)
             return primary500;
-        else if (name == "primary600")
+        else if (strcmp(name, "primary600") == 0)
             return primary600;
-        else if (name == "primary700")
+        else if (strcmp(name, "primary700") == 0)
             return primary700;
-        else if (name == "primary800")
+        else if (strcmp(name, "primary800") == 0)
             return primary800;
-        else if (name == "primary900")
+        else if (strcmp(name, "primary900") == 0)
             return primary900;
         return 0x00000;
     }
