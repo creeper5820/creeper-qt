@@ -7,13 +7,12 @@
 
 namespace creeper {
 
-class Button : public Extension<QPushButton> {
+class PushButton : public Extension<QPushButton> {
     Q_OBJECT
 public:
-    explicit Button(QWidget* parent = nullptr)
+    explicit PushButton(QWidget* parent = nullptr)
         : Extension("default", parent) {
-        auto& theme = Theme::instance();
-        loadStyleFromFile(theme.qss("push-button"));
+        loadStyleFromFile(Theme::qss("push-button"));
     }
 
 private:

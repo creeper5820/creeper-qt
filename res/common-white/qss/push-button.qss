@@ -2,22 +2,16 @@ QPushButton {
     background-color: #F4F0F9;
     color: #1C1B1F;
     border: none;
-    border-radius: 16px;
-    padding: 20px;
+    border-radius: 10%;
     text-align: center;
 
-    font-size: 22px;
     font-weight: bold;
     font-family: monospace;
-
-    min-width: 300px;
-    min-height: 80px;
 }
 
 QPushButton[description]::after {
     content: attr(description);
     color: #49454F;
-    font-size: 14px;
     font-weight: normal;
 }
 
@@ -27,7 +21,6 @@ QPushButton:hover {
 
 QPushButton:pressed {
     background-color: #DED3F7;
-    padding-top: 21px;
 }
 
 QPushButton:disabled {

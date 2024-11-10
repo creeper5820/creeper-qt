@@ -19,8 +19,7 @@ public:
         setMinimumWidth(1440);
         setMinimumHeight(720);
 
-        auto& theme = Theme::instance();
-        loadStyleFromFile(theme.qss("main-window"));
+        loadStyleFromFile(Theme::qss("main-window"));
     }
 
     void moveCenter() {
