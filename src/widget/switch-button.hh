@@ -4,7 +4,6 @@
 #include "widget/widget.hh"
 
 #include <qabstractbutton.h>
-#include <qdebug.h>
 #include <qevent.h>
 #include <qpainter.h>
 #include <qpropertyanimation.h>
@@ -99,9 +98,9 @@ public:
         QWidget::setFixedSize(size);
     }
 
-    void enterEvent(QEvent* event) {
+    void enterEvent(QEnterEvent* event) override {
         QWidget::setCursor(Qt::PointingHandCursor);
-        QWidget::enterEvent(static_cast<QEnterEvent*>(event));
+        QWidget::enterEvent(event);
     }
 
     bool switched() const {
