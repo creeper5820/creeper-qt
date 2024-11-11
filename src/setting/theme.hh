@@ -1,8 +1,5 @@
 #pragma once
 
-#include "setting/color/common-white.hh"
-
-#include <qdebug.h>
 #include <qfile.h>
 #include <qstring.h>
 
@@ -21,15 +18,15 @@ public:
         occupied_ = occupied;
     }
     static inline void setTheme(const QString& name) {
-        const auto filePath = ":" + name + "/yaml/theme.yaml";
+        const auto filePath = ":/theme/" + name + "/theme.yaml";
         if (!QFile::exists(filePath))
             return;
 
-        auto yamlFile = QFile { filePath };
+        auto yamlFile = QFile(filePath);
         yamlFile.open(QFile::ReadOnly | QFile::Text);
 
-        auto yamlNode = YAML::Load(yamlFile.readAll());
-        qDebug() << "yaml size: " << yamlNode.size();
+        auto node = YAML::Load(yamlFile.readAll().toStdString());
+        themeConfig_ = std::make_unique<YAML::Node>(node);
 
         theme_ = name;
     }
@@ -37,39 +34,44 @@ public:
         return theme_;
     }
     static inline const QString qss(const QString& name) {
-        return ":" + theme() + "/qss/" + name + ".qss";
+        return ":/theme/" + theme() + "/qss/" + name + ".qss";
     }
-    static inline constexpr auto color(const char* name) {
+    static inline uint32_t color(const char* name) {
+        if (themeConfig_ != nullptr) {
+            auto& node = *themeConfig_;
+            if (node["color"]["name"])
+                return node["color"][name].as<uint32_t>();
+        }
         if (strcmp(name, "primary050") == 0)
-            return primary050;
+            return 0xece7f4;
         else if (strcmp(name, "primary100") == 0)
-            return primary100;
+            return 0xd0c3e5;
         else if (strcmp(name, "primary200") == 0)
-            return primary200;
+            return 0xb19cd6;
         else if (strcmp(name, "primary300") == 0)
-            return primary300;
+            return 0x9373c7;
         else if (strcmp(name, "primary400") == 0)
-            return primary400;
+            return 0x7c55bb;
         else if (strcmp(name, "primary500") == 0)
-            return primary500;
+            return 0x6638af;
         else if (strcmp(name, "primary600") == 0)
-            return primary600;
+            return 0x5d34a9;
         else if (strcmp(name, "primary700") == 0)
-            return primary700;
+            return 0x502ca0;
         else if (strcmp(name, "primary800") == 0)
-            return primary800;
+            return 0x442698;
         else if (strcmp(name, "primary900") == 0)
-            return primary900;
-        return 0x00000;
+            return 0x321a89;
+        else
+            return 0x000000;
     }
 
     constexpr static inline auto CommonWhite = "common-white";
     constexpr static inline auto CommonBlack = "common-black";
 
 private:
-    static inline QString theme_ = CommonWhite;
-    static inline std::atomic<bool> occupied_ = false;
-    static inline std::unique_ptr<YAML::Node> themeConfig_;
+    static inline auto theme_ = QString { CommonWhite };
+    static inline auto occupied_ = std::atomic<bool> { false };
+    static inline auto themeConfig_ = std::unique_ptr<YAML::Node>();
 };
-
 }

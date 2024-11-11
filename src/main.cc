@@ -2,6 +2,7 @@
 #include <qlayout.h>
 #include <qlayoutitem.h>
 
+#include "widget/list-widget.hh"
 #include "widget/main-window.hh"
 #include "widget/push-button.hh"
 #include "widget/switch-button.hh"
@@ -52,8 +53,16 @@ public:
         switchButton5->setFixedSize({ 80, 10 });
         verticalLayout->addWidget(switchButton5);
 
+        auto listWidget = new ListWidget;
+        listWidget->addItem("creeper");
+        listWidget->addItem("steve");
+
+        auto horizonLayout = new QHBoxLayout;
+        horizonLayout->addLayout(verticalLayout);
+        horizonLayout->addWidget(listWidget);
+
         auto mainWidget = new QWidget;
-        mainWidget->setLayout(verticalLayout);
+        mainWidget->setLayout(horizonLayout);
         setCentralWidget(mainWidget);
     }
 
