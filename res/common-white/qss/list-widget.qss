@@ -1,0 +1,49 @@
+/*
+primary050: 0xece7f4
+primary100: 0xd0c3e5
+primary200: 0xb19cd6
+primary300: 0x9373c7
+primary400: 0x7c55bb
+primary500: 0x6638af
+primary600: 0x5d34a9
+primary700: 0x502ca0
+primary800: 0x442698
+primary900: 0x321a89
+background: 0xffffff
+*/
+
+QListWidget {
+    background-color: #f7f7f7;
+    border: 2px solid #ece7f4;
+    border-radius: 10%;
+    padding: 10%;
+    outline: none;
+}
+
+QListWidget::item {
+    color: #575757;
+    border-radius: 8%;
+    padding: 5%;
+}
+
+QListWidget::item:selected {
+    background-color: #cfc2e7;
+    color: #ffffff;
+    border-radius: 8%;
+    padding: 5%;
+}
+
+QListWidget::item:selected:active {
+    background-color: #cfc2e7;
+    color: #ffffff;
+    border-radius: 8%;
+    padding: 5%;
+}
+
+
+QListView::item:hover {
+    background-color: #ece7f4;
+    color: #414141;
+    border-radius: 8%;
+    padding: 5%;
+}

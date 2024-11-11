@@ -1,7 +1,10 @@
 #pragma once
 
+#include <qboxlayout.h>
 #include <qfile.h>
 #include <qwidget.h>
+
+#include "setting/theme.hh"
 
 namespace creeper {
 
@@ -12,26 +15,48 @@ public:
     template <typename... Args>
     explicit Extension(Args... args)
         : Widget(std::forward<Args>(args)...) {
+        Theme::addReloadThemeHandler([this]() { reloadTheme(); });
     }
 
     void moveCenter() {
-        if (widget->parentWidget() == nullptr)
+        if (widget_->parentWidget() == nullptr)
             return;
-        const auto parentCenter = widget->parentWidget()->geometry().center();
-        const auto frameCenter = widget->frameGeometry().center();
-        widget->move(parentCenter - frameCenter);
+        const auto parentCenter = widget_->parentWidget()->geometry().center();
+        const auto frameCenter = widget_->frameGeometry().center();
+        widget_->move(parentCenter - frameCenter);
     }
 
     void loadStyleFromFile(const QString& file) {
         QFile styleFile(file);
         styleFile.open(QFile::ReadOnly | QFile::Text);
         const auto style = styleFile.readAll();
-        widget->setStyleSheet(style);
-        widget->ensurePolished();
+        widget_->setStyleSheet(style);
+        widget_->ensurePolished();
     }
 
+    auto verticalWithSelf() {
+        if (vertical_ == nullptr) {
+            vertical_ = new QVBoxLayout;
+            vertical_->addWidget(widget_);
+        }
+        return vertical_;
+    }
+
+    auto horizontalWithSelf() {
+        if (horizontal_ == nullptr) {
+            horizontal_ = new QHBoxLayout;
+            horizontal_->addWidget(widget_);
+        }
+        return horizontal_;
+    }
+
+    virtual void reloadTheme() = 0;
+
 private:
-    QWidget* widget = static_cast<QWidget*>(this);
+    QWidget* widget_ = static_cast<QWidget*>(this);
+
+    QVBoxLayout* vertical_ = nullptr;
+    QHBoxLayout* horizontal_ = nullptr;
 };
 
 }

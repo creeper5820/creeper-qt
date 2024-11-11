@@ -25,8 +25,6 @@ public:
     }
 
     void paintEvent(QPaintEvent* event) override {
-        const auto primary200 = Theme::color("primary200");
-        const auto primary600 = Theme::color("primary600");
         const auto black = Qt::black;
 
         const auto enabled = QWidget::isEnabled();
@@ -52,7 +50,7 @@ public:
             const auto point2 = currentCenter - QPoint(ballRadius, ballRadius);
             const auto point3 = currentCenter + QPoint(ballRadius, ballRadius);
             painter.setOpacity(1.0);
-            painter.setBrush({ disableGrey });
+            painter.setBrush({ disableGrey_ });
             painter.drawEllipse(QRect(point2, point3));
 
             return;
@@ -62,19 +60,19 @@ public:
 
         const auto lineLeft = leftCenter - QPoint(lineRadius, lineRadius);
         const auto lineCurrentLeft = currentCenter + QPoint(lineRadius, lineRadius);
-        painter.setBrush(QColor(primary200));
+        painter.setBrush(QColor(primary200_));
         painter.drawRoundedRect(QRect(lineLeft, lineCurrentLeft), lineRadius, lineRadius);
 
         const auto lineRight = rightCenter + QPoint(lineRadius, lineRadius);
         const auto lineCurrentRight = currentCenter - QPoint(lineRadius, lineRadius);
-        painter.setBrush(QColor(enableGrey));
+        painter.setBrush(QColor(enableGrey_));
         painter.drawRoundedRect(QRect(lineCurrentRight, lineRight), lineRadius, lineRadius);
 
         painter.setOpacity(1.0);
 
         const auto ballLeft = currentCenter - QPoint(ballRadius, ballRadius);
         const auto ballRight = currentCenter + QPoint(ballRadius, ballRadius);
-        const auto ballColor = switchStatus_ ? primary600 : enableGrey;
+        const auto ballColor = switchStatus_ ? primary400_ : enableGrey_;
         painter.setBrush(QColor(ballColor));
         painter.drawEllipse(QRect(ballLeft, ballRight));
     }
@@ -107,14 +105,21 @@ public:
         return switchStatus_;
     }
 
+    void reloadTheme() override {
+        primary200_ = Theme::color("primary200");
+        primary400_ = Theme::color("primary400");
+    }
+
 private:
     std::unique_ptr<QPropertyAnimation> animation_;
 
     bool switchStatus_ = false;
     uint16_t progress_ = 0;
 
-    constexpr static inline auto disableGrey = 0xbdbdbd;
-    constexpr static inline auto enableGrey = 0xd5d5d5;
+    uint32_t disableGrey_ = 0xbdbdbd;
+    uint32_t enableGrey_ = 0xd5d5d5;
+    uint32_t primary200_ = 0x7c55bb;
+    uint32_t primary400_ = 0x5d34a9;
 
     int readProgress() const {
         return progress_;

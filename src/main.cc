@@ -12,14 +12,10 @@ class MainWindowExample : public creeper::MainWindow {
 public:
     explicit MainWindowExample()
         : MainWindow() {
-        buttonTest();
-    }
-
-    void buttonTest() {
         using namespace creeper;
 
         auto verticalLayout = new QVBoxLayout;
-        verticalLayout->setAlignment(Qt::AlignCenter);
+        verticalLayout->setAlignment(Qt::AlignTop);
         verticalLayout->setSpacing(10);
         auto buttons = std::array<PushButton*, 3> {};
         for (int index = 0; auto& button : buttons) {
@@ -30,36 +26,36 @@ public:
         }
 
         auto switchButton0 = new SwitchButton;
-        switchButton0->setFixedSize({ 80, 30 });
+        switchButton0->setFixedSize({ 60, 30 });
         verticalLayout->addWidget(switchButton0);
 
         auto switchButton3 = new SwitchButton;
-        switchButton3->setFixedSize({ 100, 60 });
+        switchButton3->setFixedSize({ 60, 30 });
         verticalLayout->addWidget(switchButton3);
 
         auto switchButton1 = new SwitchButton;
-        switchButton1->setFixedSize({ 200, 60 });
+        switchButton1->setFixedSize({ 60, 30 });
         verticalLayout->addWidget(switchButton1);
 
-        auto switchButton2 = new SwitchButton;
-        switchButton2->setFixedSize({ 100, 30 });
-        verticalLayout->addWidget(switchButton2);
-
-        auto switchButton4 = new SwitchButton;
-        switchButton4->setFixedSize({ 80, 30 });
-        verticalLayout->addWidget(switchButton4);
-
-        auto switchButton5 = new SwitchButton;
-        switchButton5->setFixedSize({ 80, 10 });
-        verticalLayout->addWidget(switchButton5);
-
-        auto listWidget = new ListWidget;
-        listWidget->addItem("creeper");
-        listWidget->addItem("steve");
-
         auto horizonLayout = new QHBoxLayout;
+        horizonLayout->setAlignment(Qt::AlignCenter);
         horizonLayout->addLayout(verticalLayout);
-        horizonLayout->addWidget(listWidget);
+
+        auto listWidget1 = new ListWidget;
+        horizonLayout->addWidget(listWidget1);
+        listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
+        listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
+        listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
+        listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
+
+        auto listWidget0 = new ListWidget;
+        horizonLayout->addWidget(listWidget0);
+        listWidget0->addSimpleLabel("你好世界 HelloWorld");
+        listWidget0->addSimpleLabel("你好世界 HelloWorld");
+        listWidget0->addSimpleLabel("你好世界 HelloWorld");
+        listWidget0->addSimpleLabel("你好世界 HelloWorld");
+        listWidget0->addSimpleLabel("你好世界 HelloWorld");
+        listWidget0->addSimpleLabel("你好世界 HelloWorld");
 
         auto mainWidget = new QWidget;
         mainWidget->setLayout(horizonLayout);

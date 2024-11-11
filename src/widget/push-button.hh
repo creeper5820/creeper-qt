@@ -15,6 +15,10 @@ public:
         loadStyleFromFile(Theme::qss("push-button"));
     }
 
+    void reloadTheme() override {
+        loadStyleFromFile(Theme::qss("push-button"));
+    }
+
 private:
 };
 

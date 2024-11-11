@@ -66,6 +66,15 @@ public:
             return 0x000000;
     }
 
+    static inline void addReloadThemeHandler(std::function<void(void)> handler) {
+        widgetReloadThemeHandler_.push_back(handler);
+    }
+
+    static inline void reloadTheme() {
+        for (auto& handler : widgetReloadThemeHandler_)
+            handler();
+    }
+
     constexpr static inline auto CommonWhite = "common-white";
     constexpr static inline auto CommonBlack = "common-black";
 
@@ -73,5 +82,8 @@ private:
     static inline auto theme_ = QString { CommonWhite };
     static inline auto occupied_ = std::atomic<bool> { false };
     static inline auto themeConfig_ = std::unique_ptr<YAML::Node>();
+
+    static inline auto widgetReloadThemeHandler_
+        = std::vector<std::function<void(void)>>();
 };
 }

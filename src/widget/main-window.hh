@@ -28,6 +28,8 @@ public:
         QMainWindow::move(screenCenter - frameCenter);
     }
 
+    void reloadTheme() override { }
+
 private:
 };
 
