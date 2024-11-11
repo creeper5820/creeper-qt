@@ -2,8 +2,13 @@
 
 #include "setting/color/common-white.hh"
 
-#include <atomic>
+#include <qdebug.h>
+#include <qfile.h>
 #include <qstring.h>
+
+#include <atomic>
+
+#include <yaml-cpp/yaml.h>
 
 namespace creeper {
 
@@ -16,6 +21,16 @@ public:
         occupied_ = occupied;
     }
     static inline void setTheme(const QString& name) {
+        const auto filePath = ":" + name + "/yaml/theme.yaml";
+        if (!QFile::exists(filePath))
+            return;
+
+        auto yamlFile = QFile { filePath };
+        yamlFile.open(QFile::ReadOnly | QFile::Text);
+
+        auto yamlNode = YAML::Load(yamlFile.readAll());
+        qDebug() << "yaml size: " << yamlNode.size();
+
         theme_ = name;
     }
     static inline const QString theme() {
@@ -54,6 +69,7 @@ public:
 private:
     static inline QString theme_ = CommonWhite;
     static inline std::atomic<bool> occupied_ = false;
+    static inline std::unique_ptr<YAML::Node> themeConfig_;
 };
 
 }

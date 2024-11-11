@@ -8,11 +8,12 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_BUILD_TYPE "Release")
 add_compile_options(-Os -O3)
 
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(yaml-cpp REQUIRED)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
 
 file(GLOB_RECURSE PROJECT_CC "src/*.cc")
 file(GLOB_RECURSE PROJECT_HH "src/*.hh")
@@ -27,6 +28,7 @@ qt_add_executable(
 target_link_libraries(
     ${PROJECT_NAME} 
     PRIVATE Qt6::Widgets
+    PUBLIC yaml-cpp
 )
 
 include_directories(

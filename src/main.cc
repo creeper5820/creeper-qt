@@ -62,8 +62,12 @@ private:
 
 int main(int argc, char* argv[]) {
     auto app = new QApplication { argc, argv };
+
+    creeper::Theme::setTheme("common-white");
+
     auto window = new MainWindowExample;
     window->show();
+
     return app->exec();
 }
 

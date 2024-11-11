@@ -2,5 +2,7 @@
     <qresource prefix="/">
         <file>common-white/qss/push-button.qss</file>
         <file>common-white/qss/main-window.qss</file>
+        <file>common-white/qss/main-window.qss</file>
+        <file>common-white/yaml/color.yaml</file>
     </qresource>
 </RCC>
