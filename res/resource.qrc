@@ -6,6 +6,8 @@
         <file>common-white/qss/list-widget.qss</file>
         <file>common-white/qss/line-edit.qss</file>
         <file>common-white/theme.yaml</file>
-        <file>icon/vscode.svg</file>
+        <file>icon/vscode/vscode.svg</file>
+        <file>icon/vscode/vscode.png</file>
+        <file>icon/normal/search.png</file>
     </qresource>
 </RCC>

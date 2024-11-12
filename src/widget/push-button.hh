@@ -16,7 +16,7 @@ class PushButton : public Extension<QPushButton> {
     Q_OBJECT
 public:
     PushButton(QWidget* parent = nullptr)
-        : Extension("default", parent) {
+        : Extension(parent) {
         animationTimer_ = std::make_unique<QTimer>();
         connect(animationTimer_.get(), &QTimer::timeout, [this] {
             Extension::update();
