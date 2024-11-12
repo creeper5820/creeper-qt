@@ -18,7 +18,7 @@ class SwitchButton : public Extension<QAbstractButton> {
 public:
     SwitchButton(QWidget* parent = nullptr)
         : Extension(parent) {
-        animation_ = std::make_unique<QPropertyAnimation>(this, "Progress", this);
+        animation_ = std::make_unique<QPropertyAnimation>(this, "Progress");
         animation_->setEasingCurve(QEasingCurve::OutCubic);
         animation_->setDuration(100);
         setFixedSize({ 100, 30 });
@@ -27,51 +27,53 @@ public:
     void paintEvent(QPaintEvent* event) override {
         const auto black = Qt::black;
 
-        const auto enabled = QWidget::isEnabled();
+        const auto enabled = Extension::isEnabled();
+        const auto h = Extension::height();
+        const auto w = Extension::width();
 
-        const auto ballRadius = QWidget::height() * 0.45;
-        const auto lineRadius = ballRadius * 0.75;
+        const auto r0 = h * 0.45;
+        const auto r1 = r0 * 0.75;
 
-        const auto leftCenter = QPoint(QWidget::height() / 2, QWidget::height() / 2);
-        const auto rightCenter = QPoint(QWidget::width() - QWidget::height() / 2, QWidget::height() / 2);
-        const auto currentCenter = QPoint(progress_, QWidget::height() / 2);
+        const auto leftCenter = QPoint(h / 2, h / 2);
+        const auto rightCenter = QPoint(w - h / 2, h / 2);
+        const auto currentCenter = QPoint(progress_, h / 2);
 
         auto painter = QPainter(this);
         painter.setRenderHint(QPainter::Antialiasing, true);
         painter.setPen(Qt::NoPen);
 
         if (!enabled) {
-            const auto point0 = leftCenter - QPoint(lineRadius, lineRadius);
-            const auto point1 = rightCenter + QPoint(lineRadius, lineRadius);
+            const auto p0 = leftCenter - QPoint(r1, r1);
+            const auto p1 = rightCenter + QPoint(r1, r1);
             painter.setBrush(black);
             painter.setOpacity(0.12);
-            painter.drawRoundedRect(QRect(point0, point1), lineRadius, lineRadius);
+            painter.drawRoundedRect(QRect(p0, p1), r1, r1);
 
-            const auto point2 = currentCenter - QPoint(ballRadius, ballRadius);
-            const auto point3 = currentCenter + QPoint(ballRadius, ballRadius);
+            const auto p2 = currentCenter - QPoint(r0, r0);
+            const auto p3 = currentCenter + QPoint(r0, r0);
             painter.setOpacity(1.0);
             painter.setBrush({ disableGrey_ });
-            painter.drawEllipse(QRect(point2, point3));
+            painter.drawEllipse(QRect(p2, p3));
 
             return;
         }
 
         painter.setOpacity(0.75);
 
-        const auto lineLeft = leftCenter - QPoint(lineRadius, lineRadius);
-        const auto lineCurrentLeft = currentCenter + QPoint(lineRadius, lineRadius);
+        const auto lineLeft = leftCenter - QPoint(r1, r1);
+        const auto lineCurrentLeft = currentCenter + QPoint(r1, r1);
         painter.setBrush(QColor(primary200_));
-        painter.drawRoundedRect(QRect(lineLeft, lineCurrentLeft), lineRadius, lineRadius);
+        painter.drawRoundedRect(QRect(lineLeft, lineCurrentLeft), r1, r1);
 
-        const auto lineRight = rightCenter + QPoint(lineRadius, lineRadius);
-        const auto lineCurrentRight = currentCenter - QPoint(lineRadius, lineRadius);
+        const auto lineRight = rightCenter + QPoint(r1, r1);
+        const auto lineCurrentRight = currentCenter - QPoint(r1, r1);
         painter.setBrush(QColor(enableGrey_));
-        painter.drawRoundedRect(QRect(lineCurrentRight, lineRight), lineRadius, lineRadius);
+        painter.drawRoundedRect(QRect(lineCurrentRight, lineRight), r1, r1);
 
         painter.setOpacity(1.0);
 
-        const auto ballLeft = currentCenter - QPoint(ballRadius, ballRadius);
-        const auto ballRight = currentCenter + QPoint(ballRadius, ballRadius);
+        const auto ballLeft = currentCenter - QPoint(r0, r0);
+        const auto ballRight = currentCenter + QPoint(r0, r0);
         const auto ballColor = switchStatus_ ? primary400_ : enableGrey_;
         painter.setBrush(QColor(ballColor));
         painter.drawEllipse(QRect(ballLeft, ballRight));
@@ -79,26 +81,30 @@ public:
 
     void mouseReleaseEvent(QMouseEvent* event) override {
         if (event->button() & Qt::LeftButton) {
+            const auto left = Extension::height() / 2;
+            const auto right = Extension::width() - Extension::height() / 2;
             switchStatus_ = !switchStatus_;
-
-            const auto left = QWidget::height() / 2;
-            const auto right = QWidget::width() - QWidget::height() / 2;
 
             animation_->setStartValue(readProgress());
             animation_->setEndValue(switchStatus_ ? right : left);
             animation_->start();
         }
-        QAbstractButton::mouseReleaseEvent(event);
+        Extension::mouseReleaseEvent(event);
     }
 
     void setFixedSize(QSize size) {
         progress_ = switchStatus_ ? size.width() - size.height() / 2 : size.height() / 2;
-        QWidget::setFixedSize(size);
+        Extension::setFixedSize(size);
     }
 
     void enterEvent(QEnterEvent* event) override {
-        QWidget::setCursor(Qt::PointingHandCursor);
-        QWidget::enterEvent(event);
+        Extension::setCursor(Qt::PointingHandCursor);
+        Extension::enterEvent(event);
+    }
+
+    void setSwitchStatus(bool switchStatus) {
+        switchStatus_ = switchStatus;
+        Extension::update();
     }
 
     bool switched() const {
@@ -125,9 +131,9 @@ private:
         return progress_;
     }
 
-    void writeProgress(int offset) {
-        progress_ = offset;
-        update();
+    void writeProgress(int progress) {
+        progress_ = progress;
+        Extension::update();
     }
 };
 

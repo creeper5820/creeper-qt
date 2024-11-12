@@ -60,6 +60,10 @@ public:
         auto mainWidget = new QWidget;
         mainWidget->setLayout(horizonLayout);
         setCentralWidget(mainWidget);
+
+        connect(switchButton0, &SwitchButton::released, this, [=] {
+            qDebug() << "switch-button0: " << switchButton0->switched();
+        });
     }
 
 private:
