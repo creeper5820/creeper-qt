@@ -22,6 +22,7 @@ public:
             button = new creeper::PushButton;
             button->setText("Button" + QString::number(index++));
             button->setFixedSize({ 100, 50 });
+            button->setFont(QFont("monospace", 12, QFont::Normal));
             verticalLayout->addWidget(button);
         }
 
