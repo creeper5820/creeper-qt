@@ -8,7 +8,6 @@
 #include <qstyle.h>
 
 #include "setting/theme.hh"
-#include "widget/push-button.hh"
 #include "widget/switch-button.hh"
 #include "widget/widget.hh"
 

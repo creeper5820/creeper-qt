@@ -1,7 +1,9 @@
 #include <qapplication.h>
 #include <qlayout.h>
 #include <qlayoutitem.h>
+#include <qlineedit.h>
 
+#include "widget/line-edit.hh"
 #include "widget/list-widget.hh"
 #include "widget/main-window.hh"
 #include "widget/push-button.hh"
@@ -19,12 +21,16 @@ public:
         verticalLayout->setSpacing(10);
         auto buttons = std::array<PushButton*, 3> {};
         for (int index = 0; auto& button : buttons) {
-            button = new creeper::PushButton;
+            button = new PushButton;
             button->setText("Button" + QString::number(index++));
             button->setFixedSize({ 100, 50 });
             button->setFont(QFont("monospace", 12, QFont::Normal));
             verticalLayout->addWidget(button);
         }
+
+        auto lineEdit = new LineEdit;
+        lineEdit->setMaximumWidth(200);
+        verticalLayout->addWidget(lineEdit);
 
         auto switchButton0 = new SwitchButton;
         switchButton0->setFixedSize({ 60, 30 });

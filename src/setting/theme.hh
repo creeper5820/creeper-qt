@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qfile.h>
+#include <qfont.h>
 #include <qstring.h>
 
 #include <atomic>
@@ -35,6 +36,13 @@ public:
     }
     static inline const QString qss(const QString& name) {
         return ":/theme/" + theme() + "/qss/" + name + ".qss";
+    }
+    static inline const QFont font(const char* name) {
+        // TODO
+        if (strcmp(name, "text-font"))
+            return { "monospace", 12 };
+        else
+            return {};
     }
     static inline uint32_t color(const char* name) {
         if (themeConfig_ != nullptr) {

@@ -12,25 +12,22 @@
 
 namespace creeper {
 
-enum class PushButtonStyle {
-
-};
-
 class PushButton : public Extension<QPushButton> {
     Q_OBJECT
 public:
-    explicit PushButton(QWidget* parent = nullptr)
+    PushButton(QWidget* parent = nullptr)
         : Extension("default", parent) {
-        loadStyleFromFile(Theme::qss("push-button"));
-
         animationTimer_ = std::make_unique<QTimer>();
         connect(animationTimer_.get(), &QTimer::timeout, [this] {
             Extension::update();
         });
+
+        reloadTheme();
     }
 
     void reloadTheme() override {
-        loadStyleFromFile(Theme::qss("push-button"));
+        Extension::loadStyleFromFile(Theme::qss("push-button"));
+        waterColor_ = Theme::color("primary300");
     }
 
     // Water ripple animation
@@ -51,13 +48,15 @@ public:
 protected:
     void paintEvent(QPaintEvent* event) override {
         Extension::paintEvent(event);
+        waterRippleAnimationPaintEvent(event);
+    }
 
+    void waterRippleAnimationPaintEvent(QPaintEvent* event) {
         if (!waterRippleAnimation_)
             return;
 
         const auto width = Extension::width();
         const auto height = Extension::height();
-        const auto color0 = Theme::color("primary300");
 
         const auto maxDistance = 2 * std::max(width, height);
 
@@ -66,7 +65,7 @@ protected:
 
         auto painter = QPainter(this);
         painter.setPen(Qt::NoPen);
-        painter.setBrush(QColor(color0));
+        painter.setBrush(QColor(waterColor_));
         painter.setRenderHint(QPainter::Antialiasing, true);
 
         if (animationEvents_.empty())
@@ -95,19 +94,22 @@ protected:
                 if (!animationTimer_->isActive())
                     animationTimer_->start(refreshTime_);
             }
-        } else if (event->button() & Qt::RightButton) {
-            // something
         }
         Extension::mouseReleaseEvent(event);
     }
 
 private:
     // For Animation
-
     bool waterRippleAnimation_ = true;
+
     int diffusionStep = 5;
+
+    uint32_t waterColor_ = 0x000000;
+
     std::chrono::milliseconds refreshTime_ { 10 };
+
     std::unique_ptr<QTimer> animationTimer_;
+
     std::vector<std::tuple<QPoint, int>> animationEvents_;
 };
 
