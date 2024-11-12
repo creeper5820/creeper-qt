@@ -2,6 +2,7 @@
 
 #include "widget/widget.hh"
 
+#include <qicon.h>
 #include <qlineedit.h>
 
 namespace creeper {
@@ -13,6 +14,9 @@ public:
         : Extension(parent) {
         Extension::setPlaceholderText("你好世界 HelloWorld");
         Extension::setFont(QFont("monospace", 10, QFont::Normal));
+        Extension::addAction(QIcon(":/theme/icon/normal/search.png"),
+            QLineEdit::LeadingPosition);
+        Extension::setAlignment(Qt::AlignVCenter);
         reloadTheme();
     }
 

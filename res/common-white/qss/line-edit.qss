@@ -5,8 +5,15 @@ QLineEdit {
     selection-background-color: rgb(161, 132, 170);
 }
 
-QLineEdit:disabled {}
+QLineEdit:disabled {
+    border-radius: 15%;
+    padding: 10%;
+    background: #cfcfcf;
+}
 
-QLineEdit:enabled {}
-
-QLineEdit:hover {}
+QLineEdit:hover {
+    border-radius: 15%;
+    padding: 10%;
+    background: #eae5ee;
+    selection-background-color: rgb(161, 132, 170);
+}
