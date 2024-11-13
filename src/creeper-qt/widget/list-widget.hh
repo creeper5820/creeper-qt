@@ -7,9 +7,9 @@
 #include <qlistwidget.h>
 #include <qstyle.h>
 
-#include "setting/theme.hh"
-#include "widget/switch-button.hh"
-#include "widget/widget.hh"
+#include "../setting/theme.hh"
+#include "../widget/switch-button.hh"
+#include "../widget/widget.hh"
 
 namespace creeper {
 class CustomItemWidgetInterface : public Extension<QWidget>, public QListWidgetItem { };

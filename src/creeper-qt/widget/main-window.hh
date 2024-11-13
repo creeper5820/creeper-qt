@@ -5,8 +5,8 @@
 #include <qmainwindow.h>
 #include <qscreen.h>
 
-#include "setting/theme.hh"
-#include "widget/widget.hh"
+#include "../setting/theme.hh"
+#include "../widget/widget.hh"
 
 namespace creeper {
 

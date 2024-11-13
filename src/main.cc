@@ -3,11 +3,11 @@
 #include <qlayoutitem.h>
 #include <qlineedit.h>
 
-#include "widget/line-edit.hh"
-#include "widget/list-widget.hh"
-#include "widget/main-window.hh"
-#include "widget/push-button.hh"
-#include "widget/switch-button.hh"
+#include "creeper-qt/widget/line-edit.hh"
+#include "creeper-qt/widget/list-widget.hh"
+#include "creeper-qt/widget/main-window.hh"
+#include "creeper-qt/widget/push-button.hh"
+#include "creeper-qt/widget/switch-button.hh"
 
 class MainWindowExample : public creeper::MainWindow {
     Q_OBJECT
@@ -30,6 +30,8 @@ public:
 
         auto lineEdit = new LineEdit;
         lineEdit->setMaximumWidth(200);
+        lineEdit->setIcon(QIcon(":/theme/icon/normal/search.png"));
+        lineEdit->setPlaceholderText("HELLO WORLD");
         verticalLayout->addWidget(lineEdit);
 
         auto switchButton0 = new SwitchButton;
