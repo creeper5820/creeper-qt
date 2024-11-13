@@ -2,6 +2,7 @@
 
 #include "../setting/style-template.hh"
 #include "../setting/theme.hh"
+#include "../utility/pid.hh"
 #include "../widget/widget.hh"
 
 #include <qevent.h>
@@ -27,19 +28,9 @@ public:
     }
 
     void reloadTheme() override {
-        buttonColor_ = Theme::color("primary050");
+        buttonColor_ = Theme::color("primary100");
         waterColor_ = Theme::color("primary300");
-        textColor_ = Theme::color("primary900");
-
-        const auto normal = QColor(buttonColor_);
-        const auto hover = QColor(buttonColor_ - 0x111111);
-        const auto pressed = QColor(buttonColor_ - 0x222222);
-        const auto disabled = QColor(Qt::gray);
-        static auto styleSheet = QString(style::PushButton)
-                                     .arg(normal.name(), hover.name(),
-                                         pressed.name(), disabled.name());
-
-        Extension::setStyleSheet(styleSheet);
+        textColor_ = Theme::color("text");
     }
 
     void setWaterColor(uint32_t color) {
@@ -49,6 +40,9 @@ public:
     void setWaterColor(QColor color) {
         waterColor_ = color.value();
         reloadTheme();
+    }
+    void setRadiusRatio(float ratio) {
+        radiusRatio_ = ratio;
     }
 
     // Water ripple animation
@@ -67,11 +61,63 @@ public:
 
 protected:
     void paintEvent(QPaintEvent* event) override {
-        Extension::paintEvent(event);
-        waterRippleAnimationPaintEvent(event);
+        auto painter = QPainter(this);
+        buttonPaintEvent(painter);
+        waterRippleAnimationPaintEvent(painter);
+        textPaintEvent(painter);
+        checkAnimation();
     }
 
-    void waterRippleAnimationPaintEvent(QPaintEvent* event) {
+    void mouseReleaseEvent(QMouseEvent* event) override {
+        if (event->button() & Qt::LeftButton) {
+            if (waterRippleAnimation_) {
+                animationEvents_.emplace_back(event->pos(), 0);
+                if (!animationTimer_->isActive())
+                    animationTimer_->start(refreshTime_);
+            }
+        }
+        Extension::mouseReleaseEvent(event);
+    }
+
+    void enterEvent(QEnterEvent* event) override {
+        mouseHover_ = true;
+        if (!animationTimer_->isActive())
+            animationTimer_->start(refreshTime_);
+    }
+
+    void leaveEvent(QEvent* event) override {
+        mouseHover_ = false;
+        if (!animationTimer_->isActive())
+            animationTimer_->start(refreshTime_);
+    }
+
+    void buttonPaintEvent(QPainter& painter) {
+        const auto width = Extension::width();
+        const auto height = Extension::height();
+
+        auto roundRectPath = QPainterPath();
+        roundRectPath.addRoundedRect(0, 0, width, height,
+            radiusRatio_ * height, radiusRatio_ * height);
+
+        auto target = mouseHover_ ? mouseHoverOpacity : mouseLeaveOpacity;
+        opacity_ = updateWithPid(opacity_, target, 0.1);
+
+        painter.setPen(Qt::NoPen);
+        painter.setBrush({ buttonColor_ });
+        painter.setOpacity(opacity_);
+        painter.setRenderHint(QPainter::Antialiasing, true);
+
+        painter.drawPath(roundRectPath);
+    }
+
+    void textPaintEvent(QPainter& painter) {
+        painter.setPen(QColor(textColor_));
+        painter.setFont(QFont("monospace", 12, QFont::Bold));
+        painter.setOpacity(0.7);
+        painter.drawText(0, 0, width(), height(), Qt::AlignCenter, text());
+    }
+
+    void waterRippleAnimationPaintEvent(QPainter& painter) {
         if (!waterRippleAnimation_)
             return;
 
@@ -81,15 +127,12 @@ protected:
         const auto maxDistance = 2 * std::max(width, height);
 
         auto roundRectPath = QPainterPath();
-        roundRectPath.addRoundedRect(0, 0, width, height, 0.1 * width, 0.1 * height);
+        roundRectPath.addRoundedRect(0, 0, width, height,
+            radiusRatio_ * height, radiusRatio_ * height);
 
-        auto painter = QPainter(this);
         painter.setPen(Qt::NoPen);
         painter.setBrush({ waterColor_ });
         painter.setRenderHint(QPainter::Antialiasing, true);
-
-        if (animationEvents_.empty())
-            animationTimer_->stop();
 
         for (int index = 0; auto& [point, distance] : animationEvents_) {
             painter.setOpacity(0.3 * (1 - static_cast<double>(distance) / maxDistance));
@@ -107,22 +150,21 @@ protected:
         }
     }
 
-    void mouseReleaseEvent(QMouseEvent* event) override {
-        if (event->button() & Qt::LeftButton) {
-            if (waterRippleAnimation_) {
-                animationEvents_.emplace_back(event->pos(), 0);
-                if (!animationTimer_->isActive())
-                    animationTimer_->start(refreshTime_);
-            }
-        }
-        Extension::mouseReleaseEvent(event);
+    void checkAnimation() {
+        if (std::abs(opacity_ - (mouseHover_ ? mouseHoverOpacity : mouseLeaveOpacity)) < 0.001
+            && animationEvents_.empty())
+            animationTimer_->stop();
     }
 
 private:
     // For Animation
     bool waterRippleAnimation_ = true;
+    bool mouseHover_ = false;
 
     int diffusionStep = 5;
+    double opacity_ = mouseLeaveOpacity;
+
+    double radiusRatio_ = 0.15;
 
     uint32_t waterColor_;
     uint32_t buttonColor_;
@@ -133,6 +175,9 @@ private:
     std::unique_ptr<QTimer> animationTimer_;
 
     std::vector<std::tuple<QPoint, int>> animationEvents_;
+
+    constexpr static inline double mouseHoverOpacity = 1.0;
+    constexpr static inline double mouseLeaveOpacity = 0.6;
 };
 
 }
