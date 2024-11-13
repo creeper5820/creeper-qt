@@ -9,6 +9,7 @@
 namespace creeper {
 
 class SwitchCard : public Extension<QWidget> {
+    Q_OBJECT
 public:
     explicit SwitchCard(QWidget* parent = nullptr)
         : Extension(parent) {
