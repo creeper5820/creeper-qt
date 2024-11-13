@@ -1,5 +1,6 @@
 #pragma once
 
+#include <qdebug.h>
 #include <qfile.h>
 #include <qfont.h>
 #include <qstring.h>
@@ -31,6 +32,10 @@ public:
 
         theme_ = name;
     }
+    static inline const void printYamlString() {
+        auto string = YAML::Dump(*themeConfig_);
+        qDebug() << string.c_str();
+    }
     static inline const QString theme() {
         return theme_;
     }
@@ -47,9 +52,11 @@ public:
     static inline uint32_t color(const char* name) {
         if (themeConfig_ != nullptr) {
             auto& node = *themeConfig_;
-            if (node["color"]["name"])
+            if (node["color"][name].IsScalar()) {
                 return node["color"][name].as<uint32_t>();
+            }
         }
+
         if (strcmp(name, "primary050") == 0)
             return 0xece7f4;
         else if (strcmp(name, "primary100") == 0)

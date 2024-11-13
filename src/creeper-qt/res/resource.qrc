@@ -1,10 +1,5 @@
 <RCC>
     <qresource prefix="/theme">
-        <file>common-white/qss/push-button.qss</file>
-        <file>common-white/qss/icon-button.qss</file>
-        <file>common-white/qss/main-window.qss</file>
-        <file>common-white/qss/list-widget.qss</file>
-        <file>common-white/qss/line-edit.qss</file>
         <file>common-white/theme.yaml</file>
         <file>icon/normal/search.png</file>
     </qresource>

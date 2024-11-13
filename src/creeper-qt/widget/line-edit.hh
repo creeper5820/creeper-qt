@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../setting/style-template.hh"
 #include "../utility/pid.hh"
 #include "../widget/widget.hh"
 
@@ -28,10 +29,7 @@ public:
         background_ = Theme::color("primary100");
         border_ = Theme::color("primary200");
 
-        auto qss = QString(R"(QLineEdit {
-            selection-background-color: #bbbbbb;
-            background: transparent;
-            border: none;})");
+        auto qss = QString(style::LineEdit);
         Extension::setStyleSheet(qss);
 
         Extension::setFont(font_);
@@ -57,17 +55,14 @@ public:
 protected:
     void paintEvent(QPaintEvent* event) override {
         auto painter = QPainter(this);
-
         if (drawBackground_)
             backgroundPaintEvent(painter);
         if (drawIcon_)
             iconPaintEvent(painter);
-
         if (!setTextMargins_) {
             setTextMargins(drawIcon_ ? height() : 20, 10, 20, 10);
             setTextMargins_ = true;
         }
-
         Extension::paintEvent(event);
     }
 

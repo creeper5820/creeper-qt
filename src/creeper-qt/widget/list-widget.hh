@@ -7,6 +7,7 @@
 #include <qlistwidget.h>
 #include <qstyle.h>
 
+#include "../setting/style-template.hh"
 #include "../setting/theme.hh"
 #include "../widget/switch-button.hh"
 #include "../widget/widget.hh"
@@ -34,8 +35,7 @@ public:
         QListWidgetItem::setSizeHint(QSize(1, 80));
     }
 
-    void reloadTheme() override {
-    }
+    void reloadTheme() override { }
 
 private:
     QHBoxLayout* horizonLayout_;
@@ -47,7 +47,7 @@ class ListWidget : public Extension<QListWidget> {
 public:
     explicit ListWidget(QWidget* parent = nullptr)
         : Extension(parent) {
-        Extension::loadStyleFromFile(Theme::qss("list-widget"));
+        reloadTheme();
     }
 
     void addCustomItem(CustomItemWidgetInterface* item) {
@@ -67,7 +67,10 @@ public:
         QListWidget::addItem(item);
     }
 
-    void reloadTheme() override { }
+    void reloadTheme() override {
+        Extension::setStyleSheet(QString(style::ListWidget)
+                .arg("#f7f7f7", "#ece7f4", "#cfc2e7", "#ece7f4"));
+    }
 };
 
 }

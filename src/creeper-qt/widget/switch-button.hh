@@ -24,6 +24,31 @@ public:
         setFixedSize({ 100, 30 });
     }
 
+    void setFixedSize(QSize size) {
+        progress_ = switchStatus_ ? size.width() - size.height() / 2 : size.height() / 2;
+        Extension::setFixedSize(size);
+    }
+
+    void setSwitchStatus(bool switchStatus) {
+        switchStatus_ = switchStatus;
+        Extension::update();
+    }
+
+    void setDisabledButtonColor(uint32_t color) {
+        disabledButtonColor_ = color;
+        Extension::update();
+    }
+
+    bool switched() const {
+        return switchStatus_;
+    }
+
+    void reloadTheme() override {
+        switchedLineColor_ = Theme::color("primary200");
+        SwitchedButtonColor_ = Theme::color("primary400");
+    }
+
+protected:
     void paintEvent(QPaintEvent* event) override {
         const auto black = Qt::black;
 
@@ -41,20 +66,18 @@ public:
         auto painter = QPainter(this);
         painter.setRenderHint(QPainter::Antialiasing, true);
         painter.setPen(Qt::NoPen);
+        painter.setOpacity(1.0);
 
         if (!enabled) {
             const auto p0 = leftCenter - QPoint(r1, r1);
             const auto p1 = rightCenter + QPoint(r1, r1);
-            painter.setBrush(black);
-            painter.setOpacity(0.12);
+            painter.setBrush({ disabledButtonColor_ + 0x333333 });
             painter.drawRoundedRect(QRect(p0, p1), r1, r1);
 
             const auto p2 = currentCenter - QPoint(r0, r0);
             const auto p3 = currentCenter + QPoint(r0, r0);
-            painter.setOpacity(1.0);
-            painter.setBrush({ disableGrey_ });
+            painter.setBrush({ disabledButtonColor_ });
             painter.drawEllipse(QRect(p2, p3));
-
             return;
         }
 
@@ -62,20 +85,20 @@ public:
 
         const auto lineLeft = leftCenter - QPoint(r1, r1);
         const auto lineCurrentLeft = currentCenter + QPoint(r1, r1);
-        painter.setBrush(QColor(primary200_));
+        painter.setBrush({ switchedLineColor_ });
         painter.drawRoundedRect(QRect(lineLeft, lineCurrentLeft), r1, r1);
 
         const auto lineRight = rightCenter + QPoint(r1, r1);
         const auto lineCurrentRight = currentCenter - QPoint(r1, r1);
-        painter.setBrush(QColor(enableGrey_));
+        painter.setBrush({ notSwitchedLineColor_ });
         painter.drawRoundedRect(QRect(lineCurrentRight, lineRight), r1, r1);
 
         painter.setOpacity(1.0);
 
         const auto ballLeft = currentCenter - QPoint(r0, r0);
         const auto ballRight = currentCenter + QPoint(r0, r0);
-        const auto ballColor = switchStatus_ ? primary400_ : enableGrey_;
-        painter.setBrush(QColor(ballColor));
+        const auto ballColor = switchStatus_ ? SwitchedButtonColor_ : notSwitchedLineColor_;
+        painter.setBrush({ ballColor });
         painter.drawEllipse(QRect(ballLeft, ballRight));
     }
 
@@ -92,41 +115,12 @@ public:
         Extension::mouseReleaseEvent(event);
     }
 
-    void setFixedSize(QSize size) {
-        progress_ = switchStatus_ ? size.width() - size.height() / 2 : size.height() / 2;
-        Extension::setFixedSize(size);
-    }
-
     void enterEvent(QEnterEvent* event) override {
         Extension::setCursor(Qt::PointingHandCursor);
         Extension::enterEvent(event);
     }
 
-    void setSwitchStatus(bool switchStatus) {
-        switchStatus_ = switchStatus;
-        Extension::update();
-    }
-
-    bool switched() const {
-        return switchStatus_;
-    }
-
-    void reloadTheme() override {
-        primary200_ = Theme::color("primary200");
-        primary400_ = Theme::color("primary400");
-    }
-
 private:
-    std::unique_ptr<QPropertyAnimation> animation_;
-
-    bool switchStatus_ = false;
-    uint16_t progress_ = 0;
-
-    uint32_t disableGrey_ = 0xbdbdbd;
-    uint32_t enableGrey_ = 0xd5d5d5;
-    uint32_t primary200_ = 0x7c55bb;
-    uint32_t primary400_ = 0x5d34a9;
-
     int readProgress() const {
         return progress_;
     }
@@ -135,6 +129,17 @@ private:
         progress_ = progress;
         Extension::update();
     }
+
+private:
+    std::unique_ptr<QPropertyAnimation> animation_;
+
+    bool switchStatus_ = false;
+    uint16_t progress_ = 0;
+
+    uint32_t disabledButtonColor_ = 0xbdbdbd;
+    uint32_t notSwitchedLineColor_ = 0xd0d0d0d0;
+    uint32_t switchedLineColor_ = 0x7c55bb;
+    uint32_t SwitchedButtonColor_ = 0x5d34a9;
 };
 
 }
