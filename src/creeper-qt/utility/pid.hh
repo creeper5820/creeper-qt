@@ -25,4 +25,10 @@ private:
     float kd_ = 0;
     float last_error_ = 0;
 };
+
+template <typename T>
+inline T updateWithPid(T value, T target, double kp = 1) {
+    return value + kp * (target - value);
+}
+
 }

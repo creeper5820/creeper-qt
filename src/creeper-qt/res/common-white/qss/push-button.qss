@@ -28,15 +28,3 @@ QPushButton:disabled {
     color: #1C1B1F;
     opacity: 0.38;
 }
-
-QPushButton[color="pink"] {
-    background-color: #FFF1F5;
-}
-
-QPushButton[color="pink"]:hover {
-    background-color: #FFE3E9;
-}
-
-QPushButton[color="pink"]:pressed {
-    background-color: #FFD8E0;
-}

@@ -4,7 +4,7 @@
 #include <qfile.h>
 #include <qwidget.h>
 
-#include "setting/theme.hh"
+#include "../setting/theme.hh"
 
 namespace creeper {
 

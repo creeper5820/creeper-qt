@@ -17,12 +17,13 @@ set(CMAKE_AUTOUIC ON)
 
 file(GLOB_RECURSE PROJECT_CC "src/*.cc")
 file(GLOB_RECURSE PROJECT_HH "src/*.hh")
+set(PROJECT_RES "src/creeper-qt/res/resource.qrc")
 
 qt_add_executable(
     ${PROJECT_NAME}
+    ${PROJECT_RES}
     ${PROJECT_CC}
     ${PROJECT_HH}
-    "res/resource.qrc"
 )
 
 target_link_libraries(

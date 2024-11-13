@@ -1,7 +1,7 @@
 #pragma once
 
-#include "setting/theme.hh"
-#include "widget/widget.hh"
+#include "../setting/theme.hh"
+#include "../widget/widget.hh"
 
 #include <qabstractbutton.h>
 #include <qevent.h>
