@@ -5,6 +5,7 @@
 #include <qmainwindow.h>
 #include <qscreen.h>
 
+#include "../setting/style-template.hh"
 #include "../setting/theme.hh"
 #include "../widget/widget.hh"
 
@@ -15,11 +16,9 @@ class MainWindow : public Extension<QMainWindow> {
 public:
     explicit MainWindow(QWidget* parent = nullptr)
         : Extension(parent) {
-
         setMinimumWidth(1440);
         setMinimumHeight(720);
-
-        loadStyleFromFile(Theme::qss("main-window"));
+        reloadTheme();
     }
 
     void moveCenter() {
@@ -28,9 +27,14 @@ public:
         QMainWindow::move(screenCenter - frameCenter);
     }
 
-    void reloadTheme() override { }
+    void reloadTheme() override {
+        background_ = Theme::color("background");
+        Extension::setStyleSheet(QString(style::MainWindow)
+                .arg(QColor(background_).name()));
+    }
 
 private:
+    uint32_t background_ { 0xffffff };
 };
 
 }

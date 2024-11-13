@@ -9,6 +9,8 @@
 #include "creeper-qt/widget/push-button.hh"
 #include "creeper-qt/widget/switch-button.hh"
 
+#include "creeper-qt/module/switch-card.hh"
+
 class MainWindowExample : public creeper::MainWindow {
     Q_OBJECT
 public:
@@ -28,12 +30,6 @@ public:
             verticalLayout->addWidget(button);
         }
 
-        auto lineEdit = new LineEdit;
-        lineEdit->setMaximumWidth(200);
-        lineEdit->setIcon(QIcon(":/theme/icon/normal/search.png"));
-        lineEdit->setPlaceholderText("HELLO WORLD");
-        verticalLayout->addWidget(lineEdit);
-
         auto switchButton0 = new SwitchButton;
         switchButton0->setFixedSize({ 60, 30 });
         verticalLayout->addWidget(switchButton0);
@@ -47,8 +43,29 @@ public:
         verticalLayout->addWidget(switchButton1);
 
         auto horizonLayout = new QHBoxLayout;
+
+        auto switchCardsLayout = new QVBoxLayout;
+        switchCardsLayout->setAlignment(Qt::AlignTop);
+        switchCardsLayout->setContentsMargins(10, 10, 10, 10);
+        auto switchCard0 = new SwitchCard;
+        switchCard0->setFixedSize({ 400, 175 });
+        switchCard0->setText("将世界设定为“你好世界”");
+        switchCardsLayout->addWidget(switchCard0);
+
+        auto switchCard1 = new SwitchCard;
+        switchCard1->setFixedSize({ 400, 175 });
+        switchCard1->setText("将世界设定为“HELLO WORLD”");
+        switchCardsLayout->addWidget(switchCard1);
+
+        auto lineEdit = new LineEdit;
+        lineEdit->setMaximumWidth(200);
+        lineEdit->setIcon(QIcon(":/theme/icon/normal/search.png"));
+        lineEdit->setPlaceholderText("HELLO WORLD");
+        switchCardsLayout->addWidget(lineEdit);
+
         horizonLayout->setAlignment(Qt::AlignCenter);
         horizonLayout->addLayout(verticalLayout);
+        horizonLayout->addLayout(switchCardsLayout);
 
         auto listWidget1 = new ListWidget;
         horizonLayout->addWidget(listWidget1);
@@ -56,15 +73,6 @@ public:
         listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
         listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
         listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
-
-        auto listWidget0 = new ListWidget;
-        horizonLayout->addWidget(listWidget0);
-        listWidget0->addSimpleLabel("你好世界 HelloWorld");
-        listWidget0->addSimpleLabel("你好世界 HelloWorld");
-        listWidget0->addSimpleLabel("你好世界 HelloWorld");
-        listWidget0->addSimpleLabel("你好世界 HelloWorld");
-        listWidget0->addSimpleLabel("你好世界 HelloWorld");
-        listWidget0->addSimpleLabel("你好世界 HelloWorld");
 
         auto mainWidget = new QWidget;
         mainWidget->setLayout(horizonLayout);

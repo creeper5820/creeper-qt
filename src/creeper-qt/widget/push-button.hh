@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../setting/style-template.hh"
 #include "../setting/theme.hh"
 #include "../widget/widget.hh"
 
@@ -26,12 +27,31 @@ public:
     }
 
     void reloadTheme() override {
-        Extension::loadStyleFromFile(Theme::qss("push-button"));
+        buttonColor_ = Theme::color("primary050");
         waterColor_ = Theme::color("primary300");
+        textColor_ = Theme::color("primary900");
+
+        const auto normal = QColor(buttonColor_);
+        const auto hover = QColor(buttonColor_ - 0x111111);
+        const auto pressed = QColor(buttonColor_ - 0x222222);
+        const auto disabled = QColor(Qt::gray);
+        static auto styleSheet = QString(style::PushButton)
+                                     .arg(normal.name(), hover.name(),
+                                         pressed.name(), disabled.name());
+
+        Extension::setStyleSheet(styleSheet);
+    }
+
+    void setWaterColor(uint32_t color) {
+        waterColor_ = color;
+        reloadTheme();
+    }
+    void setWaterColor(QColor color) {
+        waterColor_ = color.value();
+        reloadTheme();
     }
 
     // Water ripple animation
-
     void enableAnimation() {
         waterRippleAnimation_ = true;
     }
@@ -65,7 +85,7 @@ protected:
 
         auto painter = QPainter(this);
         painter.setPen(Qt::NoPen);
-        painter.setBrush(QColor(waterColor_));
+        painter.setBrush({ waterColor_ });
         painter.setRenderHint(QPainter::Antialiasing, true);
 
         if (animationEvents_.empty())
@@ -104,7 +124,9 @@ private:
 
     int diffusionStep = 5;
 
-    uint32_t waterColor_ = 0x000000;
+    uint32_t waterColor_;
+    uint32_t buttonColor_;
+    uint32_t textColor_;
 
     std::chrono::milliseconds refreshTime_ { 10 };
 
