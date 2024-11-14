@@ -22,7 +22,7 @@ public:
 
         auto horizonLayout = new QHBoxLayout;
         horizonLayout->setAlignment(Qt::AlignCenter);
-        horizonLayout->addLayout(fitstVerticalLayout());
+        horizonLayout->addLayout(firstVerticalLayout());
         horizonLayout->addLayout(secondVerticalBox());
         horizonLayout->addWidget(listWidget1);
 
@@ -31,7 +31,7 @@ public:
         setCentralWidget(mainWidget);
     }
 
-    QVBoxLayout* fitstVerticalLayout() {
+    QVBoxLayout* firstVerticalLayout() {
         auto buttons = std::array<PushButton*, 3> {};
         for (int index = 0; auto& button : buttons) {
             button = new PushButton;
