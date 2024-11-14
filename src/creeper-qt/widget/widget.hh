@@ -52,7 +52,14 @@ public:
         return horizontal_;
     }
 
+    static void setRefreshIntervalMs(int ms) {
+        refreshIntervalMs_ = ms;
+    }
+
     virtual void reloadTheme() = 0;
+
+protected:
+    static inline int refreshIntervalMs_ = 10;
 
 private:
     QWidget* widget_ = static_cast<QWidget*>(this);

@@ -1,12 +1,14 @@
 #pragma once
 
 #include "../setting/theme.hh"
+#include "../utility/pid.hh"
 #include "../widget/widget.hh"
 
 #include <qabstractbutton.h>
 #include <qevent.h>
 #include <qpainter.h>
 #include <qpropertyanimation.h>
+#include <qtimer.h>
 
 namespace creeper {
 
@@ -14,14 +16,11 @@ namespace creeper {
 // modify a lot
 class SwitchButton : public Extension<QAbstractButton> {
     Q_OBJECT
-    Q_PROPERTY(int Progress READ readProgress WRITE writeProgress)
 public:
     SwitchButton(QWidget* parent = nullptr)
         : Extension(parent) {
-        animation_ = std::make_unique<QPropertyAnimation>(this, "Progress");
-        animation_->setEasingCurve(QEasingCurve::OutCubic);
-        animation_->setDuration(100);
-        setFixedSize({ 100, 30 });
+        connect(&animationTimer_, &QTimer::timeout, [this] { update(); });
+        reloadTheme();
     }
 
     void setFixedSize(QSize size) {
@@ -61,7 +60,12 @@ protected:
 
         const auto leftCenter = QPoint(h / 2, h / 2);
         const auto rightCenter = QPoint(w - h / 2, h / 2);
+
+        const double target = switchStatus_ ? w - h / 2 : h / 2;
         const auto currentCenter = QPoint(progress_, h / 2);
+        progress_ = updateWithPid(progress_, target, 0.1);
+        if (std::abs(progress_ - target) < 0.1)
+            animationTimer_.stop();
 
         auto painter = QPainter(this);
         painter.setRenderHint(QPainter::Antialiasing, true);
@@ -104,13 +108,9 @@ protected:
 
     void mouseReleaseEvent(QMouseEvent* event) override {
         if (event->button() & Qt::LeftButton) {
-            const auto left = Extension::height() / 2;
-            const auto right = Extension::width() - Extension::height() / 2;
             switchStatus_ = !switchStatus_;
-
-            animation_->setStartValue(readProgress());
-            animation_->setEndValue(switchStatus_ ? right : left);
-            animation_->start();
+            if (!animationTimer_.isActive())
+                animationTimer_.start(refreshIntervalMs_);
         }
         Extension::mouseReleaseEvent(event);
     }
@@ -121,7 +121,7 @@ protected:
     }
 
 private:
-    int readProgress() const {
+    double readProgress() const {
         return progress_;
     }
 
@@ -131,10 +131,10 @@ private:
     }
 
 private:
-    std::unique_ptr<QPropertyAnimation> animation_;
+    QTimer animationTimer_;
 
     bool switchStatus_ = false;
-    uint16_t progress_ = 0;
+    double progress_ = 0;
 
     uint32_t disabledButtonColor_ = 0xbdbdbd;
     uint32_t notSwitchedLineColor_ = 0xd0d0d0d0;
