@@ -1,7 +1,5 @@
 #include <qapplication.h>
-#include <qlayout.h>
-#include <qlayoutitem.h>
-#include <qlineedit.h>
+#include <qcheckbox.h>
 
 #include "creeper-qt/widget/line-edit.hh"
 #include "creeper-qt/widget/list-widget.hh"
@@ -12,13 +10,29 @@
 #include "creeper-qt/module/round-icon-button.hh"
 #include "creeper-qt/module/switch-card.hh"
 
+using namespace creeper;
+
 class MainWindowExample : public creeper::MainWindow {
     Q_OBJECT
 public:
     explicit MainWindowExample()
         : MainWindow() {
-        using namespace creeper;
+        auto listWidget1 = new ListWidget;
+        for (int i = 0; i < 8; i++)
+            listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
 
+        auto horizonLayout = new QHBoxLayout;
+        horizonLayout->setAlignment(Qt::AlignCenter);
+        horizonLayout->addLayout(fitstVerticalLayout());
+        horizonLayout->addLayout(secondVerticalBox());
+        horizonLayout->addWidget(listWidget1);
+
+        auto mainWidget = new QWidget;
+        mainWidget->setLayout(horizonLayout);
+        setCentralWidget(mainWidget);
+    }
+
+    QVBoxLayout* fitstVerticalLayout() {
         auto buttons = std::array<PushButton*, 3> {};
         for (int index = 0; auto& button : buttons) {
             button = new PushButton;
@@ -31,11 +45,25 @@ public:
         switchButton0->setFixedSize({ 60, 30 });
 
         auto switchButton3 = new ConvexSwitchButton;
-        switchButton3->setFixedSize({ 60, 30 });
+        switchButton3->setFixedSize({ 80, 40 });
 
         auto switchButton1 = new ConcaveSwitchButton;
         switchButton1->setFixedSize({ 80, 40 });
 
+        auto verticalLayout = new QVBoxLayout;
+        verticalLayout->setAlignment(Qt::AlignTop | Qt::AlignCenter);
+        verticalLayout->setSpacing(10);
+        verticalLayout->addWidget(buttons[0]);
+        verticalLayout->addWidget(buttons[1]);
+        verticalLayout->addWidget(buttons[2]);
+        verticalLayout->addWidget(switchButton1);
+        verticalLayout->addWidget(switchButton3);
+        verticalLayout->addWidget(switchButton0);
+
+        return verticalLayout;
+    }
+
+    QVBoxLayout* secondVerticalBox() {
         auto longSwitchButton = new ConvexSwitchButton;
         longSwitchButton->setFixedSize({ 200, 30 });
 
@@ -67,22 +95,6 @@ public:
         roundIconButton2->setIconRatio(1);
         roundIconButton2->setIcon(QIcon(":/theme/icon/normal/menu.png"));
 
-        auto listWidget1 = new ListWidget;
-        listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
-        listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
-        listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
-        listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
-
-        auto verticalLayout = new QVBoxLayout;
-        verticalLayout->setAlignment(Qt::AlignTop);
-        verticalLayout->setSpacing(10);
-        verticalLayout->addWidget(buttons[0]);
-        verticalLayout->addWidget(buttons[1]);
-        verticalLayout->addWidget(buttons[2]);
-        verticalLayout->addWidget(switchButton0);
-        verticalLayout->addWidget(switchButton3);
-        verticalLayout->addWidget(switchButton1);
-
         auto roundIconButtonLayout = new QHBoxLayout;
         roundIconButtonLayout->setAlignment(Qt::AlignLeft);
         roundIconButtonLayout->addWidget(roundIconButton0);
@@ -98,22 +110,8 @@ public:
         switchCardsLayout->addWidget(lineEdit);
         switchCardsLayout->addLayout(roundIconButtonLayout);
 
-        auto horizonLayout = new QHBoxLayout;
-        horizonLayout->setAlignment(Qt::AlignCenter);
-        horizonLayout->addLayout(verticalLayout);
-        horizonLayout->addLayout(switchCardsLayout);
-        horizonLayout->addWidget(listWidget1);
-
-        auto mainWidget = new QWidget;
-        mainWidget->setLayout(horizonLayout);
-        setCentralWidget(mainWidget);
-
-        connect(switchButton0, &ConvexSwitchButton::released, this, [=] {
-            qDebug() << "switch-button0: " << switchButton0->switched();
-        });
+        return switchCardsLayout;
     }
-
-private:
 };
 
 int main(int argc, char* argv[]) {

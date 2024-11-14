@@ -38,6 +38,7 @@ public:
         if (vertical_ == nullptr) {
             vertical_ = new QVBoxLayout;
             vertical_->setContentsMargins(0, 0, 0, 0);
+            vertical_->setAlignment(Qt::AlignCenter);
             vertical_->addWidget(widget_);
         }
         return vertical_;
@@ -47,6 +48,7 @@ public:
         if (horizontal_ == nullptr) {
             horizontal_ = new QHBoxLayout;
             horizontal_->setContentsMargins(0, 0, 0, 0);
+            horizontal_->setAlignment(Qt::AlignCenter);
             horizontal_->addWidget(widget_);
         }
         return horizontal_;
