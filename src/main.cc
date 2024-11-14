@@ -27,16 +27,16 @@ public:
             button->setFont(QFont("monospace", 12, QFont::Normal));
         }
 
-        auto switchButton0 = new SwitchButton;
+        auto switchButton0 = new ConvexSwitchButton;
         switchButton0->setFixedSize({ 60, 30 });
 
-        auto switchButton3 = new SwitchButton;
+        auto switchButton3 = new ConvexSwitchButton;
         switchButton3->setFixedSize({ 60, 30 });
 
-        auto switchButton1 = new SwitchButton;
-        switchButton1->setFixedSize({ 60, 30 });
+        auto switchButton1 = new ConcaveSwitchButton;
+        switchButton1->setFixedSize({ 80, 40 });
 
-        auto longSwitchButton = new SwitchButton;
+        auto longSwitchButton = new ConvexSwitchButton;
         longSwitchButton->setFixedSize({ 200, 30 });
 
         auto switchCard0 = new SwitchCard;
@@ -108,7 +108,7 @@ public:
         mainWidget->setLayout(horizonLayout);
         setCentralWidget(mainWidget);
 
-        connect(switchButton0, &SwitchButton::released, this, [=] {
+        connect(switchButton0, &ConvexSwitchButton::released, this, [=] {
             qDebug() << "switch-button0: " << switchButton0->switched();
         });
     }

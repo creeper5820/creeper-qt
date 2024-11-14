@@ -55,11 +55,9 @@ protected:
     }
 
 private:
-    SwitchButton switchButton_ { this };
+    ConcaveSwitchButton switchButton_ { this };
     Label label_ { this };
-
     QFont font_;
-
     uint32_t background_;
 };
 
