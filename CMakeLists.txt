@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.17...3.22)
 
-project(creeper-qt-example VERSION 1.0.0 LANGUAGES CXX)
+project(creeper-qt VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -15,23 +15,67 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-file(GLOB_RECURSE PROJECT_CC "src/*.cc")
-file(GLOB_RECURSE PROJECT_HH "src/*.hh")
-set(PROJECT_RES "src/creeper-qt/res/resource.qrc")
+## File Search
+file(GLOB_RECURSE PROJECT_CC "include/*.cc")
+file(GLOB_RECURSE PROJECT_HH "include/*.hh")
+set(PROJECT_RES "res/resource.qrc")
 
-qt_add_executable(
-    ${PROJECT_NAME}
+add_library(${PROJECT_NAME}
+    SHARED
     ${PROJECT_RES}
     ${PROJECT_CC}
     ${PROJECT_HH}
+    
+)
+add_library(${PROJECT_NAME}::widget
+    ALIAS ${PROJECT_NAME}
+)
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC Qt6::Widgets yaml-cpp 
 )
 
-target_link_libraries(
-    ${PROJECT_NAME} 
-    PRIVATE Qt6::Widgets
-    PUBLIC yaml-cpp
+## Package Config
+include(GNUInstallDirs)
+install(TARGETS ${PROJECT_NAME}
+    EXPORT ${PROJECT_NAME}Targets
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
 )
 
-include_directories(
-    ${PROJECT_SOURCE_DIR}/src
+install(DIRECTORY "include/"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
+    FILES_MATCHING PATTERN "*.hh"
 )
+
+install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}_export.h"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
+)
+
+install(
+    EXPORT ${PROJECT_NAME}Targets 
+    FILE ${PROJECT_NAME}Targets.cmake
+    NAMESPACE ${PROJECT_NAME}::
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake"
+)
+
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    cmake/${PROJECT_NAME}Config.cmake.in "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+    INSTALL_DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake"
+)
+
+write_basic_package_version_file(
+    ${PROJECT_NAME}ConfigVersion.cmake
+    VERSION ${PACKAGE_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+install(
+    FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+          "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake"
+)
+
+set(CMAKE_EXPORT_PACKAGE_REGISTRY ON)
+export(PACKAGE ${PROJECT_NAME})

@@ -1,5 +1,4 @@
 #include <qapplication.h>
-#include <qcheckbox.h>
 
 #include "creeper-qt/widget/line-edit.hh"
 #include "creeper-qt/widget/list-widget.hh"
@@ -12,10 +11,10 @@
 
 using namespace creeper;
 
-class MainWindowExample : public creeper::MainWindow {
+class Widgets : public creeper::MainWindow {
     Q_OBJECT
 public:
-    explicit MainWindowExample()
+    explicit Widgets()
         : MainWindow() {
         auto listWidget1 = new ListWidget;
         for (int i = 0; i < 8; i++)
@@ -117,10 +116,11 @@ public:
 int main(int argc, char* argv[]) {
     auto app = new QApplication { argc, argv };
 
-    creeper::Theme::setTheme("common-white");
+    Theme::setTheme("common-white");
 
-    auto window = new MainWindowExample;
-    window->setWindowIcon(QIcon(":/theme/icon/normal/menu.png"));
+    auto window = new Widgets;
+    auto icon = QIcon(":/theme/icon/normal/menu.png");
+    window->setWindowIcon(icon);
     window->setIconSize({ 10, 10 });
     window->setWindowTitle("HelloWorld");
     window->moveCenter();
@@ -129,4 +129,4 @@ int main(int argc, char* argv[]) {
     return app->exec();
 }
 
-#include "main.moc"
+#include "widgets.moc"
