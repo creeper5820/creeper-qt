@@ -15,7 +15,7 @@ public:
     template <typename... Args>
     explicit Extension(Args... args)
         : Widget(std::forward<Args>(args)...) {
-        Theme::addReloadThemeHandler([this]() { reloadTheme(); });
+        Theme::addReloadThemeHandler([this] { reloadTheme(); });
     }
 
     void moveCenter() {

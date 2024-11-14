@@ -18,7 +18,7 @@ class CustomItemWidgetInterface : public Extension<QWidget>, public QListWidgetI
 class SwitchAndLabelItem : public CustomItemWidgetInterface {
 public:
     explicit SwitchAndLabelItem(const QString& label) {
-        button_ = new SwitchButton;
+        button_ = new ConvexSwitchButton;
         button_->setFixedSize({ 50, 30 });
 
         auto labelWidget_ = new QLabel;
@@ -40,7 +40,7 @@ public:
 private:
     QHBoxLayout* horizonLayout_;
     QLabel* labelWidget_;
-    SwitchButton* button_;
+    ConvexSwitchButton* button_;
 };
 
 class ListWidget : public Extension<QListWidget> {
