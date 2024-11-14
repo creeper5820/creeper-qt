@@ -15,7 +15,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-## File Search
+# File Search
 file(GLOB_RECURSE PROJECT_CC "include/*.cc")
 file(GLOB_RECURSE PROJECT_HH "include/*.hh")
 set(PROJECT_RES "res/resource.qrc")
@@ -34,7 +34,7 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC Qt6::Widgets yaml-cpp 
 )
 
-## Package Config
+# Package Config
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}
     EXPORT ${PROJECT_NAME}Targets
@@ -42,40 +42,44 @@ install(TARGETS ${PROJECT_NAME}
     ARCHIVE DESTINATION lib
     RUNTIME DESTINATION bin
 )
-
 install(DIRECTORY "include/"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
     FILES_MATCHING PATTERN "*.hh"
 )
-
 install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}_export.h"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
 )
-
-install(
-    EXPORT ${PROJECT_NAME}Targets 
+install(EXPORT ${PROJECT_NAME}Targets 
     FILE ${PROJECT_NAME}Targets.cmake
     NAMESPACE ${PROJECT_NAME}::
     DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake"
 )
 
 include(CMakePackageConfigHelpers)
-configure_package_config_file(
-    cmake/${PROJECT_NAME}Config.cmake.in "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+configure_package_config_file(cmake/${PROJECT_NAME}Config.cmake.in
+    "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
     INSTALL_DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake"
 )
 
+# @time: 2024-11-15
+# 开发初期采用破坏式更新，姑且使用 SameMinorVersion
+# 后期可以考虑使用 SameMajorVersion
 write_basic_package_version_file(
     ${PROJECT_NAME}ConfigVersion.cmake
     VERSION ${PACKAGE_VERSION}
-    COMPATIBILITY SameMajorVersion
+    COMPATIBILITY SameMinorVersion
 )
 
-install(
-    FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-          "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
+              "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
     DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake"
 )
 
 set(CMAKE_EXPORT_PACKAGE_REGISTRY ON)
 export(PACKAGE ${PROJECT_NAME})
+
+add_custom_target("uninstall" COMMENT "uninstall creeper-qt library")
+add_custom_command(TARGET "uninstall" POST_BUILD
+    COMMENT "uninstall creeper-qt library"
+    COMMAND xargs rm -vf < install_manifest.txt || echo nothing to be uninstalled
+)
