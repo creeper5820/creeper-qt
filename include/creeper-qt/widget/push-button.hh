@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../setting/style-template.hh"
 #include "../setting/theme.hh"
 #include "../utility/pid.hh"
 #include "../widget/widget.hh"

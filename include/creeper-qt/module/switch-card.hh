@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../setting/style-template.hh"
 #include "../widget/label.hh"
 #include "../widget/switch-button.hh"
