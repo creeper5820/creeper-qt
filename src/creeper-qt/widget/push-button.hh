@@ -19,11 +19,7 @@ class PushButton : public Extension<QPushButton> {
 public:
     PushButton(QWidget* parent = nullptr)
         : Extension(parent) {
-        animationTimer_ = std::make_unique<QTimer>();
-        connect(animationTimer_.get(), &QTimer::timeout, [this] {
-            Extension::update();
-        });
-
+        connect(&animationTimer_, &QTimer::timeout, [this] { update(); });
         reloadTheme();
     }
 
@@ -52,9 +48,6 @@ public:
     void disableAnimation() {
         waterRippleAnimation_ = false;
     }
-    void setRefreshTime(std::chrono::milliseconds ms) {
-        refreshTime_ = ms;
-    }
     void setDiffusionStep(int step) {
         diffusionStep = step;
     }
@@ -72,8 +65,8 @@ protected:
         if (event->button() & Qt::LeftButton) {
             if (waterRippleAnimation_) {
                 animationEvents_.emplace_back(event->pos(), 0);
-                if (!animationTimer_->isActive())
-                    animationTimer_->start(refreshTime_);
+                if (!animationTimer_.isActive())
+                    animationTimer_.start(refreshIntervalMs_);
             }
         }
         Extension::mouseReleaseEvent(event);
@@ -81,14 +74,14 @@ protected:
 
     void enterEvent(QEnterEvent* event) override {
         mouseHover_ = true;
-        if (!animationTimer_->isActive())
-            animationTimer_->start(refreshTime_);
+        if (!animationTimer_.isActive())
+            animationTimer_.start(refreshIntervalMs_);
     }
 
     void leaveEvent(QEvent* event) override {
         mouseHover_ = false;
-        if (!animationTimer_->isActive())
-            animationTimer_->start(refreshTime_);
+        if (!animationTimer_.isActive())
+            animationTimer_.start(refreshIntervalMs_);
     }
 
     void buttonPaintEvent(QPainter& painter) {
@@ -153,7 +146,7 @@ protected:
     void checkAnimation() {
         if (std::abs(opacity_ - (mouseHover_ ? mouseHoverOpacity : mouseLeaveOpacity)) < 0.001
             && animationEvents_.empty())
-            animationTimer_->stop();
+            animationTimer_.stop();
     }
 
 private:
@@ -170,9 +163,7 @@ private:
     uint32_t buttonColor_;
     uint32_t textColor_;
 
-    std::chrono::milliseconds refreshTime_ { 10 };
-
-    std::unique_ptr<QTimer> animationTimer_;
+    QTimer animationTimer_;
 
     std::vector<std::tuple<QPoint, int>> animationEvents_;
 
