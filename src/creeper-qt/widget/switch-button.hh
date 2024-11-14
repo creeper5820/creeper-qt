@@ -59,7 +59,7 @@ protected:
 
     QTimer animationTimer_;
 
-    uint32_t lightGrey_ = 0xd0d0d0;
+    uint32_t lightGrey_ = 0xdddddd;
     uint32_t heavyGrey_ = 0xaaaaaa;
     uint32_t lightPrimary_ = 0x7c55bb;
     uint32_t heavyPrimary_ = 0x5d34a9;
