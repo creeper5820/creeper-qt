@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.17...3.22)
 
 project(creeper-qt VERSION 1.0.0 LANGUAGES CXX)
 
+# 选择是否构建示例程序
+set(BUILD_EXAMPLES OFF)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 23)
@@ -46,9 +49,6 @@ install(DIRECTORY "include/"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
     FILES_MATCHING PATTERN "*.hh"
 )
-install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}_export.h"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
-)
 install(EXPORT ${PROJECT_NAME}Targets 
     FILE ${PROJECT_NAME}Targets.cmake
     NAMESPACE ${PROJECT_NAME}::
@@ -83,3 +83,7 @@ add_custom_command(TARGET "uninstall" POST_BUILD
     COMMENT "uninstall creeper-qt library"
     COMMAND xargs rm -vf < install_manifest.txt || echo nothing to be uninstalled
 )
+
+if(BUILD_EXAMPLES)
+    add_subdirectory(example)
+endif()
