@@ -62,9 +62,6 @@ public:
 
         // test
         auto slider1 = new Slider;
-        slider1->setLength(100);
-        slider1->setThickness(5);
-        slider1->setValue(0);
         verticalLayout->addWidget(slider1);
 
         auto slider2 = new Slider;
@@ -95,12 +92,14 @@ public:
         verticalLayout->addWidget(slider5);
 
         auto slider6 = new Slider;
-        slider6->setLength(600);
-        slider6->setThickness(50);
-        slider6->setBlockBorderShadowSize_(10);
-        slider6->setBLockLength(100);
-        slider6->setValue(100);
 
+        slider6->setLength(100);
+        slider6->setThickness(20);
+        slider6->setBlockBorderShadowSize_(5);
+        slider6->setBLockLength(20);
+        slider6->setBLockThickness(30);
+        slider6->setValue(100);
+        slider6->setOrientation(Qt::Vertical);
         verticalLayout->addWidget(slider6);
 
         return verticalLayout;
