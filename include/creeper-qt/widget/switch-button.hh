@@ -185,13 +185,13 @@ protected:
         painter.drawRoundedRect(QRect(lineLeft, lineRight), r0, r0);
 
         const auto border = r0 * 0.2;
-        const auto lineInerLeft = lineLeft + QPoint(border, border);
-        const auto lineInerRight = lineRight - QPoint(border, border);
+        const auto lineInsideLeft = lineLeft + QPoint(border, border);
+        const auto lineInsideRight = lineRight - QPoint(border, border);
         const auto r2 = r0 - border;
 
         if (!switchStatus_) {
             painter.setBrush({ lightGrey_ });
-            painter.drawRoundedRect(QRect(lineInerLeft, lineInerRight), r2, r2);
+            painter.drawRoundedRect(QRect(lineInsideLeft, lineInsideRight), r2, r2);
         }
 
         const auto ballLeft = currentCenter - QPoint(r1, r1);

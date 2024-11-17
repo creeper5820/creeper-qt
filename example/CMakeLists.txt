@@ -19,9 +19,16 @@ set(CMAKE_AUTOUIC ON)
 add_executable( widgets
     widgets.cc
 )
-
 target_link_libraries( widgets
     creeper-qt::creeper-qt
-    Qt6::Widgets
+    Qt6::Widgets yaml-cpp
+)
+
+add_executable( keyboard
+    keyboard.cc
+)
+target_link_libraries( keyboard
+    creeper-qt::creeper-qt
+    Qt6Widgets Qt6Network
     yaml-cpp
 )
