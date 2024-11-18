@@ -17,17 +17,14 @@ class LineEdit : public Extension<QLineEdit> {
 public:
     LineEdit(QWidget* parent = nullptr)
         : Extension(parent) {
-        animationTimer_ = std::make_unique<QTimer>();
+        connect(&animationTimer_, &QTimer::timeout, [this] { update(); });
         reloadTheme();
-        connect(animationTimer_.get(), &QTimer::timeout, [this] {
-            Extension::update();
-        });
     }
 
     void reloadTheme() override {
-        font_ = QFont("monospace", 12, QFont::Normal);
         background_ = Theme::color("primary100");
         border_ = Theme::color("primary200");
+        font_ = QFont("monospace", 12, QFont::Normal);
 
         auto qss = QString(style::LineEdit);
         Extension::setStyleSheet(qss);
@@ -55,10 +52,8 @@ public:
 protected:
     void paintEvent(QPaintEvent* event) override {
         auto painter = QPainter(this);
-        if (drawBackground_)
-            backgroundPaintEvent(painter);
-        if (drawIcon_)
-            iconPaintEvent(painter);
+        if (drawBackground_) backgroundPaintEvent(painter);
+        if (drawIcon_) iconPaintEvent(painter);
         if (!setTextMargins_) {
             setTextMargins(drawIcon_ ? height() : 20, 10, 20, 10);
             setTextMargins_ = true;
@@ -68,15 +63,13 @@ protected:
 
     void enterEvent(QEnterEvent* event) override {
         mouseHover_ = true;
-        if (!animationTimer_->isActive())
-            animationTimer_->start(10);
+        if (!animationTimer_.isActive()) animationTimer_.start(10);
         Extension::enterEvent(event);
     }
 
     void leaveEvent(QEvent* event) override {
         mouseHover_ = false;
-        if (!animationTimer_->isActive())
-            animationTimer_->start(10);
+        if (!animationTimer_.isActive()) animationTimer_.start(10);
         Extension::leaveEvent(event);
     }
 
@@ -86,38 +79,34 @@ private:
         const auto height = Extension::height();
 
         static double opacity = 0.5;
-        if (mouseHover_) {
-            opacity = updateWithPid(opacity, 0.8, 0.1);
-            if (std::abs(opacity - 0.8) < 0.001)
-                animationTimer_->stop();
-        } else {
-            opacity = updateWithPid(opacity, 0.5, 0.1);
-            if (std::abs(opacity - 0.5) < 0.001)
-                animationTimer_->stop();
-        }
+        const auto target = mouseHover_ ? 0.8 : 0.5;
+        opacity = updateWithPid(opacity, target, 0.1);
+        if (std::abs(opacity - target) < 0.001) animationTimer_.stop();
 
         painter.setPen(Qt::NoPen);
         painter.setRenderHint(QPainter::Antialiasing, true);
         painter.setBrush(QColor(background_));
         painter.setOpacity(opacity);
 
-        painter.drawRoundedRect(0, 0, width, height, 0.5 * height, 0.5 * height);
+        const auto rect = QRect(0, 0, width, height);
+        const auto radius = 0.5 * height;
+        painter.drawRoundedRect(rect, radius, radius);
     }
 
     void iconPaintEvent(QPainter& painter) {
         const auto width = Extension::width();
         const auto height = Extension::height();
-
-        auto iconPosition = QPoint(height * 0.25, height * 0.25);
+        const auto iconPosition = QPoint(height * 0.25, height * 0.25);
+        const auto iconPixmap = icon_.pixmap(height * 0.5, height * 0.5);
         painter.setOpacity(1);
-        painter.drawPixmap(iconPosition, icon_.pixmap(height * 0.5, height * 0.5));
+        painter.drawPixmap(iconPosition, iconPixmap);
     }
 
 private:
     QIcon icon_;
     QFont font_;
 
-    std::unique_ptr<QTimer> animationTimer_;
+    QTimer animationTimer_ { this };
 
     uint32_t background_;
     uint32_t border_;

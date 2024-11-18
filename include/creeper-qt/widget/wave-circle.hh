@@ -17,17 +17,14 @@ public:
         radius_ = radius;
         setFixedSize(2 * radius, 2 * radius);
     }
-
     void setFlange(int flange) {
         assert(flange > 0);
         flange_ = flange;
     }
-
     void setFlangeRatio(double ratio) {
         assert(radius > 0 && radius < 1);
         ratio_ = ratio;
     }
-
     void reloadTheme() override { }
 
 protected:
@@ -45,8 +42,8 @@ protected:
         }
         auto insideVertex = std::vector<Eigen::Vector2d>(flange_);
         for (int index = 0; auto& point : insideVertex) {
-            point.x() = 0.8 * radius * std::cos((index + 0.5) * angleStep);
-            point.y() = 0.8 * radius * std::sin((index + 0.5) * angleStep);
+            point.x() = ratio_ * radius * std::cos((index + 0.5) * angleStep);
+            point.y() = ratio_ * radius * std::sin((index + 0.5) * angleStep);
             index++;
         }
 

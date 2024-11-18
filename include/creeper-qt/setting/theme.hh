@@ -13,16 +13,11 @@ namespace creeper {
 
 class Theme {
 public:
-    static inline bool occupied() {
-        return occupied_;
-    }
-    static inline void setOccupied(bool occupied) {
-        occupied_ = occupied;
-    }
+    static inline bool occupied() { return occupied_; }
+    static inline void setOccupied(bool occupied) { occupied_ = occupied; }
     static inline void setTheme(const QString& name) {
         const auto filePath = ":/theme/" + name + "/theme.yaml";
-        if (!QFile::exists(filePath))
-            return;
+        if (!QFile::exists(filePath)) return;
 
         auto yamlFile = QFile(filePath);
         yamlFile.open(QFile::ReadOnly | QFile::Text);
@@ -36,16 +31,13 @@ public:
         auto string = YAML::Dump(*themeConfig_);
         qDebug() << string.c_str();
     }
-    static inline const QString theme() {
-        return theme_;
-    }
+    static inline const QString theme() { return theme_; }
     static inline const QString qss(const QString& name) {
         return ":/theme/" + theme() + "/qss/" + name + ".qss";
     }
     static inline const QFont font(const char* name) {
         // TODO
-        if (strcmp(name, "text-font"))
-            return { "monospace", 12 };
+        if (strcmp(name, "text-font")) return { "monospace", 12 };
         else
             return {};
     }
@@ -56,32 +48,11 @@ public:
                 return node["color"][name].as<uint32_t>();
             }
         }
-
-        if (strcmp(name, "primary050") == 0)
-            return 0xece7f4;
-        else if (strcmp(name, "primary100") == 0)
-            return 0xd0c3e5;
-        else if (strcmp(name, "primary200") == 0)
-            return 0xb19cd6;
-        else if (strcmp(name, "primary300") == 0)
-            return 0x9373c7;
-        else if (strcmp(name, "primary400") == 0)
-            return 0x7c55bb;
-        else if (strcmp(name, "primary500") == 0)
-            return 0x6638af;
-        else if (strcmp(name, "primary600") == 0)
-            return 0x5d34a9;
-        else if (strcmp(name, "primary700") == 0)
-            return 0x502ca0;
-        else if (strcmp(name, "primary800") == 0)
-            return 0x442698;
-        else if (strcmp(name, "primary900") == 0)
-            return 0x321a89;
-        else
-            return 0x000000;
+        return 0x000000;
     }
 
-    static inline void addReloadThemeHandler(std::function<void(void)> handler) {
+    static inline void addReloadThemeHandler(
+        std::function<void(void)> handler) {
         widgetReloadThemeHandler_.push_back(handler);
     }
 

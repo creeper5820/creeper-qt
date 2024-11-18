@@ -17,14 +17,10 @@ public:
         setFixedSize({ radius_ * 2, radius_ * 2 });
     }
 
-    void setIcon(const QIcon& icon) {
-        icon_ = icon;
-    }
+    void setIcon(const QIcon& icon) { icon_ = icon; }
 
     // default equals radius
-    void setIconRatio(float ratio) {
-        iconRatio_ = ratio;
-    }
+    void setIconRatio(float ratio) { iconRatio_ = ratio; }
 
 protected:
     void paintEvent(QPaintEvent* event) override {
@@ -34,11 +30,8 @@ protected:
         painter.setPen(Qt::NoPen);
         painter.setBrush({ Qt::black });
 
-        auto pixmap = icon_.pixmap(
-            radius_ * iconRatio_,
-            radius_ * iconRatio_);
-        painter.drawPixmap(
-            radius_ * (2 - iconRatio_) / 2,
+        auto pixmap = icon_.pixmap(radius_ * iconRatio_, radius_ * iconRatio_);
+        painter.drawPixmap(radius_ * (2 - iconRatio_) / 2,
             radius_ * (2 - iconRatio_) / 2, pixmap);
     }
 

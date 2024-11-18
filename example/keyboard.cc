@@ -9,10 +9,7 @@ using namespace creeper;
 class Keyboard : public MainWindow {
     Q_OBJECT
 public:
-    enum class Motor : bool {
-        Left,
-        Right
-    };
+    enum class Motor : bool { Left, Right };
 
     explicit Keyboard(QWidget* parent = nullptr)
         : MainWindow(parent) {
@@ -33,37 +30,27 @@ public:
 
 protected:
     void keyPressEvent(QKeyEvent* event) override {
-        if (event->key() == Qt::Key_W)
-            w_ = true;
-        if (event->key() == Qt::Key_S)
-            s_ = true;
-        if (event->key() == Qt::Key_A)
-            a_ = true;
-        if (event->key() == Qt::Key_D)
-            d_ = true;
+        if (event->key() == Qt::Key_W) w_ = true;
+        if (event->key() == Qt::Key_S) s_ = true;
+        if (event->key() == Qt::Key_A) a_ = true;
+        if (event->key() == Qt::Key_D) d_ = true;
     }
 
     void keyReleaseEvent(QKeyEvent* event) override {
-        if (event->key() == Qt::Key_W)
-            w_ = false;
-        if (event->key() == Qt::Key_S)
-            s_ = false;
-        if (event->key() == Qt::Key_A)
-            a_ = false;
-        if (event->key() == Qt::Key_D)
-            d_ = false;
+        if (event->key() == Qt::Key_W) w_ = false;
+        if (event->key() == Qt::Key_S) s_ = false;
+        if (event->key() == Qt::Key_A) a_ = false;
+        if (event->key() == Qt::Key_D) d_ = false;
     }
 
 private:
-    template <typename T>
-    inline T clamp(T value, T left, T right) {
+    template <typename T> inline T clamp(T value, T left, T right) {
         value = value > right ? right : value;
         value = value < left ? left : value;
         return value;
     }
 
-    template <Motor motor>
-    inline void rotate(double speed) {
+    template <Motor motor> inline void rotate(double speed) {
         speed = clamp(speed, -1.0, 1.0);
         int pwm1 = speed > 0 ? 255 * +speed : 0;
         int pwm2 = speed < 0 ? 255 * -speed : 0;
@@ -88,8 +75,7 @@ private:
     Label label_ { this };
     QTimer timer_;
     uint8_t data_[9];
-    bool w_ { false }, s_ { false },
-        a_ { false }, d_ { false };
+    bool w_ { false }, s_ { false }, a_ { false }, d_ { false };
 };
 
 int main(int argc, char* argv[]) {

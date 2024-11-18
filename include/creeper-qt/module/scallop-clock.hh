@@ -10,8 +10,7 @@ class ScallopClock : Extension<QWidget> {
     Q_OBJECT
 public:
     explicit ScallopClock(QWidget* parent = nullptr)
-        : Extension(parent) {
-    }
+        : Extension(parent) { }
 
 private:
 };

@@ -19,8 +19,7 @@ public:
     }
 
     void moveCenter() {
-        if (widget_->parentWidget() == nullptr)
-            return;
+        if (widget_->parentWidget() == nullptr) return;
         const auto parentCenter = widget_->parentWidget()->geometry().center();
         const auto frameCenter = widget_->frameGeometry().center();
         widget_->move(parentCenter - frameCenter);
@@ -54,9 +53,7 @@ public:
         return horizontal_;
     }
 
-    static void setRefreshIntervalMs(int ms) {
-        refreshIntervalMs_ = ms;
-    }
+    static void setRefreshIntervalMs(int ms) { refreshIntervalMs_ = ms; }
 
     virtual void reloadTheme() = 0;
 
