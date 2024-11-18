@@ -2,6 +2,7 @@
     "cSpell.words": [
         "Antialiasing",
         "Bezier",
+        "Eigen",
         "Pixmap",
         "qputenv",
         "qreal"

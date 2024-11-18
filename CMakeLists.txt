@@ -13,6 +13,7 @@ add_compile_options(-Os -O3)
 
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 find_package(yaml-cpp REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -87,3 +88,11 @@ add_custom_command(TARGET "uninstall" POST_BUILD
 if(BUILD_EXAMPLES)
     add_subdirectory(example)
 endif()
+
+include_directories(include)
+add_executable(clock
+    example/clock.cc
+)
+target_link_libraries(clock
+    ${PROJECT_NAME}
+)
