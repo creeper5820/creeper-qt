@@ -50,7 +50,8 @@ protected:
         painter.setPen(Qt::NoPen);
         painter.setRenderHint(QPainter::Antialiasing, true);
         painter.setBrush({ background_ });
-        painter.drawRoundedRect(0, 0, width, height, 0.1 * height, 0.1 * height);
+        painter.drawRoundedRect(
+            0, 0, width, height, 0.1 * height, 0.1 * height);
     }
 
 private:

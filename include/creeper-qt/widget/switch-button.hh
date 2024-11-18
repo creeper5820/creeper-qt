@@ -24,9 +24,8 @@ public:
     }
 
     void setFixedSize(QSize size) {
-        progress_ = switchStatus_
-            ? size.width() - size.height() / 2
-            : size.height() / 2;
+        progress_ = switchStatus_ ? size.width() - size.height() / 2
+                                  : size.height() / 2;
         QAbstractButton::setFixedSize(size);
     }
 
@@ -90,8 +89,7 @@ protected:
         const auto currentCenter = QPoint(progress_, h / 2);
 
         progress_ = updateWithPid(progress_, target, 0.1);
-        if (std::abs(progress_ - target) < 0.1)
-            animationTimer_.stop();
+        if (std::abs(progress_ - target) < 0.1) animationTimer_.stop();
 
         auto painter = QPainter(this);
         painter.setRenderHint(QPainter::Antialiasing, true);
@@ -155,8 +153,7 @@ protected:
         const auto currentCenter = QPoint(progress_, h / 2);
 
         progress_ = updateWithPid(progress_, target, 0.1);
-        if (std::abs(progress_ - target) < 0.1)
-            animationTimer_.stop();
+        if (std::abs(progress_ - target) < 0.1) animationTimer_.stop();
 
         auto painter = QPainter(this);
         painter.setRenderHint(QPainter::Antialiasing, true);
@@ -191,7 +188,8 @@ protected:
 
         if (!switchStatus_) {
             painter.setBrush({ lightGrey_ });
-            painter.drawRoundedRect(QRect(lineInsideLeft, lineInsideRight), r2, r2);
+            painter.drawRoundedRect(
+                QRect(lineInsideLeft, lineInsideRight), r2, r2);
         }
 
         const auto ballLeft = currentCenter - QPoint(r1, r1);

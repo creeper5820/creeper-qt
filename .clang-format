@@ -2,15 +2,23 @@ Language: Cpp
  
 BasedOnStyle: WebKit
 
-#   Attach (始终将大括号附加到周围的上下文)
-#   Linux (除函数、命名空间和类定义，与Attach类似), 
-#   Mozilla (除枚举、函数、记录定义，与Attach类似)
-#   Stroustrup (除函数定义、catch、else，与Attach类似), 
-#   Allman (总是在大括号前换行)
-#   GNU (总是在大括号前换行，并对于控制语句的大括号增加额外的缩进)
-#   WebKit (在函数前换行)
-#   Custom
- 
+# 使用空格而不是 Tab
+UseTab: Never
+
+# 缩进 4 字符
+IndentWidth: 4
+TabWidth: 4
+
+# 访问修饰符（public）等靠左对齐
+AccessModifierOffset: -4
+
 # 大括号的换行规则
 BreakBeforeBraces: Attach
- 
+
+# 最大列宽度
+ColumnLimit: 80
+
+# 是否允许短的函数，语句块等单独一行
+AllowShortIfStatementsOnASingleLine: Always
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: All

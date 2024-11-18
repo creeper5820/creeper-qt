@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.17...3.22)
 project(creeper-qt VERSION 1.0.0 LANGUAGES CXX)
 
 # 选择是否构建示例程序
-set(BUILD_EXAMPLES OFF)
+set(BUILD_EXAMPLES ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -86,13 +86,18 @@ add_custom_command(TARGET "uninstall" POST_BUILD
 )
 
 if(BUILD_EXAMPLES)
-    add_subdirectory(example)
+    include_directories(include)
+    add_executable(clock
+        example/clock.cc
+    )
+    target_link_libraries(clock
+        ${PROJECT_NAME}
+    )
+    add_executable(widgets
+    example/widgets.cc
+    )
+    target_link_libraries(widgets
+        ${PROJECT_NAME}
+    )
 endif()
 
-include_directories(include)
-add_executable(clock
-    example/clock.cc
-)
-target_link_libraries(clock
-    ${PROJECT_NAME}
-)

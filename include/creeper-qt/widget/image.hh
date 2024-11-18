@@ -9,11 +9,9 @@ namespace creeper {
 class Image : public Extension<QAbstractButton> {
 public:
     explicit Image(QWidget* parent = nullptr)
-        : Extension(parent) {
-    }
+        : Extension(parent) { }
 
-    void reloadTheme() override {
-    }
+    void reloadTheme() override { }
 
 private:
     QImage image_;

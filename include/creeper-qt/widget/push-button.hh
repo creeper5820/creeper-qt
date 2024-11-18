@@ -36,20 +36,12 @@ public:
         waterColor_ = color.value();
         reloadTheme();
     }
-    void setRadiusRatio(float ratio) {
-        radiusRatio_ = ratio;
-    }
+    void setRadiusRatio(float ratio) { radiusRatio_ = ratio; }
 
     // Water ripple animation
-    void enableAnimation() {
-        waterRippleAnimation_ = true;
-    }
-    void disableAnimation() {
-        waterRippleAnimation_ = false;
-    }
-    void setDiffusionStep(int step) {
-        diffusionStep = step;
-    }
+    void enableAnimation() { waterRippleAnimation_ = true; }
+    void disableAnimation() { waterRippleAnimation_ = false; }
+    void setDiffusionStep(int step) { diffusionStep = step; }
 
 protected:
     void paintEvent(QPaintEvent* event) override {
@@ -88,8 +80,8 @@ protected:
         const auto height = Extension::height();
 
         auto roundRectPath = QPainterPath();
-        roundRectPath.addRoundedRect(0, 0, width, height,
-            radiusRatio_ * height, radiusRatio_ * height);
+        roundRectPath.addRoundedRect(
+            0, 0, width, height, radiusRatio_ * height, radiusRatio_ * height);
 
         auto target = mouseHover_ ? mouseHoverOpacity : mouseLeaveOpacity;
         opacity_ = updateWithPid(opacity_, target, 0.1);
@@ -110,8 +102,7 @@ protected:
     }
 
     void waterRippleAnimationPaintEvent(QPainter& painter) {
-        if (!waterRippleAnimation_)
-            return;
+        if (!waterRippleAnimation_) return;
 
         const auto width = Extension::width();
         const auto height = Extension::height();
@@ -119,15 +110,16 @@ protected:
         const auto maxDistance = 2 * std::max(width, height);
 
         auto roundRectPath = QPainterPath();
-        roundRectPath.addRoundedRect(0, 0, width, height,
-            radiusRatio_ * height, radiusRatio_ * height);
+        roundRectPath.addRoundedRect(
+            0, 0, width, height, radiusRatio_ * height, radiusRatio_ * height);
 
         painter.setPen(Qt::NoPen);
         painter.setBrush({ waterColor_ });
         painter.setRenderHint(QPainter::Antialiasing, true);
 
         for (int index = 0; auto& [point, distance] : animationEvents_) {
-            painter.setOpacity(0.3 * (1 - static_cast<double>(distance) / maxDistance));
+            painter.setOpacity(
+                0.3 * (1 - static_cast<double>(distance) / maxDistance));
 
             auto ellipsePath = QPainterPath();
             ellipsePath.addEllipse(point, distance, distance);
@@ -143,7 +135,9 @@ protected:
     }
 
     void checkAnimation() {
-        if (std::abs(opacity_ - (mouseHover_ ? mouseHoverOpacity : mouseLeaveOpacity)) < 0.001
+        if (std::abs(opacity_
+                - (mouseHover_ ? mouseHoverOpacity : mouseLeaveOpacity))
+                < 0.001
             && animationEvents_.empty())
             animationTimer_.stop();
     }

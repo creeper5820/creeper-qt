@@ -13,8 +13,7 @@ class ClockWidget : public Extension<QWidget> {
     Q_OBJECT
 public:
     explicit ClockWidget(QWidget* p = nullptr)
-        : Extension(p) {
-    }
+        : Extension(p) { }
 
     void setAngle(double _angle) {
         angle = _angle;
@@ -39,7 +38,8 @@ protected:
         painter.drawEllipse(QRect { 0, 0, width(), height() });
 
         painter.setBrush(Qt::NoBrush);
-        painter.setPen(QPen { { Theme::color("primary600") }, 5, Qt::SolidLine, Qt::RoundCap });
+        painter.setPen(QPen {
+            { Theme::color("primary600") }, 5, Qt::SolidLine, Qt::RoundCap });
         painter.drawLine(center, end);
     };
 
@@ -62,7 +62,8 @@ public:
 
         connect(&animationTimer_, &QTimer::timeout, [this] {
             static double angle = seconds_ * 6;
-            angle = updateWithPid(angle, static_cast<double>(seconds_ * 6), 0.1);
+            angle
+                = updateWithPid(angle, static_cast<double>(seconds_ * 6), 0.1);
             clock.setAngle(angle);
         });
 

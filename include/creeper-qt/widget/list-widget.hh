@@ -13,7 +13,8 @@
 #include "../widget/widget.hh"
 
 namespace creeper {
-class CustomItemWidgetInterface : public Extension<QWidget>, public QListWidgetItem { };
+class CustomItemWidgetInterface : public Extension<QWidget>,
+                                  public QListWidgetItem { };
 
 class SwitchAndLabelItem : public CustomItemWidgetInterface {
 public:
