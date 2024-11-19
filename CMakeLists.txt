@@ -5,6 +5,7 @@ project(creeper-qt VERSION 1.0.0 LANGUAGES CXX)
 # 选择是否构建示例程序
 set(BUILD_EXAMPLES ON)
 
+# 请升级g++到13以上，支持cpp23的特性
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 23)
