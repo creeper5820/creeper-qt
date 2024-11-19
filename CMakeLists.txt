@@ -11,8 +11,6 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_BUILD_TYPE "Release")
 add_compile_options(-Os -O3)
 
-set(CMAKE_CXX_COMPILER "/usr/bin/g++-13")
-
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 find_package(yaml-cpp REQUIRED)
 find_package(Eigen3 REQUIRED)
