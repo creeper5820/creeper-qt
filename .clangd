@@ -1,0 +1,9 @@
+CompileFlags:
+  Add:
+    - "-std=c++23"
+  # Remove: [-m*, -f*]
+
+Diagnostics:
+  Suppress:
+    # for std::views::zip
+    - "template_different_requires_clause"
