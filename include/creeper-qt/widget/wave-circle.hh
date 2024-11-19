@@ -64,25 +64,31 @@ protected:
 
         // painter.drawPath(path);
 
-        painter.drawRect(0, 0, width(), height());
+        painter.drawRect(0, 0, 60, 60);
 
         painter.setBrush(Qt::NoBrush);
         painter.setPen(QPen { { Theme::color("primary600") }, 5, Qt::SolidLine, Qt::RoundCap });
 
-        auto origin = Eigen::Vector2d { 0, 0 };
-        auto end0 = Eigen::Vector2d { 60, 0 };
-        auto end1 = Eigen::Vector2d { 0, 60 };
-        auto [rect, angleStart, angleLength] = solveArcBetweenLines(30, origin, end0, end1);
-        qDebug() << rect << angleStart << angleLength;
+        auto o0 = Eigen::Vector2d { 0, 30 };
+        auto e00 = Eigen::Vector2d { 0, 60 };
+        auto e01 = Eigen::Vector2d { 30, 30 };
+        auto [rect0, start0, length0] = solveArcBetweenLines(30, o0, e00, e01);
 
-        path.moveTo(30, 0);
-        path.arcTo(rect, angleStart, angleLength);
+        auto o1 = Eigen::Vector2d { 60, 30 };
+        auto e10 = Eigen::Vector2d { 60, 0 };
+        auto e11 = Eigen::Vector2d { 30, 30 };
+        auto [rect1, start1, length1] = solveArcBetweenLines(30, o1, e10, e11);
+
+        path.moveTo(0, 0);
+        path.arcTo(rect0, start0, length0);
+        path.arcTo(rect1, start1, length1);
 
         painter.drawPath(path);
     }
 
 private:
-    std::tuple<QRectF, qreal, qreal> solveArcBetweenLines(
+    // 逆时针
+    std::tuple<QRectF, double, double> solveArcBetweenLines(
         double radius, Eigen::Vector2d origin, Eigen::Vector2d end0, Eigen::Vector2d end1) {
 
         // solve the arc origin
@@ -90,12 +96,16 @@ private:
         const auto v1 = Eigen::Vector2d { end1 - origin };
         const auto dot = v0.x() * v1.x() + v0.y() * v1.y();
         const auto det = v0.x() * v1.y() - v0.y() * v1.x();
-        const auto angle = std::atan2(det, dot);
+        const auto angle = std::abs(std::atan2(det, dot));
+        qDebug() << "angle: " << angle;
 
         const auto width = radius / std::tan(angle / 2);
+        qDebug() << "width: " << width;
         const auto verticalPoint = Eigen::Vector2d { origin + width * v0.normalized() };
+        qDebug() << "vertical point: " << verticalPoint.x() << verticalPoint.y();
 
-        const auto arcOrigin = Eigen::Vector2d { verticalPoint + radius * v0.unitOrthogonal() };
+        const auto arcOrigin = Eigen::Vector2d { verticalPoint - radius * v0.unitOrthogonal() };
+        qDebug() << "arc origin: " << arcOrigin.x() << arcOrigin.y();
 
         // solve the arc angle
         const auto angleStart = std::atan2(v0.unitOrthogonal().y(), v0.unitOrthogonal().x());
