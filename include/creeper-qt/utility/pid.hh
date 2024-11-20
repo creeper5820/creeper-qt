@@ -12,8 +12,7 @@ public:
 
     float update(float target, float current) {
         float error = target - current;
-        float output
-            = kp_ * error + ki_ * last_error_ + kd_ * (error - last_error_);
+        float output = kp_ * error + ki_ * last_error_ + kd_ * (error - last_error_);
         last_error_ = error;
         return output;
     }
@@ -27,6 +26,10 @@ private:
 
 template <typename T> inline T updateWithPid(T value, T target, double kp = 1) {
     return value + kp * (target - value);
+}
+
+template <typename T> inline T updateWithPidError(T value, T error, double kp = 1) {
+    return value + kp * error;
 }
 
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../utility/math.hh"
+#include "../widget/widget.hh"
 
 #include <qpainter.h>
 #include <qpainterpath.h>
@@ -10,12 +11,14 @@
 
 namespace creeper {
 
-class WaveCircle : public QWidget {
+class WaveCircle : public Extension<QWidget> {
     Q_OBJECT
 public:
     explicit WaveCircle(QWidget* parent = nullptr)
-        : QWidget(parent) { }
-    void setFlange(int flange) {
+        : Extension(parent) {
+        reloadTheme();
+    }
+    void setFlange(uint flange) {
         assert(flange > 0);
         flange_ = flange;
     }
@@ -33,8 +36,12 @@ public:
 
     void setLineWidth(double width) { lineWidth_ = width; }
 
+    void reloadTheme() override { setLineColor(Theme::color("primary400")); }
+
 protected:
     void paintEvent(QPaintEvent* event) override {
+        static int count;
+        qDebug() << "wave circle render: " << count++;
         const auto center = QPoint(width() / 2, height() / 2);
         const auto step = 2 * std::numbers::pi / flange_;
         const auto radius = 0.8 * radius_;
@@ -76,7 +83,7 @@ protected:
     }
 
 private:
-    int flange_ = 2;
+    uint flange_ = 12;
     double flangeRadius_ = 10;
     double radius_ = 100;
     double ratio_ = 0.8;
