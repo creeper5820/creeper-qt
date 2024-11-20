@@ -32,12 +32,3 @@ target_link_libraries( keyboard
     Qt6Widgets Qt6Network
     yaml-cpp
 )
-
-add_executable(
-    timer timer.cc
-)
-target_link_libraries(
-    timer
-    creeper-qt::creeper-qt
-    Qt6::Widgets yaml-cpp
-)
