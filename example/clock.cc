@@ -1,3 +1,4 @@
+#include <creeper-qt/module/scallop-clock.hh>
 #include <creeper-qt/utility/pid.hh>
 #include <creeper-qt/widget/label.hh>
 #include <creeper-qt/widget/main-window.hh>
@@ -10,66 +11,35 @@
 
 using namespace creeper;
 
-class ClockWidget : public Extension<QWidget> {
-    Q_OBJECT
-public:
-    explicit ClockWidget(QWidget* p = nullptr)
-        : Extension(p) { }
-
-    void setAngle(double _angle) {
-        angle = _angle;
-        update();
-    }
-
-protected:
-    void paintEvent(QPaintEvent* event) override {
-        auto painter = QPainter { this };
-        const auto theAngle = 270 + angle;
-        const auto length = 0.4 * width();
-        double x = length * std::cos(theAngle * std::numbers::pi / 180);
-        double y = length * std::sin(theAngle * std::numbers::pi / 180);
-        auto center = QPoint(width() / 2, height() / 2);
-        auto end = center + QPoint(x, y);
-
-        painter.setOpacity(1);
-        painter.setRenderHint(QPainter::Antialiasing);
-
-        painter.setPen(Qt::NoPen);
-        painter.setBrush({ Theme::color("primary100") });
-        painter.drawEllipse(QRect { 0, 0, width(), height() });
-
-        const auto penColor = QColor { Theme::color("primary200") };
-        const auto pen = QPen { penColor, 5, Qt::SolidLine, Qt::RoundCap };
-        painter.setPen(pen);
-        painter.setBrush(Qt::NoBrush);
-        painter.drawLine(center, end);
-    };
-
-    void reloadTheme() override { }
-
-private:
-    double angle = 100;
-};
-
 class Clock : public MainWindow {
     Q_OBJECT
 public:
     explicit Clock()
         : MainWindow() {
         connect(&clockTimer_, &QTimer::timeout, [this] {
-            auto date = QDateTime::currentDateTime();
+            const auto date = QDateTime::currentDateTime();
+            seconds_ = date.time().second();
+            minutes_ = date.time().minute();
+            hours_ = date.time().hour();
+            if (seconds_ == 0) secondAngle_ = -6;
+            if (minutes_ == 0) minuteAngle_ = -6;
+            if (hours_ == 0) hourAngle_ = -30;
             label.setText(date.toString());
-            seconds_++;
         });
 
         connect(&animationTimer_, &QTimer::timeout, [this] {
-            static double angle = seconds_ * 6;
-            angle
-                = updateWithPid(angle, static_cast<double>(seconds_ * 6), 0.1);
-            clock.setAngle(angle);
+            secondAngle_ = updateWithPid(secondAngle_, static_cast<double>(seconds_ * 6), 0.1);
+            minuteAngle_ = updateWithPid(minuteAngle_, static_cast<double>(minutes_ * 6), 0.1);
+            hourAngle_ = updateWithPid(hourAngle_, static_cast<double>(hours_ * 30), 0.1);
+            clock_.setAngle(secondAngle_, minuteAngle_, hourAngle_);
         });
 
         seconds_ = QDateTime::currentDateTime().time().second();
+        secondAngle_ = seconds_ * 6;
+        minutes_ = QDateTime::currentDateTime().time().minute();
+        minuteAngle_ = minutes_ * 6;
+        hours_ = QDateTime::currentDateTime().time().hour();
+        hourAngle_ = hours_ * 30;
 
         using namespace std::chrono_literals;
         clockTimer_.start(1s);
@@ -80,16 +50,12 @@ public:
         label.setAlignment(Qt::AlignCenter);
         label.moveCenter();
 
-        clock.setFixedSize({ 200, 200 });
-
-        waveCircle_.setRadius(150);
-        waveCircle_.setFlange(6);
+        clock_.setRadius(150);
 
         auto horizonLayout = new QHBoxLayout;
         horizonLayout->setAlignment(Qt::AlignCenter);
         horizonLayout->addWidget(&label);
-        horizonLayout->addWidget(&clock);
-        horizonLayout->addWidget(&waveCircle_);
+        horizonLayout->addWidget(&clock_);
 
         auto mainWidget = new QWidget;
         mainWidget->setLayout(horizonLayout);
@@ -101,10 +67,14 @@ private:
     QTimer clockTimer_ { this };
 
     Label label { this };
-    ClockWidget clock { this };
-    WaveCircle waveCircle_ { this };
+    ScallopClock clock_ { this };
 
     uint32_t seconds_;
+    uint32_t minutes_;
+    uint32_t hours_;
+    double secondAngle_;
+    double minuteAngle_;
+    double hourAngle_;
 };
 
 int main(int argc, char** argv) {
