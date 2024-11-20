@@ -23,10 +23,8 @@ namespace internal {
 /// @param e2 圆弧终点切线
 /// @param radius 半径
 struct RoundAngleSolution {
-    RoundAngleSolution(QPointF e0, QPointF e1, QPointF e2, double radius)
-        : RoundAngleSolution(Eigen::Vector2d { e0.x(), e0.y() }, { e1.x(), e1.y() },
-              { e2.x(), e2.y() }, radius) { }
-    RoundAngleSolution(Eigen::Vector2d e0, Eigen::Vector2d e1, Eigen::Vector2d e2, double radius) {
+    using Vector2d = Eigen::Vector2d;
+    RoundAngleSolution(Vector2d e0, Vector2d e1, Vector2d e2, double radius) {
         using Eigen::Vector2d, std::numbers::pi;
         // solve the arc origin
         const auto v1 = Vector2d { e1 - e0 };
@@ -60,6 +58,10 @@ struct RoundAngleSolution {
         angleStart = angleStart * 180 / pi;
         angleLength = angleLength * 180 / pi;
     }
+
+    RoundAngleSolution(QPointF e0, QPointF e1, QPointF e2, double radius)
+        : RoundAngleSolution(Eigen::Vector2d { e0.x(), e0.y() }, { e1.x(), e1.y() },
+              { e2.x(), e2.y() }, radius) { }
 
     QRectF rect;
     QPointF start;

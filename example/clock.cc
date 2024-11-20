@@ -21,46 +21,70 @@ public:
             seconds_ = date.time().second();
             minutes_ = date.time().minute();
             hours_ = date.time().hour();
-            if (seconds_ == 0) secondAngle_ = -6;
-            if (minutes_ == 0) minuteAngle_ = -6;
-            if (hours_ == 0) hourAngle_ = -30;
-            label.setText(date.toString());
+            label.setText(date.toString() + "\nscallop-clock");
         });
 
         connect(&animationTimer_, &QTimer::timeout, [this] {
-            secondAngle_ = updateWithPid(secondAngle_, static_cast<double>(seconds_ * 6), 0.1);
-            minuteAngle_ = updateWithPid(minuteAngle_, static_cast<double>(minutes_ * 6), 0.1);
-            hourAngle_ = updateWithPid(hourAngle_, static_cast<double>(hours_ * 30), 0.1);
+            const double secondAngleTarget = seconds_ * 6;
+            const double secondAngleError = angleDifference(secondAngleTarget, secondAngle_);
+            if (std::abs(secondAngleError) < 0.1) return;
+
+            const double minuteAngleTarget = minutes_ * 6;
+            const double minuteAngleError = angleDifference(minuteAngleTarget, minuteAngle_);
+
+            const double hourAngleTarget = hours_ * 30;
+            const double hourAngleError = angleDifference(hourAngleTarget, hourAngle_);
+
+            secondAngle_ = updateWithPidError(secondAngle_, secondAngleError, 0.1);
+            minuteAngle_ = updateWithPidError(minuteAngle_, minuteAngleError, 0.1);
+            hourAngle_ = updateWithPidError(hourAngle_, hourAngleError, 0.1);
+
+            secondAngle_ = normalizeAngle(secondAngle_);
+            minuteAngle_ = normalizeAngle(minuteAngle_);
+            hourAngle_ = normalizeAngle(hourAngle_);
+
             clock_.setAngle(secondAngle_, minuteAngle_, hourAngle_);
         });
 
-        seconds_ = QDateTime::currentDateTime().time().second();
+        const auto date = QDateTime::currentDateTime();
+        seconds_ = date.time().second();
+        minutes_ = date.time().minute();
+        hours_ = date.time().hour();
         secondAngle_ = seconds_ * 6;
-        minutes_ = QDateTime::currentDateTime().time().minute();
         minuteAngle_ = minutes_ * 6;
-        hours_ = QDateTime::currentDateTime().time().hour();
         hourAngle_ = hours_ * 30;
+        clock_.setAngle(secondAngle_, minuteAngle_, hourAngle_);
+        label.setText(date.toString() + "\nscallop-clock");
 
         using namespace std::chrono_literals;
         clockTimer_.start(1s);
         animationTimer_.start(10ms);
 
-        label.setFont({ "monospace", 15 });
+        label.setFont({ "monospace", 12, QFont::Bold });
+        label.setStyleSheet("color: #575757;");
         label.setMinimumWidth(350);
         label.setAlignment(Qt::AlignCenter);
         label.moveCenter();
 
         clock_.setRadius(150);
 
-        auto horizonLayout = new QHBoxLayout;
-        horizonLayout->setAlignment(Qt::AlignCenter);
-        horizonLayout->addWidget(&label);
-        horizonLayout->addWidget(&clock_);
+        auto vertical = new QVBoxLayout;
+        vertical->setAlignment(Qt::AlignCenter);
+        vertical->addLayout(clock_.horizontalWithSelf());
+        vertical->addLayout(label.horizontalWithSelf());
 
         auto mainWidget = new QWidget;
-        mainWidget->setLayout(horizonLayout);
+        mainWidget->setLayout(vertical);
         this->setCentralWidget(mainWidget);
     }
+
+private:
+    double angleDifference(double target, double current) {
+        double diff = fmod(target - current + 540, 360) - 180;
+        return diff;
+    }
+
+    double normalizeAngle(double angle) { return fmod(angle + 360, 360); }
 
 private:
     QTimer animationTimer_ { this };
@@ -72,6 +96,7 @@ private:
     uint32_t seconds_;
     uint32_t minutes_;
     uint32_t hours_;
+
     double secondAngle_;
     double minuteAngle_;
     double hourAngle_;
