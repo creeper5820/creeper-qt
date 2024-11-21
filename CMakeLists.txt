@@ -94,5 +94,11 @@ if(BUILD_EXAMPLES)
     target_link_libraries(clock
         ${PROJECT_NAME}
     )
+    add_executable(widgets
+        example/widgets.cc
+    )
+    target_link_libraries(widgets
+        ${PROJECT_NAME}
+    )
 endif()
 

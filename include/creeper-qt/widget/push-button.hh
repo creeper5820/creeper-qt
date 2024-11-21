@@ -158,7 +158,7 @@ private:
 
     QTimer animationTimer_;
 
-    std::vector<std::tuple<QPoint, int>> animationEvents_;
+    std::vector<std::tuple<QPointF, int>> animationEvents_;
 
     constexpr static inline double mouseHoverOpacity = 1.0;
     constexpr static inline double mouseLeaveOpacity = 0.6;
