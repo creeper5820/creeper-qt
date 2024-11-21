@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../widget/wave-circle.hh"
-#include "../widget/widget.hh"
+#include "creeper-qt/widget/wave-circle.hh"
+#include "creeper-qt/widget/widget.hh"
 
 #include <qpainter.h>
 

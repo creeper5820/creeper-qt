@@ -2,19 +2,19 @@
 
 #include "creeper-qt/widget/widget.hh"
 
-#include <qabstractbutton.h>
+#include <qmenu.h>
 
 namespace creeper {
 
-class Image : public Extension<QAbstractButton> {
+class Menu : public Extension<QMenu> {
+    Q_OBJECT
 public:
-    explicit Image(QWidget* parent = nullptr)
+    explicit Menu(QWidget* parent = nullptr)
         : Extension(parent) { }
 
     void reloadTheme() override { }
 
-private:
-    QImage image_;
+protected:
 };
 
 }

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../setting/style-template.hh"
-#include "../utility/pid.hh"
-#include "../widget/widget.hh"
+#include "creeper-qt/setting/style-template.hh"
+#include "creeper-qt/utility/pid.hh"
+#include "creeper-qt/widget/widget.hh"
 
 #include <qevent.h>
 #include <qicon.h>

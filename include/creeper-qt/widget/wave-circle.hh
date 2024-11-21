@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../utility/math.hh"
-#include "../widget/widget.hh"
+#include "creeper-qt/utility/math.hh"
+#include "creeper-qt/widget/widget.hh"
 
 #include <qpainter.h>
 #include <qpainterpath.h>

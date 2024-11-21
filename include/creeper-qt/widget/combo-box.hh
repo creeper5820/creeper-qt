@@ -2,19 +2,20 @@
 
 #include "creeper-qt/widget/widget.hh"
 
-#include <qabstractbutton.h>
+#include <qcombobox.h>
 
 namespace creeper {
 
-class Image : public Extension<QAbstractButton> {
+class ComboBox : public Extension<QComboBox> {
+    Q_OBJECT
 public:
-    explicit Image(QWidget* parent = nullptr)
+    explicit ComboBox(QWidget* parent = nullptr)
         : Extension(parent) { }
 
     void reloadTheme() override { }
 
+protected:
 private:
-    QImage image_;
 };
 
 }

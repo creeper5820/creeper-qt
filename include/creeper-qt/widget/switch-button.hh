@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../setting/theme.hh"
-#include "../utility/pid.hh"
-#include "../widget/widget.hh"
+#include "creeper-qt/setting/theme.hh"
+#include "creeper-qt/utility/pid.hh"
+#include "creeper-qt/widget/widget.hh"
 
 #include <qabstractbutton.h>
 #include <qevent.h>

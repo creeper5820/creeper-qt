@@ -1,7 +1,8 @@
 #pragma once
-#include "../setting/style-template.hh"
-#include "../widget/label.hh"
-#include "../widget/switch-button.hh"
+
+#include "creeper-qt/setting/style-template.hh"
+#include "creeper-qt/widget/label.hh"
+#include "creeper-qt/widget/switch-button.hh"
 
 #include <qlabel.h>
 
