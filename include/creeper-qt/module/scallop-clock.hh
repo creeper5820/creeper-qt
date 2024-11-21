@@ -35,7 +35,7 @@ namespace internal {
         void paintEvent(QPaintEvent* event) override {
             using std::numbers::pi;
 
-            const auto center = QPoint(width() / 2, height() / 2);
+            const auto center = QPointF(width() / 2., height() / 2.);
 
             auto painter = QPainter { this };
             painter.setOpacity(1);
@@ -45,7 +45,7 @@ namespace internal {
             const auto secondLength = 0.6 * radius_;
             const double secondX = secondLength * std::cos(secondAngle * pi / 180);
             const double secondY = secondLength * std::sin(secondAngle * pi / 180);
-            const auto secondEnd = center + QPoint(secondX, secondY);
+            const auto secondEnd = center + QPointF(secondX, secondY);
             painter.setBrush({ secondColor_ });
             painter.setPen(Qt::NoPen);
             painter.drawEllipse(secondEnd, 10, 10);
@@ -54,7 +54,7 @@ namespace internal {
             const auto minuteLength = 0.4 * radius_;
             const double minuteX = minuteLength * std::cos(minuteAngle * pi / 180);
             const double minuteY = minuteLength * std::sin(minuteAngle * pi / 180);
-            const auto minuteEnd = center + QPoint(minuteX, minuteY);
+            const auto minuteEnd = center + QPointF(minuteX, minuteY);
             const auto minutePen = QPen { { minuteColor_ }, 20, Qt::SolidLine, Qt::RoundCap };
             painter.setBrush(Qt::NoBrush);
             painter.setPen(minutePen);
@@ -64,7 +64,7 @@ namespace internal {
             const auto hourLength = 0.3 * radius_;
             const double hourX = hourLength * std::cos(hourAngle * std::numbers::pi / 180);
             const double hourY = hourLength * std::sin(hourAngle * std::numbers::pi / 180);
-            const auto hourEnd = center + QPoint(hourX, hourY);
+            const auto hourEnd = center + QPointF(hourX, hourY);
             const auto hourPen = QPen { { hourColor_ }, 20, Qt::SolidLine, Qt::RoundCap };
             painter.setPen(hourPen);
             painter.drawLine(center, hourEnd);
@@ -92,6 +92,8 @@ public:
         waveCircle_.setFlangeRatio(0.9);
         waveCircle_.setFlangeRadius(20);
         waveCircle_.setLineWidth(2);
+        waveCircle_.setBackground(Theme::color("primary050"));
+        waveCircle_.setLineColor(Theme::color("primary050"));
     }
 
     void setRadius(int radius) {
@@ -113,8 +115,8 @@ public:
     void reloadTheme() override { }
 
 private:
-    internal::ClockPointer clockPointer_ { this };
     WaveCircle waveCircle_ { this };
+    internal::ClockPointer clockPointer_ { this };
 };
 
 }

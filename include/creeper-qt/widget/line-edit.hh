@@ -88,7 +88,7 @@ private:
         painter.setBrush(QColor(background_));
         painter.setOpacity(opacity);
 
-        const auto rect = QRect(0, 0, width, height);
+        const auto rect = QRectF(0, 0, width, height);
         const auto radius = 0.5 * height;
         painter.drawRoundedRect(rect, radius, radius);
     }
@@ -96,7 +96,7 @@ private:
     void iconPaintEvent(QPainter& painter) {
         const auto width = Extension::width();
         const auto height = Extension::height();
-        const auto iconPosition = QPoint(height * 0.25, height * 0.25);
+        const auto iconPosition = QPointF(height * 0.25, height * 0.25);
         const auto iconPixmap = icon_.pixmap(height * 0.5, height * 0.5);
         painter.setOpacity(1);
         painter.drawPixmap(iconPosition, iconPixmap);

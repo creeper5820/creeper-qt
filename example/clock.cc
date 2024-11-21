@@ -76,6 +76,8 @@ public:
         auto mainWidget = new QWidget;
         mainWidget->setLayout(vertical);
         this->setCentralWidget(mainWidget);
+
+        this->setFixedSize(400, 500);
     }
 
 private:

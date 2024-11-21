@@ -24,8 +24,7 @@ public:
     }
 
     void setFixedSize(QSize size) {
-        progress_ = switchStatus_ ? size.width() - size.height() / 2
-                                  : size.height() / 2;
+        progress_ = switchStatus_ ? size.width() - size.height() / 2. : size.height() / 2.;
         QAbstractButton::setFixedSize(size);
     }
 
@@ -45,8 +44,7 @@ protected:
     void mouseReleaseEvent(QMouseEvent* event) override {
         if (event->button() & Qt::LeftButton) {
             switchStatus_ = !switchStatus_;
-            if (!animationTimer_.isActive())
-                animationTimer_.start(refreshIntervalMs_);
+            if (!animationTimer_.isActive()) animationTimer_.start(refreshIntervalMs_);
         }
         QAbstractButton::mouseReleaseEvent(event);
     }
@@ -75,18 +73,18 @@ public:
 
 protected:
     void paintEvent(QPaintEvent* event) override {
+        const double h = height();
+        const double w = width();
         const auto enabled = isEnabled();
-        const auto h = height();
-        const auto w = width();
 
         const auto r0 = h * 0.45;
         const auto r1 = r0 * 0.75;
 
-        const auto leftCenter = QPoint(h / 2, h / 2);
-        const auto rightCenter = QPoint(w - h / 2, h / 2);
+        const auto leftCenter = QPointF(h / 2., h / 2.);
+        const auto rightCenter = QPointF(w - h / 2., h / 2.);
 
-        const double target = switchStatus_ ? w - h / 2 : h / 2;
-        const auto currentCenter = QPoint(progress_, h / 2);
+        const double target = switchStatus_ ? w - h / 2. : h / 2.;
+        const auto currentCenter = QPointF(progress_, h / 2.);
 
         progress_ = updateWithPid(progress_, target, 0.1);
         if (std::abs(progress_ - target) < 0.1) animationTimer_.stop();
@@ -97,37 +95,37 @@ protected:
         painter.setOpacity(1.0);
 
         if (!enabled) {
-            const auto p0 = leftCenter - QPoint(r1, r1);
-            const auto p1 = rightCenter + QPoint(r1, r1);
+            const auto p0 = leftCenter - QPointF(r1, r1);
+            const auto p1 = rightCenter + QPointF(r1, r1);
             painter.setBrush({ heavyGrey_ + 0x333333 });
-            painter.drawRoundedRect(QRect(p0, p1), r1, r1);
+            painter.drawRoundedRect(QRectF(p0, p1), r1, r1);
 
-            const auto p2 = currentCenter - QPoint(r0, r0);
-            const auto p3 = currentCenter + QPoint(r0, r0);
+            const auto p2 = currentCenter - QPointF(r0, r0);
+            const auto p3 = currentCenter + QPointF(r0, r0);
             painter.setBrush({ heavyGrey_ });
-            painter.drawEllipse(QRect(p2, p3));
+            painter.drawEllipse(QRectF(p2, p3));
             return;
         }
 
         painter.setOpacity(0.75);
 
-        const auto lineLeft = leftCenter - QPoint(r1, r1);
-        const auto lineCurrentLeft = currentCenter + QPoint(r1, r1);
+        const auto lineLeft = leftCenter - QPointF(r1, r1);
+        const auto lineCurrentLeft = currentCenter + QPointF(r1, r1);
         painter.setBrush({ lightPrimary_ });
-        painter.drawRoundedRect(QRect(lineLeft, lineCurrentLeft), r1, r1);
+        painter.drawRoundedRect(QRectF(lineLeft, lineCurrentLeft), r1, r1);
 
-        const auto lineRight = rightCenter + QPoint(r1, r1);
-        const auto lineCurrentRight = currentCenter - QPoint(r1, r1);
+        const auto lineRight = rightCenter + QPointF(r1, r1);
+        const auto lineCurrentRight = currentCenter - QPointF(r1, r1);
         painter.setBrush({ lightGrey_ });
-        painter.drawRoundedRect(QRect(lineCurrentRight, lineRight), r1, r1);
+        painter.drawRoundedRect(QRectF(lineCurrentRight, lineRight), r1, r1);
 
         painter.setOpacity(1.0);
 
-        const auto ballLeft = currentCenter - QPoint(r0, r0);
-        const auto ballRight = currentCenter + QPoint(r0, r0);
+        const auto ballLeft = currentCenter - QPointF(r0, r0);
+        const auto ballRight = currentCenter + QPointF(r0, r0);
         const auto ballColor = switchStatus_ ? heavyPrimary_ : lightGrey_;
         painter.setBrush({ ballColor });
-        painter.drawEllipse(QRect(ballLeft, ballRight));
+        painter.drawEllipse(QRectF(ballLeft, ballRight));
     }
 };
 
@@ -146,11 +144,11 @@ protected:
         const auto r0 = h * 0.45;
         const auto r1 = r0 * 0.75;
 
-        const auto leftCenter = QPoint(h / 2, h / 2);
-        const auto rightCenter = QPoint(w - h / 2, h / 2);
+        const auto leftCenter = QPointF(h / 2., h / 2.);
+        const auto rightCenter = QPointF(w - h / 2., h / 2.);
 
-        const double target = switchStatus_ ? w - h / 2 : h / 2;
-        const auto currentCenter = QPoint(progress_, h / 2);
+        const double target = switchStatus_ ? w - h / 2. : h / 2.;
+        const auto currentCenter = QPointF(progress_, h / 2.);
 
         progress_ = updateWithPid(progress_, target, 0.1);
         if (std::abs(progress_ - target) < 0.1) animationTimer_.stop();
@@ -161,42 +159,41 @@ protected:
         painter.setOpacity(1.0);
 
         if (!enabled) {
-            const auto p0 = leftCenter - QPoint(r0, r0);
-            const auto p1 = rightCenter + QPoint(r0, r0);
+            const auto p0 = leftCenter - QPointF(r0, r0);
+            const auto p1 = rightCenter + QPointF(r0, r0);
             painter.setBrush({ heavyGrey_ + 0x333333 });
-            painter.drawRoundedRect(QRect(p0, p1), r1, r1);
+            painter.drawRoundedRect(QRectF(p0, p1), r1, r1);
 
-            const auto p2 = currentCenter - QPoint(r1, r1);
-            const auto p3 = currentCenter + QPoint(r1, r1);
+            const auto p2 = currentCenter - QPointF(r1, r1);
+            const auto p3 = currentCenter + QPointF(r1, r1);
             painter.setBrush({ heavyGrey_ });
-            painter.drawEllipse(QRect(p2, p3));
+            painter.drawEllipse(QRectF(p2, p3));
             return;
         }
 
         painter.setOpacity(1);
 
-        const auto lineLeft = leftCenter - QPoint(r0, r0);
-        const auto lineRight = rightCenter + QPoint(r0, r0);
+        const auto lineLeft = leftCenter - QPointF(r0, r0);
+        const auto lineRight = rightCenter + QPointF(r0, r0);
 
         painter.setBrush({ switchStatus_ ? heavyPrimary_ : heavyGrey_ });
-        painter.drawRoundedRect(QRect(lineLeft, lineRight), r0, r0);
+        painter.drawRoundedRect(QRectF(lineLeft, lineRight), r0, r0);
 
         const auto border = r0 * 0.2;
-        const auto lineInsideLeft = lineLeft + QPoint(border, border);
-        const auto lineInsideRight = lineRight - QPoint(border, border);
+        const auto lineInsideLeft = lineLeft + QPointF(border, border);
+        const auto lineInsideRight = lineRight - QPointF(border, border);
         const auto r2 = r0 - border;
 
         if (!switchStatus_) {
             painter.setBrush({ lightGrey_ });
-            painter.drawRoundedRect(
-                QRect(lineInsideLeft, lineInsideRight), r2, r2);
+            painter.drawRoundedRect(QRectF(lineInsideLeft, lineInsideRight), r2, r2);
         }
 
-        const auto ballLeft = currentCenter - QPoint(r1, r1);
-        const auto ballRight = currentCenter + QPoint(r1, r1);
+        const auto ballLeft = currentCenter - QPointF(r1, r1);
+        const auto ballRight = currentCenter + QPointF(r1, r1);
         const auto ballColor = switchStatus_ ? 0xffffff : heavyGrey_;
         painter.setBrush({ ballColor });
-        painter.drawEllipse(QRect(ballLeft, ballRight));
+        painter.drawEllipse(QRectF(ballLeft, ballRight));
     }
 };
 

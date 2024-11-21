@@ -50,7 +50,7 @@ struct RoundAngleSolution {
         // 角度计算时，注意Qt的系Y的正方向向下，但角度又是从X正方向逆时针开始计算,可谓混乱
         const auto angleStartVector = Vector2d { pointStart - origin };
         const auto angleEndVector = Vector2d { pointEnd - origin };
-        angleEnd = std::atan2(-angleEndVector.y(), angleEndVector.x());
+        const auto angleEnd = std::atan2(-angleEndVector.y(), angleEndVector.x());
         angleStart = std::atan2(-angleStartVector.y(), angleStartVector.x());
         angleLength = angleEnd - angleStart;
         if (angleLength < -pi) angleLength = 2 * pi + angleLength;
@@ -67,7 +67,6 @@ struct RoundAngleSolution {
     QPointF start;
     QPointF end;
     double angleStart;
-    double angleEnd;
     double angleLength;
 };
 
