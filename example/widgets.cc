@@ -1,8 +1,10 @@
 #include <qapplication.h>
 
+#include "creeper-qt/widget/combo-box.hh"
 #include "creeper-qt/widget/line-edit.hh"
 #include "creeper-qt/widget/list-widget.hh"
 #include "creeper-qt/widget/main-window.hh"
+#include "creeper-qt/widget/menu.hh"
 #include "creeper-qt/widget/push-button.hh"
 #include "creeper-qt/widget/switch-button.hh"
 
@@ -32,7 +34,7 @@ public:
     }
 
     QVBoxLayout* firstVerticalLayout() {
-        auto buttons = std::array<PushButton*, 3> {};
+        static auto buttons = std::array<PushButton*, 3> {};
         for (int index = 0; auto& button : buttons) {
             button = new PushButton;
             button->setText("按钮" + QString::number(index++));
@@ -58,6 +60,13 @@ public:
         verticalLayout->addWidget(switchButton1);
         verticalLayout->addWidget(switchButton3);
         verticalLayout->addWidget(switchButton0);
+
+        connect(buttons[0], &PushButton::clicked, [] {
+            auto visible = buttons[1]->isVisible();
+            buttons[1]->setVisible(!visible);
+            auto msg = std::format("set visible: {}", visible);
+            qDebug() << msg.c_str();
+        });
 
         return verticalLayout;
     }

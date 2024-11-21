@@ -5,9 +5,9 @@
 #include <qmainwindow.h>
 #include <qscreen.h>
 
-#include "../setting/style-template.hh"
-#include "../setting/theme.hh"
-#include "../widget/widget.hh"
+#include "creeper-qt/setting/style-template.hh"
+#include "creeper-qt/setting/theme.hh"
+#include "creeper-qt/widget/widget.hh"
 
 namespace creeper {
 

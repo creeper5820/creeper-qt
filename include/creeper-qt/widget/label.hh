@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../widget/widget.hh"
+#include "creeper-qt/widget/widget.hh"
 
 #include <qlabel.h>
 

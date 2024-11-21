@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../widget/push-button.hh"
+#include "creeper-qt/widget/push-button.hh"
 
 namespace creeper {
 
