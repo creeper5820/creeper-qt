@@ -63,7 +63,7 @@ protected:
         painter.drawPicture(0, 0, circle);
     }
 
-    /// @note： 先用QPicture实现，Pixmap等之后在看看
+    /// @note: 先用QPicture实现，Pixmap等之后在看看
     /// 帧缓存解决了之前重复计算的性能问题
     void makeCanvas(QPicture& picture) {
         static auto lastFrame = QPicture {};
@@ -94,29 +94,22 @@ protected:
         auto begin = QPointF {};
         auto path = QPainterPath {};
         for (int index = 0; index < flange_; index++) {
-            const auto e0 = center + outside[index];
-            const auto e1 = center + inside[index];
-            const auto e2 = center + inside[index + 1];
-            const auto a0 = center + inside[index + 1];
-            const auto a1 = center + outside[index + 1];
-            const auto a2 = center + outside[index];
-            const auto arc0 = RoundAngleSolution(e0, e1, e2, flangeRadius_);
-            const auto arc1 = RoundAngleSolution(a0, a1, a2, flangeRadius_);
-            if (index == 0) {
-                begin = arc0.start;
-                path.moveTo(begin);
-            }
-            path.lineTo(arc0.start);
-            path.arcTo(arc0.rect, arc0.angleStart, arc0.angleLength);
-            path.lineTo(arc1.end);
-            path.arcTo(arc1.rect, arc1.angleStart + arc1.angleLength, -arc1.angleLength);
+            const auto convexAngle = RoundAngleSolution(center + outside[index],
+                center + inside[index], center + inside[index + 1], flangeRadius_);
+            const auto concaveAngle = RoundAngleSolution(center + inside[index + 1],
+                center + outside[index + 1], center + outside[index], flangeRadius_);
+            if (index == 0) begin = convexAngle.start, path.moveTo(begin);
+            path.lineTo(convexAngle.start);
+            path.arcTo(convexAngle.rect, convexAngle.angleStart, convexAngle.angleLength);
+            path.lineTo(concaveAngle.end);
+            path.arcTo(concaveAngle.rect, concaveAngle.angleStart + concaveAngle.angleLength,
+                -concaveAngle.angleLength);
         }
         path.lineTo(begin);
-
         painter.drawPath(path);
 
-        renderRequest_ = false;
         lastFrame = picture;
+        renderRequest_ = false;
     }
 
 private:
