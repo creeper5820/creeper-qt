@@ -102,8 +102,10 @@ public:
         setFixedSize(2 * radius, 2 * radius);
     }
 
-    // TODO: 指针更新时把 WaveCircle 也一起更新了，不知道什么毛病
-    // 多了约 2% 的CPU占用，这显然是不可容忍的
+    /// @bug: 指针更新时把 WaveCircle 也一起更新了，不知道什么毛病，多了约 2%
+    /// 的CPU占用，这显然是不可容忍的
+    /// @note: 2024-11-21，问题解决，怀疑是指针和circle互为兄弟关系(?)，
+    /// 会一起更新，具体还不知道什么原因，在circle那加了个帧缓存就好了
     void setAngle(double secondAngle, double minuteAngle, double hourAngle) {
         clockPointer_.setAngle(secondAngle, minuteAngle, hourAngle);
     }
