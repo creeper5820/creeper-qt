@@ -1,31 +1,109 @@
 #include <QtNetwork/QtNetwork>
 #include <qevent.h>
+#include <qslider.h>
 
 #include <creeper-qt/widget/label.hh>
+#include <creeper-qt/widget/line-edit.hh>
 #include <creeper-qt/widget/main-window.hh>
+#include <creeper-qt/widget/push-button.hh>
 
 using namespace creeper;
 
 class Keyboard : public MainWindow {
     Q_OBJECT
 public:
+    enum class PinMode : uint8_t { None, Analog, Servo };
+    struct __attribute__((packed)) RemoteControlCommand {
+        uint8_t header = 0xa5;
+        uint8_t values[10];
+        PinMode modes[10];
+        uint8_t end = 0xb6;
+    };
+
     enum class Motor : bool { Left, Right };
 
     explicit Keyboard(QWidget* parent = nullptr)
         : MainWindow(parent) {
         connect(&timer_, &QTimer::timeout, [this] {
-            move(w_ - s_, a_ - d_);
-            socket_.write(reinterpret_cast<const char*>(data_), 8);
-            label_.setText(
-                QString("w:%1 s:%2 a:%3 d:%4").arg(w_).arg(s_).arg(a_).arg(d_));
+            command_.values[currentPinIndex_] += w_ * 5;
+            command_.values[currentPinIndex_] -= s_ * 5;
+            label_.setText(QString("w:%1 s:%2 a:%3 d:%4\nindex: %5 angle: %6")
+                    .arg(w_)
+                    .arg(s_)
+                    .arg(a_)
+                    .arg(d_)
+                    .arg(currentPinIndex_)
+                    .arg(command_.values[currentPinIndex_]));
+            if (currentPinIndex_ != -1)
+                socket_.write(reinterpret_cast<const char*>(&command_), sizeof(command_));
         });
 
         label_.setFont({ "monospace", 15, QFont::Bold });
+        label_.setAlignment(Qt::AlignCenter);
         label_.setMinimumWidth(200);
-        label_.moveCenter();
+        label_.setMinimumHeight(100);
 
-        socket_.connectToHost("10.31.2.15", 8000);
-        timer_.start(50);
+        slider_.setOrientation(Qt::Horizontal);
+        slider_.setFixedWidth(200);
+        slider_.setFixedHeight(50);
+        slider_.setMaximum(180);
+        slider_.setMinimum(0);
+        slider_.setValue(0);
+        connect(&slider_, &QSlider::valueChanged, [this] {
+            if (currentPinIndex_ == -1) return;
+            command_.values[currentPinIndex_] = slider_.value();
+        });
+
+        buttonChangeMode_.setText("Unkown Mode");
+        buttonChangeMode_.setFixedSize({ 200, 50 });
+        connect(&buttonChangeMode_, &QPushButton::clicked, [this] {
+            if (currentPinIndex_ == -1) return;
+            auto& mode = command_.modes[currentPinIndex_];
+            if (mode == PinMode::Servo) {
+                mode = PinMode::Analog;
+            } else if (mode == PinMode::Analog) {
+                mode = PinMode::Servo;
+            } else {
+                mode = PinMode::Servo;
+            }
+            updateComponents();
+        });
+
+        pinSelectorEdit_.setFont({ "monospace", 15, QFont::Bold });
+        pinSelectorEdit_.setAlignment(Qt::AlignCenter);
+        pinSelectorEdit_.setFixedWidth(200);
+        pinSelectorEdit_.setFixedHeight(50);
+        connect(&pinSelectorEdit_, &LineEdit::textChanged, [this] {
+            const auto text = pinSelectorEdit_.text();
+            bool ok;
+            int value = text.toInt(&ok);
+            if (!ok || value > 9) return;
+            currentPinIndex_ = value;
+            updateComponents();
+        });
+
+        auto horizonLayout = new QHBoxLayout;
+        horizonLayout->setAlignment(Qt::AlignCenter);
+        horizonLayout->addWidget(&buttonChangeMode_);
+        horizonLayout->addWidget(&pinSelectorEdit_);
+
+        auto verticalLayout = new QVBoxLayout;
+        verticalLayout->setAlignment(Qt::AlignCenter);
+        verticalLayout->addWidget(&label_);
+
+        auto horizonLayoutForSlider = new QHBoxLayout;
+        horizonLayoutForSlider->setAlignment(Qt::AlignCenter);
+        horizonLayoutForSlider->addWidget(&slider_);
+        verticalLayout->addLayout(horizonLayoutForSlider);
+
+        verticalLayout->addLayout(horizonLayout);
+
+        auto mainWidget = new QWidget;
+        mainWidget->setLayout(verticalLayout);
+        setCentralWidget(mainWidget);
+
+        socket_.connectToHost("10.31.2.65", 8000);
+        timer_.start(100);
     }
 
 protected:
@@ -44,6 +122,19 @@ protected:
     }
 
 private:
+    void updateComponents() {
+        const auto mode = command_.modes[currentPinIndex_];
+        const auto value = command_.values[currentPinIndex_];
+        slider_.setValue(value);
+        if (mode == PinMode::Servo) {
+            buttonChangeMode_.setText("Servo Mode");
+        } else if (mode == PinMode::Analog) {
+            buttonChangeMode_.setText("Analog Mode");
+        } else {
+            buttonChangeMode_.setText("Unkown Mode");
+        }
+    }
+
     template <typename T> inline T clamp(T value, T left, T right) {
         value = value > right ? right : value;
         value = value < left ? left : value;
@@ -54,13 +145,6 @@ private:
         speed = clamp(speed, -1.0, 1.0);
         int pwm1 = speed > 0 ? 255 * +speed : 0;
         int pwm2 = speed < 0 ? 255 * -speed : 0;
-        if constexpr (motor == Motor::Left) {
-            data_[0] = pwm1;
-            data_[1] = pwm2;
-        } else if constexpr (motor == Motor::Right) {
-            data_[4] = pwm1;
-            data_[5] = pwm2;
-        }
     }
 
     inline void move(double v, double w) {
@@ -71,10 +155,16 @@ private:
     }
 
 private:
+    Label label_;
+    PushButton buttonChangeMode_;
+    LineEdit pinSelectorEdit_;
+    QSlider slider_;
+
+    RemoteControlCommand command_;
     QUdpSocket socket_ { this };
-    Label label_ { this };
     QTimer timer_;
-    uint8_t data_[9];
+
+    int currentPinIndex_ = -1;
     bool w_ { false }, s_ { false }, a_ { false }, d_ { false };
 };
 

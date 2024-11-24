@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(widgtes)
+set(TARGET keyboard)
+project(${TARGET})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -16,18 +17,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-add_executable( widgets
-    widgets.cc
+add_executable( ${TARGET}
+    ${TARGET}.cc
 )
-target_link_libraries( widgets
-    creeper-qt::creeper-qt
-    Qt6::Widgets yaml-cpp
-)
-
-add_executable( keyboard
-    keyboard.cc
-)
-target_link_libraries( keyboard
+target_link_libraries( ${TARGET}
     creeper-qt::creeper-qt
     Qt6Widgets Qt6Network
     yaml-cpp

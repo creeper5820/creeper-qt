@@ -19,36 +19,43 @@ public:
         : Extension(parent) {
         reloadTheme();
     }
-    void setFlange(uint flange) {
+    WaveCircle& setFlange(uint flange) {
         assert(flange > 0);
         flange_ = flange;
         renderRequest_ = true;
+        return *this;
     }
-    void setRadius(double radius) {
+    WaveCircle& setRadius(double radius) {
         radius_ = radius;
         renderRequest_ = true;
         setFixedSize(2 * radius, 2 * radius);
+        return *this;
     }
-    void setFlangeRatio(double ratio) {
+    WaveCircle& setFlangeRatio(double ratio) {
         assert(radius > 0 && radius < 1);
         ratio_ = ratio;
         renderRequest_ = true;
+        return *this;
     }
-    void setFlangeRadius(double radius) {
+    WaveCircle& setFlangeRadius(double radius) {
         flangeRadius_ = radius;
         renderRequest_ = true;
+        return *this;
     }
-    void setLineColor(uint32_t color) {
+    WaveCircle& setLineColor(uint32_t color) {
         lineColor_ = color;
         renderRequest_ = true;
+        return *this;
     }
-    void setBackground(uint32_t color) {
+    WaveCircle& setBackground(uint32_t color) {
         background_ = color;
         renderRequest_ = true;
+        return *this;
     }
-    void setLineWidth(double width) {
+    WaveCircle& setLineWidth(double width) {
         lineWidth_ = width;
         renderRequest_ = true;
+        return *this;
     }
     void reloadTheme() override {
         setLineColor(Theme::color("primary400"));
