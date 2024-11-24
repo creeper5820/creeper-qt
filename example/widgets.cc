@@ -1,6 +1,5 @@
 #include <qapplication.h>
 
-#include "creeper-qt/widget/combo-box.hh"
 #include "creeper-qt/widget/line-edit.hh"
 #include "creeper-qt/widget/list-widget.hh"
 #include "creeper-qt/widget/main-window.hh"
@@ -9,6 +8,7 @@
 #include "creeper-qt/widget/switch-button.hh"
 
 #include "creeper-qt/module/round-icon-button.hh"
+#include "creeper-qt/module/scallop-clock.hh"
 #include "creeper-qt/module/switch-card.hh"
 
 using namespace creeper;
@@ -61,11 +61,16 @@ public:
         verticalLayout->addWidget(switchButton3);
         verticalLayout->addWidget(switchButton0);
 
-        connect(buttons[0], &PushButton::clicked, [] {
-            auto visible = buttons[1]->isVisible();
-            buttons[1]->setVisible(!visible);
-            auto msg = std::format("set visible: {}", visible);
-            qDebug() << msg.c_str();
+        static auto menu = new Menu;
+        menu->addAction("hello world");
+        menu->addAction("hello world");
+        menu->addAction("hello world");
+
+        connect(buttons[0], &PushButton::released, [=] {
+            const auto& button = buttons[0];
+            const auto position = button->mapToGlobal(QPoint(0, button->height()));
+            menu->exec(position);
+            qDebug() << position;
         });
 
         return verticalLayout;
@@ -103,39 +108,51 @@ public:
         roundIconButton2->setIconRatio(1);
         roundIconButton2->setIcon(QIcon(":/theme/icon/normal/menu.png"));
 
+        auto clock = new AutoScallopClock;
+        clock->setRadius(120);
+
         auto roundIconButtonLayout = new QHBoxLayout;
         roundIconButtonLayout->setAlignment(Qt::AlignLeft);
         roundIconButtonLayout->addWidget(roundIconButton0);
         roundIconButtonLayout->addWidget(roundIconButton1);
         roundIconButtonLayout->addWidget(roundIconButton2);
 
-        auto switchCardsLayout = new QVBoxLayout;
-        switchCardsLayout->setAlignment(Qt::AlignTop);
-        switchCardsLayout->setContentsMargins(10, 10, 10, 10);
-        switchCardsLayout->addWidget(switchCard0);
-        switchCardsLayout->addWidget(switchCard1);
-        switchCardsLayout->addWidget(longSwitchButton);
-        switchCardsLayout->addWidget(lineEdit);
-        switchCardsLayout->addLayout(roundIconButtonLayout);
+        auto verticalLayout0 = new QVBoxLayout;
+        verticalLayout0->setAlignment(Qt::AlignTop);
+        verticalLayout0->addWidget(longSwitchButton);
+        verticalLayout0->addWidget(lineEdit);
+        verticalLayout0->addLayout(roundIconButtonLayout);
 
-        return switchCardsLayout;
+        auto horizonLayout0 = new QHBoxLayout;
+        horizonLayout0->addLayout(verticalLayout0);
+        horizonLayout0->addWidget(clock);
+
+        auto verticalLayout1 = new QVBoxLayout;
+        verticalLayout1->setAlignment(Qt::AlignTop);
+        verticalLayout1->setContentsMargins(10, 10, 10, 10);
+        verticalLayout1->addWidget(switchCard0);
+        verticalLayout1->addWidget(switchCard1);
+        verticalLayout1->addLayout(horizonLayout0);
+
+        return verticalLayout1;
     }
 };
 
 int main(int argc, char* argv[]) {
-    auto app = new QApplication { argc, argv };
+    qputenv("QT_SCALE_FACTOR", "1");
+    auto app = QApplication { argc, argv };
 
     Theme::setTheme("common-white");
 
-    auto window = new Widgets;
-    auto icon = QIcon(":/theme/icon/normal/menu.png");
-    window->setWindowIcon(icon);
-    window->setIconSize({ 10, 10 });
-    window->setWindowTitle("HelloWorld");
-    window->moveCenter();
-    window->show();
+    auto window = Widgets {};
+    QIcon icon { ":/theme/icon/normal/menu.png" };
+    window.setWindowTitle("HelloWorld");
+    window.setIconSize({ 10, 10 });
+    window.setWindowIcon(icon);
+    window.moveCenter();
+    window.show();
 
-    return app->exec();
+    return app.exec();
 }
 
 #include "widgets.moc"

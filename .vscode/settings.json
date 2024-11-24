@@ -1,6 +1,9 @@
 {
     "cSpell.words": [
         "Antialiasing",
+        "AUTOMOC",
+        "AUTORCC",
+        "AUTOUIC",
         "Bezier",
         "Eigen",
         "Pixmap",
