@@ -5,6 +5,7 @@
 #include "creeper-qt/widget/main-window.hh"
 #include "creeper-qt/widget/menu.hh"
 #include "creeper-qt/widget/push-button.hh"
+#include "creeper-qt/widget/slider.hh"
 #include "creeper-qt/widget/switch-button.hh"
 
 #include "creeper-qt/module/round-icon-button.hh"
@@ -80,6 +81,10 @@ public:
         auto longSwitchButton = new ConvexSwitchButton;
         longSwitchButton->setFixedSize({ 200, 30 });
 
+        auto slider = new Slider;
+        slider->setFixedSize(200, 30);
+        slider->setSliderRoundRatio(0.5);
+
         auto switchCard0 = new SwitchCard;
         switchCard0->setFixedSize({ 400, 175 });
         switchCard0->setText("将世界设定为“你好世界”");
@@ -120,6 +125,7 @@ public:
         auto verticalLayout0 = new QVBoxLayout;
         verticalLayout0->setAlignment(Qt::AlignTop);
         verticalLayout0->addWidget(longSwitchButton);
+        verticalLayout0->addWidget(slider);
         verticalLayout0->addWidget(lineEdit);
         verticalLayout0->addLayout(roundIconButtonLayout);
 
