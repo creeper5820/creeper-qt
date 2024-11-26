@@ -1,7 +1,6 @@
 #pragma once
 
 #include "creeper-qt/utility/pid.hh"
-#include "creeper-qt/widget/label.hh"
 #include "creeper-qt/widget/wave-circle.hh"
 #include "creeper-qt/widget/widget.hh"
 

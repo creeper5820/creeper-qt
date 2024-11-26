@@ -81,9 +81,8 @@ public:
         auto longSwitchButton = new ConvexSwitchButton;
         longSwitchButton->setFixedSize({ 200, 30 });
 
-        auto slider = new Slider;
+        auto slider = new ConcaveSlider;
         slider->setFixedSize(200, 30);
-        slider->setSliderRoundRatio(0.5);
 
         auto switchCard0 = new SwitchCard;
         switchCard0->setFixedSize({ 400, 175 });
