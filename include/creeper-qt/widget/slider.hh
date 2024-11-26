@@ -1,16 +1,13 @@
 #pragma once
 
-#include "../utility/pid.hh"
-#include "../widget/widget.hh"
+#include "creeper-qt/utility/pid.hh"
+#include "creeper-qt/widget/widget.hh"
 
-#include <algorithm>
-#include <iostream>
 #include <qapplication.h>
 #include <qevent.h>
 #include <qpainter.h>
 #include <qpoint.h>
 #include <qtimer.h>
-#include <qwidget.h>
 
 namespace creeper {
 
@@ -18,12 +15,15 @@ class Slider : public Extension<QWidget> {
 public:
     explicit Slider(QWidget* parent = nullptr)
         : Extension(parent) {
-        dynamic_cast<QApplication*>(QCoreApplication::instance())->installEventFilter(this);
-        reloadTheme();
+        auto app = QCoreApplication::instance();
+        app->installEventFilter(this);
+
         setMouseTracking(true);
         setFixedSize(width(), height());
 
-        connect(&animationTimer_, &QTimer::timeout, [this]() { update(); });
+        connect(&animationTimer_, &QTimer::timeout, [this] { update(); });
+
+        reloadTheme();
     };
 
     void reloadTheme() override {
@@ -32,13 +32,14 @@ public:
     }
 
     Slider& setOrientation(Qt::Orientation orientation) {
-        if (orientation_ == Qt::Horizontal && orientation == Qt::Vertical) {
-            orientation_ = orientation;
-            setFixedSize(blockThickness_, sliderLength_);
-        } else if (orientation_ == Qt::Vertical && orientation == Qt::Horizontal) {
-            orientation_ = orientation;
-            setFixedSize(sliderLength_, blockThickness_);
-        }
+        if (orientation == orientation_) return *this;
+        orientation_ = orientation;
+
+        
+        if (orientation == Qt::Vertical) setFixedSize(thickness_, length_);
+        else if (orientation == Qt::Horizontal)
+            setFixedSize(length_, thickness_);
+
         return *this;
     };
 
@@ -60,8 +61,8 @@ public:
 
     Slider& setValue(double value) {
         value_ = std::clamp<double>(value, minimum_, maximum_);
-        pidTarget_ = value_ * (sliderLength_ - blockLength_) / (maximum_ - minimum_)
-            + blockLength_ / 2. + blockBorderShadowSize_;
+        pidTarget_ = value_ * (length_ - blockLength_) / (maximum_ - minimum_) + blockLength_ / 2.
+            + blockBorderShadowSize_;
         if (!animationTimer_.isActive()) animationTimer_.start(10);
         return *this;
     };
@@ -72,15 +73,15 @@ public:
         if (orientation_ == Qt::Horizontal) {
             Extension::setFixedSize(
                 width + 2 * blockBorderShadowSize_, height + 2 * blockBorderShadowSize_);
-            sliderLength_ = width;
-            blockThickness_ = height;
+            length_ = width;
+            thickness_ = height;
             lastPos_ = blockLength_ / 2.;
             pidTarget_ = lastPos_;
         } else {
             Extension::setFixedSize(
                 width + 2 * blockBorderShadowSize_, height + 2 * blockBorderShadowSize_);
-            sliderLength_ = height;
-            blockThickness_ = width;
+            length_ = height;
+            thickness_ = width;
             lastPos_ = blockLength_ / 2.;
             pidTarget_ = lastPos_;
         }
@@ -108,14 +109,14 @@ public:
         }
         return *this;
     }
-    int length() const { return sliderLength_; }
+    int length() const { return length_; }
 
     Slider& setThickness(int thickness) {
         sliderThickness_ = thickness;
-        if (blockThickness_ < sliderThickness_) {
-            if (orientation_ == Qt::Horizontal) setFixedSize(sliderLength_, sliderThickness_);
+        if (thickness_ < sliderThickness_) {
+            if (orientation_ == Qt::Horizontal) setFixedSize(length_, sliderThickness_);
             else
-                setFixedSize(sliderThickness_, sliderLength_);
+                setFixedSize(sliderThickness_, length_);
         }
         return *this;
     }
@@ -124,25 +125,25 @@ public:
     Slider& setBLockLength(int length) {
         blockLength_ = length;
 
-        if (blockLength_ > sliderLength_) {
-            if (orientation_ == Qt::Horizontal) setFixedSize(blockLength_, blockThickness_);
+        if (blockLength_ > length_) {
+            if (orientation_ == Qt::Horizontal) setFixedSize(blockLength_, thickness_);
             else
-                setFixedSize(blockThickness_, blockLength_);
+                setFixedSize(thickness_, blockLength_);
         }
         return *this;
     }
     int bLockLength() const { return blockLength_; }
 
     Slider& setBLockThickness(int thickness) {
-        if (thickness < sliderThickness_) blockThickness_ = sliderThickness_;
+        if (thickness < sliderThickness_) thickness_ = sliderThickness_;
         if (orientation_ == Qt::Horizontal) {
-            setFixedSize(sliderLength_, thickness);
+            setFixedSize(length_, thickness);
         } else {
-            setFixedSize(thickness, sliderLength_);
+            setFixedSize(thickness, length_);
         }
         return *this;
     }
-    int bLockThickness() const { return blockThickness_; }
+    int bLockThickness() const { return thickness_; }
 
     Slider& setBlockBorderShadowSize_(int size) {
         blockBorderShadowSize_ = size;
@@ -188,7 +189,6 @@ public:
 
 protected:
     void paintEvent(QPaintEvent* event) override {
-        std::cout << "value: " << value_ << std::endl;
         auto painter = QPainter(this);
         sliderPaintEvent(painter);
         animationPaintEvent(painter);
@@ -205,13 +205,12 @@ protected:
         painter.setRenderHint(QPainter::Antialiasing, true);
         if (orientation_ == Qt::Horizontal)
             painter.drawRoundedRect(blockBorderShadowSize_,
-                (blockThickness_ - sliderThickness_) / 2 + blockBorderShadowSize_, sliderLength_,
+                (thickness_ - sliderThickness_) / 2 + blockBorderShadowSize_, length_,
                 sliderThickness_, sliderThickness_ / 2. * sliderRoundRatio_,
                 sliderThickness_ / 2. * sliderRoundRatio_);
         else
-            painter.drawRoundedRect(
-                (blockThickness_ - sliderThickness_) / 2 + blockBorderShadowSize_,
-                blockBorderShadowSize_, sliderThickness_, sliderLength_,
+            painter.drawRoundedRect((thickness_ - sliderThickness_) / 2 + blockBorderShadowSize_,
+                blockBorderShadowSize_, sliderThickness_, length_,
                 sliderThickness_ / 2. * sliderRoundRatio_,
                 sliderThickness_ / 2. * sliderRoundRatio_);
     }
@@ -220,12 +219,12 @@ protected:
         const auto halfblockLength = blockLength_ / 2.;
         lastPos_ = std::clamp(updateWithPid(lastPos_, pidTarget_, 0.1),
             halfblockLength + blockBorderShadowSize_,
-            sliderLength_ - halfblockLength + blockBorderShadowSize_);
+            length_ - halfblockLength + blockBorderShadowSize_);
 
         painter.setOpacity(sliderOpacity_);
         if (orientation_ == Qt::Horizontal) {
             painter.drawRoundedRect(blockBorderShadowSize_,
-                (blockThickness_ - sliderThickness_) / 2 + blockBorderShadowSize_,
+                (thickness_ - sliderThickness_) / 2 + blockBorderShadowSize_,
                 static_cast<int>(lastPos_ + halfblockLength) - blockBorderShadowSize_,
                 sliderThickness_, sliderThickness_ / 2. * sliderRoundRatio_,
                 sliderThickness_ / 2. * sliderRoundRatio_);
@@ -233,11 +232,10 @@ protected:
             painter.setBrush({ roundColor_ });
             painter.setOpacity(sliderOpacity_);
             painter.drawRoundedRect(static_cast<int>(lastPos_ - halfblockLength),
-                blockBorderShadowSize_, blockLength_, blockThickness_,
-                blockThickness_ / 2. * sliderRoundRatio_, blockThickness_ / 2. * sliderRoundRatio_);
+                blockBorderShadowSize_, blockLength_, thickness_,
+                thickness_ / 2. * sliderRoundRatio_, thickness_ / 2. * sliderRoundRatio_);
         } else {
-            painter.drawRoundedRect(
-                (blockThickness_ - sliderThickness_) / 2 + blockBorderShadowSize_,
+            painter.drawRoundedRect((thickness_ - sliderThickness_) / 2 + blockBorderShadowSize_,
                 blockBorderShadowSize_, sliderThickness_,
                 static_cast<int>(lastPos_ + halfblockLength) - blockBorderShadowSize_,
                 sliderThickness_ / 2. * sliderRoundRatio_,
@@ -246,8 +244,8 @@ protected:
             painter.setBrush({ roundColor_ });
             painter.setOpacity(sliderOpacity_);
             painter.drawRoundedRect(blockBorderShadowSize_,
-                static_cast<int>(lastPos_ - halfblockLength), blockThickness_, blockLength_,
-                blockThickness_ / 2. * sliderRoundRatio_, blockThickness_ / 2. * sliderRoundRatio_);
+                static_cast<int>(lastPos_ - halfblockLength), thickness_, blockLength_,
+                thickness_ / 2. * sliderRoundRatio_, thickness_ / 2. * sliderRoundRatio_);
         }
     }
 
@@ -258,24 +256,22 @@ protected:
         if (orientation_ == Qt::Horizontal) {
             painter.drawRoundedRect(
                 static_cast<int>(lastPos_ - halfblockLength) - blockBorderShadowSize_, 0,
-                blockLength_ + 2 * blockBorderShadowSize_,
-                blockThickness_ + 2 * blockBorderShadowSize_,
-                blockThickness_ / 2. + blockBorderShadowSize_ * sliderRoundRatio_,
-                blockThickness_ / 2. + blockBorderShadowSize_ * sliderRoundRatio_);
+                blockLength_ + 2 * blockBorderShadowSize_, thickness_ + 2 * blockBorderShadowSize_,
+                thickness_ / 2. + blockBorderShadowSize_ * sliderRoundRatio_,
+                thickness_ / 2. + blockBorderShadowSize_ * sliderRoundRatio_);
         } else {
             painter.drawRoundedRect(0,
                 static_cast<int>(lastPos_ - halfblockLength) - blockBorderShadowSize_,
-                blockThickness_ + 2 * blockBorderShadowSize_,
-                blockLength_ + 2 * blockBorderShadowSize_,
-                blockThickness_ / 2. + blockBorderShadowSize_ * sliderRoundRatio_,
-                blockThickness_ / 2. + blockBorderShadowSize_ * sliderRoundRatio_);
+                thickness_ + 2 * blockBorderShadowSize_, blockLength_ + 2 * blockBorderShadowSize_,
+                thickness_ / 2. + blockBorderShadowSize_ * sliderRoundRatio_,
+                thickness_ / 2. + blockBorderShadowSize_ * sliderRoundRatio_);
         }
     }
 
     void checkAnimation(QPainter& painter) {
         const auto halfblockLength = blockLength_ / 2.;
         if (std::abs(lastPos_
-                - ((value_ - minimum_) * (sliderLength_ - blockLength_) / (maximum_ - minimum_)
+                - ((value_ - minimum_) * (length_ - blockLength_) / (maximum_ - minimum_)
                     + halfblockLength + blockBorderShadowSize_))
                 <= 1.
             && std::abs(lastShadowOpacity_ - shadowOpacityPidTarget_) <= 0.001) {
@@ -296,7 +292,7 @@ protected:
             }
 
             value_ = (pidTarget_ - blockLength_ / 2. - blockBorderShadowSize_)
-                    * (maximum_ - minimum_) / (sliderLength_ - blockLength_)
+                    * (maximum_ - minimum_) / (length_ - blockLength_)
                 + minimum_;
             value_ = std::clamp<double>(value_, minimum_, maximum_);
             if (!animationTimer_.isActive()) {
@@ -309,7 +305,7 @@ protected:
             else
                 pidTarget_ = event->pos().y();
             value_ = (pidTarget_ - blockLength_ / 2. - blockBorderShadowSize_)
-                    * (maximum_ - minimum_) / (sliderLength_ - blockLength_)
+                    * (maximum_ - minimum_) / (length_ - blockLength_)
                 + minimum_;
             value_ = std::clamp<double>(value_, minimum_, maximum_);
         }
@@ -320,8 +316,8 @@ protected:
         if (mouseEntered_) {
             if (orientation_ == Qt::Horizontal) {
                 if (std::abs(event->pos().x() - lastPos_) <= blockLength_
-                    && std::abs(event->pos().y() - blockThickness_ / 2 - blockBorderShadowSize_)
-                        <= blockThickness_) {
+                    && std::abs(event->pos().y() - thickness_ / 2 - blockBorderShadowSize_)
+                        <= thickness_) {
                     mouseHover_ = true;
                     shadowOpacityPidTarget_ = blockShadowOpacity_;
                 } else {
@@ -330,8 +326,8 @@ protected:
                 }
             } else {
                 if (std::abs(event->pos().y() - lastPos_) <= blockLength_
-                    && std::abs(event->pos().x() - blockThickness_ / 2 - blockBorderShadowSize_)
-                        <= blockThickness_) {
+                    && std::abs(event->pos().x() - thickness_ / 2 - blockBorderShadowSize_)
+                        <= thickness_) {
                     mouseHover_ = true;
                     shadowOpacityPidTarget_ = blockShadowOpacity_;
                 } else {
@@ -354,7 +350,7 @@ protected:
                 else
                     pidTarget_ = dynamic_cast<QMouseEvent*>(event)->pos().y() - pos().y();
                 value_ = (pidTarget_ - blockLength_ / 2. - blockBorderShadowSize_)
-                        * (maximum_ - minimum_) / (sliderLength_ - blockLength_)
+                        * (maximum_ - minimum_) / (length_ - blockLength_)
                     + minimum_;
 
                 value_ = std::clamp<double>(value_, minimum_, maximum_);
@@ -401,10 +397,10 @@ private:
 
     double sliderRoundRatio_ = 0.8;
 
-    int sliderLength_ = 200;
+    int length_ = 200;
     int sliderThickness_ = 20;
     int blockLength_ = 40;
-    int blockThickness_ = 20;
+    int thickness_ = 20;
     int blockBorderShadowSize_ = 5;
 
     double pidTarget_;
