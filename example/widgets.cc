@@ -82,8 +82,11 @@ public:
         longSwitchButton->setFixedSize({ 200, 30 });
 
         auto slider = new ConvexSlider;
-        slider->setFixedSize(200, 30).setSliderRoundRatio(1).setBLockLength(40).setBLockThickness(
-            40);
+        slider->setFixedSize(200, 30)
+            .setSliderRoundRatio(1)
+            .setBLockLength(30)
+            .setBLockThickness(30)
+            .setBlockBorderShadowSize_(2);
 
         auto switchCard0 = new SwitchCard;
         switchCard0->setFixedSize({ 400, 175 });
