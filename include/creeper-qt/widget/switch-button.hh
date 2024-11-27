@@ -36,7 +36,7 @@ public:
     bool switched() const { return switchStatus_; }
 
     void reloadTheme() override {
-        lightPrimary_ = Theme::color("primary200");
+        lightPrimary_ = Theme::color("primary300");
         heavyPrimary_ = Theme::color("primary400");
     }
 

@@ -1,5 +1,6 @@
 #include <qapplication.h>
 
+#include "creeper-qt/widget/concave-slider.hh"
 #include "creeper-qt/widget/convex-slider.hh"
 #include "creeper-qt/widget/line-edit.hh"
 #include "creeper-qt/widget/list-widget.hh"
@@ -81,12 +82,11 @@ public:
         auto longSwitchButton = new ConvexSwitchButton;
         longSwitchButton->setFixedSize({ 200, 30 });
 
-        auto slider = new ConvexSlider;
-        slider->setFixedSize(200, 30)
-            .setSliderRoundRatio(1)
-            .setBLockLength(30)
-            .setBLockThickness(30)
-            .setBlockBorderShadowSize_(2);
+        auto slider = new ConcaveSlider;
+        slider->setFixedSize(200, 30);
+
+        auto slider0 = new ConvexSlider;
+        slider0->setFixedSize(200, 30);
 
         auto switchCard0 = new SwitchCard;
         switchCard0->setFixedSize({ 400, 175 });
@@ -129,6 +129,7 @@ public:
         verticalLayout0->setAlignment(Qt::AlignTop);
         verticalLayout0->addWidget(longSwitchButton);
         verticalLayout0->addWidget(slider);
+        verticalLayout0->addWidget(slider0);
         verticalLayout0->addWidget(lineEdit);
         verticalLayout0->addLayout(roundIconButtonLayout);
 
@@ -151,7 +152,7 @@ int main(int argc, char* argv[]) {
     qputenv("QT_SCALE_FACTOR", "1");
     auto app = QApplication { argc, argv };
 
-    Theme::setTheme("common-white");
+    Theme::setTheme("common-green");
 
     auto window = Widgets {};
     QIcon icon { ":/theme/icon/normal/menu.png" };

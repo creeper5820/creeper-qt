@@ -56,8 +56,7 @@ protected:
         if (event->button() & Qt::LeftButton) {
             if (waterRippleAnimation_) {
                 animationEvents_.emplace_back(event->pos(), 0);
-                if (!animationTimer_.isActive())
-                    animationTimer_.start(refreshIntervalMs_);
+                if (!animationTimer_.isActive()) animationTimer_.start(refreshIntervalMs_);
             }
         }
         Extension::mouseReleaseEvent(event);
@@ -65,14 +64,12 @@ protected:
 
     void enterEvent(QEnterEvent* event) override {
         mouseHover_ = true;
-        if (!animationTimer_.isActive())
-            animationTimer_.start(refreshIntervalMs_);
+        if (!animationTimer_.isActive()) animationTimer_.start(refreshIntervalMs_);
     }
 
     void leaveEvent(QEvent* event) override {
         mouseHover_ = false;
-        if (!animationTimer_.isActive())
-            animationTimer_.start(refreshIntervalMs_);
+        if (!animationTimer_.isActive()) animationTimer_.start(refreshIntervalMs_);
     }
 
     void buttonPaintEvent(QPainter& painter) {
@@ -118,8 +115,7 @@ protected:
         painter.setRenderHint(QPainter::Antialiasing, true);
 
         for (int index = 0; auto& [point, distance] : animationEvents_) {
-            painter.setOpacity(
-                0.3 * (1 - static_cast<double>(distance) / maxDistance));
+            painter.setOpacity(0.3 * (1 - static_cast<double>(distance) / maxDistance));
 
             auto ellipsePath = QPainterPath();
             ellipsePath.addEllipse(point, distance, distance);
@@ -135,9 +131,7 @@ protected:
     }
 
     void checkAnimation() {
-        if (std::abs(opacity_
-                - (mouseHover_ ? mouseHoverOpacity : mouseLeaveOpacity))
-                < 0.001
+        if (std::abs(opacity_ - (mouseHover_ ? mouseHoverOpacity : mouseLeaveOpacity)) < 0.001
             && animationEvents_.empty())
             animationTimer_.stop();
     }

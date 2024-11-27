@@ -29,8 +29,7 @@ public:
 
     void reloadTheme() override {
         background_ = Theme::color("background");
-        Extension::setStyleSheet(
-            QString(style::MainWindow).arg(QColor(background_).name()));
+        Extension::setStyleSheet(QString(style::MainWindow).arg(QColor(background_).name()));
     }
 
 private:

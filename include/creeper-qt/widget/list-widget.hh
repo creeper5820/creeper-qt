@@ -13,8 +13,7 @@
 #include "creeper-qt/widget/widget.hh"
 
 namespace creeper {
-class CustomItemWidgetInterface : public Extension<QWidget>,
-                                  public QListWidgetItem { };
+class CustomItemWidgetInterface : public Extension<QWidget>, public QListWidgetItem { };
 
 class SwitchAndLabelItem : public CustomItemWidgetInterface {
 public:
@@ -69,8 +68,12 @@ public:
     }
 
     void reloadTheme() override {
+        const auto backgroundOrigin = QColor(Theme::color("background")).name();
+        const auto backgroundSelected = QColor(Theme::color("primary200")).name();
+        const auto backgroundHover = QColor(Theme::color("primary100")).name();
+        const auto borderColor = QColor(Theme::color("primary050")).name();
         Extension::setStyleSheet(QString(style::ListWidget)
-                .arg("#f7f7f7", "#ece7f4", "#cfc2e7", "#ece7f4"));
+                .arg(backgroundOrigin, borderColor, backgroundSelected, backgroundHover));
     }
 };
 

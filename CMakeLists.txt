@@ -86,18 +86,13 @@ add_custom_command(TARGET "uninstall" POST_BUILD
     COMMAND xargs rm -vf < install_manifest.txt || echo nothing to be uninstalled
 )
 
+set(EXAMPLE_NAME widgets)
 if(BUILD_EXAMPLES)
     include_directories(include)
-    add_executable(clock
-        example/clock.cc
+    add_executable(${EXAMPLE_NAME}
+        example/${EXAMPLE_NAME}.cc
     )
-    target_link_libraries(clock
-        ${PROJECT_NAME}
-    )
-    add_executable(widgets
-        example/widgets.cc
-    )
-    target_link_libraries(widgets
+    target_link_libraries(${EXAMPLE_NAME}
         ${PROJECT_NAME}
     )
 endif()
