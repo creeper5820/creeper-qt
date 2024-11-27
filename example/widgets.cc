@@ -1,11 +1,11 @@
 #include <qapplication.h>
 
+#include "creeper-qt/widget/convex-slider.hh"
 #include "creeper-qt/widget/line-edit.hh"
 #include "creeper-qt/widget/list-widget.hh"
 #include "creeper-qt/widget/main-window.hh"
 #include "creeper-qt/widget/menu.hh"
 #include "creeper-qt/widget/push-button.hh"
-#include "creeper-qt/widget/slider.hh"
 #include "creeper-qt/widget/switch-button.hh"
 
 #include "creeper-qt/module/round-icon-button.hh"
@@ -81,8 +81,9 @@ public:
         auto longSwitchButton = new ConvexSwitchButton;
         longSwitchButton->setFixedSize({ 200, 30 });
 
-        auto slider = new ConcaveSlider;
-        slider->setFixedSize(200, 30);
+        auto slider = new ConvexSlider;
+        slider->setFixedSize(200, 30).setSliderRoundRatio(1).setBLockLength(40).setBLockThickness(
+            40);
 
         auto switchCard0 = new SwitchCard;
         switchCard0->setFixedSize({ 400, 175 });
