@@ -1,6 +1,8 @@
 <RCC>
     <qresource prefix="/theme">
         <file>common-white/theme.yaml</file>
+        <file>common-green/theme.yaml</file>
+
         <file>icon/normal/search.png</file>
         <file>icon/normal/return.png</file>
         <file>icon/normal/menu.png</file>
