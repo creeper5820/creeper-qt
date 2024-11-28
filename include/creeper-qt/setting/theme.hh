@@ -51,8 +51,7 @@ public:
         return 0x000000;
     }
 
-    static inline void addReloadThemeHandler(
-        std::function<void(void)> handler) {
+    static inline void addReloadThemeHandler(std::function<void(void)> handler) {
         widgetReloadThemeHandler_.push_back(handler);
     }
 
@@ -69,7 +68,6 @@ private:
     static inline auto occupied_ = std::atomic<bool> { false };
     static inline auto themeConfig_ = std::unique_ptr<YAML::Node>();
 
-    static inline auto widgetReloadThemeHandler_
-        = std::vector<std::function<void(void)>>();
+    static inline auto widgetReloadThemeHandler_ = std::vector<std::function<void(void)>>();
 };
 }
