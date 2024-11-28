@@ -1,5 +1,6 @@
 #include <qapplication.h>
 
+#include "creeper-qt/widget/combo-box.hh"
 #include "creeper-qt/widget/concave-slider.hh"
 #include "creeper-qt/widget/convex-slider.hh"
 #include "creeper-qt/widget/line-edit.hh"
@@ -44,14 +45,25 @@ public:
             button->setFont(QFont("monospace", 12, QFont::Normal));
         }
 
-        auto switchButton0 = new ConvexSwitchButton;
-        switchButton0->setFixedSize({ 60, 30 });
+        auto themeSwitchButton = new ConvexSwitchButton;
+        themeSwitchButton->setFixedSize({ 60, 30 });
+        connect(themeSwitchButton, &ConvexSwitchButton::clicked, [] {
+            Theme::setTheme(Theme::theme() == "common-white" ? "common-green" : "common-white");
+            Theme::reloadTheme();
+        });
 
         auto switchButton3 = new ConvexSwitchButton;
         switchButton3->setFixedSize({ 80, 40 });
 
         auto switchButton1 = new ConcaveSwitchButton;
-        switchButton1->setFixedSize({ 80, 40 });
+        switchButton1->setFixedWidth(80);
+
+        auto comboBox = new ComboBox;
+        comboBox->setFixedSize({ 80, 40 });
+        comboBox->addItem("hello world1");
+        comboBox->addItem("hello world2");
+        comboBox->addItem("hello world3");
+        comboBox->addItem("hello world4");
 
         auto verticalLayout = new QVBoxLayout;
         verticalLayout->setAlignment(Qt::AlignTop | Qt::AlignCenter);
@@ -61,7 +73,8 @@ public:
         verticalLayout->addWidget(buttons[2]);
         verticalLayout->addWidget(switchButton1);
         verticalLayout->addWidget(switchButton3);
-        verticalLayout->addWidget(switchButton0);
+        verticalLayout->addWidget(themeSwitchButton);
+        verticalLayout->addWidget(comboBox);
 
         static auto menu = new Menu;
         menu->addAction("hello world");
