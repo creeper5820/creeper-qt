@@ -88,7 +88,6 @@ public:
             const auto& button = buttons[0];
             const auto position = button->mapToGlobal(QPoint(0, button->height()));
             menu->exec(position);
-            qDebug() << position;
         });
 
         return verticalLayout;
