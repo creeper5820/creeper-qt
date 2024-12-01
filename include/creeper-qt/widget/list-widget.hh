@@ -13,7 +13,11 @@
 #include "creeper-qt/widget/widget.hh"
 
 namespace creeper {
-class CustomItemWidgetInterface : public Extension<QWidget>, public QListWidgetItem { };
+class CustomItemWidgetInterface : public Extension<QWidget>, public QListWidgetItem {
+public:
+    QFont font() { return QWidget::font(); }
+    void setFont(const QFont& font) { QWidget::setFont(font); }
+};
 
 class SwitchAndLabelItem : public CustomItemWidgetInterface {
 public:
@@ -23,7 +27,7 @@ public:
 
         auto labelWidget_ = new QLabel;
         labelWidget_->setText(label);
-        labelWidget_->setFont(QFont("monospace", 12, QFont::Normal));
+        labelWidget_->setFont(font());
         labelWidget_->setStyleSheet("color: #575757;");
 
         horizonLayout_ = new QHBoxLayout;
@@ -57,13 +61,14 @@ public:
 
     void addSwitchAndLabel(const QString& label) {
         auto customItem = new SwitchAndLabelItem(label);
+        customItem->setFont(font());
         addCustomItem(static_cast<CustomItemWidgetInterface*>(customItem));
     }
 
     void addSimpleLabel(const QString& label) {
         auto item = new QListWidgetItem;
         item->setText(label);
-        item->setFont(QFont("monospace", 12, QFont::Normal));
+        item->setFont(font());
         QListWidget::addItem(item);
     }
 

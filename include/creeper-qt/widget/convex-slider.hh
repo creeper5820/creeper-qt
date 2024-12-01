@@ -364,7 +364,7 @@ protected:
         return QObject::eventFilter(obj, event);
     }
 
-    void enterEvent(QEnterEvent* event) override {
+    void enterEvent(QEvent* event) override {
         mouseEntered_ = true;
         Extension::enterEvent(event);
     };

@@ -33,11 +33,10 @@ public:
 
     void reloadTheme() override {
         background_ = Theme::color("primary050");
-        font_ = QFont("monospace", 12, QFont::Bold);
         label_.setWordWrap(true);
         label_.setAlignment(Qt::AlignCenter);
         label_.setStyleSheet("color: #575757;");
-        label_.setFont(font_);
+        label_.setFont(font());
     }
 
     void setText(const QString& text) { label_.setText(text); }
@@ -51,14 +50,12 @@ protected:
         painter.setPen(Qt::NoPen);
         painter.setRenderHint(QPainter::Antialiasing, true);
         painter.setBrush({ background_ });
-        painter.drawRoundedRect(
-            0, 0, width, height, 0.1 * height, 0.1 * height);
+        painter.drawRoundedRect(0, 0, width, height, 0.1 * height, 0.1 * height);
     }
 
 private:
     ConcaveSwitchButton switchButton_ { this };
     Label label_ { this };
-    QFont font_;
     uint32_t background_;
 };
 

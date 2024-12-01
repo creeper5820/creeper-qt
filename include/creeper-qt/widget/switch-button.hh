@@ -49,7 +49,7 @@ protected:
         QAbstractButton::mouseReleaseEvent(event);
     }
 
-    void enterEvent(QEnterEvent* event) override {
+    void enterEvent(QEvent* event) override {
         setCursor(Qt::PointingHandCursor);
         QAbstractButton::enterEvent(event);
     }

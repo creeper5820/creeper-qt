@@ -22,6 +22,7 @@ public:
     explicit Widgets()
         : MainWindow() {
         auto listWidget1 = new ListWidget;
+        listWidget1->setFont(QFont("monospace", 8, QFont::Normal));
         for (int i = 0; i < 8; i++)
             listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
 
@@ -40,11 +41,13 @@ public:
         static auto buttons = std::array<PushButton*, 3> {};
         for (int index = 0; auto& button : buttons) {
             button = new PushButton;
+            button->setFont(QFont("monospace", 8, QFont::Normal));
             button->setText("按钮" + QString::number(index++));
             button->setFixedSize({ 100, 50 });
-            button->setFont(QFont("monospace", 12, QFont::Normal));
         }
 
+        /// @note 代码中并未显式调用update()，但加载主题时全部widget会进行一次更新,
+        /// 这是怎么绘世呢？
         auto themeSwitchButton = new ConvexSwitchButton;
         themeSwitchButton->setFixedSize({ 60, 30 });
         connect(themeSwitchButton, &ConvexSwitchButton::clicked, [] {
@@ -74,7 +77,7 @@ public:
         verticalLayout->addWidget(switchButton1);
         verticalLayout->addWidget(switchButton3);
         verticalLayout->addWidget(themeSwitchButton);
-        verticalLayout->addWidget(comboBox);
+        // verticalLayout->addWidget(comboBox);
 
         static auto menu = new Menu;
         menu->addAction("hello world");
@@ -113,6 +116,7 @@ public:
         lineEdit->setMaximumWidth(200);
         lineEdit->setIcon(QIcon(":/theme/icon/normal/search.png"));
         lineEdit->setPlaceholderText("HELLO WORLD");
+        lineEdit->setFont(QFont("monospace", 8, QFont::Normal));
 
         auto roundIconButton0 = new RoundIconButton;
         roundIconButton0->setRadius(20);

@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_BUILD_TYPE "Release")
 add_compile_options(-Os -O3)
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt5 REQUIRED COMPONENTS Widgets)
 find_package(yaml-cpp REQUIRED)
 find_package(Eigen3 REQUIRED)
 
@@ -36,7 +36,7 @@ add_library(${PROJECT_NAME}::widget
     ALIAS ${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME}
-    PUBLIC Qt6::Widgets yaml-cpp 
+    PUBLIC Qt5::Widgets yaml-cpp 
 )
 
 # Package Config
@@ -93,7 +93,7 @@ if(BUILD_EXAMPLES)
         example/${EXAMPLE_NAME}.cc
     )
     target_link_libraries(${EXAMPLE_NAME}
-        ${PROJECT_NAME}
+        ${PROJECT_NAME} Qt5Network
     )
 endif()
 
