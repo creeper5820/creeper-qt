@@ -62,7 +62,7 @@ protected:
         Extension::mouseReleaseEvent(event);
     }
 
-    void enterEvent(QEnterEvent* event) override {
+    void enterEvent(QEvent* event) override {
         mouseHover_ = true;
         if (!animationTimer_.isActive()) animationTimer_.start(refreshIntervalMs_);
     }
@@ -91,9 +91,10 @@ protected:
         painter.drawPath(roundRectPath);
     }
 
+    /// @todo 适配多行文字或者不能显示完全的情况
     void textPaintEvent(QPainter& painter) {
-        painter.setPen(QColor(textColor_));
-        painter.setFont(QFont("monospace", 12, QFont::Bold));
+        painter.setPen(textColor_);
+        painter.setFont(font());
         painter.setOpacity(0.7);
         painter.drawText(0, 0, width(), height(), Qt::AlignCenter, text());
     }

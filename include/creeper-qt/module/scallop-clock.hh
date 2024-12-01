@@ -91,7 +91,10 @@ class ScallopClock : public Extension<QWidget> {
 public:
     explicit ScallopClock(QWidget* parent = nullptr)
         : Extension(parent) {
-        waveCircle_.setLineWidth(2).setFlange(12).setFlangeRatio(0.9).setFlangeRadius(20);
+        waveCircle_.setLineWidth(2);
+        waveCircle_.setFlange(12);
+        waveCircle_.setFlangeRatio(0.9);
+        waveCircle_.setFlangeRadius(20);
         reloadTheme();
     }
 
@@ -112,8 +115,8 @@ public:
     }
 
     void reloadTheme() override {
-        waveCircle_.setBackground(Theme::color("primary050"))
-            .setLineColor(Theme::color("primary050"));
+        waveCircle_.setBackground(Theme::color("primary050"));
+        waveCircle_.setLineColor(Theme::color("primary050"));
     }
 
 private:

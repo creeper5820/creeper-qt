@@ -18,19 +18,14 @@ public:
     LineEdit(QWidget* parent = nullptr)
         : Extension(parent) {
         connect(&animationTimer_, &QTimer::timeout, [this] { update(); });
+        setStyleSheet(style::LineEdit);
         reloadTheme();
     }
 
     void reloadTheme() override {
         background_ = Theme::color("primary100");
         border_ = Theme::color("primary200");
-        font_ = QFont("monospace", 12, QFont::Normal);
-
-        auto qss = QString(style::LineEdit);
-        Extension::setStyleSheet(qss);
-
-        Extension::setFont(font_);
-        Extension::setTextMargins(20, 10, 20, 10);
+        setTextMargins(drawIcon_ ? height() : 20, 10, 20, 10);
     }
 
     void enableIcon() {
@@ -61,7 +56,7 @@ protected:
         Extension::paintEvent(event);
     }
 
-    void enterEvent(QEnterEvent* event) override {
+    void enterEvent(QEvent* event) override {
         mouseHover_ = true;
         if (!animationTimer_.isActive()) animationTimer_.start(10);
         Extension::enterEvent(event);
@@ -104,7 +99,6 @@ private:
 
 private:
     QIcon icon_;
-    QFont font_;
 
     QTimer animationTimer_ { this };
 

@@ -60,7 +60,7 @@ public:
         clockTimer_.start(1s);
         animationTimer_.start(10ms);
 
-        label.setFont({ "monospace", 12, QFont::Bold });
+        label.setFont({ "monospace", 8, QFont::Bold });
         label.setStyleSheet("color: #575757;");
         label.setMinimumWidth(350);
         label.setAlignment(Qt::AlignCenter);

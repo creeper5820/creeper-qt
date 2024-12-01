@@ -35,9 +35,9 @@ public:
     static inline const QString qss(const QString& name) {
         return ":/theme/" + theme() + "/qss/" + name + ".qss";
     }
+    /// @todo 补全字体管理
     static inline const QFont font(const char* name) {
-        // TODO
-        if (strcmp(name, "text-font")) return { "monospace", 12 };
+        if (strcmp(name, "text-font")) return { "monospace", 8, QFont::Normal };
         else
             return {};
     }

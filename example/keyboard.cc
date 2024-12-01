@@ -20,6 +20,13 @@ public:
         uint8_t end = 0xb6;
     };
 
+    struct __attribute__((packed)) KeyboardCommand {
+        uint8_t header = 0xa5;
+        uint8_t values[10];
+        PinMode modes[10];
+        uint8_t end = 0xb6;
+    };
+
     enum class Motor : bool { Left, Right };
 
     explicit Keyboard(QWidget* parent = nullptr)
@@ -34,8 +41,9 @@ public:
                     .arg(d_)
                     .arg(currentPinIndex_)
                     .arg(command_.values[currentPinIndex_]));
-            if (currentPinIndex_ != -1)
-                socket_.write(reinterpret_cast<const char*>(&command_), sizeof(command_));
+
+            auto msg = QString("%1 %2 %3 %4").arg(w_).arg(s_).arg(a_).arg(d_);
+            if (currentPinIndex_ != -1) socket_.write(msg.toUtf8());
         });
 
         label_.setFont({ "monospace", 15, QFont::Bold });
@@ -102,7 +110,7 @@ public:
         mainWidget->setLayout(verticalLayout);
         setCentralWidget(mainWidget);
 
-        socket_.connectToHost("10.31.2.65", 8000);
+        socket_.connectToHost("116.62.240.46", 18954);
         timer_.start(100);
     }
 

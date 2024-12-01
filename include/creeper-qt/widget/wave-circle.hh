@@ -57,10 +57,7 @@ public:
         renderRequest_ = true;
         return *this;
     }
-    void reloadTheme() override {
-        setLineColor(Theme::color("primary400"));
-        renderRequest_ = true;
-    }
+    void reloadTheme() override { renderRequest_ = true; }
 
 protected:
     void paintEvent(QPaintEvent* event) override {
