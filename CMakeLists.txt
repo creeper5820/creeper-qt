@@ -21,8 +21,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 # File Search
-file(GLOB_RECURSE PROJECT_CC "include/*.cc")
-file(GLOB_RECURSE PROJECT_HH "include/*.hh")
+file(GLOB_RECURSE PROJECT_CC CONFIGURE_DEPENDS "include/*.cc")
+file(GLOB_RECURSE PROJECT_HH CONFIGURE_DEPENDS "include/*.hh")
 set(PROJECT_RES "res/resource.qrc")
 
 add_library(${PROJECT_NAME}
