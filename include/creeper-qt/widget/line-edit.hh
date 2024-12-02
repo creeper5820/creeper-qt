@@ -25,7 +25,7 @@ public:
     void reloadTheme() override {
         background_ = Theme::color("primary100");
         border_ = Theme::color("primary200");
-        setTextMargins(drawIcon_ ? height() : 20, 10, 20, 10);
+        setTextMargins_ = false;
     }
 
     void enableIcon() {
@@ -50,7 +50,9 @@ protected:
         if (drawBackground_) backgroundPaintEvent(painter);
         if (drawIcon_) iconPaintEvent(painter);
         if (!setTextMargins_) {
-            setTextMargins(drawIcon_ ? height() : 20, 10, 20, 10);
+            const auto h = height();
+            const auto margin = drawBackground_ ? 0.5 * h : 0.1 * h;
+            setTextMargins(drawIcon_ ? h : margin, 0.1 * h, margin, 0.1 * h);
             setTextMargins_ = true;
         }
         Extension::paintEvent(event);
@@ -109,6 +111,9 @@ private:
     bool drawIcon_ = false;
     bool mouseHover_ = false;
     bool setTextMargins_ = false;
+
+    double height_;
+    double width_;
 };
 
 }

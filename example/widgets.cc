@@ -1,5 +1,6 @@
 #include <qapplication.h>
 
+#include "creeper-qt/widget/basic-shape.hh"
 #include "creeper-qt/widget/combo-box.hh"
 #include "creeper-qt/widget/concave-slider.hh"
 #include "creeper-qt/widget/convex-slider.hh"
@@ -15,6 +16,15 @@
 #include "creeper-qt/module/switch-card.hh"
 
 using namespace creeper;
+
+class ThemedRoundedRectangle : public Extension<RoundedRectangle> {
+public:
+    ThemedRoundedRectangle(QWidget* parent = nullptr)
+        : Extension(parent) {
+        reloadTheme();
+    }
+    void reloadTheme() override { setColor(Theme::color("primary500")); }
+};
 
 class Widgets : public creeper::MainWindow {
     Q_OBJECT
@@ -46,6 +56,9 @@ public:
             button->setFixedSize({ 100, 50 });
         }
 
+        auto rect = new ThemedRoundedRectangle;
+        rect->setFixedSize({ 100, 100 });
+
         /// @note 代码中并未显式调用update()，但加载主题时全部widget会进行一次更新,
         /// 这是怎么绘世呢？
         auto themeSwitchButton = new ConvexSwitchButton;
@@ -56,7 +69,7 @@ public:
         });
 
         auto switchButton3 = new ConvexSwitchButton;
-        switchButton3->setFixedSize({ 80, 40 });
+        switchButton3->setFixedSize({ 60, 30 });
 
         auto switchButton1 = new ConcaveSwitchButton;
         switchButton1->setFixedWidth(80);
@@ -71,13 +84,13 @@ public:
         auto verticalLayout = new QVBoxLayout;
         verticalLayout->setAlignment(Qt::AlignTop | Qt::AlignCenter);
         verticalLayout->setSpacing(10);
+        verticalLayout->addWidget(rect);
         verticalLayout->addWidget(buttons[0]);
         verticalLayout->addWidget(buttons[1]);
         verticalLayout->addWidget(buttons[2]);
         verticalLayout->addWidget(switchButton1);
         verticalLayout->addWidget(switchButton3);
         verticalLayout->addWidget(themeSwitchButton);
-        // verticalLayout->addWidget(comboBox);
 
         static auto menu = new Menu;
         menu->addAction("hello world");
@@ -113,6 +126,7 @@ public:
 
         auto lineEdit = new LineEdit;
         lineEdit->setMaximumWidth(200);
+        lineEdit->setFixedHeight(40);
         lineEdit->setIcon(QIcon(":/theme/icon/normal/search.png"));
         lineEdit->setPlaceholderText("HELLO WORLD");
         lineEdit->setFont(QFont("monospace", 8, QFont::Normal));
@@ -145,7 +159,6 @@ public:
         verticalLayout0->setAlignment(Qt::AlignTop);
         verticalLayout0->addWidget(longSwitchButton);
         verticalLayout0->addWidget(slider);
-        verticalLayout0->addWidget(slider0);
         verticalLayout0->addWidget(lineEdit);
         verticalLayout0->addLayout(roundIconButtonLayout);
 
@@ -155,7 +168,6 @@ public:
 
         auto verticalLayout1 = new QVBoxLayout;
         verticalLayout1->setAlignment(Qt::AlignTop);
-        verticalLayout1->setContentsMargins(10, 10, 10, 10);
         verticalLayout1->addWidget(switchCard0);
         verticalLayout1->addWidget(switchCard1);
         verticalLayout1->addLayout(horizonLayout0);

@@ -38,6 +38,9 @@ public:
     }
     void setRadiusRatio(float ratio) { radiusRatio_ = ratio; }
 
+    void disableBackground() { drawBackground_ = false; }
+    void enableBackground() { drawBackground_ = true; }
+
     // Water ripple animation
     void enableAnimation() { waterRippleAnimation_ = true; }
     void disableAnimation() { waterRippleAnimation_ = false; }
@@ -47,9 +50,12 @@ protected:
     void paintEvent(QPaintEvent* event) override {
         auto painter = QPainter(this);
         buttonPaintEvent(painter);
-        waterRippleAnimationPaintEvent(painter);
+        buttonGradientPaintEvent(painter);
+        if (waterRippleAnimation_) {
+            waterRippleAnimationPaintEvent(painter);
+            checkAnimation();
+        }
         textPaintEvent(painter);
-        checkAnimation();
     }
 
     void mouseReleaseEvent(QMouseEvent* event) override {
@@ -72,6 +78,7 @@ protected:
         if (!animationTimer_.isActive()) animationTimer_.start(refreshIntervalMs_);
     }
 
+private:
     void buttonPaintEvent(QPainter& painter) {
         const auto width = Extension::width();
         const auto height = Extension::height();
@@ -80,15 +87,27 @@ protected:
         roundRectPath.addRoundedRect(
             0, 0, width, height, radiusRatio_ * height, radiusRatio_ * height);
 
+        painter.setPen(Qt::NoPen);
+        painter.setBrush({ drawBackground_ ? buttonColor_ : 0xffffffff });
+        painter.setRenderHint(QPainter::Antialiasing, true);
+        painter.setOpacity(1);
+
+        painter.drawPath(roundRectPath);
+    }
+
+    void buttonGradientPaintEvent(QPainter& painter) {
+        const auto width = Extension::width();
+        const auto height = Extension::height();
+
         auto target = mouseHover_ ? mouseHoverOpacity : mouseLeaveOpacity;
         opacity_ = updateWithPid(opacity_, target, 0.1);
 
         painter.setPen(Qt::NoPen);
-        painter.setBrush({ buttonColor_ });
+        painter.setBrush({ waterColor_ });
         painter.setOpacity(opacity_);
         painter.setRenderHint(QPainter::Antialiasing, true);
 
-        painter.drawPath(roundRectPath);
+        painter.drawRoundedRect(0, 0, width, height, radiusRatio_ * height, radiusRatio_ * height);
     }
 
     /// @todo 适配多行文字或者不能显示完全的情况
@@ -100,8 +119,6 @@ protected:
     }
 
     void waterRippleAnimationPaintEvent(QPainter& painter) {
-        if (!waterRippleAnimation_) return;
-
         const auto width = Extension::width();
         const auto height = Extension::height();
 
@@ -141,6 +158,7 @@ private:
     // For Animation
     bool waterRippleAnimation_ = true;
     bool mouseHover_ = false;
+    bool drawBackground_ = true;
 
     int diffusionStep = 5;
     double opacity_ = mouseLeaveOpacity;
@@ -155,8 +173,8 @@ private:
 
     std::vector<std::tuple<QPointF, int>> animationEvents_;
 
-    constexpr static inline double mouseHoverOpacity = 1.0;
-    constexpr static inline double mouseLeaveOpacity = 0.6;
+    constexpr static inline double mouseHoverOpacity = 0.5;
+    constexpr static inline double mouseLeaveOpacity = 0.0;
 };
 
 }
