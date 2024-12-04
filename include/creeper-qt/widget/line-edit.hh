@@ -75,15 +75,14 @@ private:
         const auto width = Extension::width();
         const auto height = Extension::height();
 
-        static double opacity = 0.5;
         const auto target = mouseHover_ ? 0.8 : 0.5;
-        opacity = updateWithPid(opacity, target, 0.1);
-        if (std::abs(opacity - target) < 0.001) animationTimer_.stop();
+        currentOpacity_ = updateWithPid(currentOpacity_, target, 0.1);
+        if (std::abs(currentOpacity_ - target) < 0.001) animationTimer_.stop();
 
         painter.setPen(Qt::NoPen);
         painter.setRenderHint(QPainter::Antialiasing, true);
         painter.setBrush(QColor(background_));
-        painter.setOpacity(opacity);
+        painter.setOpacity(currentOpacity_);
 
         const auto rect = QRectF(0, 0, width, height);
         const auto radius = 0.5 * height;
@@ -114,6 +113,8 @@ private:
 
     double height_;
     double width_;
+
+    double currentOpacity_ = 0.5;
 };
 
 }
