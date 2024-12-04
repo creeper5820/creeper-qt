@@ -70,9 +70,8 @@ protected:
     /// @note: 先用QPicture实现，Pixmap等之后在看看
     /// 帧缓存解决了之前重复计算的性能问题
     void makeCanvas(QPicture& picture) {
-        static auto lastFrame = QPicture {};
         if (!renderRequest_) {
-            picture = lastFrame;
+            picture = lastFrame_;
             return;
         }
 
@@ -112,7 +111,7 @@ protected:
         path.lineTo(begin);
         painter.drawPath(path);
 
-        lastFrame = picture;
+        lastFrame_ = picture;
         renderRequest_ = false;
     }
 
@@ -127,5 +126,7 @@ private:
     uint32_t background_;
 
     bool renderRequest_ = true;
+
+    QPicture lastFrame_;
 };
 }
