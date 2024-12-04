@@ -23,7 +23,7 @@ public:
         : Extension(parent) {
         reloadTheme();
     }
-    void reloadTheme() override { setColor(Theme::color("primary500")); }
+    void reloadTheme() override { setBackground(Theme::color("primary500")); }
 };
 
 class Widgets : public creeper::MainWindow {

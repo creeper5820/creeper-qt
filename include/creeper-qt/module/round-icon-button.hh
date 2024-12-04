@@ -2,6 +2,8 @@
 
 #include "creeper-qt/widget/push-button.hh"
 
+#include <qpainter.h>
+
 namespace creeper {
 
 class RoundIconButton : public PushButton {
@@ -31,8 +33,7 @@ protected:
         painter.setBrush({ Qt::black });
 
         auto pixmap = icon_.pixmap(radius_ * iconRatio_, radius_ * iconRatio_);
-        painter.drawPixmap(radius_ * (2 - iconRatio_) / 2,
-            radius_ * (2 - iconRatio_) / 2, pixmap);
+        painter.drawPixmap(radius_ * (2 - iconRatio_) / 2, radius_ * (2 - iconRatio_) / 2, pixmap);
     }
 
 private:

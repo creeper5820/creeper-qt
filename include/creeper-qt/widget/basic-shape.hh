@@ -6,47 +6,59 @@
 namespace creeper {
 
 namespace internal {
-    inline void makeShapePainter(QPainter& painter, const QColor& color) {
-        painter.setPen(Qt::NoPen);
-        painter.setBrush(color);
-        painter.setRenderHint(QPainter::Antialiasing);
-    }
+
+    /// @todo 边界的角那里一坨，不知道是不是Qt的锅
+    class ShapeWidget : public QWidget {
+    public:
+        ShapeWidget(QWidget* parent = nullptr)
+            : QWidget(parent) { }
+        void setBackground(const QColor& color) { background_ = color, update(); }
+        void setBorderColor(const QColor& color) { borderColor_ = color, update(); }
+        void setBorderWidth(double width) { borderWidth_ = width, update(); }
+
+    protected:
+        void setupPainter(QPainter& painter) {
+            painter.setPen(QPen { borderColor_, borderWidth_ });
+            painter.setBrush(background_);
+            painter.setRenderHint(QPainter::Antialiasing);
+        }
+
+        QColor background_ = 0xffffffff;
+        QColor borderColor_ = 0xffffffff;
+
+        double borderWidth_ = 1;
+    };
 }
 
-class Rectangle : public QWidget {
+class Rectangle : public internal::ShapeWidget {
 public:
     Rectangle(QWidget* parent = nullptr)
-        : QWidget(parent) { }
-    void setColor(const QColor& color) { background_ = color, update(); }
+        : ShapeWidget(parent) { }
 
 protected:
     void paintEvent(QPaintEvent* event) override {
         QPainter painter(this);
-        internal::makeShapePainter(painter, background_);
+        setupPainter(painter);
         painter.drawRect(rect());
     }
-
-private:
-    QColor background_;
 };
 
-class RoundedRectangle : public QWidget {
+class RoundedRectangle : public internal::ShapeWidget {
 public:
     RoundedRectangle(QWidget* parent = nullptr)
-        : QWidget(parent) { }
-    void setColor(const QColor& color) { color_ = color, update(); }
-    void setRoundedRadius(int radius) { radius_ = radius, update(); }
+        : ShapeWidget(parent) { }
+
+    void setRadius(double radius) { radius_ = radius, update(); }
 
 protected:
     void paintEvent(QPaintEvent* event) override {
         QPainter painter(this);
-        internal::makeShapePainter(painter, color_);
+        setupPainter(painter);
         painter.drawRoundedRect(rect(), radius_, radius_);
     }
 
 private:
-    QColor color_;
-    int radius_ = 10;
+    double radius_ = 10;
 };
 
 }
