@@ -110,11 +110,11 @@ public:
         auto longSwitchButton = new ConvexSwitchButton;
         longSwitchButton->setFixedSize({ 200, 30 });
 
-        auto slider = new ConcaveSlider;
-        slider->setFixedSize(200, 30);
-
-        auto slider0 = new ConvexSlider;
+        auto slider0 = new ConcaveSlider;
         slider0->setFixedSize(200, 30);
+
+        auto slider1 = new ConcaveSlider;
+        slider1->setFixedSize(200, 30);
 
         auto switchCard0 = new SwitchCard;
         switchCard0->setFixedSize({ 400, 175 });
@@ -158,7 +158,8 @@ public:
         auto verticalLayout0 = new QVBoxLayout;
         verticalLayout0->setAlignment(Qt::AlignTop);
         verticalLayout0->addWidget(longSwitchButton);
-        verticalLayout0->addWidget(slider);
+        verticalLayout0->addWidget(slider0);
+        verticalLayout0->addWidget(slider1);
         verticalLayout0->addWidget(lineEdit);
         verticalLayout0->addLayout(roundIconButtonLayout);
 
