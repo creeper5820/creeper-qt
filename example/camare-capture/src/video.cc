@@ -31,13 +31,22 @@ public:
     void sendConnectRequest() { connectRequest = true; }
 
     void update() {
-        if (connectRequest && !connected) connect();
+        using namespace std::chrono_literals;
+        if (connectRequest && !connected && !connect()) {
+            std::this_thread::sleep_for(500ms);
+            if (connectFailTimes > 5) {
+                connectRequest = false;
+                connectFailTimes = 0;
+                spdlog::warn("failed to handle the request of open camera");
+            }
+        }
+
         if (!connected) return;
 
         auto frame = cv::Mat {};
         const auto available = camera->read(frame);
         if (!available) {
-            spdlog::error("Error reading frame");
+            spdlog::warn("error reading frame");
             connected = false;
             return;
         }
@@ -50,6 +59,8 @@ public:
 public:
     QImage image;
     QTimer timer;
+
+    int usbCameraPort = 0;
 
     std::array<QImage, 5> framebuffers;
     int readIndex = 0;
@@ -72,12 +83,12 @@ private:
         setCameraOption(camera, args...);
     }
 
-    void connect() {
+    bool connect() {
         spdlog::info("Connecting to camera");
-        camera = std::make_unique<cv::VideoCapture>(2, cv::CAP_V4L2);
+        camera = std::make_unique<cv::VideoCapture>(usbCameraPort, cv::CAP_V4L2);
         if (!camera->isOpened()) {
-            spdlog::error("Error opening video stream or file");
-            return;
+            spdlog::warn("Error opening video stream or file: {}", ++connectFailTimes);
+            return false;
         }
         // for standard usb 2.0 v4l2 camera
         setCameraOption(*camera, //
@@ -92,10 +103,13 @@ private:
         spdlog::info("camera connected");
         connected = true;
         connectRequest = false;
+        connectFailTimes = 0;
+        return true;
     }
 
 private:
     std::atomic<bool> connectRequest = false;
+    size_t connectFailTimes = 0;
 };
 
 Video::Video(QWidget* parent)
@@ -129,7 +143,10 @@ void Video::paintEvent(QPaintEvent* event) {
     painter.drawImage(0, 0, pimpl_->image.scaled(width(), height(), Qt::KeepAspectRatio));
 }
 
-void Video::connectCamera(int index) { pimpl_->sendConnectRequest(); }
+void Video::connectCamera(int index) {
+    pimpl_->usbCameraPort = index;
+    pimpl_->sendConnectRequest();
+}
 
 bool Video::connected() const { return pimpl_->connected; }
 
