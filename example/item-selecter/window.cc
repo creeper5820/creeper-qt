@@ -152,6 +152,7 @@ Window::Window()
     connect(&pimpl_->rightVerticalList1, &ListWidget::clicked,
         [this] { pimpl_->rightVerticalList0.clearSelection(); });
 
+    /// @todo 等列表完善了记得修一下这一坨石山
     connect(&pimpl_->singleLeft2Right, &PushButton::released, [this] {
         const auto selected0 = pimpl_->leftVerticalList0.currentIndex().row();
         const auto selected1 = pimpl_->leftVerticalList1.currentIndex().row();
@@ -159,7 +160,9 @@ Window::Window()
         const auto& focusList
             = selected0 == -1 ? pimpl_->leftVerticalList1 : pimpl_->leftVerticalList0;
         const auto item = focusList.currentItem()->text();
-        const auto index = selected0 == -1 ? 2 * (selected1 + 1) - 1 : 2 * selected0;
+        const auto index = pimpl_->singleColumn
+            ? selected0
+            : (selected0 == -1 ? 2 * (selected1 + 1) - 1 : 2 * selected0);
         pimpl_->leftData.erase(pimpl_->leftData.begin() + index);
         pimpl_->rightData.push_back(item);
         pimpl_->updateList();
@@ -171,7 +174,9 @@ Window::Window()
         const auto& focusList
             = selected0 == -1 ? pimpl_->rightVerticalList1 : pimpl_->rightVerticalList0;
         const auto item = focusList.currentItem()->text();
-        const auto index = selected0 == -1 ? 2 * (selected1 + 1) - 1 : 2 * selected0;
+        const auto index = pimpl_->singleColumn
+            ? selected0
+            : (selected0 == -1 ? 2 * (selected1 + 1) - 1 : 2 * selected0);
         pimpl_->rightData.erase(pimpl_->rightData.begin() + index);
         pimpl_->leftData.push_back(item);
         pimpl_->updateList();
