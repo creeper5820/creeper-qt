@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-set(TARGET widgets)
+set(TARGET item-selector)
 project(${TARGET})
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -17,8 +17,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-add_executable( ${TARGET}
-    ${TARGET}.cc
+add_executable(${TARGET}
+    main.cc
+    window.cc
 )
 target_link_libraries( ${TARGET}
     creeper-qt::creeper-qt
