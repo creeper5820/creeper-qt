@@ -88,14 +88,19 @@ void ConcaveSlider::paintEvent(QPaintEvent* event) {
 
 void ConcaveSlider::mouseMoveEvent(QMouseEvent* event) {
     if (pimpl_->pressed) syncValueFromMouseEvent(*event);
+    Extension::mouseMoveEvent(event);
 }
 
 void ConcaveSlider::mousePressEvent(QMouseEvent* event) {
     pimpl_->pressed = true;
     syncValueFromMouseEvent(*event);
+    Extension::mousePressEvent(event);
 }
 
-void ConcaveSlider::mouseReleaseEvent(QMouseEvent* event) { pimpl_->pressed = false; }
+void ConcaveSlider::mouseReleaseEvent(QMouseEvent* event) {
+    pimpl_->pressed = false;
+    Extension::mouseReleaseEvent(event);
+}
 
 /// PRIVATE
 double ConcaveSlider::radius() const { return width() > height() ? height() / 2. : width() / 2.; }

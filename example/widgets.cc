@@ -178,7 +178,7 @@ public:
 };
 
 int main(int argc, char* argv[]) {
-    qputenv("QT_SCALE_FACTOR", "1");
+    // qputenv("QT_SCALE_FACTOR", "1");
     auto app = QApplication { argc, argv };
 
     Theme::setTheme("common-green");
