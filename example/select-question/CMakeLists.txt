@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-set(TARGET item-selector)
-project(${TARGET})
+project(select-question)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -17,11 +16,11 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-add_executable(${TARGET}
+add_executable(${PROJECT_NAME}
     main.cc
     window.cc
 )
-target_link_libraries(${TARGET}
+target_link_libraries(${PROJECT_NAME}
     creeper-qt::creeper-qt
     Qt5::Widgets yaml-cpp
 )
