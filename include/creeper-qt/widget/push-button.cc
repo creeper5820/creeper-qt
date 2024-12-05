@@ -156,10 +156,12 @@ void PushButton::enterEvent(QEvent* event) {
     pimpl_->mouseHover_ = true;
     if (!pimpl_->animationTimer_.isActive()) //
         pimpl_->animationTimer_.start(refreshIntervalMs_);
+    Extension::enterEvent(event);
 }
 
 void PushButton::leaveEvent(QEvent* event) {
     pimpl_->mouseHover_ = false;
     if (!pimpl_->animationTimer_.isActive()) //
         pimpl_->animationTimer_.start(refreshIntervalMs_);
+    Extension::leaveEvent(event);
 }
