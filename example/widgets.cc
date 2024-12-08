@@ -34,7 +34,6 @@ public:
         : MainWindow() {
         auto listWidget1 = new ListWidget;
         listWidget1->setFont(QFont(Theme::font("text"), 8, QFont::Normal));
-        qDebug() << "font: " << Theme::font("text");
         for (int i = 0; i < 8; i++)
             listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
 
