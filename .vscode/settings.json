@@ -8,6 +8,7 @@
         "Eigen",
         "Pixmap",
         "qputenv",
-        "qreal"
+        "qreal",
+        "qresource"
     ]
 }

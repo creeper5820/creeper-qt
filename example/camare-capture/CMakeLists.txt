@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(homework VERSION 0.1 LANGUAGES C CXX)
+project(video-capture VERSION 0.1 LANGUAGES C CXX)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -21,12 +21,14 @@ set(CMAKE_AUTOUIC ON)
 
 file(GLOB_RECURSE PROJECT_CC CONFIGURE_DEPENDS "src/*.cc")
 file(GLOB_RECURSE PROJECT_HH CONFIGURE_DEPENDS "src/*.hh")
+file(GLOB_RECURSE PROJECT_RC CONFIGURE_DEPENDS "*.qrc")
 include_directories(src)
 
 add_executable(
   ${PROJECT_NAME}
   ${PROJECT_CC}
   ${PROJECT_HH}
+  ${PROJECT_RC}
 )
 
 target_link_libraries(${PROJECT_NAME}
