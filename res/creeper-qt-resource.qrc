@@ -1,13 +1,14 @@
 <RCC>
     <qresource prefix="/theme">
-        <file>common-white/theme.yaml</file>
-        <file>common-green/theme.yaml</file>
-
         <file>icon/normal/search.png</file>
         <file>icon/normal/return.png</file>
         <file>icon/normal/menu.png</file>
         <file>icon/normal/home.png</file>
         <file>icon/example/25317307286232.png</file>
         <file>icon/example/397017307286402.png</file>
+
+        <file>common-white/theme.yaml</file>
+
+        <file>common-green/theme.yaml</file>
     </qresource>
 </RCC>

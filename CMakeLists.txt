@@ -23,16 +23,14 @@ set(CMAKE_AUTOUIC ON)
 # File Search
 file(GLOB_RECURSE PROJECT_CC CONFIGURE_DEPENDS "include/*.cc")
 file(GLOB_RECURSE PROJECT_HH CONFIGURE_DEPENDS "include/*.hh")
-set(PROJECT_RES "res/resource.qrc")
+file(GLOB_RECURSE PROJECT_RC CONFIGURE_DEPENDS "res/*.qrc")
 
-add_library(${PROJECT_NAME}
-    SHARED
-    ${PROJECT_RES}
+add_library(${PROJECT_NAME} SHARED
     ${PROJECT_CC}
     ${PROJECT_HH}
-    
+    ${PROJECT_RC}
 )
-add_library(${PROJECT_NAME}::widget
+add_library(${PROJECT_NAME}::widgets
     ALIAS ${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME}

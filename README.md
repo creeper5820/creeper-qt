@@ -22,8 +22,6 @@ include_directories(path/to/creeper-qt/..)
 
 ```
 
-
-
 ### For Linux
 ```bash
 # clone this repository
@@ -41,3 +39,6 @@ Then you can import this library for your project:
 ```cpp
 #include "creeper-qt/widget/line-edit.hh"
 ```
+
+## TODO
+- [ ] 增加更多的组件
