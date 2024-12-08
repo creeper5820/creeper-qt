@@ -42,3 +42,5 @@ Then you can import this library for your project:
 
 ## TODO
 - [ ] 增加更多的组件
+- [ ] 适配windows平台
+- [ ] 增加视图容器，原生的不可用

@@ -1,12 +1,14 @@
 #include "creeper-qt/widget/list-widget.hh"
 #include "creeper-qt/utility/pid.hh"
+#include "creeper-qt/widget/switch-button.hh"
 #include "creeper-qt/widget/widget.hh"
 
-#include "qlabel.h"
-#include "qpainter.h"
-#include "qpainterpath.h"
-#include "qtimer.h"
-#include "qevent.h"
+#include <qdebug.h>
+#include <qevent.h>
+#include <qlabel.h>
+#include <qpainter.h>
+#include <qpainterpath.h>
+#include <qtimer.h>
 
 using namespace creeper;
 
@@ -120,6 +122,7 @@ public:
     uint32_t waterColor_;
 
     QTimer animationTimer_;
+    QFont font_;
 
     std::vector<std::tuple<QPoint, int>> animationEvents_;
 
@@ -179,8 +182,8 @@ void CustomItemWidgetInterface::leaveEvent(QEvent* event) {
 
 struct SwitchAndLabelItem::Impl {
 public:
-    QHBoxLayout* horizonLayout_;
     QLabel* labelWidget_;
+    QHBoxLayout* horizonLayout_;
     ConcaveSwitchButton* button_;
 };
 
@@ -192,7 +195,7 @@ SwitchAndLabelItem::SwitchAndLabelItem(const QString& label, QWidget* parent)
 
     auto labelWidget_ = new QLabel;
     labelWidget_->setText(label);
-    labelWidget_->setFont(QFont("monospace", 12, QFont::Normal));
+    labelWidget_->setFont(QWidget::font());
     labelWidget_->setStyleSheet("color: #575757;");
 
     pimpl_->horizonLayout_ = new QHBoxLayout;
@@ -246,13 +249,14 @@ void ListWidget::addCustomItem(CustomItemWidgetInterface* item) {
 
 void ListWidget::addSwitchAndLabel(const QString& label) {
     auto customItem = new SwitchAndLabelItem(label);
+    customItem->QWidget::setFont(font());
     addCustomItem(static_cast<CustomItemWidgetInterface*>(customItem));
 }
 
 void ListWidget::addSimpleLabel(const QString& label) {
     auto item = new QListWidgetItem;
     item->setText(label);
-    item->setFont(QFont("monospace", 12, QFont::Normal));
+    item->setFont(font());
     Extension::addItem(item);
 }
 
