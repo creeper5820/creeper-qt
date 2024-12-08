@@ -1,85 +1,47 @@
 #pragma once
 
-#include <qboxlayout.h>
-#include <qfile.h>
-#include <qicon.h>
-#include <qlabel.h>
-#include <qlistwidget.h>
-#include <qstyle.h>
-
 #include "creeper-qt/setting/style-template.hh"
 #include "creeper-qt/setting/theme.hh"
+#include "creeper-qt/utility/pimpl.hh"
 #include "creeper-qt/widget/switch-button.hh"
 #include "creeper-qt/widget/widget.hh"
+#include "qlistwidget.h"
 
 namespace creeper {
 class CustomItemWidgetInterface : public Extension<QWidget>, public QListWidgetItem {
+    CREEPER_WIDGET_PIMPL_DEFINTION(CustomItemWidgetInterface)
+    Q_OBJECT
 public:
-    QFont font() { return QWidget::font(); }
-    void setFont(const QFont& font) { QWidget::setFont(font); }
+    void reloadTheme() override;
+    void setFirst();
+    void setLast();
+    void disableLast();
+
+protected:
+    void paintEvent(QPaintEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void enterEvent(QEvent* event) override;
+    void leaveEvent(QEvent* event) override;
 };
 
 class SwitchAndLabelItem : public CustomItemWidgetInterface {
+    CREEPER_WIDGET_PIMPL_DEFINTION(SwitchAndLabelItem)
 public:
-    explicit SwitchAndLabelItem(const QString& label) {
-        button_ = new ConvexSwitchButton;
-        button_->setFixedSize({ 50, 30 });
+    explicit SwitchAndLabelItem(const QString& label, QWidget* parent = nullptr);
 
-        auto labelWidget_ = new QLabel;
-        labelWidget_->setText(label);
-        labelWidget_->setFont(font());
-        labelWidget_->setStyleSheet("color: #575757;");
-
-        horizonLayout_ = new QHBoxLayout;
-        horizonLayout_->setAlignment(Qt::AlignLeft);
-        horizonLayout_->addLayout(button_->verticalWithSelf());
-        horizonLayout_->addWidget(labelWidget_);
-
-        Extension::setLayout(horizonLayout_);
-        QListWidgetItem::setSizeHint(QSize(1, 80));
-    }
-
-    void reloadTheme() override { }
-
-private:
-    QHBoxLayout* horizonLayout_;
-    QLabel* labelWidget_;
-    ConvexSwitchButton* button_;
+protected:
+    void mousePressEvent(QMouseEvent* event) override;
 };
 
 class ListWidget : public Extension<QListWidget> {
+    CREEPER_WIDGET_PIMPL_DEFINTION(ListWidget)
 public:
-    explicit ListWidget(QWidget* parent = nullptr)
-        : Extension(parent) {
-        reloadTheme();
-    }
+    void reloadTheme() override;
+    void addCustomItem(CustomItemWidgetInterface* item);
+    void addSwitchAndLabel(const QString& label);
+    void addSimpleLabel(const QString& label);
 
-    void addCustomItem(CustomItemWidgetInterface* item) {
-        QListWidget::addItem(item);
-        QListWidget::setItemWidget(item, item);
-    }
-
-    void addSwitchAndLabel(const QString& label) {
-        auto customItem = new SwitchAndLabelItem(label);
-        customItem->setFont(font());
-        addCustomItem(static_cast<CustomItemWidgetInterface*>(customItem));
-    }
-
-    void addSimpleLabel(const QString& label) {
-        auto item = new QListWidgetItem;
-        item->setText(label);
-        item->setFont(font());
-        QListWidget::addItem(item);
-    }
-
-    void reloadTheme() override {
-        const auto backgroundOrigin = QColor(Theme::color("background")).name();
-        const auto backgroundSelected = QColor(Theme::color("primary200")).name();
-        const auto backgroundHover = QColor(Theme::color("primary100")).name();
-        const auto borderColor = QColor(Theme::color("primary050")).name();
-        Extension::setStyleSheet(QString(style::ListWidget)
-                .arg(backgroundOrigin, borderColor, backgroundSelected, backgroundHover));
-    }
+protected:
+    void paintEvent(QPaintEvent* event) override;
 };
-
 }

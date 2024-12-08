@@ -1,0 +1,13 @@
+color:
+  primary050: 0xe3f2fd
+  primary100: 0xbbdefb
+  primary200: 0x90caf9
+  primary300: 0x64b5f6
+  primary400: 0x42a5f5
+  primary500: 0x2196f3
+  primary600: 0x1e88e5
+  primary700: 0x1976d2
+  primary800: 0x1565c0
+  primary900: 0x0d47a1
+  background: 0xffffff
+  text: 0x303030
