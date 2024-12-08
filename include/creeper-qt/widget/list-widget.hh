@@ -1,9 +1,6 @@
 #pragma once
 
-#include "creeper-qt/setting/style-template.hh"
-#include "creeper-qt/setting/theme.hh"
 #include "creeper-qt/utility/pimpl.hh"
-#include "creeper-qt/widget/switch-button.hh"
 #include "creeper-qt/widget/widget.hh"
 #include "qlistwidget.h"
 

@@ -1,4 +1,5 @@
 #include <qapplication.h>
+#include <qdebug.h>
 
 #include "creeper-qt/widget/basic-shape.hh"
 #include "creeper-qt/widget/combo-box.hh"
@@ -32,7 +33,8 @@ public:
     explicit Widgets()
         : MainWindow() {
         auto listWidget1 = new ListWidget;
-        listWidget1->setFont(QFont("monospace", 8, QFont::Normal));
+        listWidget1->setFont(QFont(Theme::font("text"), 8, QFont::Normal));
+        qDebug() << "font: " << Theme::font("text");
         for (int i = 0; i < 8; i++)
             listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
 
@@ -64,7 +66,7 @@ public:
         auto themeSwitchButton = new ConvexSwitchButton;
         themeSwitchButton->setFixedSize({ 60, 30 });
         connect(themeSwitchButton, &ConvexSwitchButton::clicked, [] {
-            Theme::setTheme(Theme::theme() == "common-green" ? "common-blue" : "common-green");
+            Theme::setTheme(Theme::theme() == "common-green" ? "common-purple" : "common-green");
             Theme::reloadTheme();
         });
 
@@ -168,9 +170,7 @@ public:
         verticalLayout0->setAlignment(Qt::AlignTop);
         verticalLayout0->addWidget(longSwitchButton);
         verticalLayout0->addWidget(slider0);
-        verticalLayout0->addWidget(slider1);
         verticalLayout0->addWidget(slider2);
-        verticalLayout0->addWidget(slider3);
         verticalLayout0->addWidget(lineEdit);
         verticalLayout0->addLayout(roundIconButtonLayout);
 

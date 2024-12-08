@@ -7,8 +7,12 @@
         <file>icon/example/25317307286232.png</file>
         <file>icon/example/397017307286402.png</file>
 
-        <file>common-white/theme.yaml</file>
+        <file>common-purple/theme.yaml</file>
 
         <file>common-green/theme.yaml</file>
+
+        <file>common-grey/theme.yaml</file>
+
+        <file>common-blue/theme.yaml</file>
     </qresource>
 </RCC>
