@@ -91,7 +91,7 @@ if(BUILD_EXAMPLES)
         example/${EXAMPLE_NAME}.cc
     )
     target_link_libraries(${EXAMPLE_NAME}
-        ${PROJECT_NAME} Qt5Network
+        ${PROJECT_NAME}
     )
 endif()
 

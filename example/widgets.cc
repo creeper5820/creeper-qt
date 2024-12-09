@@ -109,22 +109,13 @@ public:
 
     QVBoxLayout* secondVerticalBox() {
         auto longSwitchButton = new ConvexSwitchButton;
-        longSwitchButton->setFixedSize({ 300, 30 });
+        longSwitchButton->setFixedSize({ 200, 30 });
 
         auto slider0 = new ConcaveSlider;
-        slider0->setFixedSize(300, 30);
+        slider0->setFixedSize(200, 30);
 
-        auto slider1 = new ConcaveSlider;
-        slider1->setFixedSize(300, 30);
-
-        auto slider2 = new ConvexSlider;
-        slider2->setFixedSize(300, 30);
-
-        auto slider3 = new ConvexSlider;
-        slider3->setFixedSize(300, 30);
-        slider3->setBlockThicknessRatio(0.5);
-        slider3->setSliderSizeRatio(0.5);
-        slider3->setValue(100);
+        auto slider1 = new ConvexSlider;
+        slider1->setFixedSize(200, 30);
 
         auto switchCard0 = new SwitchCard;
         switchCard0->setFixedSize({ 400, 175 });
@@ -169,7 +160,7 @@ public:
         verticalLayout0->setAlignment(Qt::AlignTop);
         verticalLayout0->addWidget(longSwitchButton);
         verticalLayout0->addWidget(slider0);
-        verticalLayout0->addWidget(slider2);
+        verticalLayout0->addWidget(slider1);
         verticalLayout0->addWidget(lineEdit);
         verticalLayout0->addLayout(roundIconButtonLayout);
 

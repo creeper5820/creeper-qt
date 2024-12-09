@@ -1,4 +1,4 @@
-# CREEPER-QT<br>轻量的QT-UI封装库、
+# CREEPER-QT<br>轻量的QT-UI封装库
 ## 效果展示
 全组件展示
 
@@ -9,6 +9,12 @@ Google小时钟，是我做这个主题最原初的动力，一开始只是想�
 ![](https://raw.githubusercontent.com/creeper5820/creeper-qt/refs/heads/main/doc/example-clock.png)
 
 ## 安装指南
+### 项目依赖
+- `gcc-13` 及以上，支持完整 range 等特性
+- `cmake`
+- `yaml-cpp`
+- `qt-5`
+
 ### 直接使用源文件
 把项目拉下来吧
 ```bash
