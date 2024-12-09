@@ -65,18 +65,18 @@ void ConcaveSlider::reloadTheme() {
     pimpl_->lineColor = Theme::color("primary050");
 }
 
-ConcaveSlider& ConcaveSlider::setRange(int minimum, int maximum) {
+void ConcaveSlider::setRange(int minimum, int maximum) {
     pimpl_->minimum = minimum, pimpl_->maximum = maximum;
-    return *this;
+    emit rangeChanged(minimum, maximum);
 }
 int ConcaveSlider::minimum() const { return pimpl_->minimum; }
 
 int ConcaveSlider::maximum() const { return pimpl_->maximum; }
 
-ConcaveSlider& ConcaveSlider::setValue(int value) {
+void ConcaveSlider::setValue(int value) {
     if (!pimpl_->timer.isActive()) pimpl_->timer.start(refreshIntervalMs_);
     pimpl_->value_ = value;
-    return *this;
+    emit valueChanged(value);
 }
 int ConcaveSlider::value() const { return pimpl_->value_; }
 
@@ -88,24 +88,28 @@ void ConcaveSlider::paintEvent(QPaintEvent* event) {
 
 void ConcaveSlider::mouseMoveEvent(QMouseEvent* event) {
     if (pimpl_->pressed) syncValueFromMouseEvent(*event);
-    Extension::mouseMoveEvent(event);
+    emit sliderMoved(event->x());
 }
 
 void ConcaveSlider::mousePressEvent(QMouseEvent* event) {
     pimpl_->pressed = true;
     syncValueFromMouseEvent(*event);
-    Extension::mousePressEvent(event);
+    emit sliderPressed();
 }
 
 void ConcaveSlider::mouseReleaseEvent(QMouseEvent* event) {
     pimpl_->pressed = false;
-    Extension::mouseReleaseEvent(event);
+    syncValueFromMouseEvent(*event);
+    emit sliderReleased();
 }
 
 /// PRIVATE
 double ConcaveSlider::radius() const { return width() > height() ? height() / 2. : width() / 2.; }
 
 void ConcaveSlider::syncValueFromMouseEvent(QMouseEvent& event) {
-    const auto ratio = (event.localPos().x() - radius()) / (width() - radius() * 2.);
-    setValue(std::clamp(ratio, 0.0, 1.0) * (pimpl_->maximum - pimpl_->minimum) + pimpl_->minimum);
+    const double r = radius(), w = width(), x = event.x();
+    const double min = pimpl_->minimum, max = pimpl_->maximum;
+    const double ratio = std::clamp((x - r) / (w - r * 2.), 0., 1.);
+    const double value = ratio * (max - min) + min;
+    if (value != pimpl_->value_) setValue(value);
 }
