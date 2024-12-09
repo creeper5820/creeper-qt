@@ -1,11 +1,11 @@
 #include <QtNetwork/QtNetwork>
-#include <qevent.h>
-#include <qslider.h>
+#include <QtWidgets/QtWidgets>
 
 #include <creeper-qt/widget/label.hh>
 #include <creeper-qt/widget/line-edit.hh>
 #include <creeper-qt/widget/main-window.hh>
 #include <creeper-qt/widget/push-button.hh>
+#include <creeper-qt/widget/slider.hh>
 
 using namespace creeper;
 
@@ -51,13 +51,11 @@ public:
         label_.setMinimumWidth(200);
         label_.setMinimumHeight(100);
 
-        slider_.setOrientation(Qt::Horizontal);
         slider_.setFixedWidth(200);
-        slider_.setFixedHeight(50);
-        slider_.setMaximum(180);
-        slider_.setMinimum(0);
+        slider_.setFixedHeight(30);
+        slider_.setRange(0, 180);
         slider_.setValue(0);
-        connect(&slider_, &QSlider::valueChanged, [this] {
+        connect(&slider_, &ConcaveSlider::sliderMoved, [this](int position) {
             if (currentPinIndex_ == -1) return;
             command_.values[currentPinIndex_] = slider_.value();
         });
@@ -166,7 +164,7 @@ private:
     Label label_;
     PushButton buttonChangeMode_;
     LineEdit pinSelectorEdit_;
-    QSlider slider_;
+    ConcaveSlider slider_;
 
     RemoteControlCommand command_;
     QUdpSocket socket_ { this };
@@ -179,7 +177,7 @@ private:
 int main(int argc, char* argv[]) {
     auto app = new QApplication { argc, argv };
 
-    Theme::setTheme("common-white");
+    Theme::setTheme("common-green");
 
     auto window = new Keyboard;
     window->moveCenter();

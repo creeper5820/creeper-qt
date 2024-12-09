@@ -64,14 +64,13 @@ public:
         label.setStyleSheet("color: #575757;");
         label.setMinimumWidth(350);
         label.setAlignment(Qt::AlignCenter);
-        label.moveCenter();
 
         clock_.setRadius(150);
 
         auto vertical = new QVBoxLayout;
         vertical->setAlignment(Qt::AlignCenter);
         vertical->addLayout(clock_.horizontalWithSelf());
-        vertical->addLayout(label.horizontalWithSelf());
+        vertical->addWidget(&label);
 
         auto mainWidget = new QWidget;
         mainWidget->setLayout(vertical);
@@ -106,7 +105,7 @@ private:
 
 int main(int argc, char** argv) {
     auto app = new QApplication(argc, argv);
-    Theme::setTheme("common-white");
+    Theme::setTheme("common-green");
     auto window = new Clock;
     window->moveCenter();
     window->show();
