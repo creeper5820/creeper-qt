@@ -1,3 +1,6 @@
+/// @brief 南京理工大学 数据库原理及应用 面向对象程序设计
+///        练习3 项目选择器
+
 #include "window.hh"
 #include <qapplication.h>
 

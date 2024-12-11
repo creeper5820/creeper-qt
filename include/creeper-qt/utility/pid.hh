@@ -25,11 +25,11 @@ private:
 };
 
 template <typename T> inline T updateWithPid(T value, T target, double kp = 1) {
-    return value + kp * (target - value);
+    return static_cast<T>(value) + kp * (static_cast<T>(target) - static_cast<T>(value));
 }
 
 template <typename T> inline T updateWithPidError(T value, T error, double kp = 1) {
-    return value + kp * error;
+    return static_cast<T>(value) + kp * static_cast<T>(error);
 }
 
 }
