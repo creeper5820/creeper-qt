@@ -1,5 +1,5 @@
 /// @brief 南京理工大学 数据库原理及应用 面向对象程序设计
-///        练习4 选择题应答器
+///        练习5 英文字母练习器
 
 #include "window.hh"
 #include <qapplication.h>

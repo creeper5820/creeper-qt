@@ -1,3 +1,6 @@
+/// @brief 南京理工大学 数据库原理及应用 面向对象程序设计
+///        练习1 时钟实例
+
 #include <creeper-qt/module/scallop-clock.hh>
 #include <creeper-qt/utility/pid.hh>
 #include <creeper-qt/widget/label.hh>

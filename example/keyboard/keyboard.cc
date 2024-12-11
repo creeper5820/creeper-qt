@@ -65,13 +65,10 @@ public:
         connect(&buttonChangeMode_, &QPushButton::clicked, [this] {
             if (currentPinIndex_ == -1) return;
             auto& mode = command_.modes[currentPinIndex_];
-            if (mode == PinMode::Servo) {
-                mode = PinMode::Analog;
-            } else if (mode == PinMode::Analog) {
-                mode = PinMode::Servo;
-            } else {
-                mode = PinMode::Servo;
-            }
+            if (mode == PinMode::Servo) mode = PinMode::Analog;
+            else if (mode == PinMode::Analog) mode = PinMode::Servo;
+            else mode = PinMode::Servo;
+
             updateComponents();
         });
 
