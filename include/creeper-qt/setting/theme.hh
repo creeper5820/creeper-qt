@@ -36,4 +36,22 @@ private:
     struct Impl;
     static inline Impl* pimpl_;
 };
+
+template <class Widget>
+    requires std::is_convertible_v<Widget*, QWidget*>
+class Extension;
+
+template <typename Widget> class QuickAutoTheme : public Extension<Widget> {
+public:
+    template <typename... Args>
+    explicit QuickAutoTheme(std::function<void(Extension<Widget>&)> handler, Args&&... args)
+        : Extension<Widget>(std::forward<Args>(args)...)
+        , handler_(handler) {
+        reloadTheme();
+    }
+    void reloadTheme() override { handler_(static_cast<Extension<Widget>&>(*this)); }
+
+private:
+    std::function<void(Extension<Widget>&)> handler_;
+};
 }

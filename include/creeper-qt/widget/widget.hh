@@ -15,7 +15,9 @@ public:
     template <typename... Args>
     explicit Extension(Args... args)
         : Widget(std::forward<Args>(args)...) {
-        Theme::addReloadThemeHandler([this] { reloadTheme(); });
+        Theme::addReloadThemeHandler([this] {
+            if (autoReloadTheme_) reloadTheme();
+        });
     }
 
     void moveCenter() {
@@ -51,18 +53,21 @@ public:
         return horizontal_;
     }
 
-    static void setRefreshIntervalMs(int ms) { refreshIntervalMs_ = ms; }
+    void setRefreshIntervalMs(int ms) { refreshIntervalMs_ = ms; }
 
     virtual void reloadTheme() = 0;
+    void disableAutoTheme() { autoReloadTheme_ = false; }
+    void enableAutoTheme() { autoReloadTheme_ = true; }
 
 protected:
-    static inline int refreshIntervalMs_ = 10;
+    int refreshIntervalMs_ = 10;
 
 private:
     QWidget* widget_ = static_cast<QWidget*>(this);
 
     QVBoxLayout* vertical_ = nullptr;
     QHBoxLayout* horizontal_ = nullptr;
+    bool autoReloadTheme_ = true;
 };
 
 }
