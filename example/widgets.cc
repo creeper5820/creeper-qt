@@ -18,15 +18,6 @@
 
 using namespace creeper;
 
-class ThemedRoundedRectangle : public Extension<RoundedRectangle> {
-public:
-    ThemedRoundedRectangle(QWidget* parent = nullptr)
-        : Extension(parent) {
-        reloadTheme();
-    }
-    void reloadTheme() override { setBackground(Theme::color("primary500")); }
-};
-
 class Widgets : public creeper::MainWindow {
     Q_OBJECT
 public:
@@ -57,8 +48,10 @@ public:
             button->setFixedSize({ 100, 50 });
         }
 
-        auto rect = new ThemedRoundedRectangle;
-        rect->setFixedSize({ 100, 100 });
+        auto rectangle = new QuickAutoTheme<RoundedRectangle> { [](auto& rect) {
+            rect.setBackground(Theme::color("primary500"));
+        } };
+        rectangle->setFixedSize({ 100, 100 });
 
         /// @note 代码中并未显式调用update()，但加载主题时全部widget会进行一次更新,
         /// 这是怎么绘世呢？
@@ -85,7 +78,7 @@ public:
         auto verticalLayout = new QVBoxLayout;
         verticalLayout->setAlignment(Qt::AlignTop | Qt::AlignCenter);
         verticalLayout->setSpacing(10);
-        verticalLayout->addWidget(rect);
+        verticalLayout->addWidget(rectangle);
         verticalLayout->addWidget(buttons[0]);
         verticalLayout->addWidget(buttons[1]);
         verticalLayout->addWidget(buttons[2]);
