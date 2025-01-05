@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.17)
 
-project(长途汽车车辆信息管理系统)
+project(app)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -16,9 +16,13 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+file(GLOB_RECURSE PROJECT_CC CONFIGURE_DEPENDS "./*.cc")
+file(GLOB_RECURSE PROJECT_HH CONFIGURE_DEPENDS "./*.hh")
+
 add_executable(${PROJECT_NAME}
-    main.cc
-    window.cc
+    ${PROJECT_CC}
+    ${PROJECT_HH}
+    resource.qrc
 )
 target_link_libraries(${PROJECT_NAME}
     creeper-qt::creeper-qt

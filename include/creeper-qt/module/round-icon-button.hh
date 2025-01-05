@@ -30,10 +30,11 @@ protected:
 
         auto painter = QPainter(this);
         painter.setPen(Qt::NoPen);
-        painter.setBrush({ Qt::black });
+        painter.setBrush(Qt::NoBrush);
 
-        auto pixmap = icon_.pixmap(radius_ * iconRatio_, radius_ * iconRatio_);
-        painter.drawPixmap(radius_ * (2 - iconRatio_) / 2, radius_ * (2 - iconRatio_) / 2, pixmap);
+        const auto pixmap = icon_.pixmap(radius_ * iconRatio_, radius_ * iconRatio_);
+        const auto point = QPoint((width() - pixmap.width()) / 2, (height() - pixmap.height()) / 2);
+        painter.drawPixmap(point, pixmap);
     }
 
 private:

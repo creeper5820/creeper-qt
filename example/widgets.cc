@@ -5,10 +5,10 @@
 #include "creeper-qt/widget/combo-box.hh"
 #include "creeper-qt/widget/concave-slider.hh"
 #include "creeper-qt/widget/convex-slider.hh"
+#include "creeper-qt/widget/image.hh"
 #include "creeper-qt/widget/line-edit.hh"
 #include "creeper-qt/widget/list-widget.hh"
 #include "creeper-qt/widget/main-window.hh"
-#include "creeper-qt/widget/menu.hh"
 #include "creeper-qt/widget/push-button.hh"
 #include "creeper-qt/widget/switch-button.hh"
 
@@ -43,7 +43,7 @@ public:
         static auto buttons = std::array<PushButton*, 3> {};
         for (int index = 0; auto& button : buttons) {
             button = new PushButton;
-            button->setFont(QFont("monospace", 8, QFont::Normal));
+            button->setFont(QFont("Nowar Warcraft Sans CN", 8, QFont::Normal));
             button->setText("按钮" + QString::number(index++));
             button->setFixedSize({ 100, 50 });
         }
@@ -86,15 +86,17 @@ public:
         verticalLayout->addWidget(switchButton3);
         verticalLayout->addWidget(themeSwitchButton);
 
-        static auto menu = new Menu;
-        menu->addAction("hello world");
-        menu->addAction("hello world");
-        menu->addAction("hello world");
-
+        buttons[0]->setText("切换主题");
         connect(buttons[0], &PushButton::released, [=] {
-            const auto& button = buttons[0];
-            const auto position = button->mapToGlobal(QPoint(0, button->height()));
-            menu->exec(position);
+            static constexpr auto themes = std::array {
+                Theme::common::blue,
+                Theme::common::green,
+                Theme::common::grey,
+                Theme::common::purple,
+            };
+            static std::size_t index = 0;
+            Theme::setTheme(themes[index++ % themes.size()]);
+            Theme::reloadTheme();
         });
 
         return verticalLayout;
@@ -110,9 +112,14 @@ public:
         auto slider1 = new ConvexSlider;
         slider1->setFixedSize(200, 30);
 
-        auto switchCard0 = new SwitchCard;
-        switchCard0->setFixedSize({ 400, 175 });
-        switchCard0->setText("将世界设定为“你好世界”");
+        auto image = new QuickAutoTheme<Image> {
+            [](auto& image) { image.setBorderColor(Theme::color("primary200")); },
+            ":/theme/icon/example/397017307286402.png"
+        };
+        image->setFitness(ImageFitness::Cover);
+        image->setFixedSize({ 400, 175 });
+        image->setBorderWidth(5);
+        image->setRadius(10);
 
         auto switchCard1 = new SwitchCard;
         switchCard1->setFixedSize({ 400, 125 });
@@ -141,7 +148,7 @@ public:
         roundIconButton2->setIcon(QIcon(":/theme/icon/normal/menu.png"));
 
         auto clock = new AutoScallopClock;
-        clock->setRadius(120);
+        clock->setRadius(100);
 
         auto roundIconButtonLayout = new QHBoxLayout;
         roundIconButtonLayout->setAlignment(Qt::AlignLeft);
@@ -158,12 +165,13 @@ public:
         verticalLayout0->addLayout(roundIconButtonLayout);
 
         auto horizonLayout0 = new QHBoxLayout;
+        horizonLayout0->setMargin(0);
         horizonLayout0->addLayout(verticalLayout0);
         horizonLayout0->addWidget(clock);
 
         auto verticalLayout1 = new QVBoxLayout;
         verticalLayout1->setAlignment(Qt::AlignTop);
-        verticalLayout1->addWidget(switchCard0);
+        verticalLayout1->addWidget(image);
         verticalLayout1->addWidget(switchCard1);
         verticalLayout1->addLayout(horizonLayout0);
 

@@ -8,6 +8,10 @@ Google小时钟，是我做这个主题最原初的动力，一开始只是想�
 
 ![](https://raw.githubusercontent.com/creeper5820/creeper-qt/refs/heads/main/doc/example-clock.png)
 
+数据结构大作业登陆界面，既然写了库就要好好用起来：
+
+![](https://raw.githubusercontent.com/creeper5820/creeper-qt/refs/heads/main/doc/example-login.png)
+
 ## 安装指南
 ### 项目依赖
 - `gcc-13` 及以上，支持完整 range 等特性
