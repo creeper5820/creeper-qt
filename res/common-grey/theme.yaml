@@ -1,13 +1,16 @@
 color:
-  primary050: 0xfafafa
-  primary100: 0xf5f5f5
-  primary200: 0xeeeeee
-  primary300: 0xe0e0e0
-  primary400: 0xbdbdbd
-  primary500: 0x9e9e9e
-  primary600: 0x757575
-  primary700: 0x616161
-  primary800: 0x424242
-  primary900: 0x212121
+  primary050: 0xe5e5e5
+  primary100: 0xd5d5d5
+  primary200: 0xc5c5c5
+  primary300: 0xb5b5b5
+  primary400: 0x9b9b9b
+  primary500: 0x848484
+  primary600: 0x6c6c6c
+  primary700: 0x5a5a5a
+  primary800: 0x454545
+  primary900: 0x333333
   background: 0xffffff
   text: 0x303030
+
+font:
+  text: "Nowar Warcraft Sans CN"

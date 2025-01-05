@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>image/雪原城堡.png</file>
+        <file>image/username.png</file>
+        <file>image/password.png</file>
+        <file>image/google.png</file>
+        <file>image/github.png</file>
+        <file>image/school.png</file>
+    </qresource>
+</RCC>

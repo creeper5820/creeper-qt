@@ -11,3 +11,6 @@ color:
   primary900: 0x321a89
   background: 0xffffff
   text: 0x303030
+
+font:
+  text: "Nowar Warcraft Sans CN"
