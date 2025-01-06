@@ -13,6 +13,7 @@ Window::Window()
     , MainWindow() {
 
     auto loginPage = new Login;
+
     setCentralWidget(loginPage);
 }
 

@@ -7,6 +7,7 @@ class Login : public creeper::Extension<QWidget> {
     Q_OBJECT
     CREEPER_WIDGET_PIMPL_DEFINTION(Login)
 public:
+    void setButtonText(const QString& text);
     void reloadTheme() override;
 
 signals:

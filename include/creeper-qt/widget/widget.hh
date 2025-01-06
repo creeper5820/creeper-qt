@@ -61,13 +61,13 @@ public:
 
 protected:
     int refreshIntervalMs_ = 10;
+    bool autoReloadTheme_ = true;
 
 private:
     QWidget* widget_ = static_cast<QWidget*>(this);
 
     QVBoxLayout* vertical_ = nullptr;
     QHBoxLayout* horizontal_ = nullptr;
-    bool autoReloadTheme_ = true;
 };
 
 }

@@ -130,3 +130,5 @@ Login::Login(QWidget* parent)
 Login::~Login() { delete pimpl_; }
 
 void Login::reloadTheme() { }
+
+void Login::setButtonText(const QString& text) { pimpl_->loginButton.setText(text); }

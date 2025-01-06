@@ -1,5 +1,6 @@
 #include "push-button.hh"
 
+#include "creeper-qt/setting/color.hh"
 #include "creeper-qt/utility/pid.hh"
 
 #include <qevent.h>
@@ -16,11 +17,28 @@ public:
         roundRectPath.addRoundedRect(
             0, 0, width, height, radiusRatio_ * height, radiusRatio_ * height);
 
-        painter.setPen(Qt::NoPen);
-        painter.setBrush({ drawBackground_ ? buttonColor_ : 0xffffffff });
         painter.setRenderHint(QPainter::Antialiasing, true);
+        painter.setPen(Qt::NoPen);
         painter.setOpacity(1);
 
+        if (borderWidth_ != 0) {
+            painter.setBrush({ borderColor_ });
+            painter.drawPath(roundRectPath);
+
+            auto internalPath = QPainterPath();
+            const auto w = width - borderWidth_ * 2;
+            const auto h = height - borderWidth_ * 2;
+            const auto adjustedRadius = std::max(0.0, radiusRatio_ * height - borderWidth_ / 2);
+            internalPath.addRoundedRect(
+                borderWidth_, borderWidth_, w, h, adjustedRadius, adjustedRadius);
+
+            painter.setBrush({ drawBackground_ ? backgroundColor_ : color::transparent });
+            painter.drawPath(internalPath);
+
+            return;
+        }
+
+        painter.setBrush({ drawBackground_ ? backgroundColor_ : color::transparent });
         painter.drawPath(roundRectPath);
     }
 
@@ -64,10 +82,8 @@ public:
 
             painter.drawPath(ellipsePath.intersected(roundRectPath));
 
-            if (distance > maxDistance) {
-                animationEvents_.erase(animationEvents_.begin() + index);
-                index--;
-            }
+            if (distance > maxDistance) animationEvents_.erase(animationEvents_.begin() + index--);
+
             distance += diffusionStep, index++;
         }
     }
@@ -88,10 +104,12 @@ public:
     double opacity_ = mouseLeaveOpacity;
 
     double radiusRatio_ = 0.15;
+    double borderWidth_ = 0;
 
-    uint32_t waterColor_;
-    uint32_t buttonColor_;
-    uint32_t textColor_;
+    QColor waterColor_;
+    QColor backgroundColor_;
+    QColor textColor_;
+    QColor borderColor_ = Qt::transparent;
 
     QTimer animationTimer_;
 
@@ -111,15 +129,22 @@ PushButton::PushButton(QWidget* parent)
 PushButton::~PushButton() { delete pimpl_; }
 
 void PushButton::reloadTheme() {
-    pimpl_->buttonColor_ = Theme::color("primary100");
+    pimpl_->backgroundColor_ = Theme::color("primary100");
     pimpl_->waterColor_ = Theme::color("primary300");
     pimpl_->textColor_ = Theme::color("text");
 }
-void PushButton::setWaterColor(uint32_t color) {
-    pimpl_->waterColor_ = color;
-    reloadTheme();
-}
-void PushButton::setRadiusRatio(float ratio) { pimpl_->radiusRatio_ = ratio; }
+
+void PushButton::setRadiusRatio(double ratio) { pimpl_->radiusRatio_ = ratio, update(); }
+
+void PushButton::setBorderWidth(double width) { pimpl_->borderWidth_ = width, update(); }
+
+void PushButton::setWaterColor(QColor color) { pimpl_->waterColor_ = color, update(); }
+
+void PushButton::setBorderColor(QColor color) { pimpl_->borderColor_ = color, update(); }
+
+void PushButton::setTextColor(QColor color) { pimpl_->textColor_ = color, update(); }
+
+void PushButton::setBackgroundColor(QColor color) { pimpl_->backgroundColor_ = color, update(); }
 
 void PushButton::disableBackground() { pimpl_->drawBackground_ = false; }
 void PushButton::enableBackground() { pimpl_->drawBackground_ = true; }
@@ -164,4 +189,30 @@ void PushButton::leaveEvent(QEvent* event) {
     if (!pimpl_->animationTimer_.isActive()) //
         pimpl_->animationTimer_.start(refreshIntervalMs_);
     Extension::leaveEvent(event);
+}
+
+void PushButtonStyle::operator()(PushButton& button) {
+    if (text) button.setText(text.value());
+    if (size) button.setFixedSize(size.value());
+    if (font) button.setFont(font.value());
+
+    if (waterColor) button.setWaterColor(waterColor.value());
+    if (borderColor) button.setBorderColor(borderColor.value());
+    if (backgroundColor) button.setBackgroundColor(backgroundColor.value());
+    if (textColor) button.setTextColor(textColor.value());
+    if (radiusRatio) button.setRadiusRatio(radiusRatio.value());
+    if (borderWidth) button.setBorderWidth(borderWidth.value());
+
+    if (autoTheme) {
+        if (!autoTheme.value()) button.disableAutoTheme();
+        else button.enableAutoTheme();
+    }
+    if (animation) {
+        if (!animation.value()) button.disableAnimation();
+        else button.enableAnimation();
+    }
+    if (background) {
+        if (!background.value()) button.disableBackground();
+        else button.enableBackground();
+    }
 }
