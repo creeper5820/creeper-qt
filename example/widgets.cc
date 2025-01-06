@@ -1,6 +1,7 @@
 #include <qapplication.h>
 #include <qdebug.h>
 
+#include "creeper-qt/setting/color.hh"
 #include "creeper-qt/widget/basic-shape.hh"
 #include "creeper-qt/widget/combo-box.hh"
 #include "creeper-qt/widget/concave-slider.hh"
@@ -40,12 +41,18 @@ public:
     }
 
     QVBoxLayout* firstVerticalLayout() {
+        const auto buttonFont = QFont("Nowar Warcraft Sans CN", 8, QFont::Normal);
+        const auto buttonSize = QSize(100, 50);
+
         static auto buttons = std::array<PushButton*, 3> {};
         for (int index = 0; auto& button : buttons) {
             button = new PushButton;
-            button->setFont(QFont("Nowar Warcraft Sans CN", 8, QFont::Normal));
-            button->setText("按钮" + QString::number(index++));
-            button->setFixedSize({ 100, 50 });
+            PushButtonStyle {
+                .text = "很好的按钮",
+                .size = buttonSize,
+                .font = buttonFont,
+                .radiusRatio = 0.2,
+            }(*button);
         }
 
         auto rectangle = new QuickAutoTheme<RoundedRectangle> { [](auto& rect) {
