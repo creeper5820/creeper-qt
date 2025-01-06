@@ -15,10 +15,12 @@ public:
     template <typename... Args>
     explicit Extension(Args... args)
         : Widget(std::forward<Args>(args)...) {
-        Theme::addReloadThemeHandler([this] {
+        Theme::addReloadThemeHandler(this, [this] {
             if (autoReloadTheme_) reloadTheme();
         });
     }
+
+    ~Extension() { Theme::removeReloadThemeHandler(this); }
 
     void moveCenter() {
         if (widget_->parentWidget() == nullptr) return;

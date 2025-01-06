@@ -31,7 +31,6 @@ public:
         password.setPlaceholderText("请输入密码");
         password.setFont(QFont(Theme::font("text"), 10));
         password.setFixedSize(300, 40);
-        password.setEchoMode(QLineEdit::Password);
         password.setIcon(QIcon(":/image/password.png"));
 
         details.setAlignment(Qt::AlignCenter);
@@ -129,6 +128,6 @@ Login::Login(QWidget* parent)
 
 Login::~Login() { delete pimpl_; }
 
-void Login::reloadTheme() { }
+void Login::reloadTheme() { std::printf("Login reload theme\n"); }
 
 void Login::setButtonText(const QString& text) { pimpl_->loginButton.setText(text); }

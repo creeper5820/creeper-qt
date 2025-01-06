@@ -191,7 +191,7 @@ void PushButton::leaveEvent(QEvent* event) {
     Extension::leaveEvent(event);
 }
 
-void PushButtonStyle::operator()(PushButton& button) {
+void PushButton::Style::operator()(PushButton& button) {
     if (text) button.setText(text.value());
     if (size) button.setFixedSize(size.value());
     if (font) button.setFont(font.value());
@@ -215,4 +215,10 @@ void PushButtonStyle::operator()(PushButton& button) {
         if (!background.value()) button.disableBackground();
         else button.enableBackground();
     }
+}
+
+PushButton* PushButton::Style::operator()() {
+    auto button = new PushButton();
+    (*this)(*button);
+    return button;
 }
