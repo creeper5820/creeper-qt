@@ -27,7 +27,10 @@ public:
     static const uint32_t color(const char* name);
 
     static void reloadTheme();
-    static void addReloadThemeHandler(std::function<void(void)> handler);
+    /// @todo 这里重复捕获 this 指针，有一些额外开销，日后有时间记得修复
+    /// @note widget 被传入作为键值，而 function 里也会捕获一个 widget 的指针
+    static void addReloadThemeHandler(QWidget* widget, std::function<void(void)> handler);
+    static void removeReloadThemeHandler(QWidget* widget);
 
     /// @brief For Debug
     static const void printYamlString();

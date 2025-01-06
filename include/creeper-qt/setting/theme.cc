@@ -16,7 +16,7 @@ struct Theme::Impl {
     static inline auto occupied_ = std::atomic<bool> { false };
     static inline auto themeConfig_ = std::unique_ptr<YAML::Node>();
 
-    static inline auto widgetReloadThemeHandler_ = std::vector<std::function<void(void)>>();
+    static inline auto widgetReloadThemeHandler_ = std::map<QWidget*, std::function<void(void)>>();
 };
 
 bool Theme::occupied() { return pimpl_->occupied_; }
@@ -56,13 +56,17 @@ const uint32_t Theme::color(const char* name) {
     return 0x000000;
 }
 
-void Theme::addReloadThemeHandler(std::function<void(void)> handler) {
-    pimpl_->widgetReloadThemeHandler_.push_back(handler);
+void Theme::addReloadThemeHandler(QWidget* widget, std::function<void(void)> handler) {
+    pimpl_->widgetReloadThemeHandler_[widget] = handler;
+}
+
+void Theme::removeReloadThemeHandler(QWidget* widget) {
+    pimpl_->widgetReloadThemeHandler_.erase(widget);
 }
 
 void Theme::reloadTheme() {
     for (auto& handler : pimpl_->widgetReloadThemeHandler_)
-        handler();
+        handler.second();
 }
 
 const void Theme::printYamlString() {

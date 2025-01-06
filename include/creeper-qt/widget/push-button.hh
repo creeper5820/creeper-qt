@@ -5,8 +5,6 @@
 
 #include <qpushbutton.h>
 
-#include <limits>
-
 namespace creeper {
 
 class PushButton : public Extension<QPushButton> {
@@ -33,27 +31,28 @@ public:
 
     void reloadTheme() override;
 
+    struct Style {
+        std::optional<QString> text;
+        std::optional<QSize> size;
+        std::optional<QFont> font;
+        std::optional<uint32_t> waterColor;
+        std::optional<uint32_t> borderColor;
+        std::optional<uint32_t> backgroundColor;
+        std::optional<uint32_t> textColor;
+        std::optional<double> radiusRatio;
+        std::optional<double> borderWidth;
+        std::optional<bool> autoTheme;
+        std::optional<bool> animation;
+        std::optional<bool> background;
+        void operator()(PushButton& button);
+        PushButton* operator()();
+    };
+
 protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
     void paintEvent(QPaintEvent* event) override;
     void enterEvent(QEvent* event) override;
     void leaveEvent(QEvent* event) override;
-};
-
-struct PushButtonStyle {
-    std::optional<QString> text;
-    std::optional<QSize> size;
-    std::optional<QFont> font;
-    std::optional<uint32_t> waterColor;
-    std::optional<uint32_t> borderColor;
-    std::optional<uint32_t> backgroundColor;
-    std::optional<uint32_t> textColor;
-    std::optional<double> radiusRatio;
-    std::optional<double> borderWidth;
-    std::optional<bool> autoTheme;
-    std::optional<bool> animation;
-    std::optional<bool> background;
-    void operator()(PushButton& button);
 };
 
 }

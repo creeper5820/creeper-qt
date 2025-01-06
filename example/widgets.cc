@@ -1,7 +1,6 @@
 #include <qapplication.h>
 #include <qdebug.h>
 
-#include "creeper-qt/setting/color.hh"
 #include "creeper-qt/widget/basic-shape.hh"
 #include "creeper-qt/widget/combo-box.hh"
 #include "creeper-qt/widget/concave-slider.hh"
@@ -47,7 +46,7 @@ public:
         static auto buttons = std::array<PushButton*, 3> {};
         for (int index = 0; auto& button : buttons) {
             button = new PushButton;
-            PushButtonStyle {
+            PushButton::Style {
                 .text = "很好的按钮",
                 .size = buttonSize,
                 .font = buttonFont,
