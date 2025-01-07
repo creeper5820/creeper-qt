@@ -3,10 +3,10 @@
 #include <creeper-qt/utility/pimpl.hh>
 #include <creeper-qt/widget/basic-shape.hh>
 
-class OperatorArea : public creeper::RoundedRectangle {
+class ViewArea : public creeper::RoundedRectangle {
+    CREEPER_WIDGET_PIMPL_DEFINTION(ViewArea);
     Q_OBJECT
-    CREEPER_WIDGET_PIMPL_DEFINTION(OperatorArea)
 
-signals:
+public:
     void changeView(std::size_t index);
 };

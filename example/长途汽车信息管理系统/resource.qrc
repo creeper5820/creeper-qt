@@ -6,5 +6,7 @@
         <file>image/google.png</file>
         <file>image/github.png</file>
         <file>image/school.png</file>
+        <file>image/ohto-ai.png</file>
+        <file>image/map.png</file>
     </qresource>
 </RCC>

@@ -6,7 +6,7 @@
 
 using namespace creeper;
 
-struct TopArea::Impl {
+struct TopLeftArea::Impl {
     Impl() {
         main.setRadius(15);
         main.setIconRatio(1);
@@ -49,20 +49,6 @@ struct TopArea::Impl {
         name.setPlaceholderText("长途汽车信息管理系统");
         name.setFont(QFont("Nowar Warcraft Sans CN", 8));
         name.setFixedSize(200, 30);
-
-        connect(&main, &PushButton::clicked, []() {
-            static constexpr auto themes = std::array {
-                Theme::common::blue,
-                Theme::common::green,
-                Theme::common::grey,
-                Theme::common::purple,
-            };
-            static auto index = 0;
-            Theme::setTheme(themes[index++]);
-            Theme::reloadTheme();
-
-            if (index >= themes.size()) index = 0;
-        });
     };
 
     RoundIconButton main;
@@ -74,8 +60,8 @@ struct TopArea::Impl {
     PushButton help;
 };
 
-TopArea::TopArea(QWidget* parent)
-    : Rectangle(parent)
+TopLeftArea::TopLeftArea(QWidget* parent)
+    : RoundedRectangle(parent)
     , pimpl_(new Impl) {
 
     auto left = new QGridLayout;
@@ -102,6 +88,6 @@ TopArea::TopArea(QWidget* parent)
     setMaximumHeight(70);
 }
 
-TopArea::~TopArea() { delete pimpl_; }
+TopLeftArea::~TopLeftArea() { delete pimpl_; }
 
-void TopArea::setFileName(const QString& name) { pimpl_->name.setText(name); }
+void TopLeftArea::setFileName(const QString& name) { pimpl_->name.setText(name); }
