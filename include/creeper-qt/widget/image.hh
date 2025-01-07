@@ -24,6 +24,17 @@ public:
     void setBackground(QColor color);
     void setFitness(ImageFitness fitness);
 
+    struct Style {
+        std::optional<QPixmap> pixmap;
+        std::optional<QSize> size;
+        std::optional<double> radius;
+        std::optional<double> borderWidth;
+        std::optional<QColor> borderColor;
+        std::optional<QColor> background;
+        std::optional<ImageFitness> fitness;
+        void operator()(Image& image);
+    };
+
 protected:
     void paintEvent(QPaintEvent* event) override;
 };

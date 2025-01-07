@@ -97,26 +97,26 @@ void Image::paintEvent(QPaintEvent* event) {
     painter.setBrush({ pimpl_->background });
     painter.drawRoundedRect(0, 0, width, height, radius, radius);
 
+    // draw border
+    if (pimpl_->borderWidth != 0) {
+        painter.setBrush({ pimpl_->borderColor });
+        painter.drawRoundedRect(0, 0, width, height, radius, radius);
+    }
+
     // draw image
-    const auto pixmap = pimpl_->makeSuitablePixmap(width, height);
+    const auto bw = pimpl_->borderWidth;
+    const auto pixmap = pimpl_->makeSuitablePixmap(width - bw * 2, height - bw * 2);
     if (!pixmap.isNull()) {
         const auto pixmapPaintPoint
             = QPoint((width - pixmap.width()) / 2., (height - pixmap.height()) / 2.);
         auto pixmapPath = QPainterPath {};
-        pixmapPath.addRoundedRect(0, 0, width, height, radius, radius);
+        pixmapPath.addRoundedRect(
+            bw, bw, width - 2 * bw, height - 2 * bw, radius - bw / 2, radius - bw / 2);
 
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::NoBrush);
         painter.setClipPath(pixmapPath);
         painter.drawPixmap(pixmapPaintPoint, pixmap);
-    }
-
-    // draw border
-    if (pimpl_->borderWidth > 0) {
-        painter.setPen(QPen { pimpl_->borderColor, pimpl_->borderWidth, Qt::PenStyle::SolidLine,
-            Qt::PenCapStyle::RoundCap, Qt::PenJoinStyle::RoundJoin });
-        painter.setBrush(Qt::NoBrush);
-        painter.drawRoundedRect(0, 0, width, height, radius, radius);
     }
 }
 
@@ -133,3 +133,13 @@ void Image::setBorderColor(QColor color) { pimpl_->borderColor = color; }
 void Image::setBackground(QColor color) { pimpl_->background = color; }
 
 void Image::setFitness(ImageFitness fitness) { pimpl_->fitness = fitness; }
+
+void Image::Style::operator()(Image& image) {
+    if (pixmap) image.setPixmap(*pixmap);
+    if (size) image.setFixedSize(*size);
+    if (radius) image.setRadius(*radius);
+    if (borderWidth) image.setBorderWidth(*borderWidth);
+    if (borderColor) image.setBorderColor(*borderColor);
+    if (background) image.setBackground(*background);
+    if (fitness) image.setFitness(*fitness);
+}
