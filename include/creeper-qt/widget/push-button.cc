@@ -1,6 +1,5 @@
 #include "push-button.hh"
 
-#include "creeper-qt/setting/color.hh"
 #include "creeper-qt/utility/pid.hh"
 
 #include <qevent.h>
@@ -32,13 +31,19 @@ public:
             internalPath.addRoundedRect(
                 borderWidth_, borderWidth_, w, h, adjustedRadius, adjustedRadius);
 
-            painter.setBrush({ drawBackground_ ? backgroundColor_ : color::transparent });
+            /// @todo 擦出后是黑色区域，而使用pen画出来的border又极难看，待修复
+            // painter.setCompositionMode(QPainter::CompositionMode_DestinationOut);
+            // painter.setClipPath(internalPath);
+            // painter.eraseRect(0, 0, width, height);
+
+            painter.setCompositionMode(QPainter::CompositionMode_SourceOver);
+            painter.setBrush({ drawBackground_ ? backgroundColor_ : Qt::transparent });
             painter.drawPath(internalPath);
 
             return;
         }
 
-        painter.setBrush({ drawBackground_ ? backgroundColor_ : color::transparent });
+        painter.setBrush({ drawBackground_ ? backgroundColor_ : Qt::transparent });
         painter.drawPath(roundRectPath);
     }
 
