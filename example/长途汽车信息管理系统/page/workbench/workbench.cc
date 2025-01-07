@@ -1,7 +1,7 @@
 #include "workbench.hh"
 #include "operator.hh"
 #include "top-area.hh"
-#include "view.hh"
+#include "view/view.hh"
 
 #include <creeper-qt/setting/color.hh>
 
@@ -44,6 +44,8 @@ Workbench::Workbench(QWidget* parent)
 
     connect(operatorArea, &OperatorArea::changeView,
         [viewArea](std::size_t index) { viewArea->changeView(index); });
+
+    connect(operatorArea, &OperatorArea::logout, this, &Workbench::logout);
 }
 
 Workbench::~Workbench() { delete pimpl_; }

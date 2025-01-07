@@ -90,15 +90,19 @@ OperatorArea::OperatorArea(QWidget* parent)
         verticalLayout->addWidget(&button, 1);
     verticalLayout->addLayout(bottomLayout, 1);
 
+    pimpl_->updateFunctionButton(0);
+
+    setLayout(verticalLayout);
+    setBackground(color::grey100);
+    setBorderColor(color::grey100);
+
     for (std::size_t i = 0; i < pimpl_->functions.size(); i++)
         connect(&pimpl_->functions[i], &PushButton::clicked, [this, i] {
             pimpl_->updateFunctionButton(i);
             emit changeView(i);
         });
 
-    setLayout(verticalLayout);
-    setBackground(color::grey100);
-    setBorderColor(color::grey100);
+    connect(&pimpl_->logout, &PushButton::clicked, this, &OperatorArea::logout);
 }
 
 OperatorArea::~OperatorArea() { delete pimpl_; }
