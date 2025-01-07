@@ -7,10 +7,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_BUILD_TYPE "Debug")
 add_compile_options(-O3)
+add_definitions(-DPROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 find_package(yaml-cpp REQUIRED)
 find_package(creeper-qt REQUIRED)
+
+find_path(mysql mysql REQUIRED)
+find_library(mysqlpp mysqlpp CONFIG REQUIRED)
+
+include_directories(/usr/include/mysql/ .)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -27,4 +33,5 @@ add_executable(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     creeper-qt::creeper-qt
     Qt5::Widgets yaml-cpp
+    mysqlpp mysqlclient
 )

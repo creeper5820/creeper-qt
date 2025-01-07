@@ -1,37 +1,12 @@
 #include "view.hh"
+#include "about-us.hh"
+#include "dashboard.hh"
+#include "database.hh"
+#include "map-check.hh"
 
-#include <creeper-qt/setting/color.hh>
-#include <creeper-qt/widget/image.hh>
-#include <qboxlayout.h>
 #include <qstackedwidget.h>
 
 using namespace creeper;
-
-class MapCheckView : public Image {
-public:
-    explicit MapCheckView() {
-        setSizePolicy(QSizePolicy::Policy::Expanding, //
-            QSizePolicy::Policy::Expanding);
-        Image::Style {
-            .pixmap = QPixmap(":/image/map.png"),
-            .radius = 10,
-            .borderWidth = 2,
-            .borderColor = color::grey400,
-            .fitness = ImageFitness::Cover,
-        }(*this);
-    }
-};
-
-class DashboardView : public RoundedRectangle { };
-
-class DataBaseView : public RoundedRectangle {
-public:
-    explicit DataBaseView() { }
-
-private:
-};
-
-class AboutUsView : public RoundedRectangle { };
 
 struct ViewArea::Impl {
     /// @note 程序退出后 QStackedWidget 的析构会把子控件一同析构，

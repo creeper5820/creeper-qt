@@ -1,0 +1,5 @@
+database: "VehicleManagerSystem"
+username: "DatabaseHomework"
+password: "@Mysql/Cqq.5820"
+remote: "localhost"
+port: 3306

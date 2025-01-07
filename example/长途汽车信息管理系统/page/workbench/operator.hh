@@ -9,4 +9,5 @@ class OperatorArea : public creeper::RoundedRectangle {
 
 signals:
     void changeView(std::size_t index);
+    void logout();
 };

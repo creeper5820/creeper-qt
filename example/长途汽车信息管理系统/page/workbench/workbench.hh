@@ -8,4 +8,7 @@ class Workbench : public creeper::Extension<QWidget> {
     CREEPER_WIDGET_PIMPL_DEFINTION(Workbench)
 public:
     void reloadTheme() override;
+
+signals:
+    void logout();
 };
