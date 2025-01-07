@@ -124,7 +124,7 @@ public:
         };
         image->setFitness(ImageFitness::Cover);
         image->setFixedSize({ 400, 175 });
-        image->setBorderWidth(5);
+        image->setBorderWidth(2);
         image->setRadius(10);
 
         auto switchCard1 = new SwitchCard;
