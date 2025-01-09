@@ -6,6 +6,7 @@
         "AUTOUIC",
         "Bezier",
         "Eigen",
+        "mysqlpp",
         "Pixmap",
         "qputenv",
         "qreal",
