@@ -3,7 +3,9 @@
 
 #pragma once
 
-#include "database/mysql.hh"
+// #include "database/mysql.hh"
+
+// #include <ranges>
 
 #include <creeper-qt/setting/color.hh>
 #include <creeper-qt/widget/basic-shape.hh>
@@ -18,8 +20,6 @@
 ///       使用奇怪渐变和非圆角样式是不符合道义的！
 ///       使用笨拙滑条是不符合理智的！
 #include <qtablewidget.h>
-
-#include <ranges>
 
 class DataBaseView : public creeper::RoundedRectangle {
 public:
@@ -45,9 +45,9 @@ public:
 public:
     explicit DataBaseView() {
         using namespace creeper;
-        auto fuckTableWidgetStyle = [this](QTableWidget& table) {
-            table.setColumnCount(vehicleInformationTitle.size());
-            table.setHorizontalHeaderLabels(vehicleInformationTitle);
+        auto fuckTableWidgetStyle = [this](QTableWidget& table, const QStringList& title) {
+            table.setColumnCount(title.size());
+            table.setHorizontalHeaderLabels(title);
             table.setFont(QFont("JetBrains Mono", 8));
             table.setStyleSheet(tableStyle);
             table.setHorizontalScrollMode(QTableView::ScrollMode::ScrollPerPixel);
@@ -56,9 +56,9 @@ public:
             table.verticalScrollBar()->setSingleStep(10);
         };
 
-        fuckTableWidgetStyle(vehicleInformationsTable);
-        fuckTableWidgetStyle(vehicleStatusesTable);
-        fuckTableWidgetStyle(routesInformationsTable);
+        fuckTableWidgetStyle(vehicleInformationsTable, vehicleInformationTitle);
+        fuckTableWidgetStyle(vehicleStatusesTable, vehicleStatuseTitle);
+        fuckTableWidgetStyle(routesInformationsTable, routesInformationTitle);
 
         updateFromDatabase();
 
@@ -144,7 +144,7 @@ public:
         }();
 
         auto panelCancelButton = PushButton::Style {
-            .text = "取消操作",
+            .text = "清空输入",
             .size = QSize(80, 30),
             .font = buttonFont,
             .radiusRatio = 0.2,
@@ -229,13 +229,13 @@ public:
                     panelEnsureButton->setText("请输入完整");
                 } else {
                     panelEnsureButton->setText("确定操作");
-                    auto data = VehicleInformation {};
-                    data.Identity = vehicleIdentity.toStdString();
-                    data.Status = status.toStdString();
-                    data.DriveRecord = driveRecord.toStdString();
-                    data.DriveMileage = driveMileage.toStdString();
-                    data.RepairStatus = repairStatus.toStdString();
-                    client.insert(data);
+                    // auto data = VehicleInformation {};
+                    // data.Identity = vehicleIdentity.toStdString();
+                    // data.Status = status.toStdString();
+                    // data.DriveRecord = driveRecord.toStdString();
+                    // data.DriveMileage = driveMileage.toStdString();
+                    // data.RepairStatus = repairStatus.toStdString();
+                    // client.insert(data);
                     updateFromDatabase();
                 }
             });
@@ -304,11 +304,11 @@ private:
 
     /// @note 既然是大作业，那么写绝对路径也是一件能被原谅的事情吧
     /// @note 二编：算了，还是加一个宏定义
-    Database client { std::string(PROJECT_SOURCE_DIR) + "/database.yaml" };
+    // Database client { std::string(PROJECT_SOURCE_DIR) + "/database.yaml" };
 
-    std::vector<VehicleInformation> vehicleInformations;
-    std::vector<RouteDetail> vehicleStatuses;
-    std::vector<RoutesInformation> routesInformations;
+    // std::vector<VehicleInformation> vehicleInformations;
+    // std::vector<RouteDetail> vehicleStatuses;
+    // std::vector<RoutesInformation> routesInformations;
 
     QStringList vehicleInformationTitle { //
         "车牌号", "状态", "行驶记录", "行驶里程", "维修状态"
@@ -320,51 +320,69 @@ private:
         "路线名称", "车辆数量", "终点", "总距离"
     };
 
+    // only for test without mysql
     void updateFromDatabase() {
-        vehicleInformations = client.getVehicleInformations();
-        vehicleInformationsTable.setRowCount(vehicleInformations.size());
-        for (const auto [i, item] : std::views::enumerate(vehicleInformations)) {
-            vehicleInformationsTable.setItem(i, 0, //
-                new QTableWidgetItem(item.Identity.c_str()));
-            vehicleInformationsTable.setItem(i, 1, //
-                new QTableWidgetItem(item.Status.c_str()));
-            vehicleInformationsTable.setItem(i, 2, //
-                new QTableWidgetItem(item.DriveRecord.c_str()));
-            vehicleInformationsTable.setItem(i, 3, //
-                new QTableWidgetItem(item.DriveMileage.c_str()));
-            vehicleInformationsTable.setItem(i, 4, //
-                new QTableWidgetItem(item.RepairStatus.c_str()));
-        }
+        vehicleInformationsTable.setRowCount(3);
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 5; j++)
+                vehicleInformationsTable.setItem(i, j, new QTableWidgetItem("数据"));
 
-        vehicleStatuses = client.getRouteDetails();
-        vehicleStatusesTable.setRowCount(vehicleStatuses.size());
-        for (const auto [i, item] : std::views::enumerate(vehicleStatuses)) {
-            vehicleStatusesTable.setItem(i, 0, //
-                new QTableWidgetItem(item.VehicleIdentity.c_str()));
-            vehicleStatusesTable.setItem(i, 1, //
-                new QTableWidgetItem(item.RouteName.c_str()));
-            vehicleStatusesTable.setItem(i, 2, //
-                new QTableWidgetItem(item.Status.c_str()));
-            vehicleStatusesTable.setItem(i, 3, //
-                new QTableWidgetItem(item.BeginTime.str().c_str()));
-        }
+        vehicleStatusesTable.setRowCount(3);
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 4; j++)
+                vehicleStatusesTable.setItem(i, j, new QTableWidgetItem("数据"));
 
-        routesInformations = client.getRoutesInformations();
-        routesInformationsTable.setRowCount(routesInformations.size());
-        for (const auto [i, item] : std::views::enumerate(routesInformations)) {
-            routesInformationsTable.setItem(i, 0, //
-                new QTableWidgetItem(item.RouteName.c_str()));
-            routesInformationsTable.setItem(i, 1, //
-                new QTableWidgetItem(QString::number(item.VehicleCount)));
-            routesInformationsTable.setItem(i, 2, //
-                new QTableWidgetItem(item.EndPoint.c_str()));
-            routesInformationsTable.setItem(i, 3, //
-                new QTableWidgetItem(item.Distance.c_str()));
-        }
-
-        std::cout << "update data from database: \n";
-        std::cout << "vehicleInformations: " << vehicleInformations.size() << "\n";
-        std::cout << "vehicleStatuses: " << vehicleStatuses.size() << '\n';
-        std::cout << "routesInformations: " << routesInformations.size() << std::endl;
+        routesInformationsTable.setRowCount(3);
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 4; j++)
+                routesInformationsTable.setItem(i, j, new QTableWidgetItem("数据"));
     }
+
+    // void updateFromDatabase() {
+    // vehicleInformations = client.getVehicleInformations();
+    // vehicleInformationsTable.setRowCount(vehicleInformations.size());
+    // for (const auto [i, item] : std::views::enumerate(vehicleInformations)) {
+    //     vehicleInformationsTable.setItem(i, 0, //
+    //         new QTableWidgetItem(item.Identity.c_str()));
+    //     vehicleInformationsTable.setItem(i, 1, //
+    //         new QTableWidgetItem(item.Status.c_str()));
+    //     vehicleInformationsTable.setItem(i, 2, //
+    //         new QTableWidgetItem(item.DriveRecord.c_str()));
+    //     vehicleInformationsTable.setItem(i, 3, //
+    //         new QTableWidgetItem(item.DriveMileage.c_str()));
+    //     vehicleInformationsTable.setItem(i, 4, //
+    //         new QTableWidgetItem(item.RepairStatus.c_str()));
+    // }
+    //
+    // vehicleStatuses = client.getRouteDetails();
+    // vehicleStatusesTable.setRowCount(vehicleStatuses.size());
+    // for (const auto [i, item] : std::views::enumerate(vehicleStatuses)) {
+    // vehicleStatusesTable.setItem(i, 0, //
+    // new QTableWidgetItem(item.VehicleIdentity.c_str()));
+    // vehicleStatusesTable.setItem(i, 1, //
+    // new QTableWidgetItem(item.RouteName.c_str()));
+    // vehicleStatusesTable.setItem(i, 2, //
+    // new QTableWidgetItem(item.Status.c_str()));
+    // vehicleStatusesTable.setItem(i, 3, //
+    // new QTableWidgetItem(item.BeginTime.str().c_str()));
+    // }
+    //
+    // routesInformations = client.getRoutesInformations();
+    // routesInformationsTable.setRowCount(routesInformations.size());
+    // for (const auto [i, item] : std::views::enumerate(routesInformations)) {
+    // routesInformationsTable.setItem(i, 0, //
+    // new QTableWidgetItem(item.RouteName.c_str()));
+    // routesInformationsTable.setItem(i, 1, //
+    // new QTableWidgetItem(QString::number(item.VehicleCount)));
+    // routesInformationsTable.setItem(i, 2, //
+    // new QTableWidgetItem(item.EndPoint.c_str()));
+    // routesInformationsTable.setItem(i, 3, //
+    // new QTableWidgetItem(item.Distance.c_str()));
+    // }
+    //
+    // std::cout << "update data from database: \n";
+    // std::cout << "vehicleInformations: " << vehicleInformations.size() << "\n";
+    // std::cout << "vehicleStatuses: " << vehicleStatuses.size() << '\n';
+    // std::cout << "routesInformations: " << routesInformations.size() << std::endl;
+    // }
 };
