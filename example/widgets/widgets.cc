@@ -1,20 +1,10 @@
+#include "top-area.hh"
+
 #include <qapplication.h>
 #include <qdebug.h>
 
-#include "creeper-qt/widget/basic-shape.hh"
-#include "creeper-qt/widget/combo-box.hh"
-#include "creeper-qt/widget/concave-slider.hh"
-#include "creeper-qt/widget/convex-slider.hh"
-#include "creeper-qt/widget/image.hh"
-#include "creeper-qt/widget/line-edit.hh"
-#include "creeper-qt/widget/list-widget.hh"
-#include "creeper-qt/widget/main-window.hh"
-#include "creeper-qt/widget/push-button.hh"
-#include "creeper-qt/widget/switch-button.hh"
-
-#include "creeper-qt/module/round-icon-button.hh"
-#include "creeper-qt/module/scallop-clock.hh"
-#include "creeper-qt/module/switch-card.hh"
+#include <creeper-qt/module.hh>
+#include <creeper-qt/widget.hh>
 
 using namespace creeper;
 
@@ -34,8 +24,25 @@ public:
         horizonLayout->addLayout(secondVerticalBox());
         horizonLayout->addWidget(listWidget1);
 
+        auto title = new Label { "遵循Google Material Design3 的Qt框架" };
+        title->setAlignment(Qt::AlignTop);
+        title->setWordWrap(true);
+        title->setFont(QFont("Nowar Warcraft Sans CN", 8, QFont::Normal));
+
+        auto topLayout = new QHBoxLayout;
+        topLayout->addWidget(new TopLeftArea);
+        topLayout->addWidget(new QuickAutoTheme<TopRightArea> {
+            [](auto& widget) { widget.setBackground(Theme::color("primary050")); } });
+
+        auto mainVerticalLayout = new QVBoxLayout;
+        mainVerticalLayout->setAlignment(Qt::AlignTop);
+        mainVerticalLayout->setMargin(10);
+        mainVerticalLayout->setSpacing(10);
+        mainVerticalLayout->addLayout(topLayout);
+        mainVerticalLayout->addLayout(horizonLayout);
+
         auto mainWidget = new QWidget;
-        mainWidget->setLayout(horizonLayout);
+        mainWidget->setLayout(mainVerticalLayout);
         setCentralWidget(mainWidget);
     }
 

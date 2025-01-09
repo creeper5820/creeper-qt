@@ -4,7 +4,6 @@
 #pragma once
 
 // #include "database/mysql.hh"
-
 // #include <ranges>
 
 #include <creeper-qt/setting/color.hh>
@@ -71,26 +70,24 @@ public:
         layout->addWidget(&routesInformationsTable);
 
         const auto buttonFont = QFont("Nowar Warcraft Sans CN", 8);
-
+        const auto buttonSize = QSize(80, 30);
         PushButton::Style {
             .text = "插入数据",
-            .size = QSize(80, 30),
+            .size = buttonSize,
             .font = buttonFont,
             .radiusRatio = 0.2,
             .background = false,
         }(insertButton);
-
         PushButton::Style {
             .text = "查询数据",
-            .size = QSize(80, 30),
+            .size = buttonSize,
             .font = buttonFont,
             .radiusRatio = 0.2,
             .background = false,
         }(searchButton);
-
         PushButton::Style {
             .text = "删除数据",
-            .size = QSize(80, 30),
+            .size = buttonSize,
             .font = buttonFont,
             .radiusRatio = 0.2,
             .background = false,
@@ -288,6 +285,8 @@ private:
             : RoundedRectangle(parent) {
             setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint | Qt::Tool);
             setFixedSize(300, 300);
+            setBorderWidth(3);
+            setBorderColor(creeper::color::grey400);
         }
         void leaveEvent(QEvent* event) override { hide(); }
     } insertPanel { this, &insertButton }, searchPanel { this, &searchButton },

@@ -17,7 +17,7 @@ public:
         text->setText( //
             "2025年1月 开发\n南京理工大学数据库大作业\n\n"
             "- 选题 -\n长途汽车信息管理系统的设计与实现\n\n"
-            "- 作者 - \nXXXX\nXXXX\n");
+            "- 作者 - \ncreeper5820");
 
         auto layout = new QVBoxLayout(this);
         layout->addWidget(text);
