@@ -4,8 +4,12 @@
         <file>icon/normal/return.png</file>
         <file>icon/normal/menu.png</file>
         <file>icon/normal/home.png</file>
+        <file>icon/normal/google.png</file>
+        <file>icon/normal/github.png</file>
+        <file>icon/normal/school.png</file>
         <file>icon/example/25317307286232.png</file>
         <file>icon/example/397017307286402.png</file>
+        <file>icon/example/ohto-ai.png</file>
 
         <file>common-purple/theme.yaml</file>
 
