@@ -49,6 +49,66 @@ cmake .. && make -j
 sudo make install
 ```
 
+### Windows平台
+我推荐使用MSYS2环境使用这个库: [MYSY2-INSTALLATION](https://www.msys2.org/docs/installer/)
+
+![](https://raw.githubusercontent.com/creeper5820/creeper-qt/refs/heads/main/doc/windows-neofetch.png)
+
+看呐, 我没有使用Linux (
+
+不得不说, 在Windows使用`zsh`和`pacman`包管理是一件令人惬意的事情
+
+切入正题, 进入MSYS2终端
+
+```bash
+## 先刷新一下软件包数据
+pacman -Sy
+
+## 安装编译使用的工具链
+pacman -S  mingw-w64-x86_64-toolchain
+
+## 安装 Qt5
+pacman -S mingw64/mingw-w64-x86_64-qt5
+
+## 安装依赖
+pacman -S mingw-w64-x86_64-eigen3 mingw-w64-x86_64-yaml-cpp
+
+## 如果依赖找不到可以搜索一下对应版本的包, 找到 mingw 的版本就行
+pacman -Ss eigen3
+```
+
+到这里就可以编译这个库了, 如果还是会有一些依赖问题, 可以Google一下如何在MSYS2中安装QT5
+
+```bash
+## 依然是在MSYS2环境中
+## 进入项目根目录
+mkdir build
+
+## 在根目录进行项目配置
+## 请务必使用"MinGW Makefiles"
+## CMAKE_INSTALL_PREFIX 参数指定了安装目录, 
+## 默认的下载目录一般会是 C:/Program Files (x86)/
+## 会提示没有权限
+cmake -G "MinGW Makefiles" -B build -DCMAKE_INSTALL_PREFIX="D:/Software/msys2/usr/"
+
+## 编译之
+## 或者在build目录下使用 mingw32-make -j
+cmake --build build
+
+## 安装库, 注意调用的是mingw的make
+## 直接使用make可能会出现错误
+cd build && mingw32-make install
+
+## 可以查看所有文件的安装位置
+cat install_manifest.txt
+
+## 启动实例程序
+./widgets.exe
+```
+
+需要注意的是, 如果在本机而不是MSYS2中打开编译好的可执行文件, 会报找不到Qt的dll, 因为在MSYS2下载的Qt没有暴露在Windows环境中
+
+## 调用指南
 然后你可以在cmake中导入这个库，并引入头文件使用它了
 ```cmake
 cmake_minimum_required(VERSION 3.22)
@@ -59,6 +119,11 @@ project(hello-world)
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 find_package(yaml-cpp REQUIRED)
 find_package(creeper-qt REQUIRED)
+
+# 在Windows下, 安装目录如果没有暴露在环境变量, 
+# 需要手动指定一下, 项目才能找到头文件
+# dll文件在我这能找到, 没有在其他电脑上测过, 可能需要注意一下
+include_directories(D:/Software/msys2/usr/include/)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -73,6 +138,7 @@ target_link_libraries(${PROJECT_NAME}
 )
 
 ```
+然后在项目中引用
 ```cpp
 #include <creeper-qt/widget/line-edit.hh>
 ```
@@ -88,9 +154,12 @@ auto main(int argc, char* argv[]) -> int {
     Theme::setTheme(Theme::common::green);
 }
 ```
+项目中的字体可能没有, 可以修改`res\common-xxxx\theme.yaml`文件中的`font`
+
+不过示例中很多字体都是直接写的, 没有调用主题文件中的字体 (不规范, 希望得到原谅)
+
 ## TODO
 - [ ] 增加更多的组件
-- [ ] 适配windows平台
 - [ ] 增加视图容器，原生的不可用
 - [ ] 给自己做一个设置中心吧
 - [ ] 做一个日历模组
