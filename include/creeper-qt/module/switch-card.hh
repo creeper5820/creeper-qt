@@ -5,6 +5,7 @@
 #include "creeper-qt/widget/switch-button.hh"
 
 #include <qlabel.h>
+#include <qpainter.h>
 
 namespace creeper {
 

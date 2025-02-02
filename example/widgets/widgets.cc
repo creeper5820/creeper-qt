@@ -1,8 +1,11 @@
+#include "creeper-qt/widget/image.hh"
+#include "creeper-qt/widget/widget.hh"
 #include "top-area.hh"
 
 #include <qapplication.h>
 #include <qdebug.h>
 
+#include <creeper-qt/container.hh>
 #include <creeper-qt/module.hh>
 #include <creeper-qt/widget.hh>
 
@@ -18,31 +21,34 @@ public:
         for (int i = 0; i < 8; i++)
             listWidget1->addSwitchAndLabel("你好世界 HelloWorld");
 
-        auto horizonLayout = new QHBoxLayout;
-        horizonLayout->setAlignment(Qt::AlignCenter);
-        horizonLayout->addLayout(firstVerticalLayout());
-        horizonLayout->addLayout(secondVerticalBox());
-        horizonLayout->addWidget(listWidget1);
+        auto row = Row::create()
+                       .setAlignment(Qt::AlignCenter)
+                       .add(firstVerticalLayout())
+                       .add(secondVerticalBox())
+                       .add(listWidget1)
+                       .build();
 
         auto title = new Label { "遵循Google Material Design3 的Qt框架" };
         title->setAlignment(Qt::AlignTop);
         title->setWordWrap(true);
         title->setFont(QFont("Nowar Warcraft Sans CN", 8, QFont::Normal));
 
-        auto topLayout = new QHBoxLayout;
-        topLayout->addWidget(new TopLeftArea);
-        topLayout->addWidget(new QuickAutoTheme<TopRightArea> {
-            [](auto& widget) { widget.setBackground(Theme::color("primary050")); } });
+        auto top = Row::create()
+                       .add(new TopLeftArea)
+                       .add(new QuickAutoTheme<TopRightArea> {
+                           [](auto& widget) { widget.setBackground(Theme::color("primary050")); } })
+                       .build();
 
-        auto mainVerticalLayout = new QVBoxLayout;
-        mainVerticalLayout->setAlignment(Qt::AlignTop);
-        mainVerticalLayout->setMargin(10);
-        mainVerticalLayout->setSpacing(10);
-        mainVerticalLayout->addLayout(topLayout);
-        mainVerticalLayout->addLayout(horizonLayout);
+        auto column = Column::create()
+                          .setAlignment(Qt::AlignTop)
+                          .setMargin(10)
+                          .setSpacing(10)
+                          .add(top)
+                          .add(row)
+                          .build();
 
         auto mainWidget = new QWidget;
-        mainWidget->setLayout(mainVerticalLayout);
+        mainWidget->setLayout(column);
         setCentralWidget(mainWidget);
     }
 
@@ -52,13 +58,12 @@ public:
 
         static auto buttons = std::array<PushButton*, 3> {};
         for (int index = 0; auto& button : buttons) {
-            button = new PushButton;
-            PushButton::Style {
-                .text = "很好的按钮",
-                .size = buttonSize,
-                .font = buttonFont,
-                .radiusRatio = 0.2,
-            }(*button);
+            button = PushButton::create()
+                         .setText("很好的按钮")
+                         .setFixedSize(buttonSize)
+                         .setFont(buttonFont)
+                         .setRadiusRatio(0.2)
+                         .build();
         }
 
         auto rectangle = new QuickAutoTheme<RoundedRectangle> { [](auto& rect) {
@@ -71,7 +76,9 @@ public:
         auto themeSwitchButton = new ConvexSwitchButton;
         themeSwitchButton->setFixedSize({ 60, 30 });
         connect(themeSwitchButton, &ConvexSwitchButton::clicked, [] {
-            Theme::setTheme(Theme::theme() == "common-green" ? "common-purple" : "common-green");
+            Theme::setTheme(Theme::theme() == Theme::common::green //
+                    ? Theme::common::purple
+                    : Theme::common::green);
             Theme::reloadTheme();
         });
 
@@ -81,23 +88,17 @@ public:
         auto switchButton1 = new ConcaveSwitchButton;
         switchButton1->setFixedWidth(80);
 
-        auto comboBox = new ComboBox;
-        comboBox->setFixedSize({ 80, 40 });
-        comboBox->addItem("hello world1");
-        comboBox->addItem("hello world2");
-        comboBox->addItem("hello world3");
-        comboBox->addItem("hello world4");
-
-        auto verticalLayout = new QVBoxLayout;
-        verticalLayout->setAlignment(Qt::AlignTop | Qt::AlignCenter);
-        verticalLayout->setSpacing(10);
-        verticalLayout->addWidget(rectangle);
-        verticalLayout->addWidget(buttons[0]);
-        verticalLayout->addWidget(buttons[1]);
-        verticalLayout->addWidget(buttons[2]);
-        verticalLayout->addWidget(switchButton1);
-        verticalLayout->addWidget(switchButton3);
-        verticalLayout->addWidget(themeSwitchButton);
+        auto column = Column::create()
+                          .setAlignment(Qt::AlignTop | Qt::AlignCenter)
+                          .setSpacing(10)
+                          .add(rectangle)
+                          .add(buttons[0])
+                          .add(buttons[1])
+                          .add(buttons[2])
+                          .add(switchButton1)
+                          .add(switchButton3)
+                          .add(themeSwitchButton)
+                          .build();
 
         buttons[0]->setText("切换主题");
         connect(buttons[0], &PushButton::released, [=] {
@@ -112,7 +113,7 @@ public:
             Theme::reloadTheme();
         });
 
-        return verticalLayout;
+        return column;
     }
 
     QVBoxLayout* secondVerticalBox() {
@@ -125,14 +126,14 @@ public:
         auto slider1 = new ConvexSlider;
         slider1->setFixedSize(200, 30);
 
-        auto image = new QuickAutoTheme<Image> {
+        auto image = QuickAutoTheme<Image>::create(
             [](auto& image) { image.setBorderColor(Theme::color("primary200")); },
-            ":/theme/icon/example/397017307286402.png"
-        };
-        image->setFitness(ImageFitness::Cover);
-        image->setFixedSize({ 400, 175 });
-        image->setBorderWidth(2);
-        image->setRadius(10);
+            ":/theme/icon/example/397017307286402.png")
+                         .setFitness(Image::Fitness::Cover)
+                         .setFixedSize({ 400, 175 })
+                         .setBorderWidth(2)
+                         .setRadius(10)
+                         .build();
 
         auto switchCard1 = new SwitchCard;
         switchCard1->setFixedSize({ 400, 125 });
@@ -163,32 +164,31 @@ public:
         auto clock = new AutoScallopClock;
         clock->setRadius(100);
 
-        auto roundIconButtonLayout = new QHBoxLayout;
-        roundIconButtonLayout->setAlignment(Qt::AlignLeft);
-        roundIconButtonLayout->addWidget(roundIconButton0);
-        roundIconButtonLayout->addWidget(roundIconButton1);
-        roundIconButtonLayout->addWidget(roundIconButton2);
+        /// @note 究级嵌套，只是觉得很好玩
+        auto col = Column::create()
+                       .setAlignment(Qt::AlignTop)
+                       .add(image)
+                       .add(switchCard1)
+                       .add(Row::create()
+                               .setMargin(0)
+                               .add(Column::create()
+                                       .setAlignment(Qt::AlignTop)
+                                       .add(longSwitchButton)
+                                       .add(slider0)
+                                       .add(slider1)
+                                       .add(lineEdit)
+                                       .add(Row::create()
+                                               .setAlignment(Qt::AlignLeft)
+                                               .add(roundIconButton0)
+                                               .add(roundIconButton1)
+                                               .add(roundIconButton2)
+                                               .build())
+                                       .build())
+                               .add(clock)
+                               .build())
+                       .build();
 
-        auto verticalLayout0 = new QVBoxLayout;
-        verticalLayout0->setAlignment(Qt::AlignTop);
-        verticalLayout0->addWidget(longSwitchButton);
-        verticalLayout0->addWidget(slider0);
-        verticalLayout0->addWidget(slider1);
-        verticalLayout0->addWidget(lineEdit);
-        verticalLayout0->addLayout(roundIconButtonLayout);
-
-        auto horizonLayout0 = new QHBoxLayout;
-        horizonLayout0->setMargin(0);
-        horizonLayout0->addLayout(verticalLayout0);
-        horizonLayout0->addWidget(clock);
-
-        auto verticalLayout1 = new QVBoxLayout;
-        verticalLayout1->setAlignment(Qt::AlignTop);
-        verticalLayout1->addWidget(image);
-        verticalLayout1->addWidget(switchCard1);
-        verticalLayout1->addLayout(horizonLayout0);
-
-        return verticalLayout1;
+        return col;
     }
 };
 

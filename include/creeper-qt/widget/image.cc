@@ -10,12 +10,12 @@ struct Image::Impl {
     QPixmap pixmap;
     QColor borderColor = Qt::transparent;
     QColor background = Qt::transparent;
-    ImageFitness fitness = ImageFitness::None;
+    Fitness fitness = Fitness::None;
 
     double last_width = 0;
     double last_height = 0;
     QPixmap last_pixmap;
-    ImageFitness last_fitness = ImageFitness::None;
+    Fitness last_fitness = Fitness::None;
 
     QPixmap makeSuitablePixmap(double width, double height) {
         if (last_height == height && last_width == width && last_fitness == fitness)
@@ -27,7 +27,7 @@ struct Image::Impl {
         auto imageRectEnd = QPointF(pixmap.width(), pixmap.height());
 
         switch (fitness) {
-        case ImageFitness::Contain:
+        case Fitness::Contain:
             imageRectEnd *= width / imageRectEnd.x();
             if (imageRectEnd.y() > height) //
                 imageRectEnd *= height / imageRectEnd.y();
@@ -36,7 +36,7 @@ struct Image::Impl {
                 Qt::TransformationMode::SmoothTransformation);
             break;
 
-        case ImageFitness::Cover:
+        case Fitness::Cover:
             imageRectEnd *= width / imageRectEnd.x();
             if (imageRectEnd.y() < height) //
                 imageRectEnd *= height / imageRectEnd.y();
@@ -45,7 +45,7 @@ struct Image::Impl {
                 Qt::TransformationMode::SmoothTransformation);
             break;
 
-        case ImageFitness::ScaleDown:
+        case Fitness::ScaleDown:
             if (imageRectEnd.x() > width) //
                 imageRectEnd *= width / imageRectEnd.x();
             if (imageRectEnd.y() > height) //
@@ -55,12 +55,12 @@ struct Image::Impl {
                 Qt::TransformationMode::SmoothTransformation);
             break;
 
-        case ImageFitness::Fill:
+        case Fitness::Fill:
             last_pixmap = pixmap.scaled(width, height, Qt::AspectRatioMode::IgnoreAspectRatio,
                 Qt::TransformationMode::SmoothTransformation);
             break;
 
-        case ImageFitness::None:
+        case Fitness::None:
             last_pixmap = pixmap;
             break;
         }
@@ -120,26 +120,31 @@ void Image::paintEvent(QPaintEvent* event) {
     }
 }
 
-void Image::setPixmap(const QPixmap& pixmap) { pimpl_->pixmap = pixmap; }
-
-void Image::setPixmap(const QString& path) { setPixmap(QPixmap(path)); }
-
-void Image::setRadius(double radius) { pimpl_->radius = radius; }
-
-void Image::setBorderWidth(double width) { pimpl_->borderWidth = width; }
-
-void Image::setBorderColor(QColor color) { pimpl_->borderColor = color; }
-
-void Image::setBackground(QColor color) { pimpl_->background = color; }
-
-void Image::setFitness(ImageFitness fitness) { pimpl_->fitness = fitness; }
-
-void Image::Style::operator()(Image& image) {
-    if (pixmap) image.setPixmap(*pixmap);
-    if (size) image.setFixedSize(*size);
-    if (radius) image.setRadius(*radius);
-    if (borderWidth) image.setBorderWidth(*borderWidth);
-    if (borderColor) image.setBorderColor(*borderColor);
-    if (background) image.setBackground(*background);
-    if (fitness) image.setFitness(*fitness);
+Image& Image::setPixmap(const QPixmap& pixmap) {
+    pimpl_->pixmap = pixmap;
+    return *this;
+}
+Image& Image::setPixmap(const QString& path) {
+    setPixmap(QPixmap(path));
+    return *this;
+}
+Image& Image::setRadius(double radius) {
+    pimpl_->radius = radius;
+    return *this;
+}
+Image& Image::setBorderWidth(double width) {
+    pimpl_->borderWidth = width;
+    return *this;
+}
+Image& Image::setBorderColor(QColor color) {
+    pimpl_->borderColor = color;
+    return *this;
+}
+Image& Image::setBackground(QColor color) {
+    pimpl_->background = color;
+    return *this;
+}
+Image& Image::setFitness(Fitness fitness) {
+    pimpl_->fitness = fitness;
+    return *this;
 }

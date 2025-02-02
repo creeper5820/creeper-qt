@@ -14,15 +14,16 @@ public:
         setRadiusRatio(0.5);
     }
 
-    void setRadius(int radius) {
+    RoundIconButton& setRadius(int radius) {
         radius_ = radius;
         setFixedSize({ radius_ * 2, radius_ * 2 });
+        return *this;
     }
-
-    void setIcon(const QIcon& icon) { icon_ = icon; }
-
     // default equals radius
-    void setIconRatio(float ratio) { iconRatio_ = ratio; }
+    RoundIconButton& setIconRatio(float ratio) {
+        ratio_ = ratio;
+        return *this;
+    }
 
 protected:
     void paintEvent(QPaintEvent* event) override {
@@ -32,15 +33,15 @@ protected:
         painter.setPen(Qt::NoPen);
         painter.setBrush(Qt::NoBrush);
 
-        const auto pixmap = icon_.pixmap(radius_ * iconRatio_, radius_ * iconRatio_);
+        const auto icon = PushButton::icon();
+        const auto pixmap = icon.pixmap(radius_ * ratio_, radius_ * ratio_);
         const auto point = QPoint((width() - pixmap.width()) / 2, (height() - pixmap.height()) / 2);
         painter.drawPixmap(point, pixmap);
     }
 
 private:
-    QIcon icon_;
     int radius_;
-    double iconRatio_ = 1;
+    double ratio_ = 1;
 };
 
 };

@@ -9,44 +9,32 @@ namespace creeper {
 
 class PushButton : public Extension<QPushButton> {
     CREEPER_WIDGET_PIMPL_DEFINTION(PushButton);
+    CREEPER_WIDGET_OVERRIDE_INVOKE_METHOD(PushButton, Extension<QPushButton>);
     Q_OBJECT
 
 public:
     /// @brief radius = ratio * height
-    void setRadiusRatio(double ratio);
-    void setBorderWidth(double width);
+    PushButton& setRadiusRatio(double ratio);
+    PushButton& setBorderWidth(double width);
 
-    void setWaterColor(QColor color);
-    void setBorderColor(QColor color);
-    void setTextColor(QColor color);
-    void setBackgroundColor(QColor color);
+    PushButton& setWaterColor(QColor color);
+    PushButton& setBorderColor(QColor color);
+    PushButton& setTextColor(QColor color);
+    PushButton& setBackgroundColor(QColor color);
 
-    void disableBackground();
-    void enableBackground();
+    PushButton& disableBackground();
+    PushButton& enableBackground();
 
     // Water ripple animation
-    void enableAnimation();
-    void disableAnimation();
-    void setDiffusionStep(int step);
+    PushButton& enableAnimation();
+    PushButton& disableAnimation();
+    PushButton& setDiffusionStep(int step);
+
+    // Override invoke method
+    PushButton& setText(const QString& text);
+    PushButton& setIcon(const QIcon& icon);
 
     void reloadTheme() override;
-
-    struct Style {
-        std::optional<QString> text;
-        std::optional<QSize> size;
-        std::optional<QFont> font;
-        std::optional<uint32_t> waterColor;
-        std::optional<uint32_t> borderColor;
-        std::optional<uint32_t> backgroundColor;
-        std::optional<uint32_t> textColor;
-        std::optional<double> radiusRatio;
-        std::optional<double> borderWidth;
-        std::optional<bool> autoTheme;
-        std::optional<bool> animation;
-        std::optional<bool> background;
-        void operator()(PushButton& button);
-        PushButton* operator()();
-    };
 
 protected:
     void mouseReleaseEvent(QMouseEvent* event) override;

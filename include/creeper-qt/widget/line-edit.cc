@@ -69,21 +69,35 @@ void LineEdit::reloadTheme() {
     pimpl_->setTextMargins = false;
 }
 
-void LineEdit::enableIcon() {
+LineEdit& LineEdit::enableIcon() {
     pimpl_->drawIcon = true;
     pimpl_->setTextMargins = false;
+    return *this;
 }
-void LineEdit::disableIcon() {
+LineEdit& LineEdit::disableIcon() {
     pimpl_->drawIcon = false;
     pimpl_->setTextMargins = false;
+    return *this;
 }
-void LineEdit::setIcon(const QIcon& icon) {
+LineEdit& LineEdit::setIcon(const QIcon& icon) {
     pimpl_->icon = icon;
     enableIcon();
+    return *this;
 }
 
-void LineEdit::enableBackground() { pimpl_->drawBackground = true; }
-void LineEdit::disableBackground() { pimpl_->drawBackground = false; }
+LineEdit& LineEdit::enableBackground() {
+    pimpl_->drawBackground = true;
+    return *this;
+}
+LineEdit& LineEdit::disableBackground() {
+    pimpl_->drawBackground = false;
+    return *this;
+}
+
+LineEdit& LineEdit::setPlaceholderText(const QString& text) {
+    Extension::setPlaceholderText(text);
+    return *this;
+}
 
 void LineEdit::paintEvent(QPaintEvent* event) {
     auto painter = QPainter(this);

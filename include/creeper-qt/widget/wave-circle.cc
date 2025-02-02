@@ -96,7 +96,7 @@ WaveCircle& WaveCircle::setRadius(double radius) {
     return *this;
 }
 WaveCircle& WaveCircle::setFlangeRatio(double ratio) {
-    assert(radius > 0 && radius < 1);
+    assert(ratio > 0 && ratio < 1);
     pimpl_->ratio = ratio;
     pimpl_->renderRequest = true;
     return *this;

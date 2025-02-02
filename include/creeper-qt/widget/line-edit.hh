@@ -8,15 +8,19 @@ namespace creeper {
 
 class LineEdit : public Extension<QLineEdit> {
     Q_OBJECT
+    CREEPER_WIDGET_OVERRIDE_INVOKE_METHOD(LineEdit, Extension<QLineEdit>)
     CREEPER_WIDGET_PIMPL_DEFINTION(LineEdit)
 
 public:
-    void setIcon(const QIcon& icon);
-    void enableIcon();
-    void disableIcon();
+    LineEdit& setIcon(const QIcon& icon);
+    LineEdit& enableIcon();
+    LineEdit& disableIcon();
 
-    void enableBackground();
-    void disableBackground();
+    LineEdit& enableBackground();
+    LineEdit& disableBackground();
+
+    /// @todo More setter
+    LineEdit& setPlaceholderText(const QString& text);
 
     void reloadTheme() override;
 
