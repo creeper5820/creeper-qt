@@ -1,5 +1,6 @@
 #include "top-area.hh"
 
+#include <creeper-qt/container.hh>
 #include <creeper-qt/module/round-icon-button.hh>
 #include <creeper-qt/setting/color.hh>
 #include <creeper-qt/widget/image.hh>
@@ -9,11 +10,7 @@
 using namespace creeper;
 
 struct TopRightArea::Impl {
-    QuickAutoTheme<Image> avatar { [](auto& image) {
-        image.setBorderColor(Theme::color("primary300"));
-    } };
-
-    PushButton userSettings;
+    PushButton* userSettings;
     RoundIconButton button0;
     RoundIconButton button1;
     RoundIconButton button2;
@@ -25,20 +22,12 @@ TopRightArea::TopRightArea(QWidget* parent)
 
     const auto font = QFont("Nowar Warcraft Sans CN", 8);
 
-    Image::Style {
-        .pixmap = QPixmap(":/theme/icon/example/ohto-ai.png"),
-        .size = QSize(50, 50),
-        .radius = 25,
-        .borderWidth = 3,
-        .fitness = ImageFitness::Cover,
-    }(pimpl_->avatar);
-
-    PushButton::Style {
-        .text = "MIKU",
-        .size = QSize(50, 30),
-        .font = font,
-        .background = false,
-    }(pimpl_->userSettings);
+    pimpl_->userSettings = PushButton::create()
+                               .setText("大户爱")
+                               .setFixedSize(50, 30)
+                               .setFont(font)
+                               .disableBackground()
+                               .build();
 
     pimpl_->button0.setIcon(QIcon(":/theme/icon/normal/github.png"));
     pimpl_->button0.setRadius(15);
@@ -49,17 +38,26 @@ TopRightArea::TopRightArea(QWidget* parent)
     pimpl_->button2.setIcon(QIcon(":/theme/icon/normal/school.png"));
     pimpl_->button2.setRadius(15);
 
-    auto horizon = new QHBoxLayout;
-    horizon->setAlignment(Qt::AlignRight);
-    horizon->setSpacing(5);
-    horizon->addWidget(&pimpl_->button0);
-    horizon->addWidget(&pimpl_->button1);
-    horizon->addWidget(&pimpl_->button2);
-    horizon->addSpacing(20);
-    horizon->addWidget(&pimpl_->userSettings);
-    horizon->addWidget(&pimpl_->avatar);
+    auto row = Row::create()
+                   .setAlignment(Qt::AlignRight)
+                   .setSpacing(5)
+                   .add(&pimpl_->button0)
+                   .add(&pimpl_->button1)
+                   .add(&pimpl_->button2)
+                   .addSpacing(20)
+                   .add(pimpl_->userSettings)
+                   .add(QuickAutoTheme<Image>::create([](auto& image) { //
+                       image.setBorderColor(Theme::color("primary300"));
+                   })
+                           .setPixmap(QPixmap(":/theme/icon/example/ohto-ai.png"))
+                           .setRadius(25)
+                           .setBorderWidth(3)
+                           .setFitness(Image::Fitness::Cover)
+                           .setFixedSize(QSize(50, 50))
+                           .build())
+                   .build();
 
-    setLayout(horizon);
+    setLayout(row);
     setRadius(10);
     setBackground(color::grey100);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);

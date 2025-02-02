@@ -1,6 +1,7 @@
 #include "push-button.hh"
 
 #include "creeper-qt/utility/pid.hh"
+#include "creeper-qt/widget/widget.hh"
 
 #include <qevent.h>
 #include <qpainter.h>
@@ -133,31 +134,75 @@ PushButton::PushButton(QWidget* parent)
 
 PushButton::~PushButton() { delete pimpl_; }
 
+PushButton& PushButton::setRadiusRatio(double ratio) {
+    pimpl_->radiusRatio_ = ratio, update();
+    return *this;
+}
+
+PushButton& PushButton::setBorderWidth(double width) {
+    pimpl_->borderWidth_ = width, update();
+    return *this;
+}
+
+PushButton& PushButton::setWaterColor(QColor color) {
+    pimpl_->waterColor_ = color, update();
+    return *this;
+}
+
+PushButton& PushButton::setBorderColor(QColor color) {
+    pimpl_->borderColor_ = color, update();
+    return *this;
+}
+
+PushButton& PushButton::setTextColor(QColor color) {
+    pimpl_->textColor_ = color, update();
+    return *this;
+}
+
+PushButton& PushButton::setBackgroundColor(QColor color) {
+    pimpl_->backgroundColor_ = color, update();
+    return *this;
+}
+
+PushButton& PushButton::disableBackground() {
+    pimpl_->drawBackground_ = false;
+    return *this;
+}
+PushButton& PushButton::enableBackground() {
+    pimpl_->drawBackground_ = true;
+    return *this;
+}
+
+// Water ripple animation
+PushButton& PushButton::enableAnimation() {
+    pimpl_->waterRippleAnimation_ = true;
+    return *this;
+}
+PushButton& PushButton::disableAnimation() {
+    pimpl_->waterRippleAnimation_ = false;
+    return *this;
+}
+PushButton& PushButton::setDiffusionStep(int step) {
+    pimpl_->diffusionStep = step;
+    return *this;
+}
+
 void PushButton::reloadTheme() {
     pimpl_->backgroundColor_ = Theme::color("primary100");
     pimpl_->waterColor_ = Theme::color("primary300");
     pimpl_->textColor_ = Theme::color("text");
 }
 
-void PushButton::setRadiusRatio(double ratio) { pimpl_->radiusRatio_ = ratio, update(); }
+// Override invoke method
+PushButton& PushButton::setText(const QString& text) {
+    Extension::setText(text);
+    return *this;
+}
 
-void PushButton::setBorderWidth(double width) { pimpl_->borderWidth_ = width, update(); }
-
-void PushButton::setWaterColor(QColor color) { pimpl_->waterColor_ = color, update(); }
-
-void PushButton::setBorderColor(QColor color) { pimpl_->borderColor_ = color, update(); }
-
-void PushButton::setTextColor(QColor color) { pimpl_->textColor_ = color, update(); }
-
-void PushButton::setBackgroundColor(QColor color) { pimpl_->backgroundColor_ = color, update(); }
-
-void PushButton::disableBackground() { pimpl_->drawBackground_ = false; }
-void PushButton::enableBackground() { pimpl_->drawBackground_ = true; }
-
-// Water ripple animation
-void PushButton::enableAnimation() { pimpl_->waterRippleAnimation_ = true; }
-void PushButton::disableAnimation() { pimpl_->waterRippleAnimation_ = false; }
-void PushButton::setDiffusionStep(int step) { pimpl_->diffusionStep = step; }
+PushButton& PushButton::setIcon(const QIcon& icon) {
+    Extension::setIcon(icon);
+    return *this;
+}
 
 /// PROTECTED
 void PushButton::paintEvent(QPaintEvent* event) {
@@ -194,36 +239,4 @@ void PushButton::leaveEvent(QEvent* event) {
     if (!pimpl_->animationTimer_.isActive()) //
         pimpl_->animationTimer_.start(refreshIntervalMs_);
     Extension::leaveEvent(event);
-}
-
-void PushButton::Style::operator()(PushButton& button) {
-    if (text) button.setText(text.value());
-    if (size) button.setFixedSize(size.value());
-    if (font) button.setFont(font.value());
-
-    if (waterColor) button.setWaterColor(waterColor.value());
-    if (borderColor) button.setBorderColor(borderColor.value());
-    if (backgroundColor) button.setBackgroundColor(backgroundColor.value());
-    if (textColor) button.setTextColor(textColor.value());
-    if (radiusRatio) button.setRadiusRatio(radiusRatio.value());
-    if (borderWidth) button.setBorderWidth(borderWidth.value());
-
-    if (autoTheme) {
-        if (!autoTheme.value()) button.disableAutoTheme();
-        else button.enableAutoTheme();
-    }
-    if (animation) {
-        if (!animation.value()) button.disableAnimation();
-        else button.enableAnimation();
-    }
-    if (background) {
-        if (!background.value()) button.disableBackground();
-        else button.enableBackground();
-    }
-}
-
-PushButton* PushButton::Style::operator()() {
-    auto button = new PushButton();
-    (*this)(*button);
-    return button;
 }
