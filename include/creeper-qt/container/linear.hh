@@ -17,9 +17,9 @@ public:
     static Child& create() { return *(new Child); }
 
     /// @brief 显然，这个函数只是返回该容器的指针，但你不觉得先 create 后
-    /// 后再调用 build 很酷吗
-    /// @note 记得和 create 组合使用哦，要是生命周期不对，出了作用于这容器就被析构了
-    Child* build() { return static_cast<Child*>(this); }
+    /// 再调用 build 很酷吗
+    /// @note 记得和 create 组合使用哦，要是生命周期不对，出了作用域这容器就被析构了
+    [[nodiscard]] Child* build() { return static_cast<Child*>(this); }
 
 public:
     Container& add(QWidget* widget, int stretch = 0, Qt::Alignment alignment = {}) {
