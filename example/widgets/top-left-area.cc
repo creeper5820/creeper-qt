@@ -8,11 +8,14 @@ using namespace creeper;
 
 struct TopLeftArea::Impl {
     Impl() {
-        main.setRadius(15).setIconRatio(1).setIcon(QIcon(":/theme/icon/normal/google.png"));
-
         const auto buttonFont = QFont("Nowar Warcraft Sans CN", 8);
         const auto buttonSize = QSize(45, 30);
 
+        main = RoundIconButton::create()
+                   .setIcon(QIcon(":/theme/icon/normal/google.png"))
+                   .setRadius(15)
+                   .setIconRatio(1)
+                   .build();
         file = PushButton::create()
                    .setText("文件")
                    .setFixedSize(buttonSize)
@@ -49,7 +52,7 @@ struct TopLeftArea::Impl {
             .setFixedSize(200, 30);
     };
 
-    RoundIconButton main;
+    RoundIconButton* main;
     LineEdit name;
     PushButton* file;
     PushButton* edit;
@@ -68,7 +71,7 @@ TopLeftArea::TopLeftArea(QWidget* parent)
     left->setVerticalSpacing(5);
     left->setHorizontalSpacing(2);
 
-    left->addLayout(pimpl_->main.horizontalWithSelf(), 0, 0, 1, 1);
+    left->addLayout(pimpl_->main->horizontalWithSelf(), 0, 0, 1, 1);
     left->addWidget(&pimpl_->name, 0, 1, 1, 4);
     left->addWidget(pimpl_->file, 1, 0, 1, 1);
     left->addWidget(pimpl_->edit, 1, 1, 1, 1);
