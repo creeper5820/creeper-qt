@@ -1,42 +1,60 @@
 # CREEPER-QT<br>轻量的QT-UI封装库
+
 ## 效果展示
+
 全组件展示
 
-![](https://raw.githubusercontent.com/creeper5820/creeper-qt/refs/heads/main/doc/example-widgets.png)
+![example-widgets](https://raw.githubusercontent.com/creeper5820/creeper-qt/refs/heads/main/doc/example-widgets.png)
 
 Google小时钟，是我做这个主题最原初的动力，一开始只是想着这钟真漂亮，Qt能不能搞一个出来，于是纯代码自绘了波浪，为此引入了`Eigen`，顺带做了一个UI库，可谓是为了一瓶醋包了这顿饺子
 
-![](https://raw.githubusercontent.com/creeper5820/creeper-qt/refs/heads/main/doc/example-clock.png)
+![example-clock](https://raw.githubusercontent.com/creeper5820/creeper-qt/refs/heads/main/doc/example-clock.png)
 
 数据结构大作业登陆界面，既然写了库就要好好用起来：
 
-![](https://raw.githubusercontent.com/creeper5820/creeper-qt/refs/heads/main/doc/example-login.png)
+![example-login](https://raw.githubusercontent.com/creeper5820/creeper-qt/refs/heads/main/doc/example-login.png)
 
 ## 安装指南
+
 ### 项目依赖
+
 - `gcc-13` 及以上，支持完整 range 等特性
 - `cmake`
 - `yaml-cpp`
+- `eigen`
 - `qt-5`
 
+```zsh
+# on arch linux
+sudo pacman -S yaml-cpp eigen qt5-base
+
+# on ubuntu
+# ubuntu 默认 gcc 版本比较低，建议使用 ppa 下载较新的版本
+# 或者直接下载二进制文件放进环境中
+sudo apt install libyaml-cpp-dev libeigen3-dev qtbase5-dev
+```
+
 ### 直接使用源文件
+
 把项目拉下来吧
+
 ```bash
 cd path/to/your/project/lib/dir/
 git clone https://github.com/creeper5820/creeper-qt
 ```
+
 Edit your `CMakeLists.txt`:
+
 ```cmake
 include_directories(${库的根路径/include})
-
 add_executable(${EXAMPLE_NAME}
-    ${这个库所有的源文件}
+    ${这个库所有的源文件(包括头文件)}
     ${这个库所有的QRC文件}
 )
-
 ```
 
 ### Linux平台
+
 ```bash
 # 下载这个项目
 git clone https://github.com/creeper5820/creeper-qt
@@ -50,9 +68,10 @@ sudo make install
 ```
 
 ### Windows平台
+
 我推荐使用MSYS2环境使用这个库: [MYSY2-INSTALLATION](https://www.msys2.org/docs/installer/)
 
-![](https://raw.githubusercontent.com/creeper5820/creeper-qt/refs/heads/main/doc/windows-neofetch.png)
+![win](https://raw.githubusercontent.com/creeper5820/creeper-qt/refs/heads/main/doc/windows-neofetch.png)
 
 看呐, 我没有使用Linux (
 
@@ -109,7 +128,9 @@ cat install_manifest.txt
 需要注意的是, 如果在本机而不是MSYS2中打开编译好的可执行文件, 会报找不到Qt的dll, 因为在MSYS2下载的Qt没有暴露在Windows环境中
 
 ## 调用指南
+
 然后你可以在cmake中导入这个库，并引入头文件使用它了
+
 ```cmake
 cmake_minimum_required(VERSION 3.22)
 
@@ -136,13 +157,16 @@ target_link_libraries(${PROJECT_NAME}
     creeper-qt::creeper-qt
     Qt5::Widgets yaml-cpp
 )
-
 ```
+
 然后在项目中引用
+
 ```cpp
 #include <creeper-qt/widget/line-edit.hh>
 ```
+
 在使用前记得设置主题：
+
 ```cpp
 #include <creeper-qt/setting/theme.hh>
 
@@ -154,11 +178,13 @@ auto main(int argc, char* argv[]) -> int {
     Theme::setTheme(Theme::common::green);
 }
 ```
+
 项目中的字体可能没有, 可以修改`res\common-xxxx\theme.yaml`文件中的`font`
 
 不过示例中很多字体都是直接写的, 没有调用主题文件中的字体 (不规范, 希望得到原谅)
 
 ## TODO
+
 - [ ] 增加更多的组件
 - [ ] 增加视图容器，原生的不可用
 - [ ] 给自己做一个设置中心吧

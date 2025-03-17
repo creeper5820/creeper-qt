@@ -1,6 +1,7 @@
 #pragma once
 
 #include "creeper-qt/widget/push-button.hh"
+#include "creeper-qt/widget/widget.hh"
 
 #include <qpainter.h>
 
@@ -8,6 +9,7 @@ namespace creeper {
 
 class RoundIconButton : public PushButton {
     Q_OBJECT
+    CREEPER_WIDGET_OVERRIDE_INVOKE_METHOD(RoundIconButton, PushButton)
 public:
     explicit RoundIconButton(QWidget* parent = nullptr)
         : PushButton(parent) {
@@ -19,9 +21,13 @@ public:
         setFixedSize({ radius_ * 2, radius_ * 2 });
         return *this;
     }
-    // default equals radius
+    /// @note default equals radius
     RoundIconButton& setIconRatio(float ratio) {
         ratio_ = ratio;
+        return *this;
+    }
+    RoundIconButton& setIcon(const QIcon& icon) {
+        Extension::setIcon(icon);
         return *this;
     }
 

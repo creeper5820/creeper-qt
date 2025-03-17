@@ -1,13 +1,16 @@
+#include "creeper-qt/widget/basic-shape.hh"
 #include "creeper-qt/widget/image.hh"
 #include "creeper-qt/widget/widget.hh"
 #include "top-area.hh"
 
 #include <qapplication.h>
+#include <qcolor.h>
 #include <qdebug.h>
 
 #include <creeper-qt/container.hh>
 #include <creeper-qt/module.hh>
 #include <creeper-qt/widget.hh>
+#include <qwidget.h>
 
 using namespace creeper;
 
@@ -203,7 +206,9 @@ int main(int argc, char* argv[]) {
     window.setWindowTitle("HelloWorld");
     window.setIconSize({ 10, 10 });
     window.setWindowIcon(icon);
+    window.setFixedSize(1200, 700);
     window.moveCenter();
+
     window.show();
 
     return app.exec();

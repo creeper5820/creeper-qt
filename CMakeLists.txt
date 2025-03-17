@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.17...3.22)
+cmake_minimum_required(VERSION 3.17)
 
 project(creeper-qt VERSION 1.0.0 LANGUAGES CXX)
 
@@ -34,7 +34,7 @@ add_library(${PROJECT_NAME}::widgets
     ALIAS ${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME}
-    PUBLIC Qt5::Widgets yaml-cpp 
+    PUBLIC Qt5::Widgets yaml-cpp
 )
 
 # Package Config
@@ -49,7 +49,7 @@ install(DIRECTORY "include/"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
     FILES_MATCHING PATTERN "*.hh"
 )
-install(EXPORT ${PROJECT_NAME}Targets 
+install(EXPORT ${PROJECT_NAME}Targets
     FILE ${PROJECT_NAME}Targets.cmake
     NAMESPACE ${PROJECT_NAME}::
     DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake"
@@ -78,19 +78,21 @@ install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
 set(CMAKE_EXPORT_PACKAGE_REGISTRY ON)
 export(PACKAGE ${PROJECT_NAME})
 
-add_custom_target("uninstall" COMMENT "uninstall creeper-qt library")
+add_custom_target("uninstall" COMMENT "uninstall ${PROJECT_NAME} library")
 add_custom_command(TARGET "uninstall" POST_BUILD
-    COMMENT "uninstall creeper-qt library"
-    COMMAND xargs rm -vf < install_manifest.txt || echo nothing to be uninstalled
+    COMMENT "uninstall library ${PROJECT_NAME}"
+    COMMAND xargs rm -vf < install_manifest.txt
+    || echo "nothing to be uninstalled"
 )
 
+# 构建示例程序，widgets 是基本组件的集合
 if(BUILD_EXAMPLES)
     include_directories(include)
+    file(GLOB_RECURSE EXAMPLE_CC CONFIGURE_DEPENDS example/widgets/*.cc)
+    file(GLOB_RECURSE EXAMPLE_HH CONFIGURE_DEPENDS example/widgets/*.hh)
     add_executable(widgets
-        example/widgets/top-left-area.cc
-        example/widgets/top-right-area.cc
-        example/widgets/top-area.hh
-        example/widgets/widgets.cc
+        ${EXAMPLE_CC}
+        ${EXAMPLE_HH}
     )
     target_link_libraries(widgets
         ${PROJECT_NAME}
