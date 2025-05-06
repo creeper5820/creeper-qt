@@ -17,8 +17,6 @@ struct MainWindow::Impl {
 MainWindow::MainWindow(QWidget* parent)
     : Extension(parent)
     , pimpl_(new Impl) {
-    setMinimumWidth(1440);
-    setMinimumHeight(720);
     reloadTheme();
 }
 

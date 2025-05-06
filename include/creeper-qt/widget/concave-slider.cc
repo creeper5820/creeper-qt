@@ -65,18 +65,21 @@ void ConcaveSlider::reloadTheme() {
     pimpl_->lineColor = Theme::color("primary050");
 }
 
-void ConcaveSlider::setRange(int minimum, int maximum) {
-    pimpl_->minimum = minimum, pimpl_->maximum = maximum;
-    emit rangeChanged(minimum, maximum);
-}
 int ConcaveSlider::minimum() const { return pimpl_->minimum; }
 
 int ConcaveSlider::maximum() const { return pimpl_->maximum; }
 
-void ConcaveSlider::setValue(int value) {
+ConcaveSlider& ConcaveSlider::setRange(int minimum, int maximum) {
+    pimpl_->minimum = minimum, pimpl_->maximum = maximum;
+    emit rangeChanged(minimum, maximum);
+    return *this;
+}
+
+ConcaveSlider& ConcaveSlider::setValue(int value) {
     if (!pimpl_->timer.isActive()) pimpl_->timer.start(refreshIntervalMs_);
     pimpl_->value_ = value;
     emit valueChanged(value);
+    return *this;
 }
 int ConcaveSlider::value() const { return pimpl_->value_; }
 

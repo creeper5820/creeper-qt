@@ -11,8 +11,6 @@ class AbstractSwitchButton : public Extension<QAbstractButton> {
 public:
     AbstractSwitchButton(QWidget* parent = nullptr);
 
-    void setFixedSize(QSize size);
-    void setFixedSize(int width, int height);
     void setSwitchStatus(bool switchStatus);
     bool switched() const;
     void reloadTheme() override;
@@ -32,18 +30,28 @@ protected:
 };
 
 class ConvexSwitchButton : public AbstractSwitchButton {
+    CREEPER_WIDGET_OVERRIDE_INVOKE_METHOD(ConvexSwitchButton, AbstractSwitchButton)
     Q_OBJECT
 public:
     ConvexSwitchButton(QWidget* parent = nullptr);
+    ConvexSwitchButton& setSwitchStatus(bool switchStatus) {
+        AbstractSwitchButton::setSwitchStatus(switchStatus);
+        return *this;
+    }
 
 protected:
     void paintEvent(QPaintEvent* event) override;
 };
 
 class ConcaveSwitchButton : public AbstractSwitchButton {
+    CREEPER_WIDGET_OVERRIDE_INVOKE_METHOD(ConcaveSwitchButton, AbstractSwitchButton)
     Q_OBJECT
 public:
     ConcaveSwitchButton(QWidget* parent = nullptr);
+    ConcaveSwitchButton& setSwitchStatus(bool switchStatus) {
+        AbstractSwitchButton::setSwitchStatus(switchStatus);
+        return *this;
+    }
 
 protected:
     void paintEvent(QPaintEvent* event) override;
