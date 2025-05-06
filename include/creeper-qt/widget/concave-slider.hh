@@ -7,6 +7,7 @@ namespace creeper {
 
 class ConcaveSlider : public Extension<QWidget> {
     CREEPER_WIDGET_PIMPL_DEFINTION(ConcaveSlider);
+    CREEPER_WIDGET_OVERRIDE_INVOKE_METHOD(ConcaveSlider, Extension<QWidget>)
     Q_OBJECT
 public:
     void reloadTheme() override;
@@ -16,8 +17,8 @@ public:
     int value() const;
 
 public slots:
-    void setRange(int minimum, int maximum);
-    void setValue(int value);
+    ConcaveSlider& setRange(int minimum, int maximum);
+    ConcaveSlider& setValue(int value);
 
 signals:
     void valueChanged(int value);

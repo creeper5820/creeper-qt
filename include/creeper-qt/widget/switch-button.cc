@@ -20,16 +20,6 @@ AbstractSwitchButton::AbstractSwitchButton(QWidget* parent)
     reloadTheme();
 }
 
-void AbstractSwitchButton::setFixedSize(QSize size) {
-    progress_ = switchStatus_ ? size.width() - size.height() / 2. : size.height() / 2.;
-    QAbstractButton::setFixedSize(size);
-}
-
-void AbstractSwitchButton::setFixedSize(int width, int height) {
-    progress_ = switchStatus_ ? width - height / 2. : height / 2.;
-    QAbstractButton::setFixedSize(width, height);
-}
-
 void AbstractSwitchButton::setSwitchStatus(bool switchStatus) {
     switchStatus_ = switchStatus;
     update();
@@ -69,11 +59,11 @@ void ConvexSwitchButton::paintEvent(QPaintEvent* event) {
     const auto leftCenter = QPointF(h / 2., h / 2.);
     const auto rightCenter = QPointF(w - h / 2., h / 2.);
 
-    const double target = switchStatus_ ? w - h / 2. : h / 2.;
-    const auto currentCenter = QPointF(progress_, h / 2.);
+    const double target = switchStatus_ ? 1 : 0;
+    const auto currentCenter = QPointF(h / 2. + progress_ * (w - h), h / 2.);
 
     progress_ = updateWithPid(progress_, target, 0.1);
-    if (std::abs(progress_ - target) < 0.1) animationTimer_.stop();
+    if (std::abs(progress_ - target) < 0.001) animationTimer_.stop();
 
     auto painter = QPainter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);
@@ -128,11 +118,11 @@ void ConcaveSwitchButton::paintEvent(QPaintEvent* event) {
     const auto leftCenter = QPointF(h / 2., h / 2.);
     const auto rightCenter = QPointF(w - h / 2., h / 2.);
 
-    const double target = switchStatus_ ? w - h / 2. : h / 2.;
-    const auto currentCenter = QPointF(progress_, h / 2.);
+    const double target = switchStatus_ ? 1 : 0;
+    const auto currentCenter = QPointF(h / 2. + progress_ * (w - h), h / 2.);
 
     progress_ = updateWithPid(progress_, target, 0.1);
-    if (std::abs(progress_ - target) < 0.1) animationTimer_.stop();
+    if (std::abs(progress_ - target) < 0.001) animationTimer_.stop();
 
     auto painter = QPainter(this);
     painter.setRenderHint(QPainter::Antialiasing, true);

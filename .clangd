@@ -1,7 +1,6 @@
 CompileFlags:
   Add:
     - "-std=c++23"
-  # Remove: [-m*, -f*]
 
 Diagnostics:
   Suppress:
