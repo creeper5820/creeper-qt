@@ -18,6 +18,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+include_directories(creeper-qt)
+
 add_executable(
     widgets
     example/widgets/main.cc
