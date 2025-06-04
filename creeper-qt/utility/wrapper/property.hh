@@ -24,4 +24,10 @@ public:                                                                         
         static_cast<const NAMESPACE::Property&>(_).apply(*this);                                   \
     }
 
-namespace creeper { }
+namespace creeper {
+
+template <typename Instance> struct InternalProperty {
+    virtual void apply(Instance& _) const = 0;
+};
+
+}

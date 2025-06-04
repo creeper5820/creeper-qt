@@ -6,30 +6,28 @@
 namespace creeper {
 
 namespace pro::widget {
-    struct Property {
-        virtual void apply(QWidget& widget) const = 0;
-    };
+    using Property = InternalProperty<QWidget>;
     template <typename T>
     concept property_concept = std::is_base_of_v<Property, T>;
 
     // 尺寸相关
-    struct MinimumSize final : QSize, Property {
+    struct MinimumSize final : public QSize, Property {
         using QSize::QSize;
         void apply(QWidget& widget) const override { widget.setMinimumSize(*this); }
     };
-    struct MaximumSize final : QSize, Property {
+    struct MaximumSize final : public QSize, Property {
         using QSize::QSize;
         void apply(QWidget& widget) const override { widget.setMaximumSize(*this); }
     };
-    struct SizeIncrement final : QSize, Property {
+    struct SizeIncrement final : public QSize, Property {
         using QSize::QSize;
         void apply(QWidget& widget) const override { widget.setSizeIncrement(*this); }
     };
-    struct BaseSize final : QSize, Property {
+    struct BaseSize final : public QSize, Property {
         using QSize::QSize;
         void apply(QWidget& widget) const override { widget.setBaseSize(*this); }
     };
-    struct FixedSize final : QSize, Property {
+    struct FixedSize final : public QSize, Property {
         using QSize::QSize;
         void apply(QWidget& widget) const override { widget.setFixedSize(*this); }
     };
@@ -67,6 +65,16 @@ namespace pro::widget {
     };
 
     // 显示相关
+    struct Layout final : Property {
+        QLayout* layout;
+        explicit Layout(QLayout* _) { layout = _; }
+        void apply(QWidget& widget) const override { widget.setLayout(layout); }
+    };
+    struct LayoutDirection final : Property {
+        Qt::LayoutDirection direction;
+        explicit LayoutDirection(Qt::LayoutDirection _) { direction = _; }
+        void apply(QWidget& widget) const override { widget.setLayoutDirection(direction); }
+    };
     struct BackgroundRole final : Property {
         QPalette::ColorRole role;
         explicit BackgroundRole(QPalette::ColorRole _) { role = _; }
@@ -78,16 +86,16 @@ namespace pro::widget {
         void apply(QWidget& widget) const override { widget.setForegroundRole(role); }
     };
 
-    struct Font final : QFont, Property {
+    struct Font final : public QFont, Property {
         using QFont::QFont;
         void apply(QWidget& widget) const override { widget.setFont(*this); }
     };
 
-    struct BitmapMask final : QBitmap, Property {
+    struct BitmapMask final : public QBitmap, Property {
         using QBitmap::QBitmap;
         void apply(QWidget& widget) const override { widget.setMask(*this); }
     };
-    struct RegionMask final : QRegion, Property {
+    struct RegionMask final : public QRegion, Property {
         using QRegion::QRegion;
         void apply(QWidget& widget) const override { widget.setMask(*this); }
     };
@@ -96,19 +104,19 @@ namespace pro::widget {
     };
 
     // Window 相关
-    struct WindowIcon final : QIcon, Property {
+    struct WindowIcon final : public QIcon, Property {
         using QIcon::QIcon;
         void apply(QWidget& widget) const override { widget.setWindowIcon(*this); }
     };
-    struct WindowIconText final : QString, Property {
+    struct WindowIconText final : public QString, Property {
         using QString::QString;
         void apply(QWidget& widget) const override { widget.setWindowIconText(*this); }
     };
-    struct WindowRole final : QString, Property {
+    struct WindowRole final : public QString, Property {
         using QString::QString;
         void apply(QWidget& widget) const override { widget.setWindowRole(*this); }
     };
-    struct WindowFilePath final : QString, Property {
+    struct WindowFilePath final : public QString, Property {
         using QString::QString;
         void apply(QWidget& widget) const override { widget.setWindowFilePath(*this); }
     };
@@ -130,13 +138,8 @@ namespace pro::widget {
     };
 }
 
-namespace widget {
-    using namespace pro::widget;
-    using pro::widget::property_concept;
-}
-
 class Widget : public QWidget {
-    CREEPER_DEFINE_CONSTROCTOR(Widget, widget)
+    CREEPER_DEFINE_CONSTROCTOR(Widget, pro::widget)
 public:
     using QWidget::QWidget;
 };
