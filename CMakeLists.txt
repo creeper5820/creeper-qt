@@ -21,11 +21,11 @@ set(CMAKE_AUTOUIC ON)
 include_directories(creeper-qt)
 
 add_executable(
-    widgets
+    app
     example/widgets/main.cc
 )
 target_link_libraries(
-    widgets
+    app
     Qt5::Widgets
     yaml-cpp
 )

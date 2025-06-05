@@ -5,8 +5,6 @@
 #include "../../creeper-qt/layout/linear.hh"
 #include "../../creeper-qt/widget/widget.hh"
 
-#include <tuple>
-
 int main(int argc, char* argv[]) {
     new ::QApplication { argc, argv };
 

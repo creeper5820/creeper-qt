@@ -91,15 +91,11 @@ namespace pro::linear {
 }
 
 class Row : public QHBoxLayout {
-    CREEPER_DEFINE_CONSTROCTOR(Row, pro::linear, [] { })
-public:
-    using QHBoxLayout::QHBoxLayout;
+    CREEPER_DEFINE_CONSTROCTOR(Row, pro::linear)
 };
 
 class Col : public QVBoxLayout {
-    CREEPER_DEFINE_CONSTROCTOR(Col, pro::linear, [] { })
-public:
-    using QVBoxLayout::QVBoxLayout;
+    CREEPER_DEFINE_CONSTROCTOR(Col, pro::linear)
 };
 
 }
