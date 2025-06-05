@@ -138,10 +138,9 @@ namespace pro::widget {
     };
 }
 
+/// @NOTE: 默认构造按理来说是不兼容 PIMPL 模式的，只能无奈取消了
 class Widget : public QWidget {
-    CREEPER_DEFINE_CONSTROCTOR(Widget, pro::widget)
-public:
-    using QWidget::QWidget;
+    CREEPER_DEFINE_CONSTROCTOR(Widget, pro::widget, [] { })
 };
 
 }
