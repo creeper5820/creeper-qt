@@ -14,7 +14,7 @@ namespace internal {
 
     public:
         void set_radius(double radius);
-        void set_border(double border);
+        void set_border_width(double border);
 
         void set_water_color(const QColor& color);
         void set_border_color(const QColor& color);
@@ -35,7 +35,7 @@ namespace pro::filled_button {
     concept property_concept = std::is_base_of_v<Property, T> || pro::widget::property_concept<T>;
 
     using Radius = common::Radius<internal::FilledButton, Property>;
-    using Border = common::Border<internal::FilledButton, Property>;
+    using Border = common::BorderWidth<internal::FilledButton, Property>;
 
     // QPushButton
     using Text = common::Text<internal::FilledButton, Property>;
@@ -46,6 +46,7 @@ namespace pro::filled_button {
 
 class FilledButton : public internal::FilledButton {
     CREEPER_DEFINE_CONSTROCTOR(FilledButton, pro::filled_button);
+    using internal::FilledButton::FilledButton;
 };
 
 } // namespace creeper

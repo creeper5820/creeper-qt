@@ -39,11 +39,11 @@ namespace pro::common {
     };
 
     template <class Widget, class Token>
-        requires requires(Widget widget) { widget.set_border(double {}); }
-    struct Border final : Token {
+        requires requires(Widget widget) { widget.set_border_width(double {}); }
+    struct BorderWidth final : Token {
         double border;
-        explicit Border(double p) { border = p; }
-        void apply(Widget& self) const override { self.set_border(border); }
+        explicit BorderWidth(double p) { border = p; }
+        void apply(Widget& self) const override { self.set_border_width(border); }
     };
 
     template <class Widget, class Token>
@@ -51,6 +51,20 @@ namespace pro::common {
     struct Text final : public QString, Token {
         using QString::QString;
         void apply(Widget& self) const override { self.setText(*this); }
+    };
+
+    template <class Widget, class Token>
+        requires requires(Widget widget) { widget.set_background(QColor {}); }
+    struct Background final : public QColor, Token {
+        using QColor::QColor;
+        void apply(Widget& self) const override { self.set_background(*this); }
+    };
+
+    template <class Widget, class Token>
+        requires requires(Widget widget) { widget.set_border_color(QColor {}); }
+    struct BorderColor final : public QColor, Token {
+        using QColor::QColor;
+        void apply(Widget& self) const override { self.set_border_color(*this); }
     };
 
 }

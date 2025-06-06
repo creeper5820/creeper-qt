@@ -10,10 +10,10 @@ FilledButton::FilledButton()
 FilledButton::~FilledButton() = default;
 
 void FilledButton::set_radius(double radius) { }
-void FilledButton::set_border(double border) { }
+void FilledButton::set_border_width(double border) { }
 
-void FilledButton::set_water_color(const QColor& color) { }
 void FilledButton::set_border_color(const QColor& color) { }
+void FilledButton::set_water_color(const QColor& color) { }
 void FilledButton::set_text_color(const QColor& color) { }
 void FilledButton::set_background_color(const QColor& color) { }
 
