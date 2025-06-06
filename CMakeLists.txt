@@ -20,12 +20,24 @@ set(CMAKE_AUTOUIC ON)
 
 include_directories(creeper-qt)
 
+# 库文件收集
+file(GLOB_RECURSE PROJECT_CC CONFIGURE_DEPENDS "creeper-qt/*.cc")
+file(GLOB_RECURSE PROJECT_HH CONFIGURE_DEPENDS "creeper-qt/*.hh")
+
+add_library(${PROJECT_NAME} SHARED
+    ${PROJECT_CC}
+    ${PROJECT_HH}
+)
+target_link_libraries(${PROJECT_NAME}
+    PUBLIC Qt5::Widgets
+)
+
 add_executable(
     app
     example/widgets/main.cc
 )
 target_link_libraries(
     app
+    creeper-qt
     Qt5::Widgets
-    yaml-cpp
 )

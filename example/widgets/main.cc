@@ -1,9 +1,11 @@
+#include <iostream>
 #include <qapplication.h>
 #include <qpointer.h>
 #include <qpushbutton.h>
 
 #include "../../creeper-qt/layout/linear.hh"
 #include "../../creeper-qt/widget/widget.hh"
+#include "widget/button/filled-button.hh"
 
 int main(int argc, char* argv[]) {
     new ::QApplication { argc, argv };
@@ -36,13 +38,17 @@ int main(int argc, char* argv[]) {
             wi::Font { "JetBrains Mono NL", 12 },
         };
 
+        FilledButton* button;
+
         namespace li = pro::linear;
         auto main_widget = new Widget {
             wi::Layout { new Row {
                 li::ContentsMargin { 20, 20, 20, 20 },
                 li::Spacing { 20 },
                 li::Widgets { {
-                    { new QPushButton { "Hello World" }, 1, Qt::AlignCenter },
+                    { button = new FilledButton {
+                        pro::filled_button::Text { "你好世界" },
+                    }, 1, Qt::AlignCenter },
                     { widget1, 1, Qt::AlignCenter },
                     { new Widget {
                         wi::MinimumSize { 100, 100 },
@@ -54,6 +60,9 @@ int main(int argc, char* argv[]) {
             } },
         };
         main_widget->show();
+
+        QObject::connect(
+            button, &FilledButton::clicked, [] { std::println(std::cout, "Clicked This Button"); });
     }
 
     return ::QApplication::exec();

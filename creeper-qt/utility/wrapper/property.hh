@@ -20,14 +20,39 @@ public:                                                                         
         std::apply(                                                                                \
             [this](auto&&... args) { (apply(std::forward<decltype(args)>(args)), ...); }, _);      \
     }                                                                                              \
-    void apply(const NAMESPACE::property_concept auto& _) {                                        \
-        static_cast<const NAMESPACE::Property&>(_).apply(*this);                                   \
-    }
+    void apply(const NAMESPACE::property_concept auto& property) { property.apply(*this); }
 
 namespace creeper {
 
 template <typename Instance> struct InternalProperty {
     virtual void apply(Instance& _) const = 0;
 };
+
+namespace pro::common {
+
+    template <typename Widget, class Token>
+        requires requires(Widget widget) { widget.set_radius(double {}); }
+    struct Radius final : Token {
+        double radius;
+        explicit Radius(double p) { radius = p; }
+        void apply(Widget& self) const override { self.set_radius(radius); }
+    };
+
+    template <class Widget, class Token>
+        requires requires(Widget widget) { widget.set_border(double {}); }
+    struct Border final : Token {
+        double border;
+        explicit Border(double p) { border = p; }
+        void apply(Widget& self) const override { self.set_border(border); }
+    };
+
+    template <class Widget, class Token>
+        requires requires(Widget widget) { widget.setText(QString {}); }
+    struct Text final : public QString, Token {
+        using QString::QString;
+        void apply(Widget& self) const override { self.setText(*this); }
+    };
+
+}
 
 }

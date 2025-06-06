@@ -92,10 +92,12 @@ namespace pro::linear {
 
 class Row : public QHBoxLayout {
     CREEPER_DEFINE_CONSTROCTOR(Row, pro::linear)
+    using QHBoxLayout::QHBoxLayout;
 };
 
 class Col : public QVBoxLayout {
     CREEPER_DEFINE_CONSTROCTOR(Col, pro::linear)
+    using QVBoxLayout::QVBoxLayout;
 };
 
 }

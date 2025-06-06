@@ -140,6 +140,7 @@ namespace pro::widget {
 
 class Widget : public QWidget {
     CREEPER_DEFINE_CONSTROCTOR(Widget, pro::widget);
+    using QWidget::QWidget;
 };
 
 }
