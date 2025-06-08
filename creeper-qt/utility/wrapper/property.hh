@@ -30,6 +30,21 @@ template <typename Instance> struct InternalProperty {
 
 namespace pro::common {
 
+    // 通用半径长度
+    template <typename Widget, class Token>
+        requires requires(Widget widget) { widget.set_radius(double {}); }
+    struct RadiusX final : Token {
+        double radius;
+        explicit RadiusX(double p) { radius = p; }
+        void apply(Widget& self) const override { self.set_radius_x(radius); }
+    };
+    template <typename Widget, class Token>
+        requires requires(Widget widget) { widget.set_radius(double {}); }
+    struct RadiusY final : Token {
+        double radius;
+        explicit RadiusY(double p) { radius = p; }
+        void apply(Widget& self) const override { self.set_radius_y(radius); }
+    };
     template <typename Widget, class Token>
         requires requires(Widget widget) { widget.set_radius(double {}); }
     struct Radius final : Token {
@@ -38,6 +53,7 @@ namespace pro::common {
         void apply(Widget& self) const override { self.set_radius(radius); }
     };
 
+    // 通用边界宽度
     template <class Widget, class Token>
         requires requires(Widget widget) { widget.set_border_width(double {}); }
     struct BorderWidth final : Token {
@@ -46,6 +62,15 @@ namespace pro::common {
         void apply(Widget& self) const override { self.set_border_width(border); }
     };
 
+    // 通用边界颜色
+    template <class Widget, class Token>
+        requires requires(Widget widget) { widget.set_border_color(QColor {}); }
+    struct BorderColor final : public QColor, Token {
+        using QColor::QColor;
+        void apply(Widget& self) const override { self.set_border_color(*this); }
+    };
+
+    // 通用文本属性
     template <class Widget, class Token>
         requires requires(Widget widget) { widget.setText(QString {}); }
     struct Text final : public QString, Token {
@@ -53,18 +78,12 @@ namespace pro::common {
         void apply(Widget& self) const override { self.setText(*this); }
     };
 
+    // 通用背景颜色
     template <class Widget, class Token>
         requires requires(Widget widget) { widget.set_background(QColor {}); }
     struct Background final : public QColor, Token {
         using QColor::QColor;
         void apply(Widget& self) const override { self.set_background(*this); }
-    };
-
-    template <class Widget, class Token>
-        requires requires(Widget widget) { widget.set_border_color(QColor {}); }
-    struct BorderColor final : public QColor, Token {
-        using QColor::QColor;
-        void apply(Widget& self) const override { self.set_border_color(*this); }
     };
 
 }

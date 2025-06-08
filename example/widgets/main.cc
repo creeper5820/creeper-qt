@@ -1,69 +1,34 @@
 #include <iostream>
 #include <qapplication.h>
-#include <qpointer.h>
-#include <qpushbutton.h>
 
-#include "../../creeper-qt/layout/linear.hh"
-#include "../../creeper-qt/widget/widget.hh"
+#include "layout/linear.hh"
 #include "widget/button/filled-button.hh"
+#include "widget/shape/rounded-rect.hh"
 
+using namespace creeper;
 int main(int argc, char* argv[]) {
-    new ::QApplication { argc, argv };
+    auto application = new QApplication { argc, argv };
 
-    {
-        using namespace creeper;
-        namespace wi = pro::widget;
+    namespace w = pro::widget;
+    const auto base = std::tuple { w::MinimumSize { 100, 30 }, w::MaximumSize { 500, 300 } };
 
-        auto widget0 = new Widget {
-            wi::MinimumSize { 100, 100 },
-            wi::MaximumSize { 200, 200 },
-            wi::Font { "JetBrains Mono", 12 },
-        };
+    namespace rr = pro::rounded_rect;
+    namespace fb = pro::filled_button;
+    (new Widget { w::Layout { new Row { pro::linear::Widgets { {
+         { new RoundedRect {
+             base,
+             rr::Background { 0, 200, 0, 255 },
+             rr::BorderColor { 200, 0, 0, 255 },
+             rr::BorderWidth { 5 },
+             rr::Radius { 25 },
+         } },
+         { new FilledButton {
+             base,
+             fb::Text { "This Button" },
+             fb::Clickable { [] { std::println(std::cout, "Clicked This Button"); } },
+         } },
+     } } } } })
+        ->show();
 
-        const auto properties = std::tuple {
-            wi::MinimumSize { 100, 100 },
-            wi::MaximumSize { 200, 200 },
-            wi::Font { "JetBrains Mono", 15 },
-        };
-
-        auto widget1 = new Widget {
-            properties,
-        };
-        auto widget2 = new Widget {
-            properties,
-            wi::MaximumSize { 250, 250 },
-        };
-        auto widget3 = new Widget {
-            properties,
-            wi::Font { "JetBrains Mono NL", 12 },
-        };
-
-        FilledButton* button;
-
-        namespace li = pro::linear;
-        auto main_widget = new Widget {
-            wi::Layout { new Row {
-                li::ContentsMargin { 20, 20, 20, 20 },
-                li::Spacing { 20 },
-                li::Widgets { {
-                    { button = new FilledButton {
-                        pro::filled_button::Text { "你好世界" },
-                    }, 1, Qt::AlignCenter },
-                    { widget1, 1, Qt::AlignCenter },
-                    { new Widget {
-                        wi::MinimumSize { 100, 100 },
-                        wi::MaximumSize { 200, 200 },
-                        wi::Font { "JetBrains Mono", 12 },
-                    } },
-                } },
-                li::Spacing { 20 },
-            } },
-        };
-        main_widget->show();
-
-        QObject::connect(
-            button, &FilledButton::clicked, [] { std::println(std::cout, "Clicked This Button"); });
-    }
-
-    return ::QApplication::exec();
+    return application->exec();
 }

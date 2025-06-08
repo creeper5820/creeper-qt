@@ -8,7 +8,7 @@ namespace creeper {
 namespace pro::widget {
     using Property = InternalProperty<QWidget>;
     template <typename T>
-    concept property_concept = std::is_base_of_v<Property, T>;
+    concept property_concept = std::derived_from<T, Property>;
 
     // 尺寸相关
     struct MinimumSize final : public QSize, Property {

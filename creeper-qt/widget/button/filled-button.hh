@@ -2,7 +2,9 @@
 
 #include "utility/wrapper/pimpl.hh"
 #include "utility/wrapper/property.hh"
+#include "widget/button/button.hh"
 #include "widget/widget.hh"
+
 #include <qpushbutton.h>
 
 namespace creeper {
@@ -23,6 +25,12 @@ namespace internal {
 
         void set_water_ripple_status(bool enable);
         void set_water_ripple_step(double step);
+
+    protected:
+        // void mouseReleaseEvent(QMouseEvent* event) override;
+        // void paintEvent(QPaintEvent* event) override;
+        // void enterEvent(QEvent* event) override;
+        // void leaveEvent(QEvent* event) override;
     };
 
 } // namespace internal
@@ -32,16 +40,16 @@ namespace pro::filled_button {
     using Property = InternalProperty<internal::FilledButton>;
 
     template <typename T>
-    concept property_concept = std::is_base_of_v<Property, T> || pro::widget::property_concept<T>;
+    concept property_concept = std::derived_from<T, Property> || pro::widget::property_concept<T>;
+
+    using Text = common::Text<internal::FilledButton, Property>;
 
     using Radius = common::Radius<internal::FilledButton, Property>;
     using Border = common::BorderWidth<internal::FilledButton, Property>;
 
-    // QPushButton
-    using Text = common::Text<internal::FilledButton, Property>;
+    using Clickable = button::Clickable<internal::FilledButton, Property>;
 
     using namespace pro::widget;
-
 } // namespace pro::filled_button
 
 class FilledButton : public internal::FilledButton {

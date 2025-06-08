@@ -8,7 +8,7 @@ namespace creeper {
 namespace pro::linear {
     using Property = InternalProperty<QBoxLayout>;
     template <typename T>
-    concept property_concept = std::is_base_of_v<Property, T>;
+    concept property_concept = std::derived_from<T, Property>;
 
     struct Widget final : Property {
         struct Pack {

@@ -18,12 +18,6 @@ protected:
     QColor background_ { 0, 0, 0, 0 };
     QColor border_color_ { 0, 0, 0, 0 };
     double border_width_ = 0.;
-
-    void setup_painter(QPainter& painter) {
-        painter.setPen(QPen { border_color_, border_width_ });
-        painter.setBrush(background_);
-        painter.setRenderHint(QPainter::Antialiasing);
-    }
 };
 
 }
