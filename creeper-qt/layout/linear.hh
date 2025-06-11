@@ -3,10 +3,10 @@
 #include "utility/wrapper/property.hh"
 #include <qlayout.h>
 
-namespace creeper {
+namespace creeper::linear {
 
-namespace pro::linear {
-    using Property = InternalProperty<QBoxLayout>;
+namespace pro {
+    using Property = common::InternalProperty<QBoxLayout>;
     template <typename T>
     concept property_concept = std::derived_from<T, Property>;
 
@@ -90,13 +90,17 @@ namespace pro::linear {
     };
 }
 
+}
+
+namespace creeper {
+
 class Row : public QHBoxLayout {
-    CREEPER_DEFINE_CONSTROCTOR(Row, pro::linear)
+    CREEPER_DEFINE_CONSTROCTOR(Row, linear::pro)
     using QHBoxLayout::QHBoxLayout;
 };
 
 class Col : public QVBoxLayout {
-    CREEPER_DEFINE_CONSTROCTOR(Col, pro::linear)
+    CREEPER_DEFINE_CONSTROCTOR(Col, linear::pro)
     using QVBoxLayout::QVBoxLayout;
 };
 

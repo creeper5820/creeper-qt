@@ -3,10 +3,10 @@
 #include "utility/wrapper/property.hh"
 #include <qwidget.h>
 
-namespace creeper {
+namespace creeper::widget {
 
-namespace pro::widget {
-    using Property = InternalProperty<QWidget>;
+namespace pro {
+    using Property = common::InternalProperty<QWidget>;
     template <typename T>
     concept property_concept = std::derived_from<T, Property>;
 
@@ -136,10 +136,21 @@ namespace pro::widget {
         explicit WindowOpacity(double _) { level = _; }
         void apply(QWidget& widget) const override { widget.setWindowOpacity(level); }
     };
+
+    // 语言结构相关
+    struct Parent final : Property {
+        QWidget* parent;
+        explicit Parent(QWidget* _) { parent = _; }
+        void apply(QWidget& widget) const override { widget.setParent(parent); }
+    };
 }
 
+}
+
+namespace creeper {
+
 class Widget : public QWidget {
-    CREEPER_DEFINE_CONSTROCTOR(Widget, pro::widget);
+    CREEPER_DEFINE_CONSTROCTOR(Widget, widget::pro);
     using QWidget::QWidget;
 };
 

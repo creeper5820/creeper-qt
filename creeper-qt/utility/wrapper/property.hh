@@ -22,13 +22,9 @@ public:                                                                         
     }                                                                                              \
     void apply(const NAMESPACE::property_concept auto& property) { property.apply(*this); }
 
-namespace creeper {
+namespace creeper::common {
 
-template <typename Instance> struct InternalProperty {
-    virtual void apply(Instance& _) const = 0;
-};
-
-namespace pro::common {
+namespace pro {
 
     // 通用半径长度
     template <typename Widget, class Token>
@@ -86,6 +82,18 @@ namespace pro::common {
         void apply(Widget& self) const override { self.set_background(*this); }
     };
 
+    // 通用水波纹颜色
+    template <class Widget, class Token>
+        requires requires(Widget widget) { widget.set_water_color(QColor {}); }
+    struct WaterColor final : public QColor, Token {
+        using QColor::QColor;
+        void apply(Widget& self) const override { self.set_water_color(*this); }
+    };
+
 }
+
+template <typename Instance> struct InternalProperty {
+    virtual void apply(Instance& _) const = 0;
+};
 
 }
