@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(creeper-qt VERSION 1.0.0 LANGUAGES CXX)
+project(creeper-qt VERSION 2.0.0 LANGUAGES CXX)
 
 set(BUILD_EXAMPLE ON)
 

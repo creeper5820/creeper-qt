@@ -18,9 +18,9 @@ struct IAnimation {
 class AnimationCore {
 public:
     // 构造完毕后默认不开启，需要添加动画或者手动开启
-    explicit AnimationCore(QWidget& widget, int ms = 1'000 / 60) {
+    explicit AnimationCore(QWidget& widget, int hz = 60) {
         QObject::connect(&scheduler, &QTimer::timeout, [&widget] { widget.update(); });
-        scheduler.setInterval(ms);
+        scheduler.setInterval(1'000 / hz);
     }
 
     // 添加动画，动画执行完毕后会自动销毁
@@ -37,6 +37,8 @@ public:
         animations.erase(erase_first, erase_last);
         if (animations.empty()) scheduler.stop();
     }
+
+    void set_interval(int hz) { scheduler.setInterval(hz); }
 
     // 不建议手动操作开关，程序会根据动画存量来处理
     void set_status(bool running) { running ? scheduler.start() : scheduler.stop(); }

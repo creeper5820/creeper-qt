@@ -1,5 +1,4 @@
 #include "filled-button.hh"
-#include <iostream>
 
 #include <qevent.h>
 #include <qpainterpath.h>
@@ -8,20 +7,18 @@
 #include "utility/painter/helper.hh"
 using creeper::util::PainterHelper;
 
-#include "utility/animation/math.hh"
-using creeper::util::animation::update_pid_using_target;
-
 #include "utility/animation/core.hh"
-using creeper::util::animation::AnimationCore;
-
+#include "utility/animation/math.hh"
 #include "utility/animation/water-ripple.hh"
-using creeper::util::animation::WaterRipple;
+using namespace creeper::util::animation;
 
 namespace creeper::filled_button::internal {
 
 struct FilledButton::Impl {
 public:
     AnimationCore animation_core;
+    bool enable_water_ripple = true;
+    double water_ripple_step = 3.;
 
     double radius = 0;
     QColor text_color = Qt::black;
@@ -36,7 +33,7 @@ public:
     bool is_mouse_hover = false;
 
     explicit Impl(QPushButton& self)
-        : animation_core(self, 10) { }
+        : animation_core(self, 90) { }
 
     void paint_event(QPushButton& self, QPaintEvent* event) {
         auto painter = QPainter { &self };
@@ -58,15 +55,17 @@ public:
     }
 
     void mouse_release_event(QPushButton& self, QMouseEvent* event) {
-        const auto path = make_rounded_rectangle_path(self.rect(), radius);
-        const auto animation = WaterRipple { self, path, event->pos(), water_color,
-            std::max<double>(self.width(), self.height()), 5, 0.5 };
-        animation_core.append_animation(std::make_unique<WaterRipple>(std::move(animation)));
+        if (enable_water_ripple) {
+            const auto path = make_rounded_rectangle_path(self.rect(), radius);
+            const auto animation = WaterRipple { self, path, event->pos(), water_color,
+                std::max<double>(self.width(), self.height()), water_ripple_step, 0.5 };
+            animation_core.append_animation(std::make_unique<WaterRipple>(std::move(animation)));
+        }
     }
 
-    void enter_event(QEvent* event) { is_mouse_hover = true; }
+    void enter_event(QPushButton& self, QEvent* event) { is_mouse_hover = true; }
 
-    void leave_event(QEvent* event) { is_mouse_hover = false; }
+    void leave_event(QPushButton& self, QEvent* event) { is_mouse_hover = false; }
 
 private:
     constexpr static inline double mouse_hover_opacity = 0.5;
@@ -88,6 +87,7 @@ FilledButton::FilledButton()
 FilledButton::~FilledButton() = default;
 
 // 属性设置接口实现
+
 void FilledButton::set_radius(double radius) { pimpl->radius = radius; }
 
 void FilledButton::set_border_width(double border) { pimpl->border_width = border; }
@@ -100,9 +100,9 @@ void FilledButton::set_text_color(const QColor& color) { pimpl->text_color = col
 
 void FilledButton::set_background(const QColor& color) { pimpl->background = color; }
 
-void FilledButton::set_water_ripple_status(bool enable) { }
+void FilledButton::set_water_ripple_status(bool enable) { pimpl->enable_water_ripple = enable; }
 
-void FilledButton::set_water_ripple_step(double step) { }
+void FilledButton::set_water_ripple_step(double step) { pimpl->water_ripple_step = step; }
 
 // Qt 接口重载
 
@@ -110,11 +110,17 @@ void FilledButton::mouseReleaseEvent(QMouseEvent* event) {
     pimpl->mouse_release_event(*this, event);
     QPushButton::mouseReleaseEvent(event);
 }
-
-void FilledButton::paintEvent(QPaintEvent* event) { pimpl->paint_event(*this, event); }
-
-void FilledButton::enterEvent(QEvent* event) { QPushButton::enterEvent(event); }
-
-void FilledButton::leaveEvent(QEvent* event) { QPushButton::leaveEvent(event); }
+void FilledButton::paintEvent(QPaintEvent* event) {
+    pimpl->paint_event(*this, event);
+    /* Disable QPushButton::paintEvent */;
+}
+void FilledButton::enterEvent(QEvent* event) {
+    pimpl->enter_event(*this, event);
+    QPushButton::enterEvent(event);
+}
+void FilledButton::leaveEvent(QEvent* event) {
+    pimpl->leave_event(*this, event);
+    QPushButton::leaveEvent(event);
+}
 
 }
