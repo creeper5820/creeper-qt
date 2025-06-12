@@ -53,31 +53,23 @@ public:
     inline PainterHelper& ellipse(const QColor& background, const QColor& border_color,
         double border_width, const QRectF& rect) {
 
-        const auto inliner_border_rectangle = rect.adjusted(
-            border_width / 2, border_width / 2, -border_width / 2, -border_width / 2);
-        const auto inliner_outside_rectangle
-            = rect.adjusted(border_width, border_width, -border_width, -border_width);
+        brush_only({ background }).drawEllipse(rect);
 
-        painter.setBrush(Qt::NoBrush);
-        painter.setPen(QPen { border_color, border_width });
-        painter.drawEllipse(inliner_border_rectangle);
-
-        painter.setBrush(QBrush { background });
-        painter.setPen(Qt::NoPen);
-        painter.drawEllipse(inliner_outside_rectangle);
+        const auto half = border_width / 2;
+        if (border_width != 0)
+            pen_only({ border_color, border_width })
+                .drawEllipse(rect.adjusted(half, half, -half, -half));
 
         return *this;
     }
     inline PainterHelper& ellipse(const QColor& background, const QColor& border_color,
         double border_width, const QPointF& origin, double radius_x, double radius_y) {
 
-        painter.setBrush(Qt::NoBrush);
-        painter.setPen(QPen { border_color, border_width });
-        painter.drawEllipse(origin, radius_x - border_width / 2, radius_y - border_width / 2);
+        brush_only({ background }).drawEllipse(origin, radius_x, radius_y);
 
-        painter.setBrush(QBrush { background });
-        painter.setPen(Qt::NoPen);
-        painter.drawEllipse(origin, radius_x, radius_y);
+        if (border_width != 0)
+            pen_only({ border_color, border_width })
+                .drawEllipse(origin, radius_x - border_width / 2, radius_y - border_width / 2);
 
         return *this;
     }
@@ -85,18 +77,14 @@ public:
     inline PainterHelper& rectangle(const QColor& background, const QColor& border_color,
         double border_width, const QRectF& rect) {
 
+        brush_only({ background }).drawRect(rect);
+
+        if (border_width == 0) return *this;
+
         const auto inliner_border_rectangle = rect.adjusted(
             border_width / 2, border_width / 2, -border_width / 2, -border_width / 2);
-        const auto inliner_outside_rectangle
-            = rect.adjusted(border_width, border_width, -border_width, -border_width);
 
-        painter.setBrush(Qt::NoBrush);
-        painter.setPen(QPen { border_color, border_width });
-        painter.drawRect(inliner_border_rectangle);
-
-        painter.setBrush(QBrush { background });
-        painter.setPen(Qt::NoPen);
-        painter.drawRect(inliner_outside_rectangle);
+        pen_only({ border_color, border_width }).drawRect(inliner_border_rectangle);
 
         return *this;
     }
@@ -104,25 +92,39 @@ public:
     inline PainterHelper& rounded_rectangle(const QColor& background, const QColor& border_color,
         double border_width, const QRectF& rect, double radius_x, double radius_y) {
 
+        brush_only({ background }).drawRoundedRect(rect, radius_x, radius_y);
+
+        if (border_width == 0) return *this;
         const auto inliner_border_rectangle = rect.adjusted(
             border_width / 2, border_width / 2, -border_width / 2, -border_width / 2);
-        const auto inliner_outside_rectangle
-            = rect.adjusted(border_width, border_width, -border_width, -border_width);
 
-        painter.setBrush(Qt::NoBrush);
-        painter.setPen(QPen { border_color, border_width });
-        painter.drawRoundedRect(inliner_border_rectangle, std::max(radius_x - border_width / 2, 0.),
-            std::max(radius_y - border_width / 2, 0.));
+        pen_only({ border_color, border_width })
+            .drawRoundedRect(inliner_border_rectangle, std::max(radius_x - border_width / 2, 0.),
+                std::max(radius_y - border_width / 2, 0.));
 
-        painter.setBrush(QBrush { background });
-        painter.setPen(Qt::NoPen);
-        painter.drawRoundedRect(inliner_outside_rectangle, std::max(radius_x - border_width, 0.),
-            std::max(radius_y - border_width, 0.));
+        return *this;
+    }
 
+    // Pen 是以路径为中心来绘制图片，有绘出 rect 导致画面被裁切的可能，由于是 path 类型，不好做限制
+    inline PainterHelper& path(const QColor& background, const QColor& border_color,
+        double border_width, const QPainterPath& path) {
+        brush_only({ background }).drawPath(path);
+        if (border_width != 0) pen_only({ border_color, border_width }).drawPath(path);
         return *this;
     }
 
 private:
     QPainter& painter;
+
+    QPainter& pen_only(const QPen& pen) {
+        painter.setBrush(Qt::NoBrush);
+        painter.setPen(pen);
+        return painter;
+    }
+    QPainter& brush_only(const QBrush& brush) {
+        painter.setBrush(brush);
+        painter.setPen(Qt::NoPen);
+        return painter;
+    }
 };
 }

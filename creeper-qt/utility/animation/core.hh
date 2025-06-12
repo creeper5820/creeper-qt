@@ -10,10 +10,9 @@
 
 namespace creeper::util::animation {
 
-// 当 update 返回 true，即表示需要销毁动画
 struct IAnimation {
     virtual ~IAnimation() = default;
-    virtual bool update() = 0;
+    virtual bool update(const QPaintEvent&) = 0;
 };
 
 class AnimationCore {
@@ -25,15 +24,16 @@ public:
     }
 
     // 添加动画，动画执行完毕后会自动销毁
-    AnimationCore& append_animation(std::unique_ptr<IAnimation> animation) {
+    void append_animation(std::unique_ptr<IAnimation> animation) {
         animations.push_back(std::move(animation));
         if (!scheduler.isActive()) scheduler.start();
-        return *this;
     }
 
-    void paint_event(QPaintEvent* event) {
+    void paint_event(const QPaintEvent& event) {
         const auto [erase_first, erase_last] = std::ranges::remove_if(
-            animations, [](const auto& animation) { return animation->update(); });
+            animations, [event](const std::unique_ptr<IAnimation>& animation) {
+                return animation->update(event);
+            });
         animations.erase(erase_first, erase_last);
         if (animations.empty()) scheduler.stop();
     }
