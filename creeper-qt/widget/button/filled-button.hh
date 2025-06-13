@@ -41,6 +41,7 @@ namespace filled_button::pro {
     concept property_concept = std::derived_from<T, Property> || widget::pro::property_concept<T>;
 
     using Text        = common::pro::Text<internal::FilledButton, Property>;
+    using TextColor   = common::pro::TextColor<internal::FilledButton, Property>;
     using Radius      = common::pro::Radius<internal::FilledButton, Property>;
     using BorderWidth = common::pro::BorderWidth<internal::FilledButton, Property>;
     using BorderColor = common::pro::BorderColor<internal::FilledButton, Property>;

@@ -39,6 +39,7 @@ int main(int argc, char* argv[]) {
         { new FilledButton {
             basic_property,
             fb::Text { "你好世界" },
+            fb::TextColor { green800 },
             fb::Font { "JetBrains Mono", 15 },
             fb::Background { green200 },
             fb::BorderColor { green300 },

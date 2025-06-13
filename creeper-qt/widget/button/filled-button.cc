@@ -21,8 +21,10 @@ public:
     static constexpr auto kLeaveColor = QColor { 0, 0, 0, 00 };
 
     AnimationCore animation_core;
+
+    QPixmap water_ripple;
     bool enable_water_ripple = true;
-    double water_ripple_step = 5.;
+    double water_ripple_step = 1.;
 
     double radius     = 0;
     QColor text_color = Qt::black;
@@ -38,7 +40,7 @@ public:
 
 public:
     explicit Impl(QPushButton& self)
-        : animation_core(self, 90) { }
+        : animation_core([&self] { self.update(); }, 90) { }
 
     void paint_event(QPushButton& self, QPaintEvent* event) {
         auto painter = QPainter { &self };
@@ -46,36 +48,31 @@ public:
             .set_render_hint(QPainter::RenderHint::Antialiasing)
             .set_opacity(1.)
             .rounded_rectangle(background, border_color, border_width, self.rect(), radius, radius)
+            .set_opacity(1.)
             .rounded_rectangle(hover_color, Qt::transparent, 0, self.rect(), radius, radius)
+            .set_opacity(1.)
             .simple_text(self.text(), self.font(), text_color, self.rect(), Qt::AlignCenter);
-
-        animation_core.paint_event(*event);
     }
 
     void mouse_release_event(QPushButton& self, QMouseEvent* event) {
         if (enable_water_ripple) {
             const auto button_path  = make_rounded_rectangle_path(self.rect(), radius);
             const auto max_distance = std::max<double>(self.width(), self.height());
-            animation_core.append(std::make_unique<WaterRipple>(self, button_path, event->pos(),
-                water_color, max_distance, water_ripple_step, 0.5));
+            animation_core.append(std::make_unique<WaterRipple>(water_color, button_path,
+                event->pos(), water_ripple_step, max_distance,
+                [](const WaterRipple::Renderer& func) -> bool { return false; }));
         }
     }
 
     void enter_event(QPushButton& self, QEvent* event) {
-        animation_core.append(std::make_unique<GradientColor>(
-            hover_color, kHoverColor, 0.1, [this](const QColor& color) {
-                hover_color = color;
-                return !is_mouse_hover;
-            }));
+        animation_core.append(std::make_unique<GradientColor>(hover_color, kHoverColor, 0.1,
+            [this](const QColor& color) { return hover_color = color, !is_mouse_hover; }));
         is_mouse_hover = true;
     }
 
     void leave_event(QPushButton& self, QEvent* event) {
-        animation_core.append(std::make_unique<GradientColor>(
-            hover_color, kLeaveColor, 0.1, [this](const QColor& color) {
-                hover_color = color;
-                return is_mouse_hover;
-            }));
+        animation_core.append(std::make_unique<GradientColor>(hover_color, kLeaveColor, 0.1,
+            [this](const QColor& color) { return hover_color = color, is_mouse_hover; }));
         is_mouse_hover = false;
     }
 

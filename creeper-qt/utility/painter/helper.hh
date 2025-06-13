@@ -10,7 +10,7 @@ public:
     explicit PainterHelper(QPainter& painter)
         : painter(painter) { }
 
-    inline void done() { /* 充当语气助词的函数 */ }
+    inline void done() { }
 
     inline PainterHelper& apply(std::function<void(QPainter&)> function) {
         function(painter);
@@ -110,6 +110,11 @@ public:
         double border_width, const QPainterPath& path) {
         brush_only({ background }).drawPath(path);
         if (border_width != 0) pen_only({ border_color, border_width }).drawPath(path);
+        return *this;
+    }
+
+    inline PainterHelper& pixmap(const QPixmap& pixmap, const QRectF& dst, const QRectF& src) {
+        painter.drawPixmap(dst, pixmap, src);
         return *this;
     }
 

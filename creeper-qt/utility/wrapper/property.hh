@@ -74,6 +74,14 @@ namespace pro {
         void apply(Widget& self) const override { self.setText(*this); }
     };
 
+    // 通用文字颜色
+    template <class Widget, class Token>
+        requires requires(Widget widget) { widget.set_text_color(QColor {}); }
+    struct TextColor final : public QColor, Token {
+        using QColor::QColor;
+        void apply(Widget& self) const override { self.set_text_color(*this); }
+    };
+
     // 通用背景颜色
     template <class Widget, class Token>
         requires requires(Widget widget) { widget.set_background(QColor {}); }

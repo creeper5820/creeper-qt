@@ -31,7 +31,7 @@ public:
         , update_callback(update_callback) { }
 
 private:
-    bool update(const QPaintEvent&) override {
+    bool update() override {
         begin = lerp(begin, final, ratio);
         return (begin - final).cwiseAbs().maxCoeff() < 1e-1 || update_callback(from_vector4(begin));
     }
