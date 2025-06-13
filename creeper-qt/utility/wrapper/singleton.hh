@@ -1,14 +1,14 @@
 #pragma once
 #include <memory>
 
-namespace util {
+namespace creeper::util {
 
 template <typename T> class Singleton {
 public:
     static T& instance();
 
-    Singleton(const Singleton&) = delete;
-    Singleton& operator=(const Singleton) = delete;
+    Singleton(const Singleton&)            = delete;
+    Singleton& operator=(const Singleton&) = delete;
 
 protected:
     struct token { };

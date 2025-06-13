@@ -17,12 +17,12 @@ namespace creeper::filled_button::internal {
 
 struct FilledButton::Impl {
 public:
-    static constexpr auto kHoverColor = QColor { 0, 0, 0, 50 };
+    static constexpr auto kHoverColor = QColor { 0, 0, 0, 30 };
     static constexpr auto kLeaveColor = QColor { 0, 0, 0, 00 };
 
     AnimationCore animation_core;
     bool enable_water_ripple = true;
-    double water_ripple_step = 3.;
+    double water_ripple_step = 5.;
 
     double radius     = 0;
     QColor text_color = Qt::black;
@@ -46,7 +46,8 @@ public:
             .set_render_hint(QPainter::RenderHint::Antialiasing)
             .set_opacity(1.)
             .rounded_rectangle(background, border_color, border_width, self.rect(), radius, radius)
-            .rounded_rectangle(hover_color, Qt::transparent, 0, self.rect(), radius, radius);
+            .rounded_rectangle(hover_color, Qt::transparent, 0, self.rect(), radius, radius)
+            .simple_text(self.text(), self.font(), text_color, self.rect(), Qt::AlignCenter);
 
         animation_core.paint_event(*event);
     }

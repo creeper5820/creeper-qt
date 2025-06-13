@@ -16,13 +16,13 @@ int main(int argc, char* argv[]) {
     auto application = new QApplication { argc, argv };
 
     namespace w = widget::pro;
-    const auto basic_property
-        = std::tuple { w::MinimumSize { 100, 50 }, w::MaximumSize { 500, 300 } };
+    const auto basic_property =
+        std::tuple { w::MinimumSize { 100, 50 }, w::MaximumSize { 500, 300 } };
 
     namespace rr = rounded_rect::pro;
     namespace fb = filled_button::pro;
     namespace el = ellipse::pro;
-    auto widget = new Widget { w::Layout { new Row { linear::pro::Widgets { {
+    auto widget  = new Widget { w::Layout { new Row { linear::pro::Widgets { {
         { new RoundedRect {
             basic_property,
             rr::Background { green200 },
@@ -38,7 +38,8 @@ int main(int argc, char* argv[]) {
         } },
         { new FilledButton {
             basic_property,
-            fb::Text { "This Button" },
+            fb::Text { "你好世界" },
+            fb::Font { "JetBrains Mono", 15 },
             fb::Background { green200 },
             fb::BorderColor { green300 },
             fb::WaterColor { green500 },

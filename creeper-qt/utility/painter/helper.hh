@@ -81,8 +81,8 @@ public:
 
         if (border_width == 0) return *this;
 
-        const auto inliner_border_rectangle = rect.adjusted(
-            border_width / 2, border_width / 2, -border_width / 2, -border_width / 2);
+        const auto inliner_border_rectangle =
+            rect.adjusted(border_width / 2, border_width / 2, -border_width / 2, -border_width / 2);
 
         pen_only({ border_color, border_width }).drawRect(inliner_border_rectangle);
 
@@ -95,8 +95,8 @@ public:
         brush_only({ background }).drawRoundedRect(rect, radius_x, radius_y);
 
         if (border_width == 0) return *this;
-        const auto inliner_border_rectangle = rect.adjusted(
-            border_width / 2, border_width / 2, -border_width / 2, -border_width / 2);
+        const auto inliner_border_rectangle =
+            rect.adjusted(border_width / 2, border_width / 2, -border_width / 2, -border_width / 2);
 
         pen_only({ border_color, border_width })
             .drawRoundedRect(inliner_border_rectangle, std::max(radius_x - border_width / 2, 0.),
@@ -110,6 +110,15 @@ public:
         double border_width, const QPainterPath& path) {
         brush_only({ background }).drawPath(path);
         if (border_width != 0) pen_only({ border_color, border_width }).drawPath(path);
+        return *this;
+    }
+
+    inline PainterHelper& simple_text(const QString& text, const QFont& font, const QColor& color,
+        const QRectF& rect, Qt::Alignment alignment) {
+        painter.setFont(font);
+        painter.setBrush(Qt::NoBrush);
+        painter.setPen({ color });
+        painter.drawText(rect, alignment, text);
         return *this;
     }
 
