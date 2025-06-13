@@ -23,3 +23,8 @@ ColumnLimit: 100
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 AllowShortBlocksOnASingleLine: Empty
 AllowShortFunctionsOnASingleLine: All
+
+BreakBeforeBinaryOperators: NonAssignment
+PenaltyBreakAssignment: 2
+PenaltyBreakString: 2
+AlignConsecutiveAssignments: true

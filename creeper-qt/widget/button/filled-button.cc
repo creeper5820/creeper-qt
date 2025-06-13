@@ -1,5 +1,6 @@
 #include "filled-button.hh"
 
+#include <qdebug.h>
 #include <qevent.h>
 #include <qpainterpath.h>
 #include <qtimer.h>
@@ -8,7 +9,7 @@
 using creeper::util::PainterHelper;
 
 #include "utility/animation/core.hh"
-#include "utility/animation/math.hh"
+#include "utility/animation/gradient-color.hh"
 #include "utility/animation/water-ripple.hh"
 using namespace creeper::util::animation;
 
@@ -16,11 +17,14 @@ namespace creeper::filled_button::internal {
 
 struct FilledButton::Impl {
 public:
+    static constexpr auto kHoverColor = QColor { 0, 0, 0, 50 };
+    static constexpr auto kLeaveColor = QColor { 0, 0, 0, 00 };
+
     AnimationCore animation_core;
     bool enable_water_ripple = true;
     double water_ripple_step = 3.;
 
-    double radius = 0;
+    double radius     = 0;
     QColor text_color = Qt::black;
     QColor background = Qt::white;
 
@@ -29,51 +33,52 @@ public:
 
     QColor water_color = Qt::black;
 
-    double hover_opacity = 0;
+    QColor hover_color  = Qt::transparent;
     bool is_mouse_hover = false;
 
+public:
     explicit Impl(QPushButton& self)
         : animation_core(self, 90) { }
 
     void paint_event(QPushButton& self, QPaintEvent* event) {
         auto painter = QPainter { &self };
-
         PainterHelper { painter }
             .set_render_hint(QPainter::RenderHint::Antialiasing)
-
-            // Background
-            .set_opacity(1)
+            .set_opacity(1.)
             .rounded_rectangle(background, border_color, border_width, self.rect(), radius, radius)
-
-            // Hover Animation
-            .set_opacity(
-                hover_opacity = update_pid_using_target(hover_opacity, get_hover_opacity_target()))
-            .rounded_rectangle(background, Qt::transparent, 0, self.rect(), radius, radius)
-            .done();
+            .rounded_rectangle(hover_color, Qt::transparent, 0, self.rect(), radius, radius);
 
         animation_core.paint_event(*event);
     }
 
     void mouse_release_event(QPushButton& self, QMouseEvent* event) {
         if (enable_water_ripple) {
-            const auto path = make_rounded_rectangle_path(self.rect(), radius);
-            const auto animation = WaterRipple { self, path, event->pos(), water_color,
-                std::max<double>(self.width(), self.height()), water_ripple_step, 0.5 };
-            animation_core.append_animation(std::make_unique<WaterRipple>(std::move(animation)));
+            const auto button_path  = make_rounded_rectangle_path(self.rect(), radius);
+            const auto max_distance = std::max<double>(self.width(), self.height());
+            animation_core.append(std::make_unique<WaterRipple>(self, button_path, event->pos(),
+                water_color, max_distance, water_ripple_step, 0.5));
         }
     }
 
-    void enter_event(QPushButton& self, QEvent* event) { is_mouse_hover = true; }
-
-    void leave_event(QPushButton& self, QEvent* event) { is_mouse_hover = false; }
-
-private:
-    constexpr static inline double mouse_hover_opacity = 0.5;
-    constexpr static inline double mouse_leave_opacity = 0.0;
-    double get_hover_opacity_target() {
-        return is_mouse_hover ? mouse_hover_opacity : mouse_leave_opacity;
+    void enter_event(QPushButton& self, QEvent* event) {
+        animation_core.append(std::make_unique<GradientColor>(
+            hover_color, kHoverColor, 0.1, [this](const QColor& color) {
+                hover_color = color;
+                return !is_mouse_hover;
+            }));
+        is_mouse_hover = true;
     }
 
+    void leave_event(QPushButton& self, QEvent* event) {
+        animation_core.append(std::make_unique<GradientColor>(
+            hover_color, kLeaveColor, 0.1, [this](const QColor& color) {
+                hover_color = color;
+                return is_mouse_hover;
+            }));
+        is_mouse_hover = false;
+    }
+
+private:
     static QPainterPath make_rounded_rectangle_path(const QRectF& rect, double radius) {
         auto path = QPainterPath {};
         path.addRoundedRect(rect, radius, radius);

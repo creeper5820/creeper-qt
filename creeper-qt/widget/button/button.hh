@@ -2,9 +2,8 @@
 
 #include <qabstractbutton.h>
 
-namespace creeper {
-
-namespace pro::button {
+namespace creeper::button {
+namespace pro {
 
     template <std::derived_from<QAbstractButton> Widget, class Token>
     struct Clickable final : Token {
@@ -16,5 +15,4 @@ namespace pro::button {
     };
 
 }
-
 }

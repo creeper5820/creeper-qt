@@ -40,13 +40,13 @@ namespace filled_button::pro {
     template <typename T>
     concept property_concept = std::derived_from<T, Property> || widget::pro::property_concept<T>;
 
-    using Text = common::pro::Text<internal::FilledButton, Property>;
-    using Radius = common::pro::Radius<internal::FilledButton, Property>;
+    using Text        = common::pro::Text<internal::FilledButton, Property>;
+    using Radius      = common::pro::Radius<internal::FilledButton, Property>;
     using BorderWidth = common::pro::BorderWidth<internal::FilledButton, Property>;
     using BorderColor = common::pro::BorderColor<internal::FilledButton, Property>;
-    using Background = common::pro::Background<internal::FilledButton, Property>;
-    using WaterColor = common::pro::WaterColor<internal::FilledButton, Property>;
-    using Clickable = ::creeper::pro::button::Clickable<internal::FilledButton, Property>;
+    using Background  = common::pro::Background<internal::FilledButton, Property>;
+    using WaterColor  = common::pro::WaterColor<internal::FilledButton, Property>;
+    using Clickable   = button::pro::Clickable<internal::FilledButton, Property>;
 
     using namespace widget::pro;
 }
