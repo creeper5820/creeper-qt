@@ -21,10 +21,10 @@ public:
     static constexpr auto kLeaveColor = QColor { 0, 0, 0, 00 };
 
     AnimationCore animation_core;
+    WaterRippleContainer water_ripples;
 
-    QPixmap water_ripple;
     bool enable_water_ripple = true;
-    double water_ripple_step = 1.;
+    double water_ripple_step = 5.;
 
     double radius     = 0;
     QColor text_color = Qt::black;
@@ -43,11 +43,16 @@ public:
         : animation_core([&self] { self.update(); }, 90) { }
 
     void paint_event(QPushButton& self, QPaintEvent* event) {
+        const auto water_renderer = [&self, this](QPainter& painter) {
+            water_ripples.render(painter, self.rect(), self.rect());
+        };
+
         auto painter = QPainter { &self };
         PainterHelper { painter }
             .set_render_hint(QPainter::RenderHint::Antialiasing)
             .set_opacity(1.)
             .rounded_rectangle(background, border_color, border_width, self.rect(), radius, radius)
+            .apply(water_renderer)
             .set_opacity(1.)
             .rounded_rectangle(hover_color, Qt::transparent, 0, self.rect(), radius, radius)
             .set_opacity(1.)
@@ -60,7 +65,9 @@ public:
             const auto max_distance = std::max<double>(self.width(), self.height());
             animation_core.append(std::make_unique<WaterRipple>(water_color, button_path,
                 event->pos(), water_ripple_step, max_distance,
-                [](const WaterRipple::Renderer& func) -> bool { return false; }));
+                [this](std::unique_ptr<WaterRipple::Result> result) -> bool {
+                    return water_ripples.append(std::move(result)), false;
+                }));
         }
     }
 

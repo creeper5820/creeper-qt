@@ -37,14 +37,15 @@ int main(int argc, char* argv[]) {
             el::BorderWidth { 5 },
         } },
         { new FilledButton {
-            basic_property,
+            fb::FixedSize { 100, 50 },
             fb::Text { "你好世界" },
             fb::TextColor { green800 },
             fb::Font { "JetBrains Mono", 15 },
             fb::Background { green200 },
             fb::BorderColor { green300 },
+            fb::BorderWidth { 2 },
             fb::WaterColor { green500 },
-            fb::Radius { 20 },
+            fb::Radius { 10 },
             fb::Clickable { [] { std::println(std::cout, "Clicked This Button"); } },
         } },
     } } } } };

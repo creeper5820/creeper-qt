@@ -7,13 +7,23 @@ namespace creeper::util {
 /// @brief 隐藏冗杂的细节，解放命令式的绘图调用
 class PainterHelper {
 public:
+    using Renderer = std::function<void(QPainter&)>;
+
     explicit PainterHelper(QPainter& painter)
         : painter(painter) { }
 
     inline void done() { }
 
-    inline PainterHelper& apply(std::function<void(QPainter&)> function) {
-        function(painter);
+    inline PainterHelper& apply(const Renderer& renderer) {
+        renderer(painter);
+        return *this;
+    }
+
+    inline PainterHelper& apply(const std::ranges::range auto& renderers)
+        requires std::same_as<std::ranges::range_value_t<decltype(renderers)>, Renderer>
+    {
+        for (const auto& renderer : renderers)
+            renderer(painter);
         return *this;
     }
 
