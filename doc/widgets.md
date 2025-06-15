@@ -27,7 +27,7 @@ qwidget->setMinimumSize(100, 050);
 ......
 ```
 
-Widget 完全继承自 QWidget，只附加了一系列构造方法用于传入配置，和传统调用手段完全兼容，后续所有组件也使用类似封装方法，其中，属性的命名遵循 `set_xxx > Xxx`，如果是原有的接口，则为 `setXxx > Xxx`
+Widget 完全继承自 QWidget，只附加了一系列构造方法用于传入配置，**和传统调用手段完全兼容**，后续所有组件也使用类似封装方法，其中，属性的命名遵循 `set_xxx > Xxx`，如果是原有的接口，则为 `setXxx > Xxx`
 
 使用上述方法，可以便捷的复用已知共有属性，例如:
 
@@ -57,6 +57,10 @@ const auto widget_a = new Widget { ... };
 ```
 
 ## 普通按钮组件
+
+![buttons-dark](image/buttons-dark.png)
+
+![buttons-light](image/buttons-light.png)
 
 ### ElevatedButton
 
