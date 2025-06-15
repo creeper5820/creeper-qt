@@ -5,6 +5,8 @@
 
 namespace creeper::util::theme {
 
+enum class ColorMode { LIGHT, DARK };
+
 struct ColorScheme {
     // Primary
     QColor primary;
@@ -56,7 +58,7 @@ struct Typography {
     QFont button;
 };
 
-constexpr ColorScheme kBlueMikuLightColorScheme = { // 蓝色初音亮色
+constexpr auto kBlueMikuLightColorScheme = ColorScheme { // 蓝色初音亮色
     .primary              = QColor(0, 89, 199),
     .on_primary           = QColor(255, 255, 255),
     .primary_container    = QColor(217, 226, 255),
@@ -93,7 +95,7 @@ constexpr ColorScheme kBlueMikuLightColorScheme = { // 蓝色初音亮色
     .inverse_on_surface = QColor(242, 240, 244),
     .inverse_primary    = QColor(175, 198, 255)
 };
-constexpr ColorScheme kDarkColorScheme = { // 蓝色初音暗色
+constexpr auto kBlueMikuDarkColorScheme = ColorScheme { // 蓝色初音暗色
     .primary              = QColor(175, 198, 255),
     .on_primary           = QColor(0, 45, 108),
     .primary_container    = QColor(0, 67, 152),
@@ -130,5 +132,8 @@ constexpr ColorScheme kDarkColorScheme = { // 蓝色初音暗色
     .inverse_on_surface = QColor(48, 48, 52),
     .inverse_primary    = QColor(0, 89, 199)
 };
+constexpr auto kBlueMikuColorScheme(ColorMode mode) noexcept {
+    return mode == ColorMode::LIGHT ? kBlueMikuLightColorScheme : kBlueMikuDarkColorScheme;
+}
 
 }

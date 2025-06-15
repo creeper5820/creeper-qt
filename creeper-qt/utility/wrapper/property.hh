@@ -63,6 +63,8 @@ namespace pro {
         requires requires(Widget widget) { widget.set_border_color(QColor {}); }
     struct BorderColor final : public QColor, Token {
         using QColor::QColor;
+        explicit BorderColor(const QColor& color)
+            : QColor(color) { }
         void apply(Widget& self) const override { self.set_border_color(*this); }
     };
 
@@ -79,6 +81,8 @@ namespace pro {
         requires requires(Widget widget) { widget.set_text_color(QColor {}); }
     struct TextColor final : public QColor, Token {
         using QColor::QColor;
+        explicit TextColor(const QColor& color)
+            : QColor(color) { }
         void apply(Widget& self) const override { self.set_text_color(*this); }
     };
 
@@ -87,6 +91,8 @@ namespace pro {
         requires requires(Widget widget) { widget.set_background(QColor {}); }
     struct Background final : public QColor, Token {
         using QColor::QColor;
+        explicit Background(const QColor& color)
+            : QColor(color) { }
         void apply(Widget& self) const override { self.set_background(*this); }
     };
 
@@ -95,6 +101,8 @@ namespace pro {
         requires requires(Widget widget) { widget.set_water_color(QColor {}); }
     struct WaterColor final : public QColor, Token {
         using QColor::QColor;
+        explicit WaterColor(const QColor& color)
+            : QColor(color) { }
         void apply(Widget& self) const override { self.set_water_color(*this); }
     };
 

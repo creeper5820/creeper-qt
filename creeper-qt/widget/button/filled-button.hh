@@ -1,5 +1,6 @@
 #pragma once
 
+#include "utility/theme/theme.hh"
 #include "utility/wrapper/pimpl.hh"
 #include "utility/wrapper/property.hh"
 #include "widget/button/button.hh"
@@ -14,6 +15,9 @@ namespace filled_button::internal {
         CREEPER_PIMPL_DEFINTION(FilledButton);
 
     public:
+        void set_color_scheme(const ColorScheme& pack);
+        void load_theme_manager(ThemeManager& manager);
+
         void set_radius(double radius);
         void set_border_width(double border);
 
@@ -21,6 +25,7 @@ namespace filled_button::internal {
         void set_border_color(const QColor& color);
         void set_text_color(const QColor& color);
         void set_background(const QColor& color);
+        void set_hover_color(const QColor& color);
 
         void set_water_ripple_status(bool enable);
         void set_water_ripple_step(double step);
@@ -39,6 +44,9 @@ namespace filled_button::pro {
 
     template <typename T>
     concept property_concept = std::derived_from<T, Property> || widget::pro::property_concept<T>;
+
+    using ColorScheme  = util::theme::pro::ColorScheme<internal::FilledButton, Property>;
+    using ThemeManager = util::theme::pro::ThemeManager<internal::FilledButton, Property>;
 
     using Text        = common::pro::Text<internal::FilledButton, Property>;
     using TextColor   = common::pro::TextColor<internal::FilledButton, Property>;

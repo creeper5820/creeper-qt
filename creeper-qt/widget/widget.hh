@@ -1,6 +1,7 @@
 #pragma once
 
 #include "utility/wrapper/property.hh"
+#include <qgraphicseffect.h>
 #include <qwidget.h>
 
 namespace creeper::widget {
@@ -101,6 +102,12 @@ namespace pro {
     };
     struct ClearMask final : Property {
         void apply(QWidget& widget) const override { widget.clearMask(); }
+    };
+
+    struct GraphicsEffect final : Property {
+        QGraphicsEffect* effect;
+        explicit GraphicsEffect(QGraphicsEffect* p) { effect = p; }
+        void apply(QWidget& widget) const override { widget.setGraphicsEffect(effect); }
     };
 
     // Window 相关

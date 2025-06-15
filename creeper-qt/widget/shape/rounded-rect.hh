@@ -37,7 +37,7 @@ namespace rounded_rect::pro {
     // 通用属性
     using RadiusX = common::pro::RadiusX<internal::RoundedRect, Property>;
     using RadiusY = common::pro::RadiusY<internal::RoundedRect, Property>;
-    using Radius = common::pro::Radius<internal::RoundedRect, Property>;
+    using Radius  = common::pro::Radius<internal::RoundedRect, Property>;
 
     using Background = common::pro::Background<internal::RoundedRect, Property>;
 
