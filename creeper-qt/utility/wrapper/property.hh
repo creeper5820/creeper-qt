@@ -24,92 +24,110 @@ public:                                                                         
 
 namespace creeper::common {
 
+template <typename Instance> struct Token {
+    void apply(auto self) { }
+};
+
 namespace pro {
 
     // 通用半径长度
-    template <typename Widget, class Token>
-        requires requires(Widget widget) { widget.set_radius(double {}); }
-    struct RadiusX final : Token {
+    template <class Token> struct RadiusX final : Token {
         double radius;
         explicit RadiusX(double p) { radius = p; }
-        void apply(Widget& self) const override { self.set_radius_x(radius); }
+        void apply(auto& self) const
+            requires requires { self.set_radius_x(radius); }
+        {
+            self.set_radius_x(radius);
+        }
     };
-    template <typename Widget, class Token>
-        requires requires(Widget widget) { widget.set_radius(double {}); }
-    struct RadiusY final : Token {
+    template <class Token> struct RadiusY final : Token {
         double radius;
         explicit RadiusY(double p) { radius = p; }
-        void apply(Widget& self) const override { self.set_radius_y(radius); }
+        void apply(auto& self) const
+            requires requires { self.set_radius_y(radius); }
+        {
+            self.set_radius_y(radius);
+        }
     };
-    template <typename Widget, class Token>
-        requires requires(Widget widget) { widget.set_radius(double {}); }
-    struct Radius final : Token {
+    template <class Token> struct Radius final : Token {
         double radius;
         explicit Radius(double p) { radius = p; }
-        void apply(Widget& self) const override { self.set_radius(radius); }
+        void apply(auto& self) const
+            requires requires { self.set_radius(radius); }
+        {
+            self.set_radius(radius);
+        }
     };
 
     // 通用边界宽度
-    template <class Widget, class Token>
-        requires requires(Widget widget) { widget.set_border_width(double {}); }
-    struct BorderWidth final : Token {
+    template <class Token> struct BorderWidth final : Token {
         double border;
         explicit BorderWidth(double p) { border = p; }
-        void apply(Widget& self) const override { self.set_border_width(border); }
+        void apply(auto& self) const
+            requires requires { self.set_border_width(border); }
+        {
+            self.set_border_width(border);
+        }
     };
 
     // 通用边界颜色
-    template <class Widget, class Token>
-        requires requires(Widget widget) { widget.set_border_color(QColor {}); }
-    struct BorderColor final : public QColor, Token {
+    template <class Token> struct BorderColor final : public QColor, Token {
         using QColor::QColor;
         explicit BorderColor(const QColor& color)
             : QColor(color) { }
-        void apply(Widget& self) const override { self.set_border_color(*this); }
+        void apply(auto& self) const
+            requires requires { self.set_border_color(*this); }
+        {
+            self.set_border_color(*this);
+        }
     };
 
     // 通用文本属性
-    template <class Widget, class Token>
-        requires requires(Widget widget) { widget.setText(QString {}); }
-    struct Text final : public QString, Token {
+    template <class Token> struct Text final : public QString, Token {
         using QString::QString;
-        void apply(Widget& self) const override { self.setText(*this); }
+        void apply(auto& self) const
+            requires requires { self.setText(*this); }
+        {
+            self.setText(*this);
+        }
     };
 
     // 通用文字颜色
-    template <class Widget, class Token>
-        requires requires(Widget widget) { widget.set_text_color(QColor {}); }
-    struct TextColor final : public QColor, Token {
+    template <class Token> struct TextColor final : public QColor, Token {
         using QColor::QColor;
         explicit TextColor(const QColor& color)
             : QColor(color) { }
-        void apply(Widget& self) const override { self.set_text_color(*this); }
+        void apply(auto& self) const
+            requires requires { self.set_text_color(*this); }
+        {
+            self.set_text_color(*this);
+        }
     };
 
     // 通用背景颜色
-    template <class Widget, class Token>
-        requires requires(Widget widget) { widget.set_background(QColor {}); }
-    struct Background final : public QColor, Token {
+    template <class Token> struct Background final : public QColor, Token {
         using QColor::QColor;
         explicit Background(const QColor& color)
             : QColor(color) { }
-        void apply(Widget& self) const override { self.set_background(*this); }
+        void apply(auto& self) const
+            requires requires { self.set_background(*this); }
+        {
+            self.set_background(*this);
+        }
     };
 
     // 通用水波纹颜色
-    template <class Widget, class Token>
-        requires requires(Widget widget) { widget.set_water_color(QColor {}); }
-    struct WaterColor final : public QColor, Token {
+    template <class Token> struct WaterColor final : public QColor, Token {
         using QColor::QColor;
         explicit WaterColor(const QColor& color)
             : QColor(color) { }
-        void apply(Widget& self) const override { self.set_water_color(*this); }
+        void apply(auto& self) const
+            requires requires { self.set_water_color(*this); }
+        {
+            self.set_water_color(*this);
+        }
     };
 
 }
-
-template <typename Instance> struct InternalProperty {
-    virtual void apply(Instance& _) const = 0;
-};
 
 }

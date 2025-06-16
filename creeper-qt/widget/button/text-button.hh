@@ -1,20 +1,22 @@
 #include "widget/button/filled-button.hh"
 
 namespace creeper {
-namespace filled_tonal_button::internal {
-    class FilledTonalButton : public FilledButton {
+namespace text_button::internal {
+    class TextButton : public FilledButton {
     public:
         void set_color_scheme(const ColorScheme& color_scheme) {
-            set_background(color_scheme.secondary_container);
-            set_text_color(color_scheme.on_secondary_container);
+            set_background(Qt::transparent);
+            set_text_color(color_scheme.primary);
+
+            auto hover_color = color_scheme.primary;
+            hover_color.setAlphaF(0.08);
+            set_hover_color(hover_color);
 
             auto water_color = QColor {};
             if (color_scheme.primary.lightness() > 128) {
                 water_color = color_scheme.primary.darker(130);
-                set_hover_color(QColor { 0, 0, 0, 30 });
             } else {
                 water_color = color_scheme.primary.lighter(130);
-                set_hover_color(QColor { 255, 255, 255, 30 });
             }
             water_color.setAlphaF(0.25);
             set_water_color(water_color);
@@ -35,7 +37,7 @@ namespace filled_tonal_button::internal {
     };
 }
 
-namespace filled_tonal_button::pro {
+namespace text_button::pro {
 
     template <typename T>
     concept property_concept =
@@ -45,9 +47,9 @@ namespace filled_tonal_button::pro {
     using namespace button::pro;
 }
 
-class FilledTonalButton : public filled_tonal_button::internal::FilledTonalButton {
-    CREEPER_DEFINE_CONSTROCTOR(FilledTonalButton, filled_tonal_button::pro);
-    using filled_tonal_button::internal::FilledTonalButton::FilledTonalButton;
+class TextButton : public text_button::internal::TextButton {
+    CREEPER_DEFINE_CONSTROCTOR(TextButton, text_button::pro);
+    using text_button::internal::TextButton::TextButton;
 };
 
 }

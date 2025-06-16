@@ -4,6 +4,7 @@
 
 #include "utility/theme/color-scheme.hh"
 #include "utility/wrapper/pimpl.hh"
+#include "widget/widget.hh"
 
 namespace creeper::util::theme {
 
@@ -22,6 +23,8 @@ struct ThemePack {
 class ThemeManager {
     CREEPER_PIMPL_DEFINTION(ThemeManager)
 public:
+    explicit ThemeManager(const ThemePack& pack);
+
     void apply_theme() const;
 
     using Handler = std::function<void(const ThemeManager&)>;
@@ -42,6 +45,7 @@ public:
 
     void set_theme_pack(const ThemePack& pack);
     void set_color_mode(const ColorMode& mode);
+    void toggle_color_mode();
 
     ThemePack theme_pack() const;
     ColorMode color_mode() const;
@@ -51,24 +55,29 @@ public:
 
 namespace pro {
 
-    template <class Widget, class Token>
-        requires requires(Widget widget) { widget.set_color_scheme(ColorScheme {}); }
-    struct ColorScheme final : public util::theme::ColorScheme, Token {
+    template <typename T>
+    concept property_concept = widget::pro::property_concept<T>;
+
+    struct ColorScheme final : public util::theme::ColorScheme, widget::pro::Property {
         using util::theme::ColorScheme::ColorScheme;
         explicit ColorScheme(const util::theme::ColorScheme& p)
             : util::theme::ColorScheme(p) { }
-        void apply(Widget& self) const override { self.set_color_scheme(*this); }
+        void apply(auto& self) const
+            requires requires { self.set_color_scheme(*this); }
+        {
+            self.set_color_scheme(*this);
+        }
     };
 
-    template <class Widget, class Token>
-        requires requires(Widget widget, util::theme::ThemeManager& manager) {
-            widget.load_theme_manager(manager);
-        }
-    struct ThemeManager final : Token {
+    struct ThemeManager final : widget::pro::Property {
         util::theme::ThemeManager& manager;
         explicit ThemeManager(util::theme::ThemeManager& p)
             : manager(p) { }
-        void apply(Widget& self) const override { self.load_theme_manager(manager); }
+        void apply(auto& self) const
+            requires requires { self.load_theme_manager(manager); }
+        {
+            self.load_theme_manager(manager);
+        }
     };
 
 }

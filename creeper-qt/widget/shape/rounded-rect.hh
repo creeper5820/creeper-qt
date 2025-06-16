@@ -29,20 +29,20 @@ namespace rounded_rect::internal {
     };
 }
 namespace rounded_rect::pro {
-    using Property = common::InternalProperty<internal::RoundedRect>;
+    using Property = common::Token<internal::RoundedRect>;
 
     template <typename T>
     concept property_concept = std::derived_from<T, Property> || widget::pro::property_concept<T>;
 
     // 通用属性
-    using RadiusX = common::pro::RadiusX<internal::RoundedRect, Property>;
-    using RadiusY = common::pro::RadiusY<internal::RoundedRect, Property>;
-    using Radius  = common::pro::Radius<internal::RoundedRect, Property>;
+    using RadiusX = common::pro::RadiusX<Property>;
+    using RadiusY = common::pro::RadiusY<Property>;
+    using Radius  = common::pro::Radius<Property>;
 
-    using Background = common::pro::Background<internal::RoundedRect, Property>;
+    using Background = common::pro::Background<Property>;
 
-    using BorderWidth = common::pro::BorderWidth<internal::RoundedRect, Property>;
-    using BorderColor = common::pro::BorderColor<internal::RoundedRect, Property>;
+    using BorderWidth = common::pro::BorderWidth<Property>;
+    using BorderColor = common::pro::BorderColor<Property>;
 
     using namespace widget::pro;
 }

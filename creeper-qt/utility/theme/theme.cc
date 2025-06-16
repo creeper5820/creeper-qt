@@ -19,13 +19,15 @@ struct ThemeManager::Impl {
     }
 
     void remove_handler(const QWidget* key) { handlers.erase(key); }
-
-    void set_theme_pack(const ThemePack& pack) { theme_pack = pack; }
-    void set_color_mode(const ColorMode& mode) { color_mode = mode; }
 };
 
 ThemeManager::ThemeManager()
     : pimpl(std::make_unique<Impl>()) { }
+
+ThemeManager::ThemeManager(const ThemePack& pack)
+    : pimpl(std::make_unique<Impl>()) {
+    pimpl->theme_pack = pack;
+}
 
 ThemeManager::~ThemeManager() = default;
 
@@ -37,8 +39,14 @@ void ThemeManager::append_handler(const QWidget* key, const Handler& handler) {
 
 void ThemeManager::remove_handler(const QWidget* key) { pimpl->remove_handler(key); }
 
-void ThemeManager::set_theme_pack(const ThemePack& pack) { pimpl->set_theme_pack(pack); }
-void ThemeManager::set_color_mode(const ColorMode& mode) { pimpl->set_color_mode(mode); }
+void ThemeManager::set_theme_pack(const ThemePack& pack) { pimpl->theme_pack = pack; }
+void ThemeManager::set_color_mode(const ColorMode& mode) { pimpl->color_mode = mode; }
+
+void ThemeManager::toggle_color_mode() {
+    pimpl->color_mode = (pimpl->color_mode == ColorMode::LIGHT) //
+        ? ColorMode::DARK
+        : ColorMode::LIGHT;
+}
 
 ThemePack ThemeManager::theme_pack() const { return pimpl->theme_pack; }
 ColorMode ThemeManager::color_mode() const { return pimpl->color_mode; }

@@ -4,7 +4,6 @@
 #include "utility/wrapper/pimpl.hh"
 #include "utility/wrapper/property.hh"
 #include "widget/button/button.hh"
-#include "widget/widget.hh"
 
 #include <qpushbutton.h>
 
@@ -39,25 +38,12 @@ namespace filled_button::internal {
 
 }
 namespace filled_button::pro {
-
-    using Property = common::InternalProperty<internal::FilledButton>;
-
     template <typename T>
-    concept property_concept = std::derived_from<T, Property> || widget::pro::property_concept<T>;
+    concept property_concept =
+        util::theme::pro::property_concept<T> || button::pro::property_concept<T>;
 
-    using ColorScheme  = util::theme::pro::ColorScheme<internal::FilledButton, Property>;
-    using ThemeManager = util::theme::pro::ThemeManager<internal::FilledButton, Property>;
-
-    using Text        = common::pro::Text<internal::FilledButton, Property>;
-    using TextColor   = common::pro::TextColor<internal::FilledButton, Property>;
-    using Radius      = common::pro::Radius<internal::FilledButton, Property>;
-    using BorderWidth = common::pro::BorderWidth<internal::FilledButton, Property>;
-    using BorderColor = common::pro::BorderColor<internal::FilledButton, Property>;
-    using Background  = common::pro::Background<internal::FilledButton, Property>;
-    using WaterColor  = common::pro::WaterColor<internal::FilledButton, Property>;
-    using Clickable   = button::pro::Clickable<internal::FilledButton, Property>;
-
-    using namespace widget::pro;
+    using namespace util::theme::pro;
+    using namespace button::pro;
 }
 
 class FilledButton : public filled_button::internal::FilledButton {
