@@ -1,10 +1,14 @@
-<h1 align=center>CREEPER-QT（未发布）</h1>
-
 <div align=center>
+
+<img src="doc/image/creeper.png" title="TODO: 换成自己画的苦力怕娘" alt="Picture" width=150>
+
+<h1>CREEPER-QT（未发布）</h1>
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=9ccbfb)
 ![GitHub Repo stars](https://img.shields.io/github/stars/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=b9c8da)
 ![GitHub repo size](https://img.shields.io/github/repo-size/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=d3bfe6)
+
+`creeper-qt` 是基于 `Qt5` 开发的 UI 集成库，轻量简洁，组件外观大体遵循 `Google Material Design3`，同时改造了老式的命令式调用，使组件构造和配置可以在同一时间完成，添加了主题管理，支持切换明亮和黑暗主题和各种配色，动效部分基于 PID 控制器和弹簧模型等迭代算法，带来更流畅的动画体验和打断效果
 
 </div>
 
@@ -18,7 +22,7 @@
 
 Google小时钟，是我做这个主题最原初的动力，一开始只是想着这钟真漂亮，Qt能不能搞一个出来，于是纯代码自绘了波浪，为此引入了`Eigen`，顺带做了一个UI库，可谓是为了一瓶醋包了这顿饺子
 
-<img title="" src="doc/image/example-clock.png" alt="example-clock" data-align="center">
+<div align=center><img src="doc/image/example-clock.png"></div>
 
 数据结构大作业登陆界面，既然写了库就要好好用起来：
 

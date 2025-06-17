@@ -35,8 +35,6 @@ struct Switch::Impl {
     explicit Impl(Switch& self)
         : animation_core([&self] { self.update(); }, 90) {
         QObject::connect(&self, &QAbstractButton::clicked, [this] { set_checked(!checked); });
-
-        using namespace util::animation;
     }
 
     void set_checked(bool on) {
