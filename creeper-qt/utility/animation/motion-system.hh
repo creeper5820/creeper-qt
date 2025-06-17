@@ -3,7 +3,6 @@
 #include "utility/animation/core.hh"
 #include "utility/animation/math.hh"
 #include <eigen3/Eigen/Dense>
-#include <qeasingcurve.h>
 
 namespace creeper::util::animation {
 

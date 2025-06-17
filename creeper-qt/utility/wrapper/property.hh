@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qbitmap.h>
+#include <qdebug.h>
 #include <qicon.h>
 #include <qwidget.h>
 
@@ -25,7 +26,11 @@ public:                                                                         
 namespace creeper::common {
 
 template <typename Instance> struct Token {
-    void apply(auto self) { }
+    void apply(auto& self) const {
+        const auto self_name = typeid(self).name();
+        const auto prop_name = typeid(this).name();
+        qDebug() << "Unimplemented" << prop_name << "is called by" << self_name;
+    }
 };
 
 namespace pro {

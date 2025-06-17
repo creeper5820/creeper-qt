@@ -34,10 +34,10 @@ public:
     bool is_mouse_hover = false;
 
 public:
-    explicit Impl(QPushButton& self)
+    explicit Impl(QAbstractButton& self)
         : animation_core([&self] { self.update(); }, 90) { }
 
-    void paint_event(QPushButton& self, QPaintEvent* event) {
+    void paint_event(QAbstractButton& self, QPaintEvent* event) {
         const auto water_renderer = [&self, this](QPainter& painter) {
             water_ripples.render(painter, self.rect(), self.rect());
         };
@@ -54,7 +54,7 @@ public:
             .simple_text(self.text(), self.font(), text_color, self.rect(), Qt::AlignCenter);
     }
 
-    void mouse_release_event(QPushButton& self, QMouseEvent* event) {
+    void mouse_release_event(QAbstractButton& self, QMouseEvent* event) {
         if (enable_water_ripple) {
 
             const auto button_path  = make_rounded_rectangle_path(self.rect(), radius);
@@ -68,13 +68,13 @@ public:
         }
     }
 
-    void enter_event(QPushButton& self, QEvent* event) {
+    void enter_event(QAbstractButton& self, QEvent* event) {
         animation_core.append(std::make_unique<GradientColor>(hover_color, kHoverColor, 0.1,
             [this](const QColor& color) { return hover_color = color, !is_mouse_hover; }));
         is_mouse_hover = true;
     }
 
-    void leave_event(QPushButton& self, QEvent* event) {
+    void leave_event(QAbstractButton& self, QEvent* event) {
         animation_core.append(std::make_unique<GradientColor>(hover_color, Qt::transparent, 0.1,
             [this](const QColor& color) { return hover_color = color, is_mouse_hover; }));
         is_mouse_hover = false;
@@ -144,19 +144,19 @@ void FilledButton::set_water_ripple_step(double step) { pimpl->water_ripple_step
 
 void FilledButton::mouseReleaseEvent(QMouseEvent* event) {
     pimpl->mouse_release_event(*this, event);
-    QPushButton::mouseReleaseEvent(event);
+    QAbstractButton::mouseReleaseEvent(event);
 }
 void FilledButton::paintEvent(QPaintEvent* event) {
     pimpl->paint_event(*this, event);
-    /* Disable QPushButton::paintEvent */;
+    /* Disable QAbstractButton::paintEvent */;
 }
 void FilledButton::enterEvent(QEvent* event) {
     pimpl->enter_event(*this, event);
-    QPushButton::enterEvent(event);
+    QAbstractButton::enterEvent(event);
 }
 void FilledButton::leaveEvent(QEvent* event) {
     pimpl->leave_event(*this, event);
-    QPushButton::leaveEvent(event);
+    QAbstractButton::leaveEvent(event);
 }
 
 }

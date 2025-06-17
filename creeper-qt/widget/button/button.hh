@@ -7,13 +7,13 @@
 namespace creeper::button {
 namespace pro {
 
-    using Property = common::Token<QAbstractButton>;
+    using Token = common::Token<QAbstractButton>;
 
     template <class Button>
-    concept property_concept =
-        std::derived_from<Button, Property> || widget::pro::property_concept<Button>;
+    concept property_concept = std::derived_from<Button, Token> //
+        || widget::pro::property_concept<Button>;
 
-    struct Clickable final : Property {
+    struct Clickable final : Token {
         std::function<void()> callback;
         explicit Clickable(std::function<void()> p) { callback = p; }
         void apply(auto& self) const
@@ -23,13 +23,13 @@ namespace pro {
         }
     };
 
-    using Text        = common::pro::Text<Property>;
-    using TextColor   = common::pro::TextColor<Property>;
-    using Radius      = common::pro::Radius<Property>;
-    using BorderWidth = common::pro::BorderWidth<Property>;
-    using BorderColor = common::pro::BorderColor<Property>;
-    using Background  = common::pro::Background<Property>;
-    using WaterColor  = common::pro::WaterColor<Property>;
+    using Text        = common::pro::Text<Token>;
+    using TextColor   = common::pro::TextColor<Token>;
+    using Radius      = common::pro::Radius<Token>;
+    using BorderWidth = common::pro::BorderWidth<Token>;
+    using BorderColor = common::pro::BorderColor<Token>;
+    using Background  = common::pro::Background<Token>;
+    using WaterColor  = common::pro::WaterColor<Token>;
 
     using namespace widget::pro;
 }

@@ -5,12 +5,10 @@
 #include "utility/wrapper/property.hh"
 #include "widget/button/button.hh"
 
-#include <qpushbutton.h>
-
 namespace creeper {
 namespace filled_button::internal {
 
-    class FilledButton : public QPushButton {
+    class FilledButton : public QAbstractButton {
         CREEPER_PIMPL_DEFINTION(FilledButton);
 
     public:
