@@ -1,20 +1,28 @@
-# CREEPER-QT（未发布）<br>轻量的QT-UI封装库
+<h1 align=center>CREEPER-QT（未发布）</h1>
+
+<div align=center>
+
+![GitHub last commit](https://img.shields.io/github/last-commit/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=9ccbfb)
+![GitHub Repo stars](https://img.shields.io/github/stars/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=b9c8da)
+![GitHub repo size](https://img.shields.io/github/repo-size/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=d3bfe6)
+
+</div>
 
 ## 效果展示
 
 全组件展示
 
-![example-widgets](doc/image/example-widgets.png)
+<img src="doc/image/example-widgets.png" title="" alt="example-widgets" data-align="center">
 
-![buttons](doc/image/buttons.png)
+<img src="doc/image/buttons.png" title="" alt="buttons" data-align="center">
 
 Google小时钟，是我做这个主题最原初的动力，一开始只是想着这钟真漂亮，Qt能不能搞一个出来，于是纯代码自绘了波浪，为此引入了`Eigen`，顺带做了一个UI库，可谓是为了一瓶醋包了这顿饺子
 
-![example-clock](doc/image/example-clock.png)
+<img title="" src="doc/image/example-clock.png" alt="example-clock" data-align="center">
 
 数据结构大作业登陆界面，既然写了库就要好好用起来：
 
-![example-login](doc/image/example-login.png)
+<img src="doc/image/example-login.png" title="" alt="example-login" data-align="center">
 
 ## 使用文档
 
@@ -140,7 +148,7 @@ sudo make install
 
 我推荐使用MSYS2环境使用这个库: [MYSY2-INSTALLATION](https://www.msys2.org/docs/installer/)
 
-![win](doc/image/windows-neofetch.png)
+<img src="doc/image/windows-neofetch.png" title="" alt="win" data-align="center">
 
 看呐, 我没有使用Linux (
 
@@ -207,7 +215,11 @@ cat install_manifest.txt
 ## 待做事项
 
 - [ ] 增加更多的组件
+
 - [ ] 按钮的禁止效果
+
 - [ ] 增加视图容器，原生的不可用
+
 - [ ] 给自己做一个设置中心吧
+
 - [ ] 做一个日历模组
