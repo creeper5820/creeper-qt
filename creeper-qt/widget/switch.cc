@@ -11,34 +11,64 @@ struct Switch::Impl {
     bool checked  = false;
     bool disabled = false;
 
-    std::shared_ptr<QColor> track { std::make_shared<QColor>() };
-    std::shared_ptr<QColor> track_target { std::make_shared<QColor>() };
+    std::shared_ptr<Eigen::Vector4d> track { std::make_shared<Eigen::Vector4d>() };
     QColor track_unchecked;
     QColor track_checked;
     QColor track_disabled;
 
-    std::shared_ptr<QColor> handle { std::make_shared<QColor>() };
-    std::shared_ptr<QColor> handle_target { std::make_shared<QColor>() };
+    std::shared_ptr<Eigen::Vector4d> handle { std::make_shared<Eigen::Vector4d>() };
     QColor handle_unchecked;
     QColor handle_checked;
     QColor handle_disabled;
 
-    std::shared_ptr<QColor> outline { std::make_shared<QColor>() };
-    std::shared_ptr<QColor> outline_target { std::make_shared<QColor>() };
+    std::shared_ptr<Eigen::Vector4d> outline { std::make_shared<Eigen::Vector4d>() };
     QColor outline_unchecked;
     QColor outline_checked;
     QColor outline_disabled;
 
     std::shared_ptr<double> position { std::make_shared<double>(0) };
-    std::shared_ptr<double> position_target { std::make_shared<double>(0) };
+    static constexpr double position_unchecked = 0.0;
+    static constexpr double position_checked   = 1.0;
 
     explicit Impl(Switch& self)
         : animation_core([&self] { self.update(); }, 90) {
         QObject::connect(&self, &QAbstractButton::clicked, [this] { set_checked(!checked); });
     }
 
+    void set_disabled(bool on) { }
+
     void set_checked(bool on) {
         if (disabled || checked == on) return;
+
+        using Tracker4D = util::animation::FinitePidTracker<Eigen::Vector4d>;
+        using Tracker1D = util::animation::FinitePidTracker<double>;
+
+        auto stop_token = std::make_shared<bool>(false);
+        double kp = 1.0, ki = 0.0, kd = 0.0, hz = 90;
+
+        const auto track_target = checked ? track_checked : track_unchecked;
+        const auto track_animation =
+            Tracker4D { track, from_color(track_target), stop_token, kp, ki, kd, hz };
+
+        const auto handle_target = checked ? handle_checked : handle_unchecked;
+        const auto handle_animation =
+            Tracker4D { handle, from_color(handle_target), stop_token, kp, ki, kd, hz };
+
+        const auto outline_target = checked ? outline_checked : outline_unchecked;
+        const auto outline_animation =
+            Tracker4D { outline, from_color(outline_target), stop_token, kp, ki, kd, hz };
+
+        const auto position_target = checked ? position_checked : position_unchecked;
+        const auto position_animation =
+            Tracker1D { position, position_target, stop_token, kp, ki, kd, hz };
+
+        // 打断动画，将 token 设为 true 后清空，动画类持有的 token 会随着动画的结束而释放
+        for (auto& stop_token : stop_tokens)
+            *stop_token = true;
+
+        stop_tokens.clear();
+        stop_tokens.push_back(std::move(stop_token));
+
         checked = on;
     }
 

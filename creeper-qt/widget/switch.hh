@@ -15,6 +15,7 @@ namespace _switch::internal {
         void set_color_scheme(const ColorScheme&);
         void load_theme_manager(ThemeManager&);
 
+        void set_disabled(bool);
         void set_checked(bool);
         bool checked() const;
 

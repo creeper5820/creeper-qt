@@ -134,7 +134,7 @@ add_executable(${EXAMPLE_NAME}
 )
 ```
 
-### Linux平台
+### Linux 平台编译安装
 
 ```bash
 # 下载这个项目
@@ -148,7 +148,7 @@ cmake .. && make -j
 sudo make install
 ```
 
-### Windows平台
+### Windows 平台编译安装
 
 我推荐使用MSYS2环境使用这个库: [MYSY2-INSTALLATION](https://www.msys2.org/docs/installer/)
 
@@ -160,7 +160,7 @@ sudo make install
 
 切入正题, 进入MSYS2终端
 
-```bash
+```sh
 ## 先刷新一下软件包数据
 pacman -Sy
 
@@ -179,7 +179,7 @@ pacman -Ss eigen3
 
 到这里就可以编译这个库了, 如果还是会有一些依赖问题, 可以Google一下如何在MSYS2中安装QT5
 
-```bash
+```sh
 ## 依然是在MSYS2环境中
 ## 进入项目根目录
 mkdir build
