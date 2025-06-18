@@ -1,6 +1,8 @@
 #include <qapplication.h>
+#include <qcolor.h>
 
 #include "layout/linear.hh"
+#include "utility/theme/theme.hh"
 #include "widget/button/filled-button.hh"
 #include "widget/button/filled-tonal-button.hh"
 #include "widget/button/outlined-button.hh"
@@ -14,47 +16,53 @@ using namespace creeper;
 int main(int argc, char* argv[]) {
     auto application = new QApplication { argc, argv };
 
-    static auto theme_manager = ThemeManager { kBlueMikuThemePack };
+    auto theme_manager = ThemeManager { kBlueMikuThemePack };
 
-    const auto properties = std::tuple {
-        util::theme::pro::ThemeManager { theme_manager },
-        widget::pro::FixedSize { 100, 50 },
-        widget::pro::Font { "JetBrains Mono", 12 },
-        button::pro::Text { "你好世界" },
-        button::pro::Radius { 25 },
+    auto switch_row = new Row {
+        linear::pro::Widget { { new QWidget {}, 1 } },
+        linear::pro::Widgets { {
+            { new Switch {
+                _switch::pro::ThemeManager { theme_manager },
+                _switch::pro::FixedSize { 70, 40 },
+                _switch::pro::Checked { true },
+            } },
+            { new Switch {
+                _switch::pro::ThemeManager { theme_manager },
+                _switch::pro::FixedSize { 70, 40 },
+                _switch::pro::Checked { false },
+            } },
+            { new Switch {
+                _switch::pro::ThemeManager { theme_manager },
+                _switch::pro::FixedSize { 70, 40 },
+                _switch::pro::Checked { true },
+                _switch::pro::Disabled { true },
+            } },
+            { new Switch {
+                _switch::pro::ThemeManager { theme_manager },
+                _switch::pro::FixedSize { 70, 40 },
+                _switch::pro::Checked { false },
+                _switch::pro::Disabled { true },
+            } },
+        } },
+        linear::pro::Widget { { new QWidget {}, 1 } },
     };
 
-    auto background_rect = (RoundedRect*)nullptr;
-
-    background_rect = new RoundedRect {
-        widget::pro::Layout { new Row {
+    auto background_rect = new RoundedRect {
+        widget::pro::Layout { new Col {
             linear::pro::Widget { { new QWidget {}, 1 } },
-            linear::pro::Layout { { new Col {
-                linear::pro::Widget { { new QWidget {}, 1 } },
-                linear::pro::Widgets { {
-                    { new FilledTonalButton {
-                        properties,
-                        button::pro::Text { "切换主题" },
-                        button::pro::Clickable { [] {
-                            theme_manager.toggle_color_mode();
-                            theme_manager.apply_theme();
-                        } },
+            linear::pro::Layout { { switch_row, 1 } },
+            linear::pro::Widget { {
+                new Switch {
+                    _switch::pro::ThemeManager { theme_manager },
+                    _switch::pro::FixedSize { 70, 40 },
+                    _switch::pro::Clickable { [&theme_manager](bool checked) {
+                        theme_manager.set_color_mode(checked ? ColorMode::DARK : ColorMode::LIGHT);
+                        theme_manager.apply_theme();
                     } },
-                    { new FilledButton { properties } },
-                    { new TextButton { properties } },
-                    { new TextButton { properties } },
-                    { new Switch {
-                        _switch::pro::ThemeManager { theme_manager },
-                        _switch::pro::FixedSize { 100, 50 },
-                    } },
-                    { new OutlinedButton {
-                        properties,
-                        button::pro::Text { "Exit" },
-                        button::pro::Clickable { [application] { application->exit(); } },
-                    } },
-                } },
-                linear::pro::Widget { { new QWidget {}, 1 } },
-            } } },
+                },
+                1,
+                Qt::AlignCenter,
+            } },
             linear::pro::Widget { { new QWidget {}, 1 } },
         } },
     };

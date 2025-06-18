@@ -6,7 +6,7 @@ Switch::Switch()
 Switch::~Switch() = default;
 
 void Switch::set_color_scheme(const ColorScheme& scheme) {
-    pimpl->set_color_scheme(scheme), update();
+    pimpl->set_color_scheme(*this, scheme), update();
 }
 
 void Switch::load_theme_manager(ThemeManager& manager) {
@@ -20,20 +20,41 @@ void Switch::load_theme_manager(ThemeManager& manager) {
     });
 }
 
-void Switch::set_checked(bool on) { pimpl->checked = on; }
+void Switch::set_disabled(bool on) { pimpl->set_disabled(*this, on); }
+bool Switch::disabled() const { return pimpl->disabled; }
+
+void Switch::set_checked(bool on) { pimpl->set_checked(*this, on); }
 bool Switch::checked() const { return pimpl->checked; }
 
-void Switch::set_track_color_unchecked(QColor color) { pimpl->track_unchecked = color; }
-void Switch::set_track_color_checked(QColor color) { pimpl->track_checked = color; }
-void Switch::set_track_color_disabled(QColor color) { pimpl->track_disabled = color; }
+void Switch::set_track_color_unchecked(const QColor& color) { pimpl->track_unchecked = color; }
+void Switch::set_track_color_checked(const QColor& color) { pimpl->track_checked = color; }
+void Switch::set_track_color_unchecked_disabled(const QColor& color) {
+    pimpl->track_unchecked_disabled = color;
+}
+void Switch::set_track_color_checked_disabled(const QColor& color) {
+    pimpl->track_checked_disabled = color;
+}
 
-void Switch::set_handle_color_unchecked(QColor color) { pimpl->handle_unchecked = color; }
-void Switch::set_handle_color_checked(QColor color) { pimpl->handle_checked = color; }
-void Switch::set_handle_color_disabled(QColor color) { pimpl->handle_disabled = color; }
+void Switch::set_handle_color_unchecked(const QColor& color) { pimpl->handle_unchecked = color; }
+void Switch::set_handle_color_checked(const QColor& color) { pimpl->handle_checked = color; }
+void Switch::set_handle_color_unchecked_disabled(const QColor& color) {
+    pimpl->handle_unchecked_disabled = color;
+}
+void Switch::set_handle_color_checked_disabled(const QColor& color) {
+    pimpl->handle_checked_disabled = color;
+}
 
-void Switch::set_outline_color_unchecked(QColor color) { pimpl->outline_unchecked = color; }
-void Switch::set_outline_color_checked(QColor color) { pimpl->outline_checked = color; }
-void Switch::set_outline_color_disabled(QColor color) { pimpl->outline_disabled = color; }
+void Switch::set_outline_color_unchecked(const QColor& color) { pimpl->outline_unchecked = color; }
+void Switch::set_outline_color_checked(const QColor& color) { pimpl->outline_checked = color; }
+void Switch::set_outline_color_unchecked_disabled(const QColor& color) {
+    pimpl->outline_unchecked_disabled = color;
+}
+void Switch::set_outline_color_checked_disabled(const QColor& color) {
+    pimpl->outline_checked_disabled = color;
+}
+
+void Switch::set_hover_color_unchecked(const QColor& color) { pimpl->hover_unchecked = color; }
+void Switch::set_hover_color_checked(const QColor& color) { pimpl->hover_checked = color; }
 
 void Switch::enterEvent(QEvent* event) {
     pimpl->enter_event(*this, *event);

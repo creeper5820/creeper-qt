@@ -1,6 +1,5 @@
 #pragma once
 
-#include "utility/wrapper/property.hh"
 #include "widget/widget.hh"
 #include <qabstractbutton.h>
 
@@ -15,7 +14,7 @@ namespace pro {
 
     struct Clickable final : Token {
         std::function<void()> callback;
-        explicit Clickable(std::function<void()> p) { callback = p; }
+        explicit Clickable(const std::function<void()>& p) { callback = p; }
         void apply(auto& self) const
             requires requires { &std::remove_cvref_t<decltype(self)>::clicked; }
         {

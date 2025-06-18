@@ -1,12 +1,12 @@
 <div align=center>
 
-<img src="doc/image/creeper.png" title="TODO: 换成自己画的苦力怕娘" alt="Picture" width=150>
+<div align=center><img src="doc/image/example-clock.png"></div>
 
-<h1>CREEPER-QT（未发布）</h1>
+<h1>CREEPER-QT（重构中）</h1>
 
-![GitHub last commit](https://img.shields.io/github/last-commit/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=9ccbfb)
-![GitHub Repo stars](https://img.shields.io/github/stars/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=b9c8da)
-![GitHub repo size](https://img.shields.io/github/repo-size/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=d3bfe6)
+[组件文档](./doc/widgets.md) | [主题文档](./doc/utility.md) | [视频演示](https://www.bilibili.com/video/BV1GAq5YZEtr/?share_source=copy_web&vd_source=64f4d9d099bf51aa199961a8349d034b)
+
+![GitHub last commit](https://img.shields.io/github/last-commit/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=9ccbfb) ![GitHub Repo stars](https://img.shields.io/github/stars/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=b9c8da) ![GitHub repo size](https://img.shields.io/github/repo-size/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=d3bfe6)
 
 `creeper-qt` 是基于 `Qt5` 开发的 UI 集成库，轻量简洁，组件外观大体遵循 `Google Material Design3`，同时改造了老式的命令式调用，使组件构造和配置可以在同一时间完成，添加了主题管理，支持切换明亮和黑暗主题和各种配色，动效部分基于 PID 控制器和弹簧模型等迭代算法，带来更流畅的动画体验和打断效果
 
@@ -14,24 +14,11 @@
 
 ## 效果展示
 
-全组件展示
-
 <img src="doc/image/example-widgets.png" title="" alt="example-widgets" data-align="center">
-
-<img src="doc/image/buttons.png" title="" alt="buttons" data-align="center">
-
-Google小时钟，是我做这个主题最原初的动力，一开始只是想着这钟真漂亮，Qt能不能搞一个出来，于是纯代码自绘了波浪，为此引入了`Eigen`，顺带做了一个UI库，可谓是为了一瓶醋包了这顿饺子
-
-<div align=center><img src="doc/image/example-clock.png"></div>
-
-数据结构大作业登陆界面，既然写了库就要好好用起来：
 
 <img src="doc/image/example-login.png" title="" alt="example-login" data-align="center">
 
-## 使用文档
-
-- [`Widgets 文档`](doc/widgets.md)：基本组件的接口罗列和使用方法
-- [`Utilty 文档`](doc/utilty.md)：主题系统的使用及封装思路
+<img src="doc/image/buttons.png" title="" alt="buttons" data-align="center">
 
 ## 调用示例
 
@@ -115,7 +102,7 @@ sudo pacman -S yaml-cpp eigen qt5-base
 sudo apt install libyaml-cpp-dev libeigen3-dev qtbase5-dev
 ```
 
-### 直接使用源文件
+### 方式一 直接使用源文件
 
 把项目拉下来吧
 
@@ -134,7 +121,7 @@ add_executable(${EXAMPLE_NAME}
 )
 ```
 
-### Linux 平台编译安装
+### 方式二 Linux 平台编译安装
 
 ```bash
 # 下载这个项目
@@ -148,7 +135,7 @@ cmake .. && make -j
 sudo make install
 ```
 
-### Windows 平台编译安装
+### 方式三 Windows 平台编译安装
 
 我推荐使用MSYS2环境使用这个库: [MYSY2-INSTALLATION](https://www.msys2.org/docs/installer/)
 

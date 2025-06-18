@@ -1,5 +1,6 @@
 #pragma once
 
+#include "utility/wrapper/common-property.hh"
 #include "utility/wrapper/property.hh"
 #include <qlayout.h>
 

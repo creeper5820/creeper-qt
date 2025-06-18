@@ -1,6 +1,9 @@
 #include "widget/button/filled-button.hh"
 
 namespace creeper {
+
+class TextButton;
+
 namespace text_button::internal {
     class TextButton : public FilledButton {
     public:
@@ -39,12 +42,15 @@ namespace text_button::internal {
 
 namespace text_button::pro {
 
-    template <typename T>
-    concept property_concept =
-        util::theme::pro::property_concept<T> || button::pro::property_concept<T>;
+    using Token = common::Token<internal::TextButton>;
 
-    using namespace util::theme::pro;
+    template <typename T>
+    concept property_concept = std::derived_from<T, Token> //
+        || button::pro::property_concept<T>                //
+        || util::theme::pro::property_concept<T>;
+
     using namespace button::pro;
+    using namespace util::theme::pro;
 }
 
 class TextButton : public text_button::internal::TextButton {

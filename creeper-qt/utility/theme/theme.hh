@@ -3,8 +3,8 @@
 #include <qwidget.h>
 
 #include "utility/theme/color-scheme.hh"
+#include "utility/wrapper/common-property.hh"
 #include "utility/wrapper/pimpl.hh"
-#include "widget/widget.hh"
 
 namespace creeper::util::theme {
 
@@ -55,10 +55,12 @@ public:
 
 namespace pro {
 
-    template <typename T>
-    concept property_concept = widget::pro::property_concept<T>;
+    using Token = common::Token<ThemeManager>;
 
-    struct ColorScheme final : public util::theme::ColorScheme, widget::pro::Property {
+    template <typename T>
+    concept property_concept = std::derived_from<T, Token>;
+
+    struct ColorScheme final : public util::theme::ColorScheme, Token {
         using util::theme::ColorScheme::ColorScheme;
         explicit ColorScheme(const util::theme::ColorScheme& p)
             : util::theme::ColorScheme(p) { }
@@ -69,7 +71,7 @@ namespace pro {
         }
     };
 
-    struct ThemeManager final : widget::pro::Property {
+    struct ThemeManager final : Token {
         util::theme::ThemeManager& manager;
         explicit ThemeManager(util::theme::ThemeManager& p)
             : manager(p) { }

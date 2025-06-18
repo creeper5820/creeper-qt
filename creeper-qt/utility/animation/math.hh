@@ -2,6 +2,7 @@
 
 #include <eigen3/Eigen/Dense>
 #include <qcolor.h>
+#include <qrect.h>
 
 namespace creeper::util::animation {
 
@@ -33,6 +34,19 @@ inline Eigen::Vector4d from_color(const QColor& color) {
 }
 inline QColor from_vector4(const Eigen::Vector4d& vector) {
     return QColor(vector[0], vector[1], vector[2], vector[3]);
+}
+
+inline QRectF extract_rect(const QRectF& rect, int w_weight, int h_weight) {
+    double rw, rh;
+    if (rect.width() * h_weight > rect.height() * w_weight) {
+        rh = rect.height();
+        rw = rh * w_weight / h_weight;
+    } else {
+        rw = rect.width();
+        rh = rw * h_weight / w_weight;
+    }
+    const auto center = rect.center();
+    return QRectF(center.x() - rw / 2, center.y() - rh / 2, rw, rh);
 }
 
 }
