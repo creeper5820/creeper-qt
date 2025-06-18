@@ -66,7 +66,7 @@ struct Switch::Impl {
         outline_unchecked          = scheme.outline;
         outline_checked            = scheme.primary;
         outline_unchecked_disabled = scheme.on_surface;
-        outline_checked_disabled   = scheme.on_surface;
+        outline_checked_disabled   = Qt::transparent;
 
         hover_checked   = scheme.primary;
         hover_unchecked = scheme.on_surface;
@@ -75,7 +75,6 @@ struct Switch::Impl {
         track_unchecked_disabled.setAlphaF(disabled_track_opacity);
         track_checked_disabled.setAlphaF(disabled_track_opacity);
         outline_unchecked_disabled.setAlphaF(disabled_track_opacity);
-        outline_checked_disabled.setAlphaF(disabled_track_opacity);
 
         constexpr auto disabled_handle_opacity = 0.38;
         handle_unchecked_disabled.setAlphaF(disabled_handle_opacity);
