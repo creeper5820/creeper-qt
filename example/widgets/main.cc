@@ -44,6 +44,7 @@ int main(int argc, char* argv[]) {
                     { new TextButton { properties } },
                     { new TextButton { properties } },
                     { new Switch {
+                        _switch::pro::ThemeManager { theme_manager },
                         _switch::pro::FixedSize { 100, 50 },
                     } },
                     { new OutlinedButton {
