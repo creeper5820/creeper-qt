@@ -48,8 +48,8 @@ struct Switch::Impl {
 
     explicit Impl(Switch& self)
         : animation_core([&self] { self.update(); }, 90) {
-
-        QObject::connect(&self, &Switch::clicked, [this, &self] { set_checked(self, !checked); });
+        QObject::connect(&self, &Switch::clicked, //
+            [this, &self] { set_checked(self, !checked); });
     }
 
     void set_color_scheme(Switch& self, const ColorScheme& scheme) {
@@ -101,13 +101,14 @@ struct Switch::Impl {
         checked = on;
     }
 
-    void enter_event(Switch& self, const QEvent& event) { hovered = true; }
+    void enter_event(Switch& self, const QEvent& event) {
+        if (!disabled) self.setCursor(Qt::PointingHandCursor);
+        hovered = true;
+    }
 
     void leave_event(Switch& self, const QEvent& event) { hovered = false; }
 
     void paint_event(Switch& self, const QPaintEvent& event) {
-        auto painter = QPainter { &self };
-
         const auto rect = extract_rect(self.rect(), 13, 8);
 
         // 外轮廓相关变量计算
@@ -134,17 +135,18 @@ struct Switch::Impl {
         const auto handle_point =
             handle_point_begin + *position * (handle_point_end - handle_point_begin);
 
+        // 选择 hover 颜色
         const auto hover_color =
             (!disabled && hovered) ? (checked ? hover_checked : hover_unchecked) : Qt::transparent;
 
+        auto painter = QPainter { &self };
         util::PainterHelper { painter }
             .set_render_hint(QPainter::RenderHint::Antialiasing)
             .rounded_rectangle(from_vector4(*track), from_vector4(*outline), outline_width,
                 outline_rect, outline_radius, outline_radius)
             .ellipse(from_vector4(*handle), Qt::transparent, 0, handle_point, handle_radius,
                 handle_radius)
-            .ellipse(hover_color, Qt::transparent, 0, handle_point, hover_radius, hover_radius)
-            .done();
+            .ellipse(hover_color, Qt::transparent, 0, handle_point, hover_radius, hover_radius);
     }
 
 private:

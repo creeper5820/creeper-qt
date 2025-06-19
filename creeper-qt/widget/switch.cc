@@ -10,14 +10,8 @@ void Switch::set_color_scheme(const ColorScheme& scheme) {
 }
 
 void Switch::load_theme_manager(ThemeManager& manager) {
-    manager.append_handler(this, [this](const ThemeManager& manager) {
-        const auto color_mode   = manager.color_mode();
-        const auto theme_pack   = manager.theme_pack();
-        const auto color_scheme = color_mode == ColorMode::LIGHT //
-            ? theme_pack.light
-            : theme_pack.dark;
-        set_color_scheme(color_scheme);
-    });
+    manager.append_handler(
+        this, [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
 }
 
 void Switch::set_disabled(bool on) { pimpl->set_disabled(*this, on); }

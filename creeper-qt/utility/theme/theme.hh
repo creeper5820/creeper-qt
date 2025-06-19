@@ -41,6 +41,7 @@ public:
     ///   When the widget is destroyed, ThemeManager::remove_handler() will be called automatically
     ///   to remove the associated handler.
     void append_handler(const QWidget* key, const Handler& handler);
+
     void remove_handler(const QWidget* key);
 
     void set_theme_pack(const ThemePack& pack);
@@ -92,10 +93,5 @@ using ColorMode    = util::theme::ColorMode;
 using ColorScheme  = util::theme::ColorScheme;
 using ThemePack    = util::theme::ThemePack;
 using ThemeManager = util::theme::ThemeManager;
-
-constexpr auto kBlueMikuThemePack = ThemePack {
-    .light = util::theme::kBlueMikuLightColorScheme,
-    .dark  = util::theme::kBlueMikuDarkColorScheme,
-};
 
 }

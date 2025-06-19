@@ -17,6 +17,19 @@ struct ThemeManager::Impl {
         handlers[key] = handler;
         QObject::connect(key, &QWidget::destroyed, [this, key] { remove_handler(key); });
     }
+    void append_handler(const QWidget* key, auto& widget)
+        requires requires { widget.set_color_scheme(ColorScheme {}); }
+    {
+        handlers[key] = [&widget](const ThemeManager& manager) {
+            const auto color_mode   = manager.color_mode();
+            const auto theme_pack   = manager.theme_pack();
+            const auto color_scheme = color_mode == ColorMode::LIGHT //
+                ? theme_pack.light
+                : theme_pack.dark;
+            widget.set_color_scheme(color_scheme);
+        };
+        QObject::connect(key, &QWidget::destroyed, [this, key] { remove_handler(key); });
+    }
 
     void remove_handler(const QWidget* key) { handlers.erase(key); }
 };

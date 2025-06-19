@@ -8,9 +8,6 @@
 #include <qabstractbutton.h>
 
 namespace creeper {
-
-class Switch;
-
 namespace _switch::internal {
     class Switch : public QAbstractButton {
         CREEPER_PIMPL_DEFINTION(Switch)
@@ -167,7 +164,6 @@ namespace _switch::pro {
     using namespace util::theme::pro;
     using namespace widget::pro;
 }
-
 /// @note 使用时建议比例 w : h > 7 : 4 ，过冲动画会多占用一些宽度，倘若 w 过短，可能会出现 hover
 /// 层画面被截断的情况
 class Switch : public _switch::internal::Switch {

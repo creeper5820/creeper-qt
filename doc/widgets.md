@@ -71,8 +71,8 @@ const auto widget_a = new Widget { ... };
 ## 普通按钮组件
 
 - 完整主题：内置 `kBlueMikuThemePack`
-- 暗色主题：内置 `util::theme::kBlueMikuDarkColorScheme`
-- 亮色主题：内置 `util::theme::kBlueMikuLightColorScheme`
+- 暗色主题：内置 `kBlueMikuDarkColorScheme`
+- 亮色主题：内置 `kBlueMikuLightColorScheme`
 
 ![buttons](image/buttons.png)
 
@@ -124,7 +124,6 @@ namespace button::pro {
 - `creeper::util::theme::pro`
 - `creeper::widget::pro`
 - `creeper::button::pro`
-
 
 ### OutlinedButton
 
@@ -211,3 +210,4 @@ auto button = XxxxButton { properties };
 | `HoverColorUnchecked`           | `QColor`                    |
 | `HoverColorChecked`             | `QColor`                    |
 | `Clickable`                     | `std::function<void(bool)>` |
+

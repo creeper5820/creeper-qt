@@ -1,9 +1,6 @@
 #include "widget/button/filled-button.hh"
 
 namespace creeper {
-
-class TextButton;
-
 namespace text_button::internal {
     class TextButton : public FilledButton {
     public:
@@ -28,18 +25,11 @@ namespace text_button::internal {
         }
 
         void load_theme_manager(ThemeManager& manager) {
-            manager.append_handler(this, [this](const ThemeManager& manager) {
-                const auto color_mode   = manager.color_mode();
-                const auto theme_pack   = manager.theme_pack();
-                const auto color_scheme = color_mode == ColorMode::LIGHT //
-                    ? theme_pack.light
-                    : theme_pack.dark;
-                set_color_scheme(color_scheme);
-            });
+            manager.append_handler(this,
+                [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
         }
     };
 }
-
 namespace text_button::pro {
 
     using Token = common::Token<internal::TextButton>;
@@ -52,10 +42,8 @@ namespace text_button::pro {
     using namespace button::pro;
     using namespace util::theme::pro;
 }
-
 class TextButton : public text_button::internal::TextButton {
     CREEPER_DEFINE_CONSTROCTOR(TextButton, text_button::pro);
     using text_button::internal::TextButton::TextButton;
 };
-
 }
