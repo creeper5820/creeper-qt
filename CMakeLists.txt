@@ -18,7 +18,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-include_directories(creeper-qt)
+include_directories(.)
 
 # 库文件收集
 file(GLOB_RECURSE PROJECT_CC CONFIGURE_DEPENDS "creeper-qt/*.cc")
@@ -35,24 +35,28 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC Qt5::Widgets
 )
 
-# Package Config
+# 创建安装目标
 include(GNUInstallDirs)
 install(TARGETS ${PROJECT_NAME}
     EXPORT ${PROJECT_NAME}Targets
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 install(DIRECTORY "creeper-qt/"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/creeper-qt/"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/creeper-qt"
     FILES_MATCHING PATTERN "*.hh"
 )
+
+# 导出 Targets 文件
 install(EXPORT ${PROJECT_NAME}Targets
     FILE ${PROJECT_NAME}Targets.cmake
     NAMESPACE ${PROJECT_NAME}::
     DESTINATION "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/cmake"
 )
 
+# 生成配置文件
 include(CMakePackageConfigHelpers)
 configure_package_config_file(cmake/${PROJECT_NAME}Config.cmake.in
     "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"

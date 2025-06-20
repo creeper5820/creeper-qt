@@ -101,7 +101,7 @@ namespace button::pro {
 | `BorderColor` | `QColor`                |
 | `Background`  | `QColor`                |
 | `WaterColor`  | `QColor`                |
-| `Clickable`   | `std::function<void()>` |
+| `Clickable`   | `std::invocable<void()>` |
 
 ### FilledButton
 
@@ -210,4 +210,3 @@ auto button = XxxxButton { properties };
 | `HoverColorUnchecked`           | `QColor`                    |
 | `HoverColorChecked`             | `QColor`                    |
 | `Clickable`                     | `std::function<void(bool)>` |
-

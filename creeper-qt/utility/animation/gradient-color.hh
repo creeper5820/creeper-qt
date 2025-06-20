@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utility/animation/core.hh"
+#include "creeper-qt/utility/animation/core.hh"
 
 #include <eigen3/Eigen/Dense>
 #include <qdebug.h>

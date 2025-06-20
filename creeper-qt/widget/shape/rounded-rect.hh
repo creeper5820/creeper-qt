@@ -1,9 +1,9 @@
 #pragma once
 
-#include "utility/painter/helper.hh"
-#include "utility/wrapper/property.hh"
-#include "widget/shape/shape.hh"
-#include "widget/widget.hh"
+#include "creeper-qt/utility/painter/helper.hh"
+#include "creeper-qt/utility/wrapper/property.hh"
+#include "creeper-qt/widget/shape/shape.hh"
+#include "creeper-qt/widget/widget.hh"
 
 namespace creeper {
 namespace rounded_rect::internal {

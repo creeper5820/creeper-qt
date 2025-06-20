@@ -1,14 +1,14 @@
 #include "filled-button.hh"
 
-#include "utility/painter/helper.hh"
+#include "creeper-qt/utility/painter/helper.hh"
 using creeper::util::PainterHelper;
 
-#include "utility/animation/core.hh"
-#include "utility/animation/gradient-color.hh"
-#include "utility/animation/water-ripple.hh"
+#include "creeper-qt/utility/animation/core.hh"
+#include "creeper-qt/utility/animation/gradient-color.hh"
+#include "creeper-qt/utility/animation/water-ripple.hh"
 using namespace creeper::util::animation;
 
-#include "utility/theme/theme.hh"
+#include "creeper-qt/utility/theme/theme.hh"
 
 namespace creeper::filled_button::internal {
 
@@ -104,7 +104,7 @@ void FilledButton::set_color_scheme(const ColorScheme& color_scheme) {
         pimpl->water_color = color_scheme.primary.lighter(130);
         pimpl->kHoverColor = QColor { 255, 255, 255, 30 };
     }
-    pimpl->water_color.setAlphaF(0.25);
+    pimpl->water_color.setAlphaF(0.4);
 
     update();
 }

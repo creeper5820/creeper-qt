@@ -1,7 +1,7 @@
 #pragma once
 
-#include "utility/animation/core.hh"
-#include "utility/animation/math.hh"
+#include "creeper-qt/utility/animation/core.hh"
+#include "creeper-qt/utility/animation/math.hh"
 #include <eigen3/Eigen/Dense>
 
 namespace creeper::util::animation {

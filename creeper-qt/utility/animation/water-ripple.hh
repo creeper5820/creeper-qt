@@ -1,7 +1,8 @@
 #pragma once
 
-#include "utility/animation/core.hh"
-#include "utility/painter/helper.hh"
+#include "creeper-qt/utility/animation/core.hh"
+#include "creeper-qt/utility/painter/helper.hh"
+
 #include <qdebug.h>
 #include <qevent.h>
 #include <qpaintdevice.h>

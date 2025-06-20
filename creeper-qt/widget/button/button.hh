@@ -1,6 +1,6 @@
 #pragma once
 
-#include "widget/widget.hh"
+#include "creeper-qt/widget/widget.hh"
 #include <qabstractbutton.h>
 
 namespace creeper::button {
@@ -12,13 +12,16 @@ namespace pro {
     concept property_concept = std::derived_from<Button, Token> //
         || widget::pro::property_concept<Button>;
 
+    template <typename Callback>
+        requires std::invocable<Callback>
     struct Clickable final : Token {
-        std::function<void()> callback;
-        explicit Clickable(const std::function<void()>& p) { callback = p; }
+        Callback callback;
+        explicit Clickable(Callback p)
+            : callback(p) { }
         void apply(auto& self) const
             requires requires { &std::remove_cvref_t<decltype(self)>::clicked; }
         {
-            QObject::connect(&self, &QAbstractButton::clicked, [this] { callback(); });
+            QObject::connect(&self, &QAbstractButton::clicked, callback);
         }
     };
 

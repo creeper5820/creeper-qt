@@ -1,4 +1,4 @@
-#include "widget/switch.impl.hh"
+#include "switch.impl.hh"
 
 Switch::Switch()
     : pimpl(std::make_unique<Impl>(*this)) { }

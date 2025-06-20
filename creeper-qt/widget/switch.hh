@@ -1,10 +1,11 @@
 #pragma once
 
-#include "utility/theme/theme.hh"
-#include "utility/wrapper/common-property.hh"
-#include "utility/wrapper/pimpl.hh"
-#include "utility/wrapper/property.hh"
-#include "widget/widget.hh"
+#include "creeper-qt/utility/theme/theme.hh"
+#include "creeper-qt/utility/wrapper/common-property.hh"
+#include "creeper-qt/utility/wrapper/pimpl.hh"
+#include "creeper-qt/utility/wrapper/property.hh"
+#include "creeper-qt/widget/widget.hh"
+
 #include <qabstractbutton.h>
 
 namespace creeper {
@@ -143,13 +144,20 @@ namespace _switch::pro {
         void apply(auto& self) const { self.set_hover_color_checked(*this); }
     };
 
+    template <typename Callback>
+        requires std::invocable<Callback, bool>
     struct Clickable final : Token {
-        std::function<void(bool)> callback;
-        explicit Clickable(const std::function<void(bool)>& p) { callback = p; }
-        void apply(auto& self) const {
-            QObject::connect(&self, &QAbstractButton::clicked, [this, &self] {
-                if (!self.disabled()) callback(self.checked());
-            });
+        Callback callback;
+        explicit Clickable(Callback p) noexcept
+            : callback(p) { }
+        void apply(auto& self) const noexcept
+            requires requires {
+                &std::remove_cvref_t<decltype(self)>::clicked;
+                { self.checked() } -> std::same_as<bool>;
+            }
+        {
+            QObject::connect(&self, &QAbstractButton::clicked,
+                [function = callback, &self] { function(self.checked()); });
         }
     };
 

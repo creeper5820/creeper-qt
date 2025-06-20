@@ -1,4 +1,4 @@
-#include "widget/button/filled-button.hh"
+#include "filled-button.hh"
 
 namespace creeper {
 namespace outlined_button::internal {

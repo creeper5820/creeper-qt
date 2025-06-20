@@ -2,9 +2,9 @@
 
 #include <qwidget.h>
 
-#include "utility/theme/color-scheme.hh"
-#include "utility/wrapper/common-property.hh"
-#include "utility/wrapper/pimpl.hh"
+#include "creeper-qt/utility/theme/color-scheme.hh"
+#include "creeper-qt/utility/wrapper/common-property.hh"
+#include "creeper-qt/utility/wrapper/pimpl.hh"
 
 namespace creeper::util::theme {
 

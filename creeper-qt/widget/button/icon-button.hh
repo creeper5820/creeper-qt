@@ -2,9 +2,9 @@
 
 #include <qabstractbutton.h>
 
-#include "utility/theme/theme.hh"
-#include "utility/wrapper/pimpl.hh"
-#include "utility/wrapper/property.hh"
+#include "creeper-qt/utility/theme/theme.hh"
+#include "creeper-qt/utility/wrapper/pimpl.hh"
+#include "creeper-qt/utility/wrapper/property.hh"
 
 namespace creeper {
 namespace icon_button::internal {

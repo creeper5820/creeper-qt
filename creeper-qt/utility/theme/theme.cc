@@ -1,4 +1,4 @@
-#include "utility/theme/theme.hh"
+#include "creeper-qt/utility/theme/theme.hh"
 
 using namespace creeper::util::theme;
 using Handler = ThemeManager::Handler;

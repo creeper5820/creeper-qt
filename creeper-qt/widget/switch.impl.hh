@@ -1,11 +1,10 @@
 #pragma once
-
-#include "widget/switch.hh"
+#include "switch.hh"
 
 #include <qpainter.h>
 
-#include "utility/animation/motion-system.hh"
-#include "utility/painter/helper.hh"
+#include "creeper-qt/utility/animation/motion-system.hh"
+#include "creeper-qt/utility/painter/helper.hh"
 
 using namespace creeper::_switch::internal;
 using creeper::util::animation::AnimationCore;

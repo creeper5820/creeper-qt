@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utility/theme/theme.hh"
+#include "creeper-qt/utility/theme/theme.hh"
 
 namespace creeper {
 

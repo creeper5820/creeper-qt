@@ -1,7 +1,8 @@
 #pragma once
 
-#include "utility/wrapper/common-property.hh"
-#include "utility/wrapper/property.hh"
+#include "creeper-qt/utility/wrapper/common-property.hh"
+#include "creeper-qt/utility/wrapper/property.hh"
+
 #include <qgraphicseffect.h>
 #include <qwidget.h>
 
