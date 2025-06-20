@@ -83,6 +83,11 @@ namespace pro {
         explicit Margin(int p) { margin = p; }
         void apply(QBoxLayout& self) const { self.setMargin(margin); }
     };
+    struct SetSpacing final : Property {
+        int size;
+        explicit SetSpacing(int p) { size = p; }
+        void apply(QBoxLayout& self) const { self.setSpacing(size); }
+    };
 
     struct ContentsMargin final : public QMargins, Property {
         using QMargins::QMargins;

@@ -19,16 +19,16 @@ namespace ellipse::internal {
     };
 }
 namespace ellipse::pro {
-    using Property = common::InternalProperty<internal::Ellipse>;
+    using Token = common::Token<internal::Ellipse>;
 
     template <typename T>
-    concept property_concept = std::derived_from<T, Property> || widget::pro::property_concept<T>;
+    concept property_concept = std::derived_from<T, Token> || widget::pro::property_concept<T>;
 
     // 通用属性
-    using Background = common::pro::Background<internal::Ellipse, Property>;
+    using Background = common::pro::Background<Token>;
 
-    using BorderWidth = common::pro::BorderWidth<internal::Ellipse, Property>;
-    using BorderColor = common::pro::BorderColor<internal::Ellipse, Property>;
+    using BorderWidth = common::pro::BorderWidth<Token>;
+    using BorderColor = common::pro::BorderColor<Token>;
 
     using namespace widget::pro;
 }

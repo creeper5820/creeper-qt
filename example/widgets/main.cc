@@ -1,15 +1,5 @@
+#include "creeper-qt/creeper-qt.hh"
 #include <qapplication.h>
-#include <qcolor.h>
-
-#include "creeper-qt/layout/linear.hh"
-#include "creeper-qt/utility/theme/preset/blue-miku.hh"
-#include "creeper-qt/utility/theme/theme.hh"
-#include "creeper-qt/widget/button/filled-tonal-button.hh"
-#include "creeper-qt/widget/button/outlined-button.hh"
-#include "creeper-qt/widget/button/text-button.hh"
-#include "creeper-qt/widget/shape/rounded-rect.hh"
-#include "creeper-qt/widget/switch.hh"
-#include "creeper-qt/widget/widget.hh"
 
 using namespace creeper;
 
@@ -18,99 +8,106 @@ int main(int argc, char* argv[]) {
 
     auto theme_manager = ThemeManager { kBlueMikuThemePack };
 
-    auto switch_row = new Row {
-        linear::pro::Widget { { new QWidget {}, 1 } },
-        linear::pro::Widgets { {
-            { new Switch {
-                _switch::pro::ThemeManager { theme_manager },
-                _switch::pro::FixedSize { 70, 40 },
-                _switch::pro::Checked { true },
-            } },
-            { new Switch {
-                _switch::pro::ThemeManager { theme_manager },
-                _switch::pro::FixedSize { 70, 40 },
-                _switch::pro::Checked { false },
-            } },
-            { new Switch {
-                _switch::pro::ThemeManager { theme_manager },
-                _switch::pro::FixedSize { 70, 40 },
-                _switch::pro::Checked { true },
-                _switch::pro::Disabled { true },
-            } },
-            { new Switch {
-                _switch::pro::ThemeManager { theme_manager },
-                _switch::pro::FixedSize { 70, 40 },
-                _switch::pro::Checked { false },
-                _switch::pro::Disabled { true },
-            } },
-        } },
-        linear::pro::Widget { { new QWidget {}, 1 } },
-    };
-
-    namespace widget = widget::pro;
     namespace button = button::pro;
     namespace linear = linear::pro;
+    namespace filled = filled_button::pro;
+    namespace sw     = _switch::pro;
 
-    namespace pro = filled_button::pro;
-
-    const auto button_pro = std::tuple {
-        pro::ThemeManager { theme_manager },
-        pro::FixedSize { 110, 50 },
-        pro::Text { "你好世界" },
-        pro::Font { "WenQuanYi Zen Hei", 13 },
-        pro::Radius { 25 },
+    const auto switch_common_properties = std::tuple {
+        sw::ThemeManager { theme_manager },
+        sw::FixedSize { 70, 40 },
+    };
+    const auto button_common_properties = std::tuple {
+        filled::ThemeManager { theme_manager },
+        filled::FixedSize { 110, 50 },
+        filled::Text { "你好世界" },
+        filled::Font { "WenQuanYi Zen Hei", 13 },
+        filled::Radius { 25 },
+    };
+    const auto card_common_properties = std::tuple {
+        card::pro::ThemeManager { theme_manager },
+        card::pro::Level { SurfaceLevel::LOWEST },
+        card::pro::WindowFlag { Qt::WindowType::SplashScreen },
+        card::pro::FixedSize { 50, 50 },
+        card::pro::Radius { 10 },
     };
 
-    const auto button_row = new Row {
-        linear::Widget { { new Widget, 1 } },
-        linear::Widgets { {
-            { new FilledButton {
-                button_pro,
-                button::Text { "威严满满" },
-                button::Clickable { [] { //
-                    qDebug() << "抱头蹲防";
+    const auto card = new FilledCard {
+        card::pro::ThemeManager { theme_manager },
+        card::pro::Level { SurfaceLevel::HIGHEST },
+        card::pro::WindowFlag { Qt::WindowType::SplashScreen },
+        card::pro::FixedSize { 500, 300 },
+        card::pro::Radius { 0 },
+        card::pro::Layout { new Col {
+            linear::Stretch { 1 },
+            // 第一行：按钮展示
+            linear::Layout { { new Row {
+                linear::Stretch { 1 },
+                linear::Widgets { {
+                    { new FilledButton {
+                        button_common_properties,
+                        button::Text { "威严满满" },
+                        button::Clickable { [] { qDebug() << "抱头蹲防"; } },
+                    } },
+                    { new FilledTonalButton {
+                        button_common_properties,
+                        button::Text { "Color Mode" },
+                        button::Clickable { [&theme_manager] {
+                            theme_manager.toggle_color_mode();
+                            theme_manager.apply_theme();
+                        } },
+                    } },
+                    { new OutlinedButton { button_common_properties } },
+                    { new TextButton {
+                        button_common_properties,
+                        button::Text { "退出应用" },
+                        button::Clickable { [&application] { application->exit(); } },
+                    } },
                 } },
-            } },
-            { new FilledTonalButton {
-                button_pro,
-                button::Text { "Color Mode" },
-                button::Clickable { [&theme_manager] {
-                    theme_manager.toggle_color_mode();
-                    theme_manager.apply_theme();
+                linear::Stretch { 1 },
+            } } },
+            // 第二行：Switch 展示
+            linear::Layout { { new Row {
+                linear::Stretch { 1 },
+                linear::Widgets { {
+                    { new Switch {
+                        switch_common_properties,
+                        sw::Checked { true },
+                    } },
+                    { new Switch {
+                        switch_common_properties,
+                        sw::Checked { false },
+                    } },
+                    { new Switch {
+                        switch_common_properties,
+                        sw::Checked { true },
+                        sw::Disabled { true },
+                    } },
+                    { new Switch {
+                        switch_common_properties,
+                        sw::Checked { false },
+                        sw::Disabled { true },
+                    } },
                 } },
-            } },
-            { new OutlinedButton { button_pro } },
-            { new TextButton {
-                button_pro,
-                button::Text { "退出应用" },
-                button::Clickable { [&application] { //
-                    application->exit();
+                linear::Stretch { 1 },
+            } } },
+            // 第三行：卡片展示
+            linear::Layout { { new Row {
+                linear::SetSpacing { 15 },
+                linear::Stretch { 1 },
+                linear::Widgets { {
+                    { new ElevatedCard { card_common_properties } },
+                    { new OutlinedCard { card_common_properties } },
+                    { new FilledCard { card_common_properties } },
                 } },
-            } },
+                linear::Stretch { 1 },
+            } } },
+            linear::Stretch { 1 },
         } },
-        linear::Widget { { new Widget, 1 } },
     };
+    card->show();
+    card->move(960 - card->width() / 2, 540 - card->height() / 2);
 
-    auto background_rect = new RoundedRect {
-        widget::WindowFlag { Qt::WindowType::SplashScreen },
-        widget::FixedSize { 500, 300 },
-        widget::Layout { new Col {
-            linear::Widget { { new Widget, 1 } },
-            linear::Layout { { button_row, 1 } },
-            linear::Widget { { new Widget, 1 } },
-        } },
-    };
-    background_rect->show();
-    background_rect->move(960 - background_rect->width() / 2, 540 - background_rect->height() / 2);
-
-    // 为背景矩形添加主题切换支持
-    theme_manager.append_handler(background_rect, //
-        [&background_rect](const ThemeManager& manager) {
-            const auto color_scheme = manager.color_scheme();
-            const auto background   = color_scheme.background;
-            background_rect->set_background(background);
-            background_rect->update();
-        });
     theme_manager.set_color_mode(ColorMode::LIGHT);
     theme_manager.apply_theme();
 

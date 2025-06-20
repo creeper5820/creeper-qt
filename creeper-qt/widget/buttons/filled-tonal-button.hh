@@ -1,4 +1,5 @@
-#include "creeper-qt/widget/button/filled-button.hh"
+#pragma once
+#include "filled-button.hh"
 
 namespace creeper {
 namespace filled_tonal_button::internal {

@@ -26,7 +26,6 @@ file(GLOB_RECURSE PROJECT_HH CONFIGURE_DEPENDS "creeper-qt/*.hh")
 
 add_library(${PROJECT_NAME} SHARED
     ${PROJECT_CC}
-    ${PROJECT_HH}
 )
 add_library(${PROJECT_NAME}::widgets
     ALIAS ${PROJECT_NAME}

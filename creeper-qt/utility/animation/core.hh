@@ -2,7 +2,6 @@
 
 #include <algorithm>
 #include <memory>
-#include <ranges>
 #include <vector>
 
 #include <qevent.h>
@@ -31,11 +30,6 @@ public:
             update_complete_callback_();
         });
         scheduler_.setInterval(1'000 / hz);
-
-        std::array array = { 1, 2, 3, 4, 5 };
-        for (const auto& [index, num] : std::ranges::views::enumerate(array)) {
-            (void)num;
-        }
     }
 
     // 添加动画，动画执行完毕后会自动销毁

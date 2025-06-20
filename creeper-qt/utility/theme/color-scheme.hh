@@ -43,6 +43,12 @@ struct ColorScheme {
     QColor inverse_surface;
     QColor inverse_on_surface;
     QColor inverse_primary;
+
+    QColor surface_container_highest;
+    QColor surface_container_high;
+    QColor surface_container;
+    QColor surface_container_low;
+    QColor surface_container_lowest;
 };
 
 struct Typography {

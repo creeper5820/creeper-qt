@@ -1,11 +1,18 @@
+#pragma once
 #include "filled-button.hh"
 
 namespace creeper {
-namespace text_button::internal {
-    class TextButton : public FilledButton {
+namespace outlined_button::internal {
+    class OutlinedButton : public FilledButton {
     public:
+        explicit OutlinedButton()
+            : FilledButton() {
+            set_border_width(1.5);
+        }
+
         void set_color_scheme(const ColorScheme& color_scheme) {
             set_background(Qt::transparent);
+            set_border_color(color_scheme.outline);
             set_text_color(color_scheme.primary);
 
             auto hover_color = color_scheme.primary;
@@ -30,20 +37,20 @@ namespace text_button::internal {
         }
     };
 }
-namespace text_button::pro {
 
-    using Token = common::Token<internal::TextButton>;
+namespace outlined_button::pro {
 
     template <typename T>
-    concept property_concept = std::derived_from<T, Token> //
-        || button::pro::property_concept<T>                //
-        || util::theme::pro::property_concept<T>;
+    concept property_concept =
+        util::theme::pro::property_concept<T> || button::pro::property_concept<T>;
 
-    using namespace button::pro;
     using namespace util::theme::pro;
+    using namespace button::pro;
 }
-class TextButton : public text_button::internal::TextButton {
-    CREEPER_DEFINE_CONSTROCTOR(TextButton, text_button::pro);
-    using text_button::internal::TextButton::TextButton;
+
+class OutlinedButton : public outlined_button::internal::OutlinedButton {
+    CREEPER_DEFINE_CONSTROCTOR(OutlinedButton, outlined_button::pro);
+    using outlined_button::internal::OutlinedButton::OutlinedButton;
 };
+
 }
