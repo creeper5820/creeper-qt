@@ -36,7 +36,7 @@ inline QColor from_vector4(const Eigen::Vector4d& vector) {
     return QColor(vector[0], vector[1], vector[2], vector[3]);
 }
 
-inline QRectF extract_rect(const QRectF& rect, int w_weight, int h_weight) {
+inline QRectF extract_rect(const QRectF& rect, double w_weight, double h_weight) {
     double rw, rh;
     if (rect.width() * h_weight > rect.height() * w_weight) {
         rh = rect.height();

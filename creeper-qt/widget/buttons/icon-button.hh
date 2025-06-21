@@ -11,31 +11,46 @@
 
 namespace creeper {
 namespace icon_button::internal {
-
-    constexpr auto kHoverOpacity = double { 0.1 };
-    constexpr auto kWaterOpacity = double { 0.4 };
-    constexpr auto kWidthRatio   = double { 1.25 };
-    constexpr auto kOutlineWidth = double { 1 };
-
     class IconButton : public QAbstractButton {
         CREEPER_PIMPL_DEFINTION(IconButton);
 
     public:
         enum class Types { DEFAULT, TOGGLE_UNSELECTED, TOGGLE_SELECTED };
+
         enum class Shape { DEFAULT_ROUND, SQUARE };
+
         enum class Color { DEFAULT_FILLED, TONAL, OUTLINED, STANDARD };
+
         enum class Width { DEFAULT, NARROW, WIDE };
 
-        static constexpr auto kSizeExtraSmall     = QSize { 32, 32 };
-        static constexpr auto kIconSizeExtraSmall = int { 15 };
-        static constexpr auto kSizeSmall          = QSize { 40, 40 };
-        static constexpr auto kIconSizeSmall      = int { 24 };
-        static constexpr auto kSizeMedium         = QSize { 56, 56 };
-        static constexpr auto kIconSizeMedium     = int { 24 };
-        static constexpr auto kSizeLarge          = QSize { 96, 96 };
-        static constexpr auto kIconSizeLarge      = int { 32 };
-        static constexpr auto kSizeExtraLarge     = QSize { 136, 136 };
-        static constexpr auto kIconSizeExtraLarge = int { 40 };
+        /// @brief
+        ///     依照文档 https://m3.material.io/components/icon-buttons/specs
+        ///     给出如下标准容器尺寸，图标尺寸和字体大小
+        /// @note
+        ///     该组件支持 Material Symbols，只要安装相关字体即可使用，下面的
+        ///     FontIcon Size 也是根据字体的大小而定的, utility/material-icon.hh
+        ///     文件中有一些预定义的字体和图标编码
+
+        // Extra Small
+        static constexpr auto kExtraSmallContainerSize = QSize { 32, 32 };
+        static constexpr auto kExtraSmallIconSize      = QSize { 20, 20 };
+        static constexpr auto kExtraSmallFontIconSize  = int { 15 };
+        // Small
+        static constexpr auto kSmallContainerSize = QSize { 40, 40 };
+        static constexpr auto kSmallIconSize      = QSize { 24, 24 };
+        static constexpr auto kSmallFontIconSize  = int { 18 };
+        // Medium
+        static constexpr auto kMediumContainerSize = QSize { 56, 56 };
+        static constexpr auto kMediumIconSize      = QSize { 24, 24 };
+        static constexpr auto kMediumFontIconSize  = int { 18 };
+        // Large
+        static constexpr auto kLargeContainerSize = QSize { 96, 96 };
+        static constexpr auto kLargeIconSize      = QSize { 32, 32 };
+        static constexpr auto kLargeFontIconSize  = int { 24 };
+        // Extra Large
+        static constexpr auto kExtraLargeContainerSize = QSize { 136, 136 };
+        static constexpr auto kExtraLargeIconSize      = QSize { 40, 40 };
+        static constexpr auto kExtraLargeFontIconSize  = int { 32 };
 
     public:
         void set_color_scheme(const ColorScheme&);
@@ -54,8 +69,6 @@ namespace icon_button::internal {
     protected:
         void enterEvent(QEvent*) override;
         void leaveEvent(QEvent*) override;
-
-        void mouseReleaseEvent(QMouseEvent*) override;
 
         void paintEvent(QPaintEvent*) override;
     };
@@ -82,16 +95,30 @@ namespace icon_button::pro {
         explicit Color(Enum p) { color = p; }
         void apply(auto& self) const { self.set_color(color); }
     };
+    struct Shape : Token {
+        using Enum = internal::IconButton::Shape;
+        Enum shape;
+        explicit Shape(Enum p) { shape = p; }
+        void apply(auto& self) const { self.set_shape(shape); }
+    };
+    struct Types : Token {
+        using Enum = internal::IconButton::Types;
+        Enum types;
+        explicit Types(Enum p) { types = p; }
+        void apply(auto& self) const { self.set_types(types); }
+    };
+    struct Width : Token {
+        using Enum = internal::IconButton::Width;
+        Enum width;
+        explicit Width(Enum p) { width = p; }
+        void apply(auto& self) const { self.set_width(width); }
+    };
 
-    template <typename Callback, class Widget>
-        requires std::invocable<Callback, Widget&>
-    struct Clickable final : Token {
+    template <typename Callback> struct Clickable final : Token {
         Callback callback;
-        explicit Clickable(Callback p) noexcept
-            : callback(p) { }
-        void apply(auto& self) const noexcept
-            requires requires { &std::remove_cvref_t<decltype(self)>::clicked; }
-        {
+        explicit Clickable(Callback callback) noexcept
+            : callback(callback) { }
+        void apply(auto& self) const noexcept {
             QObject::connect(&self, &QAbstractButton::clicked, //
                 [function = callback, &self] { function(self); });
         }

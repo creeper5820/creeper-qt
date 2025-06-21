@@ -154,7 +154,7 @@ private:
         using Tracker1D = util::animation::FiniteSringTracker<double>;
 
         // @TODO: 适配进 MotionScheme
-        constexpr double kp = 10.0, ki = 0.0, kd = 0.0, hz = 90;
+        constexpr double kp = 15.0, ki = 0.0, kd = 0.0, hz = 90;
         constexpr double k = 400, d = 22;
 
         auto stop_token = std::make_shared<bool>(false);

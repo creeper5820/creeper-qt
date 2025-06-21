@@ -89,12 +89,17 @@ add_custom_command(TARGET "uninstall" POST_BUILD
 # 示例应用构建
 if(BUILD_EXAMPLE)
     add_executable(
-        app
+        widgets
         example/widgets/main.cc
     )
     target_link_libraries(
-        app
+        widgets
         creeper-qt
         Qt5::Widgets
+    )
+    add_custom_target(run
+        COMMAND widgets
+        DEPENDS widgets
+        WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
     )
 endif()

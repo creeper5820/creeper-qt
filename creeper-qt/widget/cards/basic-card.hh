@@ -11,7 +11,7 @@ constexpr auto kElevatedShadowBlurRadius = double { 10 };
 constexpr auto kElevatedShadowOffsetX    = double { 0 };
 constexpr auto kElevatedShadowOffsetY    = double { 2 };
 
-constexpr auto kOutlinedWidth = double { 1 };
+constexpr auto kOutlinedWidth = double { 1.5 };
 
 class BasicCard : public RoundedRect {
 public:
