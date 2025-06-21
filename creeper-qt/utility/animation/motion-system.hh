@@ -6,18 +6,20 @@
 
 namespace creeper::util::animation {
 
-constexpr auto kErrorThreshold = 1e-2;
+constexpr auto kErrorThreshold = 1e-1;
 
 template <typename T> struct FinitePidTracker : public IAnimation {
     explicit FinitePidTracker(const std::shared_ptr<T>& current, const T& target,
-        const std::shared_ptr<bool>& stop_token, double kp, double ki, double kd, double hz)
+        const std::shared_ptr<bool>& stop_token, double kp, double ki, double kd, double hz,
+        double error_threshold = kErrorThreshold)
         : current(current)
         , target(target)
         , stop_token(stop_token)
         , kp(kp)
         , ki(ki)
         , kd(kd)
-        , dt(1.0 / hz) { }
+        , dt(1.0 / hz)
+        , error_threshold(error_threshold) { }
 
     bool update() {
         if (!current || !stop_token) return true;
@@ -30,13 +32,14 @@ template <typename T> struct FinitePidTracker : public IAnimation {
 
         *current = *current + T { output * dt };
 
-        return calculate_error(error) < kErrorThreshold || *stop_token;
+        return calculate_error(error) < error_threshold || *stop_token;
     }
 
     std::shared_ptr<T> current;
     std::shared_ptr<bool> stop_token;
     T target;
     double kp, ki, kd, dt;
+    double error_threshold;
 
     /// Note:
     ///     牢记 Eigen 变量非 POD，默认不初始化
@@ -50,18 +53,20 @@ template <typename T> struct FiniteSringTracker final : IAnimation {
     std::shared_ptr<bool> stop_token;
     T target;
     double k, d, dt;
+    double error_threshold;
+
     T velocity = zero<T>();
 
     FiniteSringTracker(const std::shared_ptr<T>& current, const T& target,
-        const std::shared_ptr<bool>& stop_token, double k, double d, double hz)
+        const std::shared_ptr<bool>& stop_token, double k, double d, double hz,
+        double error_threshold = kErrorThreshold)
         : current(current)
         , target(target)
         , stop_token(stop_token)
         , k(k)
         , d(d)
-        , dt(1.0 / hz) { }
-
-    // ~FiniteSringTracker() { qDebug() << "FiniteSringTracker Destroy"; }
+        , dt(1.0 / hz)
+        , error_threshold(error_threshold) { }
 
     bool update() {
         if (!current || !stop_token) return true;
@@ -74,7 +79,7 @@ template <typename T> struct FiniteSringTracker final : IAnimation {
         velocity = velocity + a_total * dt;
         *current = *current + velocity * dt;
 
-        return (calculate_error(error) < kErrorThreshold && std::abs(velocity) < kErrorThreshold)
+        return (calculate_error(error) < error_threshold && std::abs(velocity) < error_threshold)
             || *stop_token;
     }
 };

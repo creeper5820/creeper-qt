@@ -130,6 +130,7 @@ public:
 
     inline PainterHelper& simple_text(const QString& text, const QFont& font, const QColor& color,
         const QRectF& rect, Qt::Alignment alignment) {
+        painter.setRenderHint(QPainter::TextAntialiasing);
         painter.setFont(font);
         painter.setBrush(Qt::NoBrush);
         painter.setPen({ color });

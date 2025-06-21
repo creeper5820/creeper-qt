@@ -16,22 +16,32 @@ namespace pro {
     // 尺寸相关
     struct MinimumSize final : public QSize, Token {
         using QSize::QSize;
+        explicit MinimumSize(const QSize& size)
+            : QSize { size } { }
         void apply(QWidget& widget) const { widget.setMinimumSize(*this); }
     };
     struct MaximumSize final : public QSize, Token {
         using QSize::QSize;
+        explicit MaximumSize(const QSize& size)
+            : QSize { size } { }
         void apply(QWidget& widget) const { widget.setMaximumSize(*this); }
     };
     struct SizeIncrement final : public QSize, Token {
         using QSize::QSize;
+        explicit SizeIncrement(const QSize& size)
+            : QSize { size } { }
         void apply(QWidget& widget) const { widget.setSizeIncrement(*this); }
     };
     struct BaseSize final : public QSize, Token {
         using QSize::QSize;
+        explicit BaseSize(const QSize& size)
+            : QSize { size } { }
         void apply(QWidget& widget) const { widget.setBaseSize(*this); }
     };
     struct FixedSize final : public QSize, Token {
         using QSize::QSize;
+        explicit FixedSize(const QSize& size)
+            : QSize { size } { }
         void apply(QWidget& widget) const { widget.setFixedSize(*this); }
     };
 
@@ -91,6 +101,8 @@ namespace pro {
 
     struct Font final : public QFont, Token {
         using QFont::QFont;
+        explicit Font(const QFont& font)
+            : QFont { font } { }
         void apply(QWidget& widget) const { widget.setFont(*this); }
     };
 

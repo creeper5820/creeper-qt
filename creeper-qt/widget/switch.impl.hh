@@ -89,15 +89,15 @@ struct Switch::Impl {
     void set_disabled(Switch& self, bool on) {
         if (disabled == on) return;
 
-        update_switch_ui(self, checked, on);
         disabled = on;
+        update_switch_ui(self, checked, on);
     }
 
     void set_checked(Switch& self, bool on) {
         if (disabled || checked == on) return;
 
-        update_switch_ui(self, on);
         checked = on;
+        update_switch_ui(self, on);
     }
 
     void enter_event(Switch& self, const QEvent& event) {

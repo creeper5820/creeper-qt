@@ -88,6 +88,11 @@ namespace pro {
         explicit SetSpacing(int p) { size = p; }
         void apply(QBoxLayout& self) const { self.setSpacing(size); }
     };
+    struct Alignment final : Property {
+        Qt::Alignment alignment;
+        explicit Alignment(Qt::Alignment p) { alignment = p; }
+        void apply(QBoxLayout& self) const { self.setAlignment(alignment); }
+    };
 
     struct ContentsMargin final : public QMargins, Property {
         using QMargins::QMargins;

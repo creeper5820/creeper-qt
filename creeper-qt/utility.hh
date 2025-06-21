@@ -7,3 +7,5 @@
 
 #include "creeper-qt/utility/theme/preset/blue-miku.hh"
 #include "creeper-qt/utility/theme/theme.hh"
+
+#include "creeper-qt/utility/material-icon.hh"

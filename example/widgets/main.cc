@@ -1,17 +1,22 @@
 #include "creeper-qt/creeper-qt.hh"
 #include <qapplication.h>
+#include <qfontdatabase.h>
+#include <qlabel.h>
 
 using namespace creeper;
 
 int main(int argc, char* argv[]) {
-    auto application = new QApplication { argc, argv };
-
+    auto application   = new QApplication { argc, argv };
     auto theme_manager = ThemeManager { kBlueMikuThemePack };
 
     namespace button = button::pro;
     namespace linear = linear::pro;
     namespace filled = filled_button::pro;
+    namespace icon   = icon_button::pro;
     namespace sw     = _switch::pro;
+    namespace font   = util::icon_font;
+
+    auto material_icon = QFont { font::rounded, 20 };
 
     const auto switch_common_properties = std::tuple {
         sw::ThemeManager { theme_manager },
@@ -31,16 +36,23 @@ int main(int argc, char* argv[]) {
         card::pro::FixedSize { 50, 50 },
         card::pro::Radius { 10 },
     };
+    const auto icon_button_properties = std::tuple {
+        icon::ThemeManager { theme_manager },
+        icon::FontIcon { "settings" },
+        icon::FixedSize { IconButton::kSizeExtraSmall },
+        icon::Color { IconButton::Color::DEFAULT_FILLED },
+        icon::Font { font::rounded, IconButton::kIconSizeExtraSmall },
+    };
 
     const auto card = new FilledCard {
         card::pro::ThemeManager { theme_manager },
         card::pro::Level { SurfaceLevel::HIGHEST },
         card::pro::WindowFlag { Qt::WindowType::SplashScreen },
-        card::pro::FixedSize { 500, 300 },
+        card::pro::FixedSize { 600, 300 },
         card::pro::Radius { 0 },
         card::pro::Layout { new Col {
+            linear::SetSpacing { 20 },
             linear::Stretch { 1 },
-            // 第一行：按钮展示
             linear::Layout { { new Row {
                 linear::Stretch { 1 },
                 linear::Widgets { {
@@ -51,7 +63,8 @@ int main(int argc, char* argv[]) {
                     } },
                     { new FilledTonalButton {
                         button_common_properties,
-                        button::Text { "Color Mode" },
+                        button::Font { material_icon },
+                        button::Text { "contrast" },
                         button::Clickable { [&theme_manager] {
                             theme_manager.toggle_color_mode();
                             theme_manager.apply_theme();
@@ -60,13 +73,13 @@ int main(int argc, char* argv[]) {
                     { new OutlinedButton { button_common_properties } },
                     { new TextButton {
                         button_common_properties,
-                        button::Text { "退出应用" },
+                        button::Font { material_icon },
+                        button::Text { "exit_to_app" },
                         button::Clickable { [&application] { application->exit(); } },
                     } },
                 } },
                 linear::Stretch { 1 },
             } } },
-            // 第二行：Switch 展示
             linear::Layout { { new Row {
                 linear::Stretch { 1 },
                 linear::Widgets { {
@@ -91,7 +104,28 @@ int main(int argc, char* argv[]) {
                 } },
                 linear::Stretch { 1 },
             } } },
-            // 第三行：卡片展示
+            linear::Layout { { new Row {
+                linear::Stretch { 1 },
+                linear::Widgets { {
+                    { new IconButton {
+                        icon_button_properties,
+                        icon::Color { IconButton::Color::DEFAULT_FILLED },
+                    } },
+                    { new IconButton {
+                        icon_button_properties,
+                        icon::Color { IconButton::Color::OUTLINED },
+                    } },
+                    { new IconButton {
+                        icon_button_properties,
+                        icon::Color { IconButton::Color::TONAL },
+                    } },
+                    { new IconButton {
+                        icon_button_properties,
+                        icon::Color { IconButton::Color::STANDARD },
+                    } },
+                } },
+                linear::Stretch { 1 },
+            } } },
             linear::Layout { { new Row {
                 linear::SetSpacing { 15 },
                 linear::Stretch { 1 },
