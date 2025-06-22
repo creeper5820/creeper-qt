@@ -9,8 +9,7 @@
 
 using namespace creeper::icon_button::internal;
 using creeper::util::animation::AnimationCore;
-using creeper::util::animation::WaterRipple;
-using creeper::util::animation::WaterRippleContainer;
+using creeper::util::animation::WaterRippleRenderer;
 
 constexpr auto kHoverOpacity = double { 0.1 };
 constexpr auto kWaterOpacity = double { 0.4 };
@@ -22,7 +21,7 @@ constexpr double kp = 15.0, ki = 0.0, kd = 0.0;
 constexpr auto kSpringK = double { 400.0 };
 constexpr auto kSpringD = double { 15.0 };
 
-constexpr auto kAnimationHZ = int { 90 };
+constexpr auto kAnimationHz = int { 90 };
 constexpr auto kThreshold4D = double { 1.0 };
 constexpr auto kThreshold1D = double { 1e-1 };
 constexpr auto kWaterSpeed  = double { 5.0 };
@@ -32,7 +31,7 @@ struct IconButton::Impl {
     using Track1D = util::animation::FiniteSringTracker<double>;
 
     AnimationCore animation_core;
-    WaterRippleContainer water_ripples;
+    WaterRippleRenderer water_ripple;
     std::vector<std::shared_ptr<bool>> stop_tokens;
 
     bool is_hovered = false;
@@ -72,22 +71,14 @@ struct IconButton::Impl {
         Eigen::Vector4d::Zero()) };
 
     explicit Impl(IconButton& self) noexcept
-        : animation_core { [&self] { self.update(); }, kAnimationHZ } {
+        : animation_core { [&self] { self.update(); }, kAnimationHz }
+        , water_ripple { animation_core, kWaterSpeed, kAnimationHz } {
 
         QObject::connect(&self, &IconButton::clicked, [this, &self] {
             if (types == Types::DEFAULT) {
                 const auto center_point = self.mapFromGlobal(QCursor::pos());
                 const auto max_distance = std::max(self.width(), self.height());
-
-                auto container_outline_path = QPainterPath {};
-                container_outline_path.addRoundedRect(container_rectangle(self),
-
-                    *container_radius_current, *container_radius_current);
-                animation_core.append(std::make_unique<WaterRipple>(water_color,
-                    container_outline_path, center_point, kWaterSpeed, max_distance,
-                    [this](std::unique_ptr<WaterRipple::Result> result) {
-                        return water_ripples.append(std::move(result)), false;
-                    }));
+                water_ripple.clicked(center_point, max_distance);
             }
 
             toggle_status();
@@ -115,16 +106,15 @@ struct IconButton::Impl {
         const auto container_radius = *container_radius_current;
         const auto container_rect   = container_rectangle(self);
 
-        const auto render_water_ripple = [this, &self](QPainter& painter) {
-            water_ripples.render(painter, self.rect(), self.rect());
-        };
+        auto clip_path = QPainterPath {};
+        clip_path.addRoundedRect(container_rect, container_radius, container_radius);
 
         auto renderer = QPainter { &self };
         util::PainterHelper { renderer }
             .set_render_hint(QPainter::Antialiasing)
             .rounded_rectangle(container_color, outline_color, kOutlineWidth, container_rect,
                 container_radius, container_radius)
-            .apply(render_water_ripple)
+            .apply(water_ripple.renderer(clip_path, water_color))
             .simple_text(font_icon, self.font(), icon_color, container_rect, Qt::AlignCenter)
             .rounded_rectangle(
                 hover_color, Qt::transparent, 0, container_rect, container_radius, container_radius)
@@ -238,7 +228,7 @@ private:
                                                 : container_color_unselected;
 
         animation_core.append(std::make_unique<Track4D>(container_color_current, //
-            from_color(container_color_target), stop_token, kp, ki, kd, kAnimationHZ,
+            from_color(container_color_target), stop_token, kp, ki, kd, kAnimationHz,
             kThreshold4D));
 
         const auto icon_color_target //
@@ -246,21 +236,22 @@ private:
             : (types == Types::TOGGLE_SELECTED) ? icon_color_selected
                                                 : icon_color_unselected;
         animation_core.append(std::make_unique<Track4D>(icon_color_current,
-            from_color(icon_color_target), stop_token, kp, ki, kd, kAnimationHZ, kThreshold4D));
+            from_color(icon_color_target), stop_token, kp, ki, kd, kAnimationHz, kThreshold4D));
 
         const auto outline_color_target //
             = (types == Types::DEFAULT)         ? outline_color
             : (types == Types::TOGGLE_SELECTED) ? outline_color_selected
                                                 : outline_color_unselected;
         animation_core.append(std::make_unique<Track4D>(outline_color_current,
-            from_color(outline_color_target), stop_token, kp, ki, kd, kAnimationHZ, kThreshold4D));
+            from_color(outline_color_target), stop_token, kp, ki, kd, kAnimationHz, kThreshold4D));
 
-        const auto radius_round  = std::min<double>(self.width(), self.height()) / 2.;
+        const auto rectangle     = container_rectangle(self);
+        const auto radius_round  = std::min<double>(rectangle.width(), rectangle.height()) / 2.;
         const auto radius_target = (types == Types::TOGGLE_SELECTED || shape == Shape::SQUARE)
             ? radius_round * kSquareRatio
             : radius_round * 1.0;
         animation_core.append(std::make_unique<Track1D>(container_radius_current, radius_target,
-            stop_token, kSpringK, kSpringD, kAnimationHZ, kThreshold1D));
+            stop_token, kSpringK, kSpringD, kAnimationHz, kThreshold1D));
 
         for (auto& stop_token : stop_tokens)
             *stop_token = true;
@@ -278,7 +269,6 @@ private:
         case Types::TOGGLE_SELECTED:
             return hover_color_selected;
         }
-
         return { /* 不可能到达的彼岸 */ };
     }
 

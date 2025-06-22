@@ -35,6 +35,7 @@ namespace elevated_card::internal {
 namespace elevated_card::pro {
     template <class Card>
     concept property_concept = card::pro::property_concept<Card>;
+    using namespace card::pro;
 }
 class ElevatedCard : public elevated_card::internal::ElevatedCard {
     CREEPER_DEFINE_CONSTROCTOR(ElevatedCard, elevated_card::pro);

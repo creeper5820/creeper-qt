@@ -12,10 +12,15 @@ using namespace creeper::util::animation;
 
 namespace creeper::filled_button::internal {
 
+constexpr auto kAnimationHz = int { 90 };
+constexpr auto kThreshold4D = double { 1.0 };
+constexpr auto kThreshold1D = double { 1e-1 };
+constexpr auto kWaterSpeed  = double { 5.0 };
+
 struct FilledButton::Impl {
 public:
     AnimationCore animation_core;
-    WaterRippleContainer water_ripples;
+    WaterRippleRenderer water_ripple;
 
     bool enable_water_ripple = true;
     double water_ripple_step = 5.;
@@ -35,19 +40,19 @@ public:
 
 public:
     explicit Impl(QAbstractButton& self)
-        : animation_core([&self] { self.update(); }, 90) { }
+        : animation_core([&self] { self.update(); }, kAnimationHz)
+        , water_ripple { animation_core, kWaterSpeed, kAnimationHz } { }
 
     void paint_event(QAbstractButton& self, QPaintEvent* event) {
-        const auto water_renderer = [&self, this](QPainter& painter) {
-            water_ripples.render(painter, self.rect(), self.rect());
-        };
+
+        const auto button_path = make_rounded_rectangle_path(self.rect(), radius);
 
         auto painter = QPainter { &self };
         PainterHelper { painter }
             .set_render_hint(QPainter::RenderHint::Antialiasing)
             .set_opacity(1.)
             .rounded_rectangle(background, border_color, border_width, self.rect(), radius, radius)
-            .apply(water_renderer)
+            .apply(water_ripple.renderer(button_path, water_color))
             .set_opacity(1.)
             .rounded_rectangle(hover_color, Qt::transparent, 0, self.rect(), radius, radius)
             .set_opacity(1.)
@@ -56,15 +61,9 @@ public:
 
     void mouse_release_event(QAbstractButton& self, QMouseEvent* event) {
         if (enable_water_ripple) {
-
-            const auto button_path  = make_rounded_rectangle_path(self.rect(), radius);
+            const auto center_point = event->pos();
             const auto max_distance = std::max<double>(self.width(), self.height());
-
-            animation_core.append(std::make_unique<WaterRipple>(water_color, button_path,
-                event->pos(), water_ripple_step, max_distance,
-                [this](std::unique_ptr<WaterRipple::Result> result) -> bool {
-                    return water_ripples.append(std::move(result)), false;
-                }));
+            water_ripple.clicked(center_point, max_distance);
         }
     }
 

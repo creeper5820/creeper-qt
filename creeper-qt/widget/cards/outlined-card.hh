@@ -25,6 +25,7 @@ namespace outlined_card::internal {
 namespace outlined_card::pro {
     template <class Card>
     concept property_concept = card::pro::property_concept<Card>;
+    using namespace card::pro;
 }
 class OutlinedCard : public outlined_card::internal::OutlinedCard {
     CREEPER_DEFINE_CONSTROCTOR(OutlinedCard, outlined_card::pro);

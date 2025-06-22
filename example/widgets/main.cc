@@ -6,8 +6,12 @@
 using namespace creeper;
 
 int main(int argc, char* argv[]) {
-    auto application   = new QApplication { argc, argv };
-    auto theme_manager = ThemeManager { kBlueMikuThemePack };
+    auto application = new QApplication { argc, argv };
+
+    auto theme_manager = ThemeManager {
+        kBlueMikuThemePack,
+        ColorMode::LIGHT,
+    };
 
     namespace button = button::pro;
     namespace linear = linear::pro;
@@ -16,7 +20,7 @@ int main(int argc, char* argv[]) {
     namespace sw     = _switch::pro;
     namespace font   = util::icon_font;
 
-    auto material_icon = QFont { font::rounded, 20 };
+    const auto material_icon = QFont { font::rounded, 20 };
 
     const auto switch_common_properties = std::tuple {
         sw::ThemeManager { theme_manager },
@@ -45,11 +49,11 @@ int main(int argc, char* argv[]) {
     };
     auto icon_buttons = std::array<IconButton*, 4> {};
 
-    const auto card = new FilledCard {
+    const auto card = new OutlinedCard {
         card::pro::ThemeManager { theme_manager },
         card::pro::Level { SurfaceLevel::HIGHEST },
         card::pro::WindowFlag { Qt::WindowType::SplashScreen },
-        card::pro::Radius { 0 },
+        card::pro::Radius { 5 },
         card::pro::Layout { new Col {
             linear::SetSpacing { 20 },
             linear::Margin { 50 },
@@ -86,12 +90,9 @@ int main(int argc, char* argv[]) {
                         switch_common_properties,
                         sw::Checked { true },
                         sw::Clickable { [&icon_buttons](bool checked) {
-                            if (checked)
-                                for (const auto& icon_button : icon_buttons)
-                                    icon_button->set_types(IconButton::Types::DEFAULT);
-                            else
-                                for (const auto& icon_button : icon_buttons)
-                                    icon_button->set_types(IconButton::Types::TOGGLE_UNSELECTED);
+                            for (const auto& icon_button : icon_buttons)
+                                if (checked) icon_button->set_types(IconButton::Types::DEFAULT);
+                                else icon_button->set_types(IconButton::Types::TOGGLE_UNSELECTED);
                         } },
                     } },
                     { new Switch {
@@ -179,7 +180,6 @@ int main(int argc, char* argv[]) {
     card->show();
     card->move(960 - card->width() / 2, 540 - card->height() / 2);
 
-    theme_manager.set_color_mode(ColorMode::LIGHT);
     theme_manager.apply_theme();
 
     return application->exec();

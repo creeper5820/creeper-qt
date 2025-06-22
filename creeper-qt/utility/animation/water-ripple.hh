@@ -1,8 +1,8 @@
 #pragma once
 
 #include "creeper-qt/utility/animation/core.hh"
-#include "creeper-qt/utility/painter/helper.hh"
 
+#include <algorithm>
 #include <qdebug.h>
 #include <qevent.h>
 #include <qpaintdevice.h>
@@ -11,81 +11,64 @@
 
 namespace creeper::util::animation {
 
-struct WaterRipple final : IAnimation {
-public:
-    struct Result {
-        QPixmap pixmap;
-        uint unique_id;
-        bool is_finish;
-    };
-
-    WaterRipple(const QColor& color, const QPainterPath& path, const QPointF& origin, double speed,
-        double max_distance, const std::function<void(std::unique_ptr<Result>)>& callback)
-        : color(color)
-        , path(path)
-        , origin(origin)
+struct WaterRippleData {
+    QPointF origin;
+    double radius  = 0.0;
+    double opacity = 1.0;
+    bool finished  = false;
+};
+struct WaterRippleAnimation final : IAnimation {
+    explicit WaterRippleAnimation(
+        const std::shared_ptr<WaterRippleData>& data, double speed, double max_distance, double hz)
+        : data(data)
         , speed(speed)
-        , max_distance(max_distance)
-        , callback(callback) {
-        unique_id = static_unique_id++;
-    }
+        , max_distance(max_distance) { }
 
     bool update() override {
-        auto result = std::make_unique<Result>();
-
-        result->pixmap = QPixmap { path.boundingRect().size().toSize() };
-        result->pixmap.fill(Qt::transparent);
-
-        const auto is_finish = (distance += speed) > max_distance;
-        if (!is_finish) {
-            auto painter = QPainter { &result->pixmap };
-            PainterHelper { painter }
-                .set_clip_path(path)
-                .set_opacity(1. - distance / max_distance)
-                .ellipse(color, Qt::transparent, 0, origin, distance, distance)
-                .done();
-        }
-
-        result->is_finish = is_finish;
-        result->unique_id = unique_id;
-
-        callback(std::move(result));
-
-        return is_finish;
+        data->radius   = data->radius + speed;
+        data->finished = data->radius > max_distance;
+        data->opacity  = 1.0 - data->radius / max_distance;
+        return data->finished;
     }
 
-private:
-    static inline uint static_unique_id = 0;
-    uint unique_id;
-
-    // 状态变量
-    double distance = 0;
-
-    // 配置变量
-    QColor color;
-    QPainterPath path;
-    QPointF origin;
+    std::shared_ptr<WaterRippleData> data;
     double speed;
     double max_distance;
-
-    std::function<void(std::unique_ptr<Result>)> callback;
 };
-
-class WaterRippleContainer {
+class WaterRippleRenderer {
 public:
-    void append(std::unique_ptr<WaterRipple::Result> result) {
-        water_ripples[result->unique_id] = std::move(result);
+    explicit WaterRippleRenderer(AnimationCore& core, double speed, double hz)
+        : animation_core { core }
+        , speed { speed }
+        , hz { hz } { }
+
+    void clicked(QPointF origin, double max_distance) noexcept {
+        auto data = std::make_shared<WaterRippleData>(origin);
+        animation_core.append(
+            std::make_unique<WaterRippleAnimation>(data, speed, max_distance, hz));
+        water_ripples.push_back(std::move(data));
     }
 
-    void render(QPainter& painter, const QRectF& src, const QRectF& dst) {
-        std::erase_if(water_ripples, [](const auto& p) { return p.second->is_finish; });
-        std::ranges::for_each(water_ripples, [&painter, &src, &dst](const auto& p) {
-            painter.drawPixmap(dst, p.second->pixmap, src);
-        });
+    auto renderer(const QPainterPath& clip_path, const QColor& water_color) noexcept {
+        return [this, &clip_path, &water_color](QPainter& painter) {
+            const auto [_0, _1] = std::ranges::remove_if(water_ripples, [&](const auto& data) {
+                painter.setRenderHint(QPainter::Antialiasing);
+                painter.setClipPath(clip_path);
+                painter.setOpacity(data->opacity);
+                painter.setPen(Qt::NoPen);
+                painter.setBrush(water_color);
+                painter.drawEllipse(data->origin, data->radius, data->radius);
+                painter.setOpacity(1.0);
+                return data->finished;
+            });
+            water_ripples.erase(_0, _1);
+        };
     }
 
 private:
-    std::unordered_map<uint, std::unique_ptr<WaterRipple::Result>> water_ripples;
+    std::vector<std::shared_ptr<WaterRippleData>> water_ripples;
+    AnimationCore& animation_core;
+    double speed, hz;
 };
 
 }

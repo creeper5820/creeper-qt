@@ -37,9 +37,10 @@ struct ThemeManager::Impl {
 ThemeManager::ThemeManager()
     : pimpl(std::make_unique<Impl>()) { }
 
-ThemeManager::ThemeManager(const ThemePack& pack)
+ThemeManager::ThemeManager(const ThemePack& pack, ColorMode mode)
     : pimpl(std::make_unique<Impl>()) {
     pimpl->theme_pack = pack;
+    pimpl->color_mode = mode;
 }
 
 ThemeManager::~ThemeManager() = default;

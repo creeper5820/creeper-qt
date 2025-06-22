@@ -5,6 +5,7 @@ namespace creeper {
 namespace filled_card::pro {
     template <class Card>
     concept property_concept = card::pro::property_concept<Card>;
+    using namespace card::pro;
 }
 class FilledCard : public card::internal::BasicCard {
     CREEPER_DEFINE_CONSTROCTOR(FilledCard, filled_card::pro);
