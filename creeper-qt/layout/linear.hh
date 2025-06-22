@@ -2,6 +2,7 @@
 
 #include "creeper-qt/utility/wrapper/common-property.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
+#include "creeper-qt/widget/widget.hh"
 
 #include <qlayout.h>
 
@@ -14,30 +15,39 @@ namespace pro {
     concept property_concept = std::derived_from<T, Token>;
 
     struct Item : Token {
-        std::variant<QWidget*, QLayout*> item;
-        int stretch         = 0;
-        Qt::Alignment align = {};
+        static auto stretch(int s) { return Item { new Widget, s }; }
+
+        static auto row_spacing(int x) {
+            return Item { new Widget { widget::pro::FixedSize { x, 0 } } };
+        }
+        static auto col_spacing(int y) {
+            return Item { new Widget { widget::pro::FixedSize { 0, y } } };
+        }
+
+        std::variant<QWidget*, QLayout*> item_;
+        int stretch_         = int { 0 };
+        Qt::Alignment align_ = {};
 
         Item(QWidget* widget, int stretch = 0, Qt::Alignment align = {})
-            : item(widget)
-            , stretch(stretch)
-            , align(align) { }
+            : item_(widget)
+            , stretch_(stretch)
+            , align_(align) { }
 
         Item(QLayout* layout, int stretch = 0)
-            : item(layout)
-            , stretch(stretch) { }
+            : item_(layout)
+            , stretch_(stretch) { }
 
         void apply(QBoxLayout& self) const {
             std::visit(
                 [&](auto* item) {
                     using ItemType = std::decay_t<decltype(item)>;
                     if constexpr (std::is_same_v<ItemType, QWidget*>) {
-                        self.addWidget(item, stretch, align);
+                        self.addWidget(item, stretch_, align_);
                     } else if constexpr (std::is_same_v<ItemType, QLayout*>) {
-                        self.addLayout(item, stretch);
+                        self.addLayout(item, stretch_);
                     }
                 },
-                item);
+                item_);
         }
     };
 

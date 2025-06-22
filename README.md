@@ -18,7 +18,7 @@
 
 <img src="doc/image/example-login.png" title="" alt="example-login" data-align="center">
 
-<img src="doc/image/buttons.png" title="" alt="buttons" data-align="center">
+<img src="doc/image/blue-style-widgets.png" title="" alt="buttons" data-align="center">
 
 ## 调用示例
 
