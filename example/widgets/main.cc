@@ -58,9 +58,9 @@ int main(int argc, char* argv[]) {
             linear::SetSpacing { 20 },
             linear::Margin { 50 },
             linear::Stretch { 1 },
-            linear::Layout { { new Row {
+            linear::Item { new Row {
                 linear::Stretch { 1 },
-                linear::Widgets { {
+                linear::Items { {
                     { new FilledButton {
                         button_common_properties,
                         button::Text { "威严满满" },
@@ -82,10 +82,10 @@ int main(int argc, char* argv[]) {
                     } },
                 } },
                 linear::Stretch { 1 },
-            } } },
-            linear::Layout { { new Row {
+            } },
+            linear::Item { new Row {
                 linear::Stretch { 1 },
-                linear::Widgets { {
+                linear::Items { {
                     { new Switch {
                         switch_common_properties,
                         sw::Checked { true },
@@ -116,10 +116,10 @@ int main(int argc, char* argv[]) {
                     } },
                 } },
                 linear::Stretch { 1 },
-            } } },
-            linear::Layout { { new Row {
+            } },
+            linear::Item { new Row {
                 linear::Stretch { 1 },
-                linear::Widgets { {
+                linear::Items { {
                     { new IconButton {
                         icon_button_properties,
                         icon::Bind { icon_buttons[0] },
@@ -146,11 +146,11 @@ int main(int argc, char* argv[]) {
                     } },
                 } },
                 linear::Stretch { 1 },
-            } } },
-            linear::Layout { { new Row {
+            } },
+            linear::Item { new Row {
                 linear::SetSpacing { 15 },
                 linear::Stretch { 1 },
-                linear::Widgets { {
+                linear::Items { {
                     { new OutlinedCard {
                         card_common_properties,
                         card::pro::Level { OutlinedCard::Level::LOWEST },
@@ -173,7 +173,7 @@ int main(int argc, char* argv[]) {
                     } },
                 } },
                 linear::Stretch { 1 },
-            } } },
+            } },
             linear::Stretch { 1 },
         } },
     };

@@ -14,6 +14,16 @@ namespace pro {
     concept property_concept = std::derived_from<T, Token>;
 
     // 尺寸相关
+    struct SizePolicy final : Token {
+        QSizePolicy::Policy v, h;
+        explicit SizePolicy(QSizePolicy::Policy policy)
+            : v { policy }
+            , h { policy } { }
+        explicit SizePolicy(QSizePolicy::Policy v, QSizePolicy::Policy h)
+            : v { v }
+            , h { h } { }
+        void apply(QWidget& self) const { self.setSizePolicy(h, v); }
+    };
     struct MinimumSize final : public QSize, Token {
         using QSize::QSize;
         explicit MinimumSize(const QSize& size)

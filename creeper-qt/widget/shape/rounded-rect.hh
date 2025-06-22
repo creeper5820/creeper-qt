@@ -7,7 +7,6 @@
 
 namespace creeper {
 namespace rounded_rect::internal {
-
     class RoundedRect : public Shape {
     public:
         void set_radius_x(double radius_x) { radius_x_ = radius_x; }
