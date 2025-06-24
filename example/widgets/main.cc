@@ -1,4 +1,5 @@
 #include "creeper-qt/creeper-qt.hh"
+
 #include <qapplication.h>
 #include <qfontdatabase.h>
 #include <qlabel.h>
@@ -13,25 +14,22 @@ int main(int argc, char* argv[]) {
         ColorMode::LIGHT,
     };
 
-    namespace button = button::pro;
-    namespace linear = linear::pro;
-    namespace filled = filled_button::pro;
-    namespace icon   = icon_button::pro;
-    namespace sw     = _switch::pro;
-    namespace font   = util::icon_font;
-
-    const auto material_icon = QFont { font::rounded, 20 };
+    namespace but = button::pro;
+    namespace lin = linear::pro;
+    namespace fil = filled_button::pro;
+    namespace ico = icon_button::pro;
+    namespace swi = _switch::pro;
 
     const auto switch_common_properties = std::tuple {
-        sw::ThemeManager { theme_manager },
-        sw::FixedSize { 70, 40 },
+        swi::ThemeManager { theme_manager },
+        swi::FixedSize { 70, 40 },
     };
     const auto button_common_properties = std::tuple {
-        filled::ThemeManager { theme_manager },
-        filled::FixedSize { 110, 50 },
-        filled::Text { "你好世界" },
-        filled::Font { "WenQuanYi Zen Hei", 13 },
-        filled::Radius { 25 },
+        fil::ThemeManager { theme_manager },
+        fil::FixedSize { 110, 50 },
+        fil::Text { "你好世界" },
+        fil::Font { "WenQuanYi Zen Hei", 13 },
+        fil::Radius { 25 },
     };
     const auto card_common_properties = std::tuple {
         card::pro::ThemeManager { theme_manager },
@@ -39,146 +37,140 @@ int main(int argc, char* argv[]) {
         card::pro::Radius { 10 },
     };
     const auto icon_button_properties = std::tuple {
-        icon::ThemeManager { theme_manager },
-        icon::FontIcon { "settings" },
-        icon::Shape { IconButton::Shape::SQUARE },
-        icon::Width { IconButton::Width::DEFAULT },
-        icon::Types { IconButton::Types::DEFAULT },
-        icon::FixedSize { IconButton::kMediumContainerSize },
-        icon::Font { font::rounded, IconButton::kMediumFontIconSize },
+        ico::ThemeManager { theme_manager },
+        ico::FontIcon { "settings" },
+        ico::Shape { IconButton::Shape::SQUARE },
+        ico::Width { IconButton::Width::DEFAULT },
+        ico::Types { IconButton::Types::DEFAULT },
+        ico::FixedSize { IconButton::kMediumContainerSize },
+        ico::Font { material::kRoundedMediumFont },
     };
     auto icon_buttons = std::array<IconButton*, 4> {};
 
-    const auto card = new OutlinedCard {
+    const auto examples_container = new OutlinedCard {
         card::pro::ThemeManager { theme_manager },
         card::pro::Level { SurfaceLevel::HIGHEST },
         card::pro::WindowFlag { Qt::WindowType::SplashScreen },
         card::pro::Radius { 5 },
-        card::pro::Layout { new Col {
-            linear::SetSpacing { 20 },
-            linear::Margin { 50 },
-            linear::Stretch { 1 },
-            linear::Item { new Row {
-                linear::Stretch { 1 },
-                linear::Items { {
-                    { new FilledButton {
-                        button_common_properties,
-                        button::Text { "威严满满" },
-                        button::Clickable { [] { qDebug() << "抱头蹲防"; } },
+        card::pro::Layout<Col> {
+            lin::SetSpacing { 20 },
+            lin::Margin { 50 },
+            lin::Stretch { 1 },
+            lin::Item<Row> {
+                lin::Stretch { 1 },
+                lin::Item<FilledButton> {
+                    button_common_properties,
+                    but::Text { "威严满满" },
+                    but::Clickable { [] { qDebug() << "抱头蹲防"; } },
+                },
+                lin::Item<FilledTonalButton> {
+                    button_common_properties,
+                    but::Text { "色彩模式" },
+                    but::Clickable { [&theme_manager] {
+                        theme_manager.toggle_color_mode();
+                        theme_manager.apply_theme();
                     } },
-                    { new FilledTonalButton {
-                        button_common_properties,
-                        button::Text { "色彩模式" },
-                        button::Clickable { [&theme_manager] {
-                            theme_manager.toggle_color_mode();
-                            theme_manager.apply_theme();
-                        } },
+                },
+                lin::Item<OutlinedButton> { button_common_properties },
+                lin::Item<TextButton> {
+                    button_common_properties,
+                    but::Text { "退出演示" },
+                    but::Clickable { [&application] { application->exit(); } },
+                },
+                lin::Stretch { 1 },
+            },
+            lin::Item<Row> {
+                lin::Stretch { 1 },
+                lin::Item<Switch> {
+                    switch_common_properties,
+                    swi::Checked { true },
+                    swi::Clickable { [&icon_buttons](bool checked) {
+                        for (const auto& icon_button : icon_buttons)
+                            if (checked) icon_button->set_types(IconButton::Types::DEFAULT);
+                            else icon_button->set_types(IconButton::Types::TOGGLE_UNSELECTED);
                     } },
-                    { new OutlinedButton { button_common_properties } },
-                    { new TextButton {
-                        button_common_properties,
-                        button::Text { "退出演示" },
-                        button::Clickable { [&application] { application->exit(); } },
+                },
+                lin::Item<Switch> {
+                    switch_common_properties,
+                    swi::Checked { false },
+                    swi::Clickable { [&icon_buttons](bool checked) {
+                        for (const auto& icon_button : icon_buttons)
+                            if (!checked) icon_button->set_shape(IconButton::Shape::SQUARE);
+                            else icon_button->set_shape(IconButton::Shape::DEFAULT_ROUND);
                     } },
-                } },
-                linear::Stretch { 1 },
-            } },
-            linear::Item { new Row {
-                linear::Stretch { 1 },
-                linear::Items { {
-                    { new Switch {
-                        switch_common_properties,
-                        sw::Checked { true },
-                        sw::Clickable { [&icon_buttons](bool checked) {
-                            for (const auto& icon_button : icon_buttons)
-                                if (checked) icon_button->set_types(IconButton::Types::DEFAULT);
-                                else icon_button->set_types(IconButton::Types::TOGGLE_UNSELECTED);
-                        } },
-                    } },
-                    { new Switch {
-                        switch_common_properties,
-                        sw::Checked { false },
-                        sw::Clickable { [&icon_buttons](bool checked) {
-                            for (const auto& icon_button : icon_buttons)
-                                if (!checked) icon_button->set_shape(IconButton::Shape::SQUARE);
-                                else icon_button->set_shape(IconButton::Shape::DEFAULT_ROUND);
-                        } },
-                    } },
-                    { new Switch {
-                        switch_common_properties,
-                        sw::Checked { true },
-                        sw::Disabled { true },
-                    } },
-                    { new Switch {
-                        switch_common_properties,
-                        sw::Checked { false },
-                        sw::Disabled { true },
-                    } },
-                } },
-                linear::Stretch { 1 },
-            } },
-            linear::Item { new Row {
-                linear::Stretch { 1 },
-                linear::Items { {
-                    { new IconButton {
-                        icon_button_properties,
-                        icon::Bind { icon_buttons[0] },
-                        icon::FontIcon { util::icon_code::star },
-                        icon::Color { IconButton::Color::DEFAULT_FILLED },
-                    } },
-                    { new IconButton {
-                        icon_button_properties,
-                        icon::Bind { icon_buttons[2] },
-                        icon::FontIcon { util::icon_code::search },
-                        icon::Color { IconButton::Color::TONAL },
-                    } },
-                    { new IconButton {
-                        icon_button_properties,
-                        icon::Bind { icon_buttons[1] },
-                        icon::FontIcon { util::icon_code::folder_open },
-                        icon::Color { IconButton::Color::OUTLINED },
-                    } },
-                    { new IconButton {
-                        icon_button_properties,
-                        icon::Bind { icon_buttons[3] },
-                        icon::FontIcon { util::icon_code::menu },
-                        icon::Color { IconButton::Color::STANDARD },
-                    } },
-                } },
-                linear::Stretch { 1 },
-            } },
-            linear::Item { new Row {
-                linear::SetSpacing { 15 },
-                linear::Stretch { 1 },
-                linear::Items { {
-                    { new OutlinedCard {
-                        card_common_properties,
-                        card::pro::Level { OutlinedCard::Level::LOWEST },
-                    } },
-                    { new OutlinedCard {
-                        card_common_properties,
-                        card::pro::Level { OutlinedCard::Level::LOW },
-                    } },
-                    { new OutlinedCard {
-                        card_common_properties,
-                        card::pro::Level { OutlinedCard::Level::DEFAULT },
-                    } },
-                    { new OutlinedCard {
-                        card_common_properties,
-                        card::pro::Level { OutlinedCard::Level::HIGH },
-                    } },
-                    { new OutlinedCard {
-                        card_common_properties,
-                        card::pro::Level { OutlinedCard::Level::HIGHEST },
-                    } },
-                } },
-                linear::Stretch { 1 },
-            } },
-            linear::Stretch { 1 },
-        } },
+                },
+                lin::Item<Switch> {
+                    switch_common_properties,
+                    swi::Checked { true },
+                    swi::Disabled { true },
+                },
+                lin::Item<Switch> {
+                    switch_common_properties,
+                    swi::Checked { false },
+                    swi::Disabled { true },
+                },
+                lin::Stretch { 1 },
+            },
+            lin::Item<Row> {
+                lin::Stretch { 1 },
+                lin::Item<IconButton> {
+                    icon_button_properties,
+                    ico::Bind { icon_buttons[0] },
+                    ico::FontIcon { material::kStar },
+                    ico::Color { IconButton::Color::DEFAULT_FILLED },
+                },
+                lin::Item<IconButton> {
+                    icon_button_properties,
+                    ico::Bind { icon_buttons[2] },
+                    ico::FontIcon { material::kSearch },
+                    ico::Color { IconButton::Color::TONAL },
+                },
+                lin::Item<IconButton> {
+                    icon_button_properties,
+                    ico::Bind { icon_buttons[1] },
+                    ico::FontIcon { material::kFolderOpen },
+                    ico::Color { IconButton::Color::OUTLINED },
+                },
+                lin::Item<IconButton> {
+                    icon_button_properties,
+                    ico::Bind { icon_buttons[3] },
+                    ico::FontIcon { material::kMenu },
+                    ico::Color { IconButton::Color::STANDARD },
+                },
+                lin::Stretch { 1 },
+            },
+            lin::Item<Row> {
+                lin::SetSpacing { 15 },
+                lin::Stretch { 1 },
+                lin::Item<OutlinedCard> {
+                    card_common_properties,
+                    card::pro::Level { OutlinedCard::Level::LOWEST },
+                },
+                lin::Item<OutlinedCard> {
+                    card_common_properties,
+                    card::pro::Level { OutlinedCard::Level::LOW },
+                },
+                lin::Item<OutlinedCard> {
+                    card_common_properties,
+                    card::pro::Level { OutlinedCard::Level::DEFAULT },
+                },
+                lin::Item<OutlinedCard> {
+                    card_common_properties,
+                    card::pro::Level { OutlinedCard::Level::HIGH },
+                },
+                lin::Item<OutlinedCard> {
+                    card_common_properties,
+                    card::pro::Level { OutlinedCard::Level::HIGHEST },
+                },
+                lin::Stretch { 1 },
+            },
+            lin::Stretch { 1 },
+        },
     };
-    card->show();
-    card->move(960 - card->width() / 2, 540 - card->height() / 2);
+    examples_container->show();
+
+    auto position = QPointF { 960, 540 } - examples_container->rect().center();
+    examples_container->move(position.x(), position.y());
 
     theme_manager.apply_theme();
 

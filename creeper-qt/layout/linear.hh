@@ -2,7 +2,6 @@
 
 #include "creeper-qt/utility/wrapper/common-property.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
-#include "creeper-qt/widget/widget.hh"
 
 #include <qlayout.h>
 
@@ -14,52 +13,36 @@ namespace pro {
     template <typename T>
     concept property_concept = std::derived_from<T, Token>;
 
+    template <class T>
+        requires std::is_convertible_v<T*, QWidget*> || std::is_convertible_v<T*, QLayout*>
     struct Item : Token {
-        static auto stretch(int s) { return Item { new Widget, s }; }
+        struct LayoutMethod {
+            int stretch         = 0;
+            Qt::Alignment align = {};
+        } method;
+        T* item_pointer = nullptr;
 
-        static auto row_spacing(int x) {
-            return Item { new Widget { widget::pro::FixedSize { x, 0 } } };
-        }
-        static auto col_spacing(int y) {
-            return Item { new Widget { widget::pro::FixedSize { 0, y } } };
-        }
+        explicit Item(const LayoutMethod& method, auto&&... args) noexcept
+            requires std::constructible_from<T, decltype(args)...>
+            : item_pointer { new T { std::forward<decltype(args)>(args)... } }
+            , method(method) { }
 
-        std::variant<QWidget*, QLayout*> item_;
-        int stretch_         = int { 0 };
-        Qt::Alignment align_ = {};
+        explicit Item(auto&&... args) noexcept
+            requires std::constructible_from<T, decltype(args)...>
+            : item_pointer { new T { std::forward<decltype(args)>(args)... } } { }
 
-        Item(QWidget* widget, int stretch = 0, Qt::Alignment align = {})
-            : item_(widget)
-            , stretch_(stretch)
-            , align_(align) { }
+        explicit Item(const LayoutMethod& method, T* pointer) noexcept
+            : item_pointer { pointer }
+            , method { method } { }
 
-        Item(QLayout* layout, int stretch = 0)
-            : item_(layout)
-            , stretch_(stretch) { }
+        explicit Item(T* pointer) noexcept
+            : item_pointer { pointer } { }
 
-        void apply(QBoxLayout& self) const {
-            std::visit(
-                [&](auto* item) {
-                    using ItemType = std::decay_t<decltype(item)>;
-                    if constexpr (std::is_same_v<ItemType, QWidget*>) {
-                        self.addWidget(item, stretch_, align_);
-                    } else if constexpr (std::is_same_v<ItemType, QLayout*>) {
-                        self.addLayout(item, stretch_);
-                    }
-                },
-                item_);
-        }
-    };
-
-    struct Items final : Token {
-        std::vector<Item> items;
-
-        explicit Items(std::vector<Item> args)
-            : items { args } { }
-
-        void apply(QBoxLayout& self) const {
-            for (const auto& item : items)
-                item.apply(self);
+        void apply(QBoxLayout& layout) const {
+            if constexpr (std::is_convertible_v<T*, QWidget*>)
+                layout.addWidget(item_pointer, method.stretch, method.align);
+            if constexpr (std::is_convertible_v<T*, QLayout*>)
+                layout.addLayout(item_pointer, method.stretch);
         }
     };
 
