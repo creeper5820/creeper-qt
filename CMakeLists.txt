@@ -97,9 +97,22 @@ if(BUILD_EXAMPLE)
         creeper-qt
         Qt5::Widgets
     )
+
+
+    add_executable(
+        bluetooth
+        example/bluetooth/main.cc
+    )
+    target_link_libraries(
+        bluetooth
+        creeper-qt
+        Qt5::Widgets
+    )
+
+    set(APP widgets)
     add_custom_target(run
-        COMMAND widgets
-        DEPENDS widgets
+        COMMAND ${APP}
+        DEPENDS ${APP}
         WORKING_DIRECTORY ${CMAKE_PROJECT_DIR}
     )
 endif()

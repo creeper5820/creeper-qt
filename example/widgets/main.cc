@@ -169,7 +169,7 @@ int main(int argc, char* argv[]) {
     };
     examples_container->show();
 
-    auto position = QPointF { 960, 540 } - examples_container->rect().center();
+    const auto position = QPointF { 960, 540 } - examples_container->rect().center();
     examples_container->move(position.x(), position.y());
 
     theme_manager.apply_theme();

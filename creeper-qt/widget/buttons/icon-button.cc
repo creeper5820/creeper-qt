@@ -30,3 +30,5 @@ void IconButton::set_types(Types types) { pimpl->set_types_type(*this, types); }
 void IconButton::set_shape(Shape shape) { pimpl->set_shape_type(*this, shape); }
 void IconButton::set_color(Color color) { pimpl->set_color_type(*this, color); }
 void IconButton::set_width(Width width) { pimpl->set_width_type(*this, width); }
+
+auto IconButton::types() const -> Types { return pimpl->types; }

@@ -64,6 +64,8 @@ namespace icon_button::internal {
         void set_color(Color);
         void set_width(Width);
 
+        auto types() const -> Types;
+
         // TODO: 详细的颜色自定义接口有缘再写
 
     protected:
