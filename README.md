@@ -1,6 +1,6 @@
 <div align=center>
 
-<div align=center><img src="doc/image/example-clock.png"></div>
+<div align=center><img src="doc/image/creeper-qt.jpg" width=400></div>
 
 <h1>CREEPER-QT（重构中）</h1>
 
