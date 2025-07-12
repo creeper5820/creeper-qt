@@ -1,8 +1,6 @@
 <div align=center>
 
-<div style="width:250px; margin:30px; position:relative; border-radius:32px; overflow:hidden; box-shadow: 0 0px 10px rgba(0,0,0,0.2);">
-  <img src="doc/image/creeper-qt.jpg" style="display:block;">
-</div>
+<div align=center><img src="doc/image/creeper-qt.jpg" width=400></div>
 
 <h1>CREEPER-QT（重构中）</h1>
 

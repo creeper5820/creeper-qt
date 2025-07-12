@@ -1,24 +1,21 @@
 #include "creeper-qt/creeper-qt.hh"
-
 #include <qapplication.h>
-#include <qfontdatabase.h>
-#include <qlabel.h>
 
 using namespace creeper;
 
 int main(int argc, char* argv[]) {
-    auto application = new QApplication { argc, argv };
-
-    auto theme_manager = ThemeManager {
-        kBlueMikuThemePack,
-        ColorMode::LIGHT,
-    };
-
     namespace but = button::pro;
     namespace lin = linear::pro;
     namespace fil = filled_button::pro;
     namespace ico = icon_button::pro;
     namespace swi = _switch::pro;
+
+    new ::QApplication { argc, argv };
+
+    auto theme_manager = ThemeManager {
+        kBlueMikuThemePack,
+        ColorMode::LIGHT,
+    };
 
     const auto switch_common_properties = std::tuple {
         swi::ThemeManager { theme_manager },
@@ -75,7 +72,7 @@ int main(int argc, char* argv[]) {
                 lin::Item<TextButton> {
                     button_common_properties,
                     but::Text { "退出演示" },
-                    but::Clickable { [&application] { application->exit(); } },
+                    but::Clickable { [] { qApp->quit(); } },
                 },
                 lin::Stretch { 1 },
             },
@@ -164,6 +161,9 @@ int main(int argc, char* argv[]) {
                 },
                 lin::Stretch { 1 },
             },
+            lin::Item<Row> {
+                lin::Item<FilledTextField> {},
+            },
             lin::Stretch { 1 },
         },
     };
@@ -174,5 +174,5 @@ int main(int argc, char* argv[]) {
 
     theme_manager.apply_theme();
 
-    return application->exec();
+    return ::QApplication::exec();
 }
