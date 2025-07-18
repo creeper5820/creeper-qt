@@ -9,6 +9,8 @@
 #include <qabstractbutton.h>
 
 namespace creeper {
+class Switch;
+
 namespace _switch::internal {
     class Switch : public QAbstractButton {
         CREEPER_PIMPL_DEFINTION(Switch)
@@ -144,23 +146,6 @@ namespace _switch::pro {
         void apply(auto& self) const { self.set_hover_color_checked(*this); }
     };
 
-    template <typename Callback>
-        requires std::invocable<Callback, bool>
-    struct Clickable final : Token {
-        Callback callback;
-        explicit Clickable(Callback p) noexcept
-            : callback(p) { }
-        void apply(auto& self) const noexcept
-            requires requires {
-                &std::remove_cvref_t<decltype(self)>::clicked;
-                { self.checked() } -> std::same_as<bool>;
-            }
-        {
-            QObject::connect(&self, &QAbstractButton::clicked,
-                [function = callback, &self] { function(self.checked()); });
-        }
-    };
-
     template <class Switch>
     concept property_concept = std::derived_from<Switch, Token> //
         || widget::pro::property_concept<Switch>                //
@@ -168,6 +153,8 @@ namespace _switch::pro {
 
     using Disabled = common::pro::Disabled<Token>;
     using Checked  = common::pro::Checked<Token>;
+
+    template <typename Callback> using Clickable = common::pro::Clickable<Callback, Token, Switch>;
 
     using namespace util::theme::pro;
     using namespace widget::pro;

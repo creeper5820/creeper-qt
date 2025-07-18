@@ -13,8 +13,8 @@ template <typename T> struct FinitePidTracker : public IAnimation {
         const std::shared_ptr<bool>& stop_token, double kp, double ki, double kd, double hz,
         double error_threshold = kErrorThreshold)
         : current(current)
-        , target(target)
         , stop_token(stop_token)
+        , target(target)
         , kp(kp)
         , ki(ki)
         , kd(kd)
@@ -49,20 +49,13 @@ template <typename T> struct FinitePidTracker : public IAnimation {
 };
 
 template <typename T> struct FiniteSringTracker final : IAnimation {
-    std::shared_ptr<T> current;
-    std::shared_ptr<bool> stop_token;
-    T target;
-    double k, d, dt;
-    double error_threshold;
-
-    T velocity = zero<T>();
 
     FiniteSringTracker(const std::shared_ptr<T>& current, const T& target,
         const std::shared_ptr<bool>& stop_token, double k, double d, double hz,
         double error_threshold = kErrorThreshold)
         : current(current)
-        , target(target)
         , stop_token(stop_token)
+        , target(target)
         , k(k)
         , d(d)
         , dt(1.0 / hz)
@@ -82,6 +75,14 @@ template <typename T> struct FiniteSringTracker final : IAnimation {
         return (calculate_error(error) < error_threshold && std::abs(velocity) < error_threshold)
             || *stop_token;
     }
+
+    std::shared_ptr<T> current;
+    std::shared_ptr<bool> stop_token;
+    T target;
+    double k, d, dt;
+    double error_threshold;
+
+    T velocity = zero<T>();
 };
 
 struct MotionScheme { };

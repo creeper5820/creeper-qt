@@ -42,11 +42,11 @@ constexpr auto kBlueMikuLightColorScheme = ColorScheme {
     .inverse_on_surface = QColor(242, 240, 244),
     .inverse_primary    = QColor(175, 198, 255),
 
-    .surface_container_highest = QColor(254, 251, 255),
-    .surface_container_high    = QColor(242, 243, 252),
+    .surface_container_highest = QColor(224, 232, 248),
+    .surface_container_high    = QColor(226, 233, 249),
     .surface_container         = QColor(234, 238, 251),
-    .surface_container_low     = QColor(226, 233, 249),
-    .surface_container_lowest  = QColor(224, 232, 248),
+    .surface_container_low     = QColor(242, 243, 252),
+    .surface_container_lowest  = QColor(254, 251, 255),
 };
 constexpr auto kBlueMikuDarkColorScheme = ColorScheme {
     // 蓝色初音暗色
@@ -86,11 +86,11 @@ constexpr auto kBlueMikuDarkColorScheme = ColorScheme {
     .inverse_on_surface = QColor(48, 48, 52),
     .inverse_primary    = QColor(0, 89, 199),
 
-    .surface_container_highest = QColor(27, 27, 31),
-    .surface_container_high    = QColor(34, 35, 42),
+    .surface_container_highest = QColor(44, 47, 57),
+    .surface_container_high    = QColor(43, 46, 56),
     .surface_container         = QColor(39, 40, 49),
-    .surface_container_low     = QColor(43, 46, 56),
-    .surface_container_lowest  = QColor(44, 47, 57),
+    .surface_container_low     = QColor(34, 35, 42),
+    .surface_container_lowest  = QColor(27, 27, 31),
 };
 
 constexpr auto kBlueMikuThemePack = ThemePack {

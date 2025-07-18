@@ -146,5 +146,15 @@ namespace pro {
         }
     };
 
+    template <typename Callback, class Token, class Self> struct Clickable final : Token {
+        Callback callback;
+        explicit Clickable(Callback callback) noexcept
+            : callback(callback) { }
+        void apply(auto& self) const noexcept {
+            QObject::connect(
+                &self, &Self::clicked, [function = callback, &self] { function(self); });
+        }
+    };
+
 }
 }

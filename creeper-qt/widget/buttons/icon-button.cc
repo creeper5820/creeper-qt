@@ -31,4 +31,9 @@ void IconButton::set_shape(Shape shape) { pimpl->set_shape_type(*this, shape); }
 void IconButton::set_color(Color color) { pimpl->set_color_type(*this, color); }
 void IconButton::set_width(Width width) { pimpl->set_width_type(*this, width); }
 
-auto IconButton::types() const -> Types { return pimpl->types; }
+auto IconButton::types_enum() const -> Types { return pimpl->types; }
+auto IconButton::shape_enum() const -> Shape { return pimpl->shape; }
+auto IconButton::color_enum() const -> Color { return pimpl->color; }
+auto IconButton::width_enum() const -> Width { return pimpl->width; }
+
+auto IconButton::selected() const -> bool { return pimpl->types == Types::TOGGLE_SELECTED; }

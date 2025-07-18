@@ -4,12 +4,15 @@
 #include <qpainter.h>
 
 #include "creeper-qt/utility/theme/theme.hh"
+#include "creeper-qt/utility/wrapper/common-property.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
 
 #include "creeper-qt/widget/widget.hh"
 
 namespace creeper {
+class IconButton;
+
 namespace icon_button::internal {
     class IconButton : public QAbstractButton {
         CREEPER_PIMPL_DEFINTION(IconButton);
@@ -64,7 +67,12 @@ namespace icon_button::internal {
         void set_color(Color);
         void set_width(Width);
 
-        auto types() const -> Types;
+        Types types_enum() const;
+        Shape shape_enum() const;
+        Color color_enum() const;
+        Width width_enum() const;
+
+        bool selected() const;
 
         // TODO: 详细的颜色自定义接口有缘再写
 
@@ -116,20 +124,13 @@ namespace icon_button::pro {
         void apply(auto& self) const { self.set_width(width); }
     };
 
-    template <typename Callback> struct Clickable final : Token {
-        Callback callback;
-        explicit Clickable(Callback callback) noexcept
-            : callback(callback) { }
-        void apply(auto& self) const noexcept {
-            QObject::connect(&self, &QAbstractButton::clicked, //
-                [function = callback, &self] { function(self); });
-        }
-    };
-
     template <class T>
     concept property_concept = std::derived_from<T, Token> //
         || util::theme::pro::property_concept<T>           //
         || widget::pro::property_concept<T>;
+
+    template <typename Callback>
+    using Clickable = common::pro::Clickable<Callback, Token, IconButton>;
 
     using namespace util::theme::pro;
     using namespace widget::pro;

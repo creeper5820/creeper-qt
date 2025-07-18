@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
 
     const auto examples_container = new OutlinedCard {
         card::pro::ThemeManager { theme_manager },
-        card::pro::Level { SurfaceLevel::HIGHEST },
+        card::pro::Level { SurfaceLevel::LOWEST },
         card::pro::WindowFlag { Qt::WindowType::SplashScreen },
         card::pro::Radius { 5 },
         card::pro::Layout<Col> {
@@ -84,19 +84,21 @@ int main(int argc, char* argv[]) {
                 lin::Item<Switch> {
                     switch_common_properties,
                     swi::Checked { true },
-                    swi::Clickable { [&icon_buttons](bool checked) {
+                    swi::Clickable { [&icon_buttons](Switch& self) {
                         for (const auto& icon_button : icon_buttons)
-                            if (checked) icon_button->set_types(IconButton::Types::DEFAULT);
-                            else icon_button->set_types(IconButton::Types::TOGGLE_UNSELECTED);
+                            icon_button->set_types(self.checked() //
+                                    ? IconButton::Types::DEFAULT
+                                    : IconButton::Types::TOGGLE_UNSELECTED);
                     } },
                 },
                 lin::Item<Switch> {
                     switch_common_properties,
                     swi::Checked { false },
-                    swi::Clickable { [&icon_buttons](bool checked) {
+                    swi::Clickable { [&icon_buttons](Switch& self) {
                         for (const auto& icon_button : icon_buttons)
-                            if (!checked) icon_button->set_shape(IconButton::Shape::SQUARE);
-                            else icon_button->set_shape(IconButton::Shape::DEFAULT_ROUND);
+                            icon_button->set_shape(self.checked() //
+                                    ? IconButton::Shape::DEFAULT_ROUND
+                                    : IconButton::Shape::SQUARE);
                     } },
                 },
                 lin::Item<Switch> {
@@ -168,6 +170,15 @@ int main(int argc, char* argv[]) {
                 lin::Item<FilledTextField> {
                     tef::ThemeManager { theme_manager },
                     tef::ClearButton { true },
+                    tef::LabelText { "Search" },
+                    tef::LeadingIcon { material::kSearch, material::kRoundedFontName },
+                    Font,
+                },
+                lin::Item<FilledTextField> {
+                    tef::ThemeManager { theme_manager },
+                    tef::ClearButton { true },
+                    tef::LabelText { "Favorite" },
+                    tef::LeadingIcon { material::kFavorite, material::kRoundedFontName },
                     Font,
                 },
             },
