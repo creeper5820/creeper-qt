@@ -9,8 +9,11 @@ int main(int argc, char* argv[]) {
     namespace fil = filled_button::pro;
     namespace ico = icon_button::pro;
     namespace swi = _switch::pro;
+    namespace tef = text_field::pro;
 
     new ::QApplication { argc, argv };
+
+    const auto Font = widget::pro::Font { "WenQuanYi Zen Hei", 13 };
 
     auto theme_manager = ThemeManager {
         kBlueMikuThemePack,
@@ -25,8 +28,8 @@ int main(int argc, char* argv[]) {
         fil::ThemeManager { theme_manager },
         fil::FixedSize { 110, 50 },
         fil::Text { "你好世界" },
-        fil::Font { "WenQuanYi Zen Hei", 13 },
         fil::Radius { 25 },
+        Font,
     };
     const auto card_common_properties = std::tuple {
         card::pro::ThemeManager { theme_manager },
@@ -162,7 +165,11 @@ int main(int argc, char* argv[]) {
                 lin::Stretch { 1 },
             },
             lin::Item<Row> {
-                lin::Item<FilledTextField> {},
+                lin::Item<FilledTextField> {
+                    tef::ThemeManager { theme_manager },
+                    tef::ClearButton { true },
+                    Font,
+                },
             },
             lin::Stretch { 1 },
         },

@@ -5,9 +5,13 @@ BasicTextField::BasicTextField()
 
 BasicTextField::~BasicTextField() = default;
 
-auto BasicTextField::set_color_scheme(const ColorScheme& scheme) -> void { }
+auto BasicTextField::set_color_scheme(const ColorScheme& scheme) -> void {
+    pimpl->set_color_scheme(scheme);
+}
 
-auto BasicTextField::load_theme_manager(ThemeManager& manager) -> void { }
+auto BasicTextField::load_theme_manager(ThemeManager& manager) -> void {
+    pimpl->load_theme_manager(manager);
+}
 
 auto BasicTextField::enterEvent(QEvent* event) -> void {
     QLineEdit::enterEvent(event); //
@@ -17,7 +21,12 @@ auto BasicTextField::leaveEvent(QEvent* event) -> void {
     QLineEdit::leaveEvent(event); //
 }
 
-auto BasicTextField::paintEvent(QPaintEvent* event) -> void {
+auto FilledTextField::paintEvent(QPaintEvent* event) -> void {
     QLineEdit::paintEvent(event);
-    pimpl->paint_event(*event);
+    //
+}
+
+auto OutlinedTextField::paintEvent(QPaintEvent* event) -> void {
+    QLineEdit::paintEvent(event);
+    //
 }

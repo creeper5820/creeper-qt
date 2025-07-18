@@ -19,6 +19,9 @@ struct IAnimation {
 
 class AnimationCore {
 public:
+    // 推荐帧率
+    static constexpr auto kHz = 90;
+
     // 构造完毕后默认不开启，需要添加动画或者手动开启
     explicit AnimationCore(const std::function<void()>& update_complete_callback, int hz = 60)
         : update_complete_callback_(update_complete_callback) {

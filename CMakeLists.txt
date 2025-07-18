@@ -12,7 +12,6 @@ add_compile_options(-Os -O3)
 
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Eigen3 REQUIRED)
-find_package(yaml-cpp REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -43,8 +42,8 @@ install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
-install(DIRECTORY "creeper-qt/"
-    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/creeper-qt"
+install(DIRECTORY "${PROJECT_NAME}/"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
     FILES_MATCHING PATTERN "*.hh"
 )
 
@@ -97,7 +96,6 @@ if(BUILD_EXAMPLE)
         creeper-qt
         Qt5::Widgets
     )
-
 
     add_executable(
         bluetooth

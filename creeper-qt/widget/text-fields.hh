@@ -17,6 +17,8 @@ namespace text_field::internal {
 
         struct ColorList {
             QColor container;
+            QColor caret;
+            QColor active_indicator;
 
             QColor input_text;
             QColor label_text;
@@ -25,39 +27,55 @@ namespace text_field::internal {
             QColor leading_icon;
             QColor trailing_icon;
         };
+        struct {
+            QColor state_layer;
+            QColor selection_container;
 
-        ColorList enabled_color_list;
-        ColorList disabled_color_list;
-        ColorList hovered_color_list;
-        ColorList focused_color_list;
-        ColorList error_color_list;
-
-        ColorList current_color_list;
+            ColorList enabled;
+            ColorList disabled;
+            ColorList focused;
+            ColorList error;
+            ColorList current;
+        } color;
 
     protected:
         void enterEvent(QEvent*) override;
         void leaveEvent(QEvent*) override;
-
-        void paintEvent(QPaintEvent*) override;
     };
 }
 namespace text_field::pro {
     using Token = common::Token<internal::BasicTextField>;
 
-    struct ContainerColor : Token {
-        QColor color;
-        explicit ContainerColor(const QColor& color)
-            : color { color } { }
-        void apply(auto& self) const { self.current_color_list.container = color; }
+    struct ClearButton : Token {
+        bool enabled;
+        explicit ClearButton(bool enabled)
+            : enabled { enabled } { }
+        void apply(auto& self) const { self.setClearButtonEnabled(enabled); }
     };
 
     template <class TextField>
     concept property_concept = std::derived_from<TextField, Token> //
         || widget::pro::property_concept<TextField>                //
         || util::theme::pro::property_concept<TextField>;
+
+    using namespace widget::pro;
+    using namespace util::theme::pro;
 }
+
 class FilledTextField : public text_field::internal::BasicTextField {
     CREEPER_DEFINE_CONSTROCTOR(FilledTextField, text_field::pro);
     using text_field::internal::BasicTextField::BasicTextField;
+
+protected:
+    void paintEvent(QPaintEvent*) override;
 };
+
+class OutlinedTextField : public text_field::internal::BasicTextField {
+    CREEPER_DEFINE_CONSTROCTOR(OutlinedTextField, text_field::pro);
+    using text_field::internal::BasicTextField::BasicTextField;
+
+protected:
+    void paintEvent(QPaintEvent*) override;
+};
+
 }

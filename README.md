@@ -2,7 +2,7 @@
 
 <div align=center><img src="doc/image/creeper-qt.jpg" width=400></div>
 
-<h1>CREEPER-QT（重构中）</h1>
+<h1>CREEPER-QT</h1>
 
 [组件文档](./doc/widgets.md) | [主题文档](./doc/utility.md) | [视频演示](https://www.bilibili.com/video/BV1GAq5YZEtr/?share_source=copy_web&vd_source=64f4d9d099bf51aa199961a8349d034b)
 
@@ -14,11 +14,11 @@
 
 ## 效果展示
 
-<img src="doc/image/example-widgets.png" title="" alt="example-widgets" data-align="center">
+<img src="doc/image/blue-style-widgets.png" title="" alt="buttons" data-align="center">
 
 <img src="doc/image/example-login.png" title="" alt="example-login" data-align="center">
 
-<img src="doc/image/blue-style-widgets.png" title="" alt="buttons" data-align="center">
+<img src="doc/image/example-widgets.png" title="" alt="example-widgets" data-align="center">
 
 ## 调用示例
 
@@ -29,10 +29,15 @@ cmake_minimum_required(VERSION 3.22)
 
 project(hello-world)
 
-# yaml-cpp 和 Qt5 是项目依赖的库，记得导入
+# Qt5 是项目依赖的库，记得导入
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
-find_package(yaml-cpp REQUIRED)
 find_package(creeper-qt REQUIRED)
+
+# Eigen 是 Header only 的，不用 find 也可以，只要保证
+# 环境中能搜寻到头文件
+# 如果只是二次开发的话，就不需要该库了
+# Eigen 只在实现时用到了
+find_package(Eigen3 REQUIRED)
 
 # 在 Windows 下, 安装目录如果没有暴露在环境变量, 
 # 需要手动指定一下, 项目才能找到头文件
@@ -48,7 +53,7 @@ add_executable(${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME}
     creeper-qt::creeper-qt
-    Qt5::Widgets yaml-cpp
+    Qt5::Widgets
 )
 ```
 
@@ -88,18 +93,17 @@ int main(int argc, char* argv[]) {
 
 - `gcc-13` 及以上，支持完整 range 等特性
 - `cmake`
-- `yaml-cpp`
 - `eigen`
 - `qt-5`
 
 ```zsh
 # on arch linux
-sudo pacman -S yaml-cpp eigen qt5-base
+sudo pacman -S eigen qt5-base
 
 # on ubuntu
 # ubuntu 默认 gcc 版本比较低，建议使用 ppa 下载较新的版本
 # 或者直接下载二进制文件放进环境中
-sudo apt install libyaml-cpp-dev libeigen3-dev qtbase5-dev
+sudo apt install libeigen3-dev qtbase5-dev
 ```
 
 ### 方式一 直接使用源文件
@@ -114,10 +118,13 @@ git clone https://github.com/creeper5820/creeper-qt
 Edit your `CMakeLists.txt`:
 
 ```cmake
-include_directories(${库的根路径/include})
+include_directories(${库的根路径})
 add_executable(${EXAMPLE_NAME}
-    ${这个库所有的源文件(包括头文件)}
-    ${这个库所有的QRC文件}
+    ${这个库所有的 .cc 文件}
+)
+target_link_libraries(
+    ${EXAMPLE_NAME}
+    Qt5::Widgets
 )
 ```
 
@@ -129,10 +136,11 @@ git clone https://github.com/creeper5820/creeper-qt
 # 进入项目根目录
 cd creeper-qt
 # build
-mkdir build && cd build
-cmake .. && make -j
-# 下载到全局环境中，理论上是/usr/local里面
-sudo make install
+cmake -B build
+cmake --build build
+# 下载到全局环境中，理论上是 /usr/local 里面
+cd build && sudo make install
+./widgets
 ```
 
 ### 方式三 Windows 平台编译安装
@@ -158,7 +166,7 @@ pacman -S  mingw-w64-x86_64-toolchain
 pacman -S mingw64/mingw-w64-x86_64-qt5
 
 ## 安装依赖
-pacman -S mingw-w64-x86_64-eigen3 mingw-w64-x86_64-yaml-cpp
+pacman -S mingw-w64-x86_64-eigen3
 
 ## 如果依赖找不到可以搜索一下对应版本的包, 找到 mingw 的版本就行
 pacman -Ss eigen3
@@ -176,7 +184,7 @@ mkdir build
 ## CMAKE_INSTALL_PREFIX 参数指定了安装目录, 
 ## 默认的下载目录一般会是 C:/Program Files (x86)/
 ## 会提示没有权限
-cmake -G "MinGW Makefiles" -B build -DCMAKE_INSTALL_PREFIX="D:/Software/msys2/usr/"
+cmake -G "MinGW Makefiles" -B build -DCMAKE_INSTALL_PREFIX="C:/xxx/xxx/"
 
 ## 编译之
 ## 或者在build目录下使用 mingw32-make -j
