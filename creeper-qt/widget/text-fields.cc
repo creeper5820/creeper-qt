@@ -13,10 +13,27 @@ auto BasicTextField::load_theme_manager(ThemeManager& manager) -> void {
     pimpl->load_theme_manager(manager);
 }
 
-auto BasicTextField::set_label_text(const QString& text) -> void { pimpl->set_label_text(text); }
+auto BasicTextField::set_label_text(const QString& text) -> void {
+    pimpl->set_label_text(text); //
+}
+
+auto BasicTextField::set_hint_text(const QString& text) -> void { }
+
+auto BasicTextField::set_supporting_text(const QString& text) -> void { }
+
+auto BasicTextField::set_leading_icon(const QIcon& text) -> void { }
 
 auto BasicTextField::set_leading_icon(const QString& code, const QString& font) -> void {
     pimpl->set_leading_icon(code, font);
+}
+
+auto BasicTextField::set_trailling_icon(const QIcon& text) -> void { }
+
+auto BasicTextField::set_trailling_icon(const QString& code, const QString& font) -> void { }
+
+auto BasicTextField::resizeEvent(QResizeEvent* event) -> void {
+    pimpl->resize(event);
+    QLineEdit::resizeEvent(event);
 }
 
 auto BasicTextField::enterEvent(QEvent* event) -> void {
@@ -35,8 +52,8 @@ auto BasicTextField::focusInEvent(QFocusEvent* event) -> void {
 }
 
 auto BasicTextField::focusOutEvent(QFocusEvent* event) -> void {
-    QLineEdit::focusOutEvent(event);
     pimpl->focus_out(event);
+    QLineEdit::focusOutEvent(event);
 }
 
 auto FilledTextField::paintEvent(QPaintEvent* event) -> void {

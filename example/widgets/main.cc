@@ -45,6 +45,13 @@ int main(int argc, char* argv[]) {
         ico::FixedSize { IconButton::kMediumContainerSize },
         ico::Font { material::kRoundedMediumFont },
     };
+    const auto text_field_properties = std::tuple {
+        tef::ThemeManager { theme_manager },
+        tef::LabelText { "Search" },
+        tef::LeadingIcon { material::kSearch, material::kRoundedFontName },
+        Font,
+    };
+
     auto icon_buttons = std::array<IconButton*, 4> {};
 
     const auto examples_container = new OutlinedCard {
@@ -168,18 +175,14 @@ int main(int argc, char* argv[]) {
             },
             lin::Item<Row> {
                 lin::Item<FilledTextField> {
-                    tef::ThemeManager { theme_manager },
-                    tef::ClearButton { true },
+                    text_field_properties,
                     tef::LabelText { "Search" },
                     tef::LeadingIcon { material::kSearch, material::kRoundedFontName },
-                    Font,
                 },
-                lin::Item<FilledTextField> {
-                    tef::ThemeManager { theme_manager },
-                    tef::ClearButton { true },
+                lin::Item<OutlinedTextField> {
+                    text_field_properties,
                     tef::LabelText { "Favorite" },
                     tef::LeadingIcon { material::kFavorite, material::kRoundedFontName },
-                    Font,
                 },
             },
             lin::Stretch { 1 },

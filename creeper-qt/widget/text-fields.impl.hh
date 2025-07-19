@@ -1,6 +1,5 @@
 #include "creeper-qt/utility/animation/core.hh"
 #include "creeper-qt/utility/animation/motion-system.hh"
-#include "creeper-qt/utility/painter/helper.hh"
 #include "text-fields.hh"
 #include <qpainter.h>
 #include <qpainterpath.h>
@@ -15,7 +14,6 @@ public:
     explicit Impl(BasicTextField& self) noexcept
         : self { self }
         , animation_core { [&self] { self.update(); }, AnimationCore::kHz } {
-        self.setTextMargins(text_margin_l, text_margin_u, text_margin_r, text_margin_d);
         self.setAlignment(Qt::AlignVCenter);
     }
 
@@ -98,12 +96,7 @@ public:
         const auto rect  = self.rect();
         const auto color = color_list();
 
-        if (use_leading_icon && !has_adjust_margin) {
-            has_adjust_margin  = true;
-            const auto margins = self.textMargins();
-            self.setTextMargins(margins.left() + self.height() * 0.6, margins.top(),
-                margins.right(), margins.bottom());
-        }
+        update_margin();
 
         auto container_path = QPainterPath {};
         {
@@ -158,20 +151,21 @@ public:
         }
         // Label Text
         if (!label_text.isEmpty()) {
-            const auto position = self.text().isEmpty() ? *label_position : 1.;
-            const auto margins  = self.textMargins();
-            const auto rect_1   = QRectF {
+            const auto position    = self.text().isEmpty() ? *label_position : 1.;
+            const auto margins     = self.textMargins();
+            const auto rect_bottom = QRectF {
                 QPointF(margins.left(), 0),
                 QPointF(self.width() - margins.right(), self.height()),
             };
-            const auto rect_2 = QRectF {
+            const auto rect_top = QRectF {
                 QPointF(margins.left(), 0),
                 QPointF(self.width() - margins.right(), margins.top()),
             };
-            const auto rect = interpolate(rect_1, rect_2, position);
+            const auto rect = interpolate(rect_bottom, rect_top, position);
 
-            auto font = self.font();
-            auto size = font.pointSizeF() * (1. - 0.3 * position);
+            auto font  = self.font();
+            auto ratio = 1. - 0.3 * position;
+            auto size  = font.pointSizeF() * ratio;
             font.setPointSizeF(size);
 
             painter.setBrush(Qt::NoBrush);
@@ -189,6 +183,8 @@ public:
     }
 
     auto paint_outlined(QPaintEvent*) -> void { }
+
+    auto resize(QResizeEvent*) -> void { has_adjust_margin = false; }
 
     auto enter_event(QEvent*) -> void {
         is_hovered = true;
@@ -213,6 +209,17 @@ public:
 private:
     auto update_ui_state() -> void { }
 
+    auto update_margin() -> void {
+        if (has_adjust_margin) return;
+
+        const auto magic   = 0.6;
+        const auto padding = use_leading_icon ? self.height() * magic : 0;
+
+        self.setTextMargins(text_margin_l + padding, text_margin_u, text_margin_r, text_margin_d);
+
+        has_adjust_margin = true;
+    }
+
     auto update_label_position() -> void {
         using Tracker = util::animation::FinitePidTracker<double>;
 
@@ -224,8 +231,8 @@ private:
             *label_stop_token, kp, ki, kd, AnimationCore::kHz, 1e-3));
     }
 
-    auto sync_basic_text_style(const QColor& text, const QColor& container,
-        const QColor& selection_text, const QColor& selection_container) -> void {
+    auto sync_basic_text_style(const QColor& text, const QColor& background,
+        const QColor& selection_text, const QColor& selection_background) -> void {
 
         constexpr auto to_rgba = [](const QColor& color) {
             return QStringLiteral("rgba(%1, %2, %3, %4)")
@@ -247,9 +254,9 @@ private:
 
         const auto qss = QString { kQLineEditStyle };
         self.setStyleSheet(qss.arg(to_rgba(text))
-                .arg(to_rgba(container))
+                .arg(to_rgba(background))
                 .arg(to_rgba(selection_text))
-                .arg(to_rgba(selection_container)));
+                .arg(to_rgba(selection_background)));
     }
 
     auto color_list() const -> ColorList const& {
@@ -258,7 +265,11 @@ private:
             : is_focused  ? self.color.focused
                           : self.color.enabled;
     }
-    auto line_width() const -> double { return (is_focused && !is_disable) ? 3 : 1; }
+    auto line_width() const -> double {
+        constexpr auto normal_width = 1;
+        constexpr auto active_width = 3;
+        return (is_focused && !is_disable) ? active_width : normal_width;
+    }
 
     static constexpr auto interpolate(const QRectF& r1, const QRectF& r2, qreal position)
         -> QRectF {

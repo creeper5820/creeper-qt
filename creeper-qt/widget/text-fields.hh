@@ -59,8 +59,11 @@ namespace text_field::internal {
         } color;
 
     protected:
+        void resizeEvent(QResizeEvent*) override;
+
         void leaveEvent(QEvent*) override;
         void enterEvent(QEvent*) override;
+
         void focusInEvent(QFocusEvent*) override;
         void focusOutEvent(QFocusEvent*) override;
     };
@@ -74,6 +77,7 @@ namespace text_field::pro {
             : enabled { enabled } { }
         void apply(auto& self) const { self.setClearButtonEnabled(enabled); }
     };
+
     struct LabelText : public QString, Token {
         using QString::QString;
         explicit LabelText(const QString& text)

@@ -58,7 +58,8 @@ int main(int argc, char* argv[]) {
                 icon::Color { IconButton::Color::DEFAULT_FILLED },
                 icon::Types { IconButton::Types::TOGGLE_UNSELECTED },
                 icon::Clickable { [](IconButton& self) {
-                    auto is_selected = self.types() == IconButton::Types::TOGGLE_UNSELECTED;
+                    const auto is_selected =
+                        self.types_enum() == IconButton::Types::TOGGLE_UNSELECTED;
                     self.set_icon(is_selected ? "bluetooth_disabled" : "bluetooth");
                 } },
             },
