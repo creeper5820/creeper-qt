@@ -16,6 +16,15 @@
 
 <img src="doc/image/blue-style-widgets.png" title="" alt="buttons" data-align="center">
 
+<div align=center>
+    <img src="doc/image/switch-working.gif" width=50%>
+</div>
+
+<div align=center>
+    <img src="doc/image/filled-text-field.gif" width=50%>
+</div>
+
+
 <img src="doc/image/example-login.png" title="" alt="example-login" data-align="center">
 
 <img src="doc/image/example-widgets.png" title="" alt="example-widgets" data-align="center">

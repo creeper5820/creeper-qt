@@ -74,7 +74,7 @@ const auto widget_a = new Widget { ... };
 - 暗色主题：内置 `kBlueMikuDarkColorScheme`
 - 亮色主题：内置 `kBlueMikuLightColorScheme`
 
-![buttons](image/buttons.png)
+![buttons](image/blue-style-widgets.png)
 
 ### 通用属性定义
 
@@ -92,16 +92,16 @@ namespace button::pro {
 }
 ```
 
-| `PROPERTY`    | `TYPE`                  |
-| ------------- | ----------------------- |
-| `Text`        | `QString`               |
-| `TextColor`   | `QColor`                |
-| `Radius`      | `double`                |
-| `BorderWidth` | `double`                |
-| `BorderColor` | `QColor`                |
-| `Background`  | `QColor`                |
-| `WaterColor`  | `QColor`                |
-| `Clickable`   | `std::invocable<void()>` |
+| `PROPERTY`    | `TYPE`   |
+| ------------- | ---------|
+| `Text`        | `QString`|
+| `TextColor`   | `QColor` |
+| `Radius`      | `double` |
+| `BorderWidth` | `double` |
+| `BorderColor` | `QColor` |
+| `Background`  | `QColor` |
+| `WaterColor`  | `QColor` |
+| `Clickable`   | `[](){}` |
 
 ### FilledButton
 
@@ -193,20 +193,28 @@ auto button = XxxxButton { properties };
 
 属性：
 
-| `PROPERTIES`                    | `TYPE`                      |
-| ------------------------------- | --------------------------- |
-| `TrackColorUnchecked`           | `QColor`                    |
-| `TrackColorChecked`             | `QColor`                    |
-| `TrackColorUncheckedDisabled`   | `QColor`                    |
-| `TrackColorCheckedDisabled`     | `QColor`                    |
-| `HandleColorUnchecked`          | `QColor`                    |
-| `HandleColorChecked`            | `QColor`                    |
-| `HandleColorUncheckedDisabled`  | `QColor`                    |
-| `HandleColorCheckedDisabled`    | `QColor`                    |
-| `OutlineColorUnchecked`         | `QColor`                    |
-| `OutlineColorChecked`           | `QColor`                    |
-| `OutlineColorUncheckedDisabled` | `QColor`                    |
-| `OutlineColorCheckedDisabled`   | `QColor`                    |
-| `HoverColorUnchecked`           | `QColor`                    |
-| `HoverColorChecked`             | `QColor`                    |
-| `Clickable`                     | `std::function<void(bool)>` |
+| `PROPERTIES`                    | `TYPE`             |
+| ------------------------------- | -----------------  |
+| `TrackColorUnchecked`           | `QColor`           |
+| `TrackColorChecked`             | `QColor`           |
+| `TrackColorUncheckedDisabled`   | `QColor`           |
+| `TrackColorCheckedDisabled`     | `QColor`           |
+| `HandleColorUnchecked`          | `QColor`           |
+| `HandleColorChecked`            | `QColor`           |
+| `HandleColorUncheckedDisabled`  | `QColor`           |
+| `HandleColorCheckedDisabled`    | `QColor`           |
+| `OutlineColorUnchecked`         | `QColor`           |
+| `OutlineColorChecked`           | `QColor`           |
+| `OutlineColorUncheckedDisabled` | `QColor`           |
+| `OutlineColorCheckedDisabled`   | `QColor`           |
+| `HoverColorUnchecked`           | `QColor`           |
+| `HoverColorChecked`             | `QColor`           |
+| `Clickable`                     | `[](auto& self){}` |
+
+### FilledTextField
+
+<div align=center>
+    <img src="image/filled-text-field.gif" width=400>
+    <br/>
+    <br/>
+</div>
