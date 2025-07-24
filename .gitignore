@@ -1,3 +1,9 @@
 .cache/
+.vscode/
+.vs/
+.idea/
 
 build/
+output/
+
+.clangd

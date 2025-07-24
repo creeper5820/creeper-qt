@@ -1,5 +1,6 @@
 #include "creeper-qt/creeper-qt.hh"
 #include <qapplication.h>
+#include <qmainwindow.h>
 
 using namespace creeper;
 
@@ -11,14 +12,17 @@ int main(int argc, char* argv[]) {
     namespace swi = _switch::pro;
     namespace tef = text_field::pro;
 
-    new ::QApplication { argc, argv };
+    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
-    const auto Font = widget::pro::Font { "WenQuanYi Zen Hei", 13 };
+    new ::QApplication { argc, argv };
 
     auto theme_manager = ThemeManager {
         kBlueMikuThemePack,
         ColorMode::LIGHT,
     };
+
+    const auto Font = widget::pro::Font { "WenQuanYi Micro Hei", 12 };
 
     const auto switch_common_properties = std::tuple {
         swi::ThemeManager { theme_manager },
@@ -43,12 +47,12 @@ int main(int argc, char* argv[]) {
         ico::Width { IconButton::Width::DEFAULT },
         ico::Types { IconButton::Types::DEFAULT },
         ico::FixedSize { IconButton::kMediumContainerSize },
-        ico::Font { material::kRoundedMediumFont },
+        ico::Font { material::kRoundMediumFont },
     };
     const auto text_field_properties = std::tuple {
         tef::ThemeManager { theme_manager },
         tef::LabelText { "Search" },
-        tef::LeadingIcon { material::kSearch, material::kRoundedFontName },
+        tef::LeadingIcon { material::icon::kSearch, material::kRoundFontName },
         Font,
     };
 
@@ -125,25 +129,25 @@ int main(int argc, char* argv[]) {
                 lin::Item<IconButton> {
                     icon_button_properties,
                     ico::Bind { icon_buttons[0] },
-                    ico::FontIcon { material::kStar },
+                    ico::FontIcon { material::icon::kStar },
                     ico::Color { IconButton::Color::DEFAULT_FILLED },
                 },
                 lin::Item<IconButton> {
                     icon_button_properties,
                     ico::Bind { icon_buttons[2] },
-                    ico::FontIcon { material::kSearch },
+                    ico::FontIcon { material::icon::kSearch },
                     ico::Color { IconButton::Color::TONAL },
                 },
                 lin::Item<IconButton> {
                     icon_button_properties,
                     ico::Bind { icon_buttons[1] },
-                    ico::FontIcon { material::kFolderOpen },
+                    ico::FontIcon { material::icon::kFolderOpen },
                     ico::Color { IconButton::Color::OUTLINED },
                 },
                 lin::Item<IconButton> {
                     icon_button_properties,
                     ico::Bind { icon_buttons[3] },
-                    ico::FontIcon { material::kMenu },
+                    ico::FontIcon { material::icon::kMenu },
                     ico::Color { IconButton::Color::STANDARD },
                 },
                 lin::Stretch { 1 },
@@ -177,21 +181,21 @@ int main(int argc, char* argv[]) {
                 lin::Item<FilledTextField> {
                     text_field_properties,
                     tef::LabelText { "Search" },
-                    tef::LeadingIcon { material::kSearch, material::kRoundedFontName },
+                    tef::LeadingIcon { material::icon::kSearch, material::kRoundFontName },
                 },
                 lin::Item<OutlinedTextField> {
                     text_field_properties,
                     tef::LabelText { "Favorite" },
-                    tef::LeadingIcon { material::kFavorite, material::kRoundedFontName },
+                    tef::LeadingIcon { material::icon::kFavorite, material::kRoundFontName },
                 },
             },
             lin::Stretch { 1 },
         },
     };
-    examples_container->show();
 
-    const auto position = QPointF { 960, 540 } - examples_container->rect().center();
-    examples_container->move(position.x(), position.y());
+    auto window = new QMainWindow {};
+    window->setCentralWidget(examples_container);
+    window->show();
 
     theme_manager.apply_theme();
 

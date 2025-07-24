@@ -1,8 +1,6 @@
 #include <creeper-qt/creeper-qt.hh>
 #include <qapplication.h>
 
-#include <iostream>
-
 inline auto query_bluetooth_status() -> bool { return {}; }
 
 int main(int argc, char* argv[]) {
@@ -15,7 +13,6 @@ int main(int argc, char* argv[]) {
 
     new ::QApplication { argc, argv };
 
-    std::println(std::cout, "Hello World");
     auto manager = ThemeManager { kBlueMikuThemePack };
 
     const auto bluetooth_status = query_bluetooth_status();
@@ -104,7 +101,7 @@ int main(int argc, char* argv[]) {
                 { 0, Qt::AlignCenter },
                 icon::ThemeManager { manager },
                 icon::Color { IconButton::Color::STANDARD },
-                icon::Font { material::kRoundedMediumFont },
+                icon::Font { material::kRoundMediumFont },
                 icon::FixedSize { IconButton::kMediumContainerSize },
                 icon::FontIcon { "media_output" },
             },
@@ -124,7 +121,7 @@ int main(int argc, char* argv[]) {
         return new IconButton {
             icon::ThemeManager { manager },
             icon::FixedSize { IconButton::kSmallContainerSize },
-            icon::Font { material::kRoundedSmallFont },
+            icon::Font { material::kRoundSmallFont },
             icon::FontIcon { "bluetooth" },
             icon::Color { IconButton::Color::TONAL },
             icon::Width { IconButton::Width::NARROW },

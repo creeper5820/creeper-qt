@@ -138,7 +138,7 @@ public:
             const auto height = self.height() / 3;
             const auto rect   = QRectF {
                 QPointF(text_margin_l, 0),
-                QPointF(self.width(), self.height()),
+                QPointF(text_margin_l + self.width(), self.height()),
             };
 
             auto font = QFont { leading_font };
