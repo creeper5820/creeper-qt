@@ -15,7 +15,7 @@ class IconButton;
 
 namespace icon_button::internal {
     class IconButton : public QAbstractButton {
-        CREEPER_PIMPL_DEFINTION(IconButton);
+        CREEPER_PIMPL_DEFINITION(IconButton);
 
     public:
         enum class Types { DEFAULT, TOGGLE_UNSELECTED, TOGGLE_SELECTED };

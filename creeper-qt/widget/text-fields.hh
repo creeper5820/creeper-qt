@@ -12,7 +12,7 @@ class OutlinedTextField;
 
 namespace text_field::internal {
     class BasicTextField : public QLineEdit {
-        CREEPER_PIMPL_DEFINTION(BasicTextField);
+        CREEPER_PIMPL_DEFINITION(BasicTextField);
 
         friend FilledTextField;
         friend OutlinedTextField;

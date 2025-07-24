@@ -21,7 +21,7 @@ struct ThemePack {
 };
 
 class ThemeManager {
-    CREEPER_PIMPL_DEFINTION(ThemeManager)
+    CREEPER_PIMPL_DEFINITION(ThemeManager)
 public:
     explicit ThemeManager(const ThemePack& pack, ColorMode mode = ColorMode::LIGHT);
 

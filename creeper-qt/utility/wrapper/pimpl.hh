@@ -2,11 +2,11 @@
 
 #include <memory>
 
-#define CREEPER_PIMPL_DEFINTION(Class)                                                             \
+#define CREEPER_PIMPL_DEFINITION(Class)                                                            \
 public:                                                                                            \
     Class();                                                                                       \
     ~Class();                                                                                      \
-    Class(const Class&) = delete;                                                                  \
+    Class(const Class&)            = delete;                                                       \
     Class& operator=(const Class&) = delete;                                                       \
                                                                                                    \
 private:                                                                                           \

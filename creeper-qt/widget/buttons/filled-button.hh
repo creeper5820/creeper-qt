@@ -10,7 +10,7 @@ namespace creeper {
 namespace filled_button::internal {
 
     class FilledButton : public QAbstractButton {
-        CREEPER_PIMPL_DEFINTION(FilledButton);
+        CREEPER_PIMPL_DEFINITION(FilledButton);
 
     public:
         void set_color_scheme(const ColorScheme& pack);

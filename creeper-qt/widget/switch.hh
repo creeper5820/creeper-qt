@@ -13,7 +13,7 @@ class Switch;
 
 namespace _switch::internal {
     class Switch : public QAbstractButton {
-        CREEPER_PIMPL_DEFINTION(Switch)
+        CREEPER_PIMPL_DEFINITION(Switch)
 
     public:
         void set_color_scheme(const ColorScheme&);
