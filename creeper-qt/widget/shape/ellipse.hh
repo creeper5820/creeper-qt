@@ -6,6 +6,7 @@
 #include "creeper-qt/widget/widget.hh"
 
 namespace creeper {
+
 namespace ellipse::internal {
     class Ellipse : public Shape {
     protected:
@@ -18,11 +19,9 @@ namespace ellipse::internal {
         }
     };
 }
+
 namespace ellipse::pro {
     using Token = common::Token<internal::Ellipse>;
-
-    template <typename T>
-    concept property_concept = std::derived_from<T, Token> || widget::pro::property_concept<T>;
 
     // 通用属性
     using Background = common::pro::Background<Token>;
@@ -30,10 +29,21 @@ namespace ellipse::pro {
     using BorderWidth = common::pro::BorderWidth<Token>;
     using BorderColor = common::pro::BorderColor<Token>;
 
+    template <typename T>
+    concept property_concept = std::derived_from<T, Token> || widget::pro::property_concept<T>;
+
+    struct checker {
+        template <class t> struct result {
+            static constexpr auto v = false;
+        };
+        template <property_concept t> struct result<t> {
+            static constexpr auto v = true;
+        };
+    };
+
     using namespace widget::pro;
 }
-class Ellipse : public ellipse::internal::Ellipse {
-    CREEPER_DEFINE_CONSTROCTOR(Ellipse, ellipse::pro);
-    using ellipse::internal::Ellipse::Ellipse;
-};
+
+using Ellipse = Declarative<ellipse::internal::Ellipse, ellipse::pro::checker>;
+
 }

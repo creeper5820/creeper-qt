@@ -2,6 +2,7 @@
 #include "filled-button.hh"
 
 namespace creeper {
+
 namespace text_button::internal {
     class TextButton : public FilledButton {
     public:
@@ -31,6 +32,7 @@ namespace text_button::internal {
         }
     };
 }
+
 namespace text_button::pro {
 
     using Token = common::Token<internal::TextButton>;
@@ -40,11 +42,19 @@ namespace text_button::pro {
         || button::pro::property_concept<T>                //
         || util::theme::pro::property_concept<T>;
 
+    struct checker {
+        template <class T> struct result {
+            static constexpr auto v = false;
+        };
+        template <property_concept T> struct result<T> {
+            static constexpr auto v = true;
+        };
+    };
+
     using namespace button::pro;
     using namespace util::theme::pro;
 }
-class TextButton : public text_button::internal::TextButton {
-    CREEPER_DEFINE_CONSTROCTOR(TextButton, text_button::pro);
-    using text_button::internal::TextButton::TextButton;
-};
+
+using TextButton = Declarative<text_button::internal::TextButton, text_button::pro::checker>;
+
 }

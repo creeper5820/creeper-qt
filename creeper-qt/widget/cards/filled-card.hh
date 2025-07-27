@@ -3,12 +3,7 @@
 
 namespace creeper {
 namespace filled_card::pro {
-    template <class Card>
-    concept property_concept = card::pro::property_concept<Card>;
     using namespace card::pro;
 }
-class FilledCard : public card::internal::BasicCard {
-    CREEPER_DEFINE_CONSTROCTOR(FilledCard, filled_card::pro);
-    using card::internal::BasicCard::BasicCard;
-};
+using FilledCard = Declarative<card::internal::Card, card::pro::checker>;
 }

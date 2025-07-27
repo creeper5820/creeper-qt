@@ -3,10 +3,10 @@
 
 namespace creeper {
 namespace outlined_button::internal {
-    class OutlinedButton : public FilledButton {
+    class OutlinedButton : public filled_button::internal::FilledButton {
     public:
         explicit OutlinedButton()
-            : FilledButton() {
+            : FilledButton {} {
             set_border_width(1.5);
         }
 
@@ -44,13 +44,18 @@ namespace outlined_button::pro {
     concept property_concept =
         util::theme::pro::property_concept<T> || button::pro::property_concept<T>;
 
+    struct checker {
+        template <class T> struct result {
+            static constexpr auto v = false;
+        };
+        template <property_concept T> struct result<T> {
+            static constexpr auto v = true;
+        };
+    };
+
     using namespace util::theme::pro;
     using namespace button::pro;
 }
-
-class OutlinedButton : public outlined_button::internal::OutlinedButton {
-    CREEPER_DEFINE_CONSTROCTOR(OutlinedButton, outlined_button::pro);
-    using outlined_button::internal::OutlinedButton::OutlinedButton;
-};
-
+using OutlinedButton =
+    Declarative<outlined_button::internal::OutlinedButton, outlined_button::pro::checker>;
 }

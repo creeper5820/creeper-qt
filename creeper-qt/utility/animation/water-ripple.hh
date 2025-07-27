@@ -17,7 +17,7 @@ struct WaterRippleData {
     double opacity = 1.0;
     bool finished  = false;
 };
-struct WaterRippleAnimation final : IAnimation {
+struct WaterRippleAnimation  : IAnimation {
     explicit WaterRippleAnimation(
         const std::shared_ptr<WaterRippleData>& data, double speed, double max_distance, double hz)
         : data(data)

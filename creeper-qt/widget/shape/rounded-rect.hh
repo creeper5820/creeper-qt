@@ -30,9 +30,6 @@ namespace rounded_rect::internal {
 namespace rounded_rect::pro {
     using Property = common::Token<internal::RoundedRect>;
 
-    template <typename T>
-    concept property_concept = std::derived_from<T, Property> || widget::pro::property_concept<T>;
-
     // 通用属性
     using RadiusX = common::pro::RadiusX<Property>;
     using RadiusY = common::pro::RadiusY<Property>;
@@ -43,10 +40,21 @@ namespace rounded_rect::pro {
     using BorderWidth = common::pro::BorderWidth<Property>;
     using BorderColor = common::pro::BorderColor<Property>;
 
+    template <typename T>
+    concept property_concept = std::derived_from<T, Property> || widget::pro::property_concept<T>;
+
+    struct checker {
+        template <class T> struct result {
+            static constexpr auto v = false;
+        };
+        template <property_concept T> struct result<T> {
+            static constexpr auto v = true;
+        };
+    };
+
     using namespace widget::pro;
 }
-class RoundedRect : public rounded_rect::internal::RoundedRect {
-    CREEPER_DEFINE_CONSTROCTOR(RoundedRect, rounded_rect::pro);
-    using rounded_rect::internal::RoundedRect::RoundedRect;
-};
+
+using RoundedRect = Declarative<rounded_rect::internal::RoundedRect, rounded_rect::pro::checker>;
+
 }

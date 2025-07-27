@@ -17,7 +17,7 @@ template <typename Instance> struct Token {
 namespace pro {
 
     // 特殊属性，用于绑定自身指针
-    template <class Token, class Final> struct Bind final : Token {
+    template <class Token, class Final> struct Bind  : Token {
         Final*& widget;
         explicit Bind(Final*& p)
             : widget(p) { };
@@ -25,7 +25,7 @@ namespace pro {
     };
 
     // 通用半径长度
-    template <class Token> struct RadiusX final : Token {
+    template <class Token> struct RadiusX  : Token {
         double radius;
         explicit RadiusX(double p) { radius = p; }
         void apply(auto& self) const
@@ -34,7 +34,7 @@ namespace pro {
             self.set_radius_x(radius);
         }
     };
-    template <class Token> struct RadiusY final : Token {
+    template <class Token> struct RadiusY  : Token {
         double radius;
         explicit RadiusY(double p) { radius = p; }
         void apply(auto& self) const
@@ -43,7 +43,7 @@ namespace pro {
             self.set_radius_y(radius);
         }
     };
-    template <class Token> struct Radius final : Token {
+    template <class Token> struct Radius  : Token {
         double radius;
         explicit Radius(double p) { radius = p; }
         void apply(auto& self) const
@@ -54,7 +54,7 @@ namespace pro {
     };
 
     // 通用边界宽度
-    template <class Token> struct BorderWidth final : Token {
+    template <class Token> struct BorderWidth  : Token {
         double border;
         explicit BorderWidth(double p) { border = p; }
         void apply(auto& self) const
@@ -65,7 +65,7 @@ namespace pro {
     };
 
     // 通用边界颜色
-    template <class Token> struct BorderColor final : public QColor, Token {
+    template <class Token> struct BorderColor  : public QColor, Token {
         using QColor::QColor;
         explicit BorderColor(const QColor& color)
             : QColor(color) { }
@@ -77,7 +77,7 @@ namespace pro {
     };
 
     // 通用文本属性
-    template <class Token> struct Text final : public QString, Token {
+    template <class Token> struct Text  : public QString, Token {
         using QString::QString;
         explicit Text(const QString& text)
             : QString { text } { }
@@ -89,7 +89,7 @@ namespace pro {
     };
 
     // 通用文字颜色
-    template <class Token> struct TextColor final : public QColor, Token {
+    template <class Token> struct TextColor  : public QColor, Token {
         using QColor::QColor;
         explicit TextColor(const QColor& color)
             : QColor(color) { }
@@ -101,7 +101,7 @@ namespace pro {
     };
 
     // 通用背景颜色
-    template <class Token> struct Background final : public QColor, Token {
+    template <class Token> struct Background  : public QColor, Token {
         using QColor::QColor;
         explicit Background(const QColor& color)
             : QColor(color) { }
@@ -113,7 +113,7 @@ namespace pro {
     };
 
     // 通用水波纹颜色
-    template <class Token> struct WaterColor final : public QColor, Token {
+    template <class Token> struct WaterColor  : public QColor, Token {
         using QColor::QColor;
         explicit WaterColor(const QColor& color)
             : QColor(color) { }
@@ -125,7 +125,7 @@ namespace pro {
     };
 
     // 通用禁止属性
-    template <class Token> struct Disabled final : Token {
+    template <class Token> struct Disabled  : Token {
         bool disabled;
         explicit Disabled(bool p) { disabled = p; }
         void apply(auto& self) const
@@ -136,7 +136,7 @@ namespace pro {
     };
 
     // 通用 Checked 属性
-    template <class Token> struct Checked final : Token {
+    template <class Token> struct Checked  : Token {
         bool checked;
         explicit Checked(bool p) { checked = p; }
         void apply(auto& self) const
@@ -146,13 +146,13 @@ namespace pro {
         }
     };
 
-    template <typename Callback, class Token, class Self> struct Clickable final : Token {
+    template <typename Callback, class Token> struct Clickable  : Token {
         Callback callback;
         explicit Clickable(Callback callback) noexcept
             : callback(callback) { }
         void apply(auto& self) const noexcept {
-            QObject::connect(
-                &self, &Self::clicked, [function = callback, &self] { function(self); });
+            QObject::connect(&self, &std::remove_cvref_t<decltype(self)>::clicked,
+                [function = callback, &self] { function(self); });
         }
     };
 

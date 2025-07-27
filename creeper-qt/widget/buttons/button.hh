@@ -14,7 +14,7 @@ namespace pro {
 
     template <typename Callback>
         requires std::invocable<Callback>
-    struct Clickable final : Token {
+    struct Clickable  : Token {
         Callback callback;
         explicit Clickable(Callback p)
             : callback(p) { }

@@ -43,13 +43,20 @@ namespace filled_button::pro {
     concept property_concept =
         util::theme::pro::property_concept<T> || button::pro::property_concept<T>;
 
+    struct checker {
+        template <class T> struct result {
+            static constexpr auto v = false;
+        };
+        template <property_concept T> struct result<T> {
+            static constexpr auto v = true;
+        };
+    };
+
     using namespace util::theme::pro;
     using namespace button::pro;
 }
 
-class FilledButton : public filled_button::internal::FilledButton {
-    CREEPER_DEFINE_CONSTROCTOR(FilledButton, filled_button::pro);
-    using filled_button::internal::FilledButton::FilledButton;
-};
+using FilledButton =
+    Declarative<filled_button::internal::FilledButton, filled_button::pro::checker>;
 
 }

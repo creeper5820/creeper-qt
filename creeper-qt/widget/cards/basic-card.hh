@@ -13,13 +13,13 @@ constexpr auto kElevatedShadowOffsetY    = double { 2 };
 
 constexpr auto kOutlinedWidth = double { 1.5 };
 
-class BasicCard : public RoundedRect {
+class Card : public Declarative<rounded_rect::internal::RoundedRect, rounded_rect::pro::checker> {
 public:
     enum class Level { LOWEST, LOW, DEFAULT, HIGH, HIGHEST } level { Level::DEFAULT };
 
 public:
-    explicit BasicCard()
-        : RoundedRect {
+    explicit Card() noexcept
+        : Declarative {
             rounded_rect::pro::BorderWidth { 0 },
             rounded_rect::pro::BorderColor { Qt::transparent },
             rounded_rect::pro::Radius { kCardRadius },
@@ -27,19 +27,19 @@ public:
 
     void set_color_scheme(const ColorScheme& scheme) {
         switch (level) {
-        case card::internal::BasicCard::Level::LOWEST:
+        case card::internal::Card::Level::LOWEST:
             set_background(scheme.surface_container_lowest);
             break;
-        case card::internal::BasicCard::Level::LOW:
+        case card::internal::Card::Level::LOW:
             set_background(scheme.surface_container_low);
             break;
-        case card::internal::BasicCard::Level::DEFAULT:
+        case card::internal::Card::Level::DEFAULT:
             set_background(scheme.surface_container);
             break;
-        case card::internal::BasicCard::Level::HIGH:
+        case card::internal::Card::Level::HIGH:
             set_background(scheme.surface_container_high);
             break;
-        case card::internal::BasicCard::Level::HIGHEST:
+        case card::internal::Card::Level::HIGHEST:
             set_background(scheme.surface_container_highest);
             break;
         }
@@ -54,26 +54,42 @@ public:
 }
 namespace creeper::card::pro {
 
-using Token = common::Token<internal::BasicCard>;
+using Token = common::Token<internal::Card>;
 
 struct Level : Token {
-    using Enum = internal::BasicCard::Level;
+    using Enum = internal::Card::Level;
     Enum level { Enum::DEFAULT };
 
     explicit Level(Enum level)
-        : level(level) { }
+        : level { level } { }
 
     void apply(auto& self) const { self.level = level; }
 };
+namespace level {
+    inline const auto DEFAULT = Level { Level::Enum::DEFAULT };
+    inline const auto HIGHEST = Level { Level::Enum::HIGHEST };
+    inline const auto HIGH    = Level { Level::Enum::HIGH };
+    inline const auto LOWEST  = Level { Level::Enum::LOWEST };
+    inline const auto LOW     = Level { Level::Enum::LOW };
+}
 
 template <class Card>
 concept property_concept = std::derived_from<Card, Token> //
     || rounded_rect::pro::property_concept<Card>          //
     || util::theme::pro::property_concept<Card>;
 
+struct checker {
+    template <class T> struct result {
+        static constexpr auto v = false;
+    };
+    template <property_concept T> struct result<T> {
+        static constexpr auto v = true;
+    };
+};
+
 using namespace rounded_rect::pro;
 using namespace util::theme::pro;
 }
 namespace creeper {
-using SurfaceLevel = card::internal::BasicCard::Level;
+using CardLevel = card::internal::Card::Level;
 }

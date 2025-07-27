@@ -10,9 +10,6 @@ namespace creeper::linear {
 namespace pro {
     using Token = common::Token<QBoxLayout>;
 
-    template <typename T>
-    concept property_concept = std::derived_from<T, Token>;
-
     template <class T>
         requires std::is_convertible_v<T*, QWidget*> || std::is_convertible_v<T*, QLayout*>
     struct Item : Token {
@@ -46,60 +43,65 @@ namespace pro {
         }
     };
 
-    struct Spacing final : Token {
+    struct Spacing  : Token {
         int size;
         explicit Spacing(int p) { size = p; }
         void apply(QBoxLayout& self) const { self.addSpacing(size); }
     };
 
-    struct Stretch final : Token {
+    struct Stretch  : Token {
         int stretch;
         explicit Stretch(int p) { stretch = p; }
         void apply(QBoxLayout& self) const { self.addStretch(stretch); }
     };
 
-    struct SpacerItem final : Token {
+    struct SpacerItem  : Token {
         QSpacerItem* spacer_item;
         explicit SpacerItem(QSpacerItem* p) { spacer_item = p; }
         void apply(QBoxLayout& self) const { self.addSpacerItem(spacer_item); }
     };
 
     // 属性类接口
-    struct Margin final : Token {
+    struct Margin  : Token {
         int margin;
         explicit Margin(int p) { margin = p; }
         void apply(QBoxLayout& self) const { self.setMargin(margin); }
     };
-    struct SetSpacing final : Token {
+    struct SetSpacing  : Token {
         int size;
         explicit SetSpacing(int p) { size = p; }
         void apply(QBoxLayout& self) const { self.setSpacing(size); }
     };
-    struct Alignment final : Token {
+    struct Alignment  : Token {
         Qt::Alignment alignment;
         explicit Alignment(Qt::Alignment p) { alignment = p; }
         void apply(QBoxLayout& self) const { self.setAlignment(alignment); }
     };
 
-    struct ContentsMargin final : public QMargins, Token {
+    struct ContentsMargin  : public QMargins, Token {
         using QMargins::QMargins;
         explicit ContentsMargin(int left, int top, int right, int bottom)
             : QMargins(left, top, right, bottom) { }
         void apply(QBoxLayout& self) const { self.setContentsMargins(*this); }
+    };
+
+    template <typename T>
+    concept property_concept = std::derived_from<T, Token>;
+
+    struct checker {
+        template <class T> struct result {
+            static constexpr auto v = false;
+        };
+        template <property_concept T> struct result<T> {
+            static constexpr auto v = true;
+        };
     };
 }
 }
 
 namespace creeper {
 
-class Row : public QHBoxLayout {
-    CREEPER_DEFINE_CONSTROCTOR(Row, linear::pro)
-    using QHBoxLayout::QHBoxLayout;
-};
-
-class Col : public QVBoxLayout {
-    CREEPER_DEFINE_CONSTROCTOR(Col, linear::pro)
-    using QVBoxLayout::QVBoxLayout;
-};
+using Row = Declarative<QHBoxLayout, linear::pro::checker>;
+using Col = Declarative<QVBoxLayout, linear::pro::checker>;
 
 }

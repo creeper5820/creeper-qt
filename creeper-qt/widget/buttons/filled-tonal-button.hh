@@ -3,7 +3,7 @@
 
 namespace creeper {
 namespace filled_tonal_button::internal {
-    class FilledTonalButton : public FilledButton {
+    class Impl : public FilledButton {
     public:
         void set_color_scheme(const ColorScheme& color_scheme) {
             set_background(color_scheme.secondary_container);
@@ -36,13 +36,20 @@ namespace filled_tonal_button::pro {
     concept property_concept =
         util::theme::pro::property_concept<T> || button::pro::property_concept<T>;
 
+    struct checker {
+        template <class T> struct result {
+            static constexpr auto v = false;
+        };
+        template <property_concept T> struct result<T> {
+            static constexpr auto v = true;
+        };
+    };
+
     using namespace util::theme::pro;
     using namespace button::pro;
 }
 
-class FilledTonalButton : public filled_tonal_button::internal::FilledTonalButton {
-    CREEPER_DEFINE_CONSTROCTOR(FilledTonalButton, filled_tonal_button::pro);
-    using filled_tonal_button::internal::FilledTonalButton::FilledTonalButton;
-};
+using FilledTonalButton =
+    Declarative<filled_tonal_button::internal::Impl, filled_tonal_button::pro::checker>;
 
 }

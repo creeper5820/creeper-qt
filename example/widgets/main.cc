@@ -21,6 +21,7 @@ int main(int argc, char* argv[]) {
         kBlueMikuThemePack,
         ColorMode::LIGHT,
     };
+    auto manager_pro = util::theme::pro::ThemeManager { theme_manager };
 
     const auto Font = widget::pro::Font { "WenQuanYi Micro Hei", 12 };
 
@@ -40,15 +41,18 @@ int main(int argc, char* argv[]) {
         card::pro::FixedSize { 50, 50 },
         card::pro::Radius { 10 },
     };
+
+    auto mutable_shape = Mutable { ico::shape::DEFAULT_ROUND };
+    auto mutable_types = Mutable { ico::types::DEFAULT };
+
     const auto icon_button_properties = std::tuple {
         ico::ThemeManager { theme_manager },
-        ico::FontIcon { "settings" },
-        ico::Shape { IconButton::Shape::SQUARE },
-        ico::Width { IconButton::Width::DEFAULT },
-        ico::Types { IconButton::Types::DEFAULT },
-        ico::FixedSize { IconButton::kMediumContainerSize },
+        ico::width::DEFAULT,
         ico::Font { material::kRoundMediumFont },
+        ico::FontIcon { "settings" },
+        ico::FixedSize { IconButton::kMediumContainerSize },
     };
+
     const auto text_field_properties = std::tuple {
         tef::ThemeManager { theme_manager },
         tef::LabelText { "Search" },
@@ -60,7 +64,7 @@ int main(int argc, char* argv[]) {
 
     const auto examples_container = new OutlinedCard {
         card::pro::ThemeManager { theme_manager },
-        card::pro::Level { SurfaceLevel::LOWEST },
+        card::pro::Level { CardLevel::LOWEST },
         card::pro::WindowFlag { Qt::WindowType::SplashScreen },
         card::pro::Radius { 5 },
         card::pro::Layout<Col> {
@@ -95,21 +99,19 @@ int main(int argc, char* argv[]) {
                 lin::Item<Switch> {
                     switch_common_properties,
                     swi::Checked { true },
-                    swi::Clickable { [&icon_buttons](Switch& self) {
-                        for (const auto& icon_button : icon_buttons)
-                            icon_button->set_types(self.checked() //
-                                    ? IconButton::Types::DEFAULT
-                                    : IconButton::Types::TOGGLE_UNSELECTED);
+                    swi::Clickable { [&](Switch& self) {
+                        mutable_types = self.checked() //
+                            ? ico::types::DEFAULT
+                            : ico::types::TOGGLE_UNSELECTED;
                     } },
                 },
                 lin::Item<Switch> {
                     switch_common_properties,
                     swi::Checked { false },
-                    swi::Clickable { [&icon_buttons](Switch& self) {
-                        for (const auto& icon_button : icon_buttons)
-                            icon_button->set_shape(self.checked() //
-                                    ? IconButton::Shape::DEFAULT_ROUND
-                                    : IconButton::Shape::SQUARE);
+                    swi::Clickable { [&](Switch& self) {
+                        mutable_shape = self.checked() //
+                        ? ico::shape::SQUARE
+                        : ico::shape::DEFAULT_ROUND;
                     } },
                 },
                 lin::Item<Switch> {
@@ -128,27 +130,35 @@ int main(int argc, char* argv[]) {
                 lin::Stretch { 1 },
                 lin::Item<IconButton> {
                     icon_button_properties,
+                    mutable_shape,
+                    mutable_types,
                     ico::Bind { icon_buttons[0] },
                     ico::FontIcon { material::icon::kStar },
-                    ico::Color { IconButton::Color::DEFAULT_FILLED },
+                    ico::color::DEFAULT_FILLED,
                 },
                 lin::Item<IconButton> {
                     icon_button_properties,
+                    mutable_shape,
+                    mutable_types,
                     ico::Bind { icon_buttons[2] },
                     ico::FontIcon { material::icon::kSearch },
-                    ico::Color { IconButton::Color::TONAL },
+                    ico::color::TONAL,
                 },
                 lin::Item<IconButton> {
                     icon_button_properties,
+                    mutable_shape,
+                    mutable_types,
                     ico::Bind { icon_buttons[1] },
                     ico::FontIcon { material::icon::kFolderOpen },
-                    ico::Color { IconButton::Color::OUTLINED },
+                    ico::color::OUTLINED,
                 },
                 lin::Item<IconButton> {
                     icon_button_properties,
+                    mutable_shape,
+                    mutable_types,
                     ico::Bind { icon_buttons[3] },
                     ico::FontIcon { material::icon::kMenu },
-                    ico::Color { IconButton::Color::STANDARD },
+                    ico::color::STANDARD,
                 },
                 lin::Stretch { 1 },
             },
@@ -157,23 +167,23 @@ int main(int argc, char* argv[]) {
                 lin::Stretch { 1 },
                 lin::Item<OutlinedCard> {
                     card_common_properties,
-                    card::pro::Level { OutlinedCard::Level::LOWEST },
+                    card::pro::level::HIGHEST,
                 },
                 lin::Item<OutlinedCard> {
                     card_common_properties,
-                    card::pro::Level { OutlinedCard::Level::LOW },
+                    card::pro::level::HIGH,
                 },
                 lin::Item<OutlinedCard> {
                     card_common_properties,
-                    card::pro::Level { OutlinedCard::Level::DEFAULT },
+                    card::pro::level::DEFAULT,
                 },
                 lin::Item<OutlinedCard> {
                     card_common_properties,
-                    card::pro::Level { OutlinedCard::Level::HIGH },
+                    card::pro::level::LOW,
                 },
                 lin::Item<OutlinedCard> {
                     card_common_properties,
-                    card::pro::Level { OutlinedCard::Level::HIGHEST },
+                    card::pro::level::LOWEST,
                 },
                 lin::Stretch { 1 },
             },

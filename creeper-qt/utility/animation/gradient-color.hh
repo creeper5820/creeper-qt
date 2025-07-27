@@ -7,7 +7,7 @@
 
 namespace creeper::util::animation {
 
-struct GradientColor final : IAnimation {
+struct GradientColor : IAnimation {
 private:
     using RGBA = Eigen::Vector4d;
 
@@ -20,7 +20,7 @@ private:
 
 public:
     /// @param begin 初始颜色
-    /// @param final 目标颜色
+    /// @param  目标颜色
     /// @param ratio 线性插值参数，值越小变化越慢
     /// @param update_callback 更新回调，返回 true 时立刻销毁该动画
     GradientColor(const QColor& begin, const QColor& final, double ratio,

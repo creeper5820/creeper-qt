@@ -48,7 +48,7 @@ template <typename T> struct FinitePidTracker : public IAnimation {
     T last_error = zero<T>();
 };
 
-template <typename T> struct FiniteSringTracker final : IAnimation {
+template <typename T> struct FiniteSringTracker  : IAnimation {
 
     FiniteSringTracker(const std::shared_ptr<T>& current, const T& target,
         const std::shared_ptr<bool>& stop_token, double k, double d, double hz,

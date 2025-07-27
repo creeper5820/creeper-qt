@@ -99,23 +99,28 @@ namespace text_field::pro {
         || widget::pro::property_concept<TextField>                //
         || util::theme::pro::property_concept<TextField>;
 
+    struct checker {
+        template <class T> struct result {
+            static constexpr auto v = false;
+        };
+        template <property_concept T> struct result<T> {
+            static constexpr auto v = true;
+        };
+    };
+
     using namespace widget::pro;
     using namespace util::theme::pro;
 }
 
-class FilledTextField : public text_field::internal::BasicTextField {
-    CREEPER_DEFINE_CONSTROCTOR(FilledTextField, text_field::pro);
-    using text_field::internal::BasicTextField::BasicTextField;
-
-protected:
+struct FilledTextField
+    : public Declarative<text_field::internal::BasicTextField, text_field::pro::checker> {
+    using Declarative::Declarative;
     void paintEvent(QPaintEvent*) override;
 };
 
-class OutlinedTextField : public text_field::internal::BasicTextField {
-    CREEPER_DEFINE_CONSTROCTOR(OutlinedTextField, text_field::pro);
-    using text_field::internal::BasicTextField::BasicTextField;
-
-protected:
+struct OutlinedTextField
+    : public Declarative<text_field::internal::BasicTextField, text_field::pro::checker> {
+    using Declarative::Declarative;
     void paintEvent(QPaintEvent*) override;
 };
 

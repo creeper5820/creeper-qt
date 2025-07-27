@@ -3,16 +3,16 @@
 
 namespace creeper {
 namespace outlined_card::internal {
-    class OutlinedCard : public card::internal::BasicCard {
+    class Impl : public card::internal::Card {
     public:
-        explicit OutlinedCard() {
+        explicit Impl() {
             using namespace card::internal;
             set_border_width(kOutlinedWidth);
         }
 
         void set_color_scheme(const ColorScheme& scheme) {
             set_border_color(scheme.outline_variant);
-            BasicCard::set_color_scheme(scheme);
+            card::internal::Card::set_color_scheme(scheme);
         }
 
         void load_theme_manager(ThemeManager& manager) {
@@ -23,12 +23,7 @@ namespace outlined_card::internal {
 
 }
 namespace outlined_card::pro {
-    template <class Card>
-    concept property_concept = card::pro::property_concept<Card>;
     using namespace card::pro;
 }
-class OutlinedCard : public outlined_card::internal::OutlinedCard {
-    CREEPER_DEFINE_CONSTROCTOR(OutlinedCard, outlined_card::pro);
-    using outlined_card::internal::OutlinedCard::OutlinedCard;
-};
+using OutlinedCard = Declarative<outlined_card::internal::Impl, card::pro::checker>;
 }

@@ -9,3 +9,5 @@
 #include "creeper-qt/utility/theme/theme.hh"
 
 #include "creeper-qt/utility/material-icon.hh"
+
+#include "creeper-qt/utility/wrapper/mutable.hh"
