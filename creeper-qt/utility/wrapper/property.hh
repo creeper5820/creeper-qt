@@ -24,21 +24,43 @@ public:                                                                         
 
 namespace creeper {
 
-/// @brief 声明式包装，非侵入式实现 Setter 的声明式化
+/// @brief
+/// 声明式包装，非侵入式实现 Setter 的声明式化
 ///
-/// @tparam _widget 需要包装的组件
+/// @tparam _widget
+/// 需要包装的组件
 ///
-/// @tparam _checker 套两层类型可以延迟模板的实例化，将类型推迟到调用函数时
-///         这里使用实际绝对不会使用的类型 void 作为检查
-///         一般写成如下形式:
-///         struct checker {
-///             template <class T> struct result {
-///                 static constexpr auto v = false;
-///             };
-///             template <property_concept T> struct result<T> {
-///                 static constexpr auto v = true;
-///             };
-///         };
+/// @tparam _checker
+/// 套两层类型可以延迟模板的实例化，将类型推迟到调用函数时
+/// 这里使用实际绝对不会使用的类型 void 作为检查
+/// 一般写成如下形式:
+/// struct checker {
+///     template <class T> struct result {
+///         static constexpr auto v = false;
+///     };
+///     template <property_concept T> struct result<T> {
+///         static constexpr auto v = true;
+///     };
+/// };
+/// @note
+/// 使用该声明式包装器时，模板参数的递归实例化会导致编译器自动生成一系列参数极多的构造函数，
+/// 例如：
+///
+/// In Declarative<Impl, checker>
+/// template <> explicit Declarative<
+///         creeper::util::theme::pro::ThemeManager,
+///         creeper::card::pro::Level,
+///         creeper::widget::pro::WindowFlag,
+///         creeper::common::pro::Radius<...>,
+///         creeper::widget::pro::Layout<...>,
+///         >
+///
+/// 一旦中间某一层模板参数类型有误，
+/// 编译器会将错误信息逐层上报，最终导致巨量且难以定位的模板报错。
+/// 因此，在 concept 层面进行类型约束是必要之举，而使用 checker 进行 concept
+/// 注入可以大幅简化开发流程， 以便在编写代码时即可获得清晰的类型错误提示，
+/// 避免编译期出现冗长难读的错误栈。
+///
 template <class _widget, class _checker>
     requires requires {
         { _checker::template result<void>::v };

@@ -1,6 +1,5 @@
 #include "creeper-qt/creeper-qt.hh"
-#include <qapplication.h>
-#include <qmainwindow.h>
+#include <QtWidgets/QtWidgets>
 
 using namespace creeper;
 
@@ -60,6 +59,14 @@ int main(int argc, char* argv[]) {
         Font,
     };
 
+    auto mutable_icon  = Mutable { tef::LeadingIcon {
+        material::icon::kFavorite,
+        material::round::font,
+    } };
+    auto mutable_label = Mutable {
+        tef::LabelText { "Search" },
+    };
+
     auto icon_buttons = std::array<IconButton*, 4> {};
 
     const auto examples_container = new OutlinedCard {
@@ -76,7 +83,17 @@ int main(int argc, char* argv[]) {
                 lin::Item<FilledButton> {
                     button_common_properties,
                     but::Text { "威严满满" },
-                    but::Clickable { [] { qDebug() << "抱头蹲防"; } },
+                    but::Clickable { [&] {
+                        qDebug() << "抱头蹲防";
+                        static auto flag = bool { false };
+
+                        const auto icon = (flag = !flag) //
+                            ? material::icon::kHeartBroken
+                            : material::icon::kFavorite;
+
+                        mutable_icon  = tef::LeadingIcon { icon, material::round::font };
+                        mutable_label = icon;
+                    } },
                 },
                 lin::Item<FilledTonalButton> {
                     button_common_properties,
@@ -110,8 +127,8 @@ int main(int argc, char* argv[]) {
                     swi::Checked { false },
                     swi::Clickable { [&](Switch& self) {
                         mutable_shape = self.checked() //
-                        ? ico::shape::SQUARE
-                        : ico::shape::DEFAULT_ROUND;
+                            ? ico::shape::SQUARE
+                            : ico::shape::DEFAULT_ROUND;
                     } },
                 },
                 lin::Item<Switch> {
@@ -190,8 +207,8 @@ int main(int argc, char* argv[]) {
             lin::Item<Row> {
                 lin::Item<FilledTextField> {
                     text_field_properties,
-                    tef::LabelText { "Search" },
-                    tef::LeadingIcon { material::icon::kSearch, material::kRoundFontName },
+                    mutable_icon,
+                    mutable_label,
                 },
                 lin::Item<OutlinedTextField> {
                     text_field_properties,

@@ -47,7 +47,10 @@ public:
     auto bind(auto& self) const noexcept -> void {
         callbacks_.insert({
             &self,
-            [&](const T& pro) { pro.apply(self); },
+            [&](const T& pro) {
+                pro.apply(self);
+                self.update();
+            },
         });
         QObject::connect(&self, &QWidget::destroyed,
             [pointer = &self, this] //
