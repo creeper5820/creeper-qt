@@ -1,7 +1,7 @@
 #pragma once
 
 #include "creeper-qt/utility/theme/theme.hh"
-#include "creeper-qt/utility/wrapper/common-property.hh"
+#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/widget/widget.hh"
 
 #include <qlineedit.h>
@@ -101,10 +101,7 @@ namespace text_field::pro {
 
     struct checker {
         template <class T> struct result {
-            static constexpr auto v = false;
-        };
-        template <property_concept T> struct result<T> {
-            static constexpr auto v = true;
+            static constexpr auto v = property_concept<T>;
         };
     };
 

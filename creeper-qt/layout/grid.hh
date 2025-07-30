@@ -1,15 +1,13 @@
 #pragma once
 
-#include "creeper-qt/utility/wrapper/common-property.hh"
+#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
 
 #include <qgridlayout.h>
 
 namespace creeper {
 namespace grid::internal {
-    class Grid : public QGridLayout {
-    public:
-    };
+    class Grid : public QGridLayout { };
 }
 namespace grid::pro {
     using Token = common::Token<QGridLayout>;
@@ -80,10 +78,7 @@ namespace grid::pro {
 
     struct checker {
         template <class T> struct result {
-            static constexpr auto v = false;
-        };
-        template <property_concept T> struct result<T> {
-            static constexpr auto v = true;
+            static constexpr auto v = property_concept<T>;
         };
     };
 

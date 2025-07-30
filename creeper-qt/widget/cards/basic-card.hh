@@ -80,10 +80,7 @@ concept property_concept = std::derived_from<Card, Token> //
 
 struct checker {
     template <class T> struct result {
-        static constexpr auto v = false;
-    };
-    template <property_concept T> struct result<T> {
-        static constexpr auto v = true;
+        static constexpr auto v = property_concept<T>;
     };
 };
 

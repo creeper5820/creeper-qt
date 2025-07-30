@@ -33,11 +33,8 @@ namespace ellipse::pro {
     concept property_concept = std::derived_from<T, Token> || widget::pro::property_concept<T>;
 
     struct checker {
-        template <class t> struct result {
-            static constexpr auto v = false;
-        };
-        template <property_concept t> struct result<t> {
-            static constexpr auto v = true;
+        template <class T> struct result {
+            static constexpr auto v = property_concept<T>;
         };
     };
 

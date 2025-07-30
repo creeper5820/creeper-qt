@@ -45,6 +45,10 @@ public:
 
     void paint_event(QAbstractButton& self, QPaintEvent* event) {
 
+        const auto radius = this->radius < 0
+            ? std::min<double>(self.rect().height(), self.rect().width()) / 2
+            : this->radius;
+
         const auto button_path = make_rounded_rectangle_path(self.rect(), radius);
 
         auto painter = QPainter { &self };
