@@ -11,3 +11,7 @@
 #include "creeper-qt/utility/material-icon.hh"
 
 #include "creeper-qt/utility/wrapper/mutable.hh"
+
+#include "creeper-qt/utility/content-scale.hh"
+#include "creeper-qt/utility/material-icon.hh"
+#include "creeper-qt/utility/painter-resource.hh"

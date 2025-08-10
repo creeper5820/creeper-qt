@@ -10,7 +10,7 @@ set(CMAKE_BUILD_TYPE "Release")
 
 add_compile_options(-Os -O3)
 
-find_package(Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt5 REQUIRED COMPONENTS Widgets Network)
 find_package(Eigen3 REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
@@ -23,14 +23,17 @@ include_directories(.)
 file(GLOB_RECURSE PROJECT_CC CONFIGURE_DEPENDS "creeper-qt/*.cc")
 file(GLOB_RECURSE PROJECT_HH CONFIGURE_DEPENDS "creeper-qt/*.hh")
 
-add_library(${PROJECT_NAME} SHARED
+add_library(${PROJECT_NAME}
+    SHARED
     ${PROJECT_CC}
 )
 add_library(${PROJECT_NAME}::widgets
     ALIAS ${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME}
-    PUBLIC Qt5::Widgets
+    PUBLIC
+    Qt5::Widgets
+    Qt5::Network
 )
 
 # 创建安装目标
