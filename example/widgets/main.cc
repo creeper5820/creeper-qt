@@ -13,7 +13,15 @@ namespace pro {
     auto theme = util::theme::pro::ThemeManager {
         internal::manager,
     };
-    auto font = widget::pro::Font { "WenQuanYi Micro Hei", 10 };
+    auto font = widget::pro::Font { "WenQuanYi Micro Hei", 12 };
+
+    const auto outlined_button_meta = std::tuple {
+        pre::pro::theme,
+        pre::pro::font,
+        button::pro::FixedSize { 100, 50 },
+        button::pro::Radius { -1 },
+        button::pro::BorderWidth { 0.5 },
+    };
 }
 namespace lambda {
     const auto change_color = [] {
@@ -24,6 +32,7 @@ namespace lambda {
 }
 
 int main(int argc, char* argv[]) {
+
     app::init {
         app::pro::Attribute { Qt::AA_EnableHighDpiScaling },
         app::pro::Attribute { Qt::AA_UseHighDpiPixmaps },
@@ -37,12 +46,15 @@ int main(int argc, char* argv[]) {
         card::pro::Layout<Col> {
             linear::pro::Stretch { 255 },
             linear::pro::Item<OutlinedButton> {
-                pre::pro::theme,
-                pre::pro::font,
-                button::pro::FixedSize { 70, 40 },
+                pre::pro::outlined_button_meta,
+                button::pro::Text { "退出程序" },
+                button::pro::Clickable {
+                    [] { QApplication::quit(); },
+                },
+            },
+            linear::pro::Item<OutlinedButton> {
+                pre::pro::outlined_button_meta,
                 button::pro::Text { "颜色模式" },
-                button::pro::Radius { -1 },
-                button::pro::BorderWidth { 0.5 },
                 button::pro::Clickable { pre::lambda::change_color },
             },
         },
@@ -59,7 +71,18 @@ int main(int argc, char* argv[]) {
             linear::pro::SetSpacing { 5 },
 
             linear::pro::Item { { 1, Qt::AlignLeft }, workspace_navigation },
-            linear::pro::Stretch { 5 },
+            linear::pro::Item<FilledCard> {
+                { 5 },
+                card::pro::Layout<Col> {
+                    linear::pro::Item<Image> {
+                        image::pro::ContentScale { ContentScale::INSIDE },
+                        image::pro::PainterResource {
+                            std::make_unique<PainterResource>( //
+                                "/home/creeper/pictures/wallpaper/搜图神器_1703017303254.png"),
+                        },
+                    },
+                },
+            },
         },
     };
 

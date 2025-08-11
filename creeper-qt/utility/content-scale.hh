@@ -1,4 +1,5 @@
 #pragma once
+#include <qdebug.h>
 #include <qpixmap.h>
 
 namespace creeper {
@@ -40,6 +41,8 @@ public:
         case ContentScale::INSIDE:
             return pixmap.scaled(size, Qt::KeepAspectRatio, mode);
         }
+
+        return {};
     }
 };
 

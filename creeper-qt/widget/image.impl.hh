@@ -1,4 +1,5 @@
 #include "image.hh"
+
 #include <qevent.h>
 #include <qpainter.h>
 #include <qpicture.h>
@@ -16,32 +17,42 @@ public:
     explicit Impl(Image& self) noexcept
         : self { self } { }
 
-    auto paint_event(const QPaintEvent& event) noexcept {
+    auto paint_event(const QPaintEvent&) noexcept {
         auto painter = QPainter { &self };
 
-        if (request_scale) regenerate_pixmap();
+        if (request_regenerate) regenerate_pixmap();
 
-        if (!pixmap_render.isNull()) {
+        if (resource_render && !resource_render->isNull()) {
             painter.setBrush(Qt::NoBrush);
             painter.setPen(Qt::NoPen);
             painter.setRenderHint(QPainter::Antialiasing);
-            painter.drawPixmap(event.rect(), pixmap_render);
+            painter.drawPixmap(self.rect(), *resource_render);
         }
     }
+    auto resize_event(const QResizeEvent&) noexcept { request_regenerate = true; }
 
 private:
     auto regenerate_pixmap() noexcept -> void {
-        const auto& _1 = pixmap_origin;
-        const auto& _2 = self.size();
-        pixmap_render  = content_scale.transform(_1, _2);
+        if (!resource_origin) return;
+        const auto& _1   = *resource_origin;
+        const auto& _2   = self.size();
+        *resource_render = content_scale.transform(_1, _2);
+        {
+            qDebug() << "Regenerate pixmap";
+            qDebug() << "Origin size:" << resource_origin->size();
+            qDebug() << "Render size:" << resource_render->size();
+        }
+        request_regenerate = false;
     }
 
 public:
     ContentScale content_scale;
-    bool request_scale = true;
+    bool request_regenerate = true;
 
-    QPixmap pixmap_origin;
-    QPixmap pixmap_render;
+    std::unique_ptr<PainterResource> resource_origin {};
+    std::unique_ptr<PainterResource> resource_render {
+        std::make_unique<PainterResource>(QPixmap {}),
+    };
 
     Image& self;
 };
