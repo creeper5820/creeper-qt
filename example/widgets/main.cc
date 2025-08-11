@@ -60,6 +60,8 @@ int main(int argc, char* argv[]) {
         },
     };
 
+    auto image = (Image*) {};
+
     const auto background = new FilledCard {
         pre::pro::theme,
         card::pro::MinimumSize { 720, 480 },
@@ -70,16 +72,18 @@ int main(int argc, char* argv[]) {
             linear::pro::Margin { 0 },
             linear::pro::SetSpacing { 5 },
 
-            linear::pro::Item { { 1, Qt::AlignLeft }, workspace_navigation },
+            linear::pro::Item { workspace_navigation },
             linear::pro::Item<FilledCard> {
-                { 5 },
+                { 255 },
                 card::pro::Layout<Col> {
                     linear::pro::Item<Image> {
-                        image::pro::ContentScale { ContentScale::INSIDE },
                         image::pro::PainterResource {
-                            std::make_unique<PainterResource>( //
-                                "/home/creeper/pictures/wallpaper/搜图神器_1703017303254.png"),
+                            "https://c-ssl.duitang.com/uploads/blog/202104/08/"
+                            "20210408220918_a9e0d.jpg",
+                            [&] { image->update(); },
                         },
+                        image::pro::Bind { image },
+                        image::pro::ContentScale { ContentScale::CROP },
                     },
                 },
             },

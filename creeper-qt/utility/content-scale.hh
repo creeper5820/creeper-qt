@@ -21,25 +21,40 @@ public:
     auto transform(const QPixmap& pixmap, const QSize& size) const -> QPixmap {
         if (pixmap.isNull()) return {};
 
-        constexpr auto mode = Qt::TransformationMode::SmoothTransformation;
+        auto image_size    = QPointF(pixmap.width(), pixmap.height());
+        auto target_width  = static_cast<double>(size.width());
+        auto target_height = static_cast<double>(size.height());
+
+        constexpr auto mode = Qt::SmoothTransformation;
 
         switch (data) {
-        case ContentScale::NONE:
+        case ContentScale::NONE: {
             return pixmap;
-        case ContentScale::FIT:
-            return pixmap.scaled(size, Qt::KeepAspectRatio, mode);
-        case ContentScale::CROP:
-            return pixmap.scaled(size, Qt::KeepAspectRatioByExpanding, mode);
+        }
+        case ContentScale::FIT: {
+            image_size *= target_width / image_size.x();
+            if (image_size.y() > target_height) image_size *= target_height / image_size.y();
+            return pixmap.scaled(image_size.x(), image_size.y(), Qt::IgnoreAspectRatio, mode);
+        }
+        case ContentScale::CROP: {
+            image_size *= target_width / image_size.x();
+            if (image_size.y() < target_height) image_size *= target_height / image_size.y();
+            return pixmap.scaled(image_size.x(), image_size.y(), Qt::IgnoreAspectRatio, mode);
+        }
+        case ContentScale::INSIDE: {
+            if (image_size.x() > target_width) image_size *= target_width / image_size.x();
+            if (image_size.y() > target_height) image_size *= target_height / image_size.y();
+            return pixmap.scaled(image_size.x(), image_size.y(), Qt::IgnoreAspectRatio, mode);
+        }
+        case ContentScale::FILL_BOUNDS: {
+            return pixmap.scaled(size, Qt::IgnoreAspectRatio, mode);
+        }
         case ContentScale::FILL_WIDTH:
-            return pixmap.scaled(size.width(), pixmap.height() * size.width() / pixmap.width(),
+            return pixmap.scaled(target_width, image_size.y() * target_width / image_size.x(),
                 Qt::IgnoreAspectRatio, mode);
         case ContentScale::FILL_HEIGHT:
-            return pixmap.scaled(size.height(), pixmap.width() * size.height() / pixmap.height(),
+            return pixmap.scaled(image_size.x() * target_height / image_size.y(), target_height,
                 Qt::IgnoreAspectRatio, mode);
-        case ContentScale::FILL_BOUNDS:
-            return pixmap.scaled(size, Qt::IgnoreAspectRatio, mode);
-        case ContentScale::INSIDE:
-            return pixmap.scaled(size, Qt::KeepAspectRatio, mode);
         }
 
         return {};

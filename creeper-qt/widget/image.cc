@@ -5,6 +5,11 @@ Image::Image()
 
 Image::~Image() = default;
 
+auto Image::update_pixmap() noexcept -> void {
+    pimpl->request_regenerate = true;
+    this->update();
+}
+
 auto Image::set_content_scale(ContentScale scale) noexcept -> void {
     pimpl->content_scale      = scale;
     pimpl->request_regenerate = true;

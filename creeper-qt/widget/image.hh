@@ -13,10 +13,12 @@ namespace image::internal {
         CREEPER_PIMPL_DEFINITION(Image)
 
     public:
-        auto set_content_scale(ContentScale) noexcept -> void;
-        auto set_painter_resource(std::unique_ptr<PainterResource>) noexcept -> void;
+        auto update_pixmap() noexcept -> void;
 
+        auto set_content_scale(ContentScale) noexcept -> void;
         auto content_scale() const noexcept -> ContentScale;
+
+        auto set_painter_resource(std::unique_ptr<PainterResource>) noexcept -> void;
         auto painter_resource() const noexcept -> PainterResource;
 
     protected:
@@ -45,8 +47,14 @@ namespace image::pro {
     struct PainterResource : Token {
         using T = creeper::PainterResource;
         mutable std::unique_ptr<T> resource;
+
         explicit PainterResource(std::unique_ptr<T> resource) noexcept
             : resource { std::move(resource) } { }
+
+        explicit PainterResource(auto&&... args) noexcept
+            requires std::constructible_from<T, decltype(args)...>
+            : resource { std::make_unique<T>(std::forward<decltype(args)>(args)...) } { }
+
         auto apply(auto& self) const noexcept -> void
             requires requires { self.set_painter_resource(std::move(resource)); }
         {
@@ -62,6 +70,8 @@ namespace image::pro {
             static constexpr auto v = property_concept<T>;
         };
     };
+
+    using namespace widget::pro;
 }
 using Image = Declarative<image::internal::Image, image::pro::checker>;
 }

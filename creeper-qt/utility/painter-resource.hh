@@ -15,13 +15,22 @@ struct PainterResource : public QPixmap {
     constexpr explicit PainterResource(std::string_view url) noexcept
         : QPixmap {} {
         const auto qurl = QUrl(QString::fromUtf8(url.data(), static_cast<int>(url.size())));
-
         if (is_filesystem_url(url) || is_qt_resource_url(url)) {
             QPixmap::load(qurl.path());
         } else if (is_network_url(url)) {
             download_resource_from_network(qurl, [](auto&) { });
         } else {
-            qDebug() << "[PainterResource] Failed to recognize the type of url";
+            qWarning() << "[PainterResource] Failed to recognize the type of url";
+        }
+    }
+    constexpr explicit PainterResource(std::string_view url, auto&& f) noexcept
+        requires painter_resource::finished_callback_c<decltype(f)>
+    {
+        const auto qurl = QUrl(QString::fromUtf8(url.data(), static_cast<int>(url.size())));
+        if (is_network_url(url)) {
+            download_resource_from_network(qurl, f);
+        } else {
+            qWarning() << "[PainterResource] Only network url can be used with callback";
         }
     }
 
@@ -38,17 +47,40 @@ struct PainterResource : public QPixmap {
         return *this;
     }
 
+    auto is_loading() const noexcept -> bool { return is_loading_; }
+
+    auto is_error() const noexcept -> bool { return is_error_; }
+
 private:
-    auto download_resource_from_network(
-        const QUrl& url, painter_resource::finished_callback_c auto&& f) noexcept -> void {
+    bool is_loading_ = false;
+    bool is_error_   = false;
+
+    auto download_resource_from_network(const QUrl& url, auto&& f) noexcept -> void
+        requires painter_resource::finished_callback_c<decltype(f)>
+    {
+        is_loading_ = true;
+
         auto manager = new QNetworkAccessManager;
         auto replay  = manager->get(QNetworkRequest { url });
+
         QObject::connect(replay, &QNetworkReply::finished, [=, this] {
-            loadFromData(replay->readAll());
+            const auto error = replay->error();
+            const auto data  = replay->readAll();
+            if (error != QNetworkReply::NoError) {
+                is_error_ = true;
+                qWarning() << "[PainterResource] Network error:" << replay->errorString();
+            } else if (data.isNull()) {
+                is_error_ = true;
+            } else {
+                is_error_ = false;
+                loadFromData(data);
+            }
+            is_loading_ = false;
             manager->deleteLater();
 
-            if constexpr (std::invocable<decltype(f), PainterResource&>) std::invoke(f, *this);
-            if constexpr (std::invocable<decltype(f)>) std::invoke(f);
+            using F = decltype(f);
+            if constexpr (std::invocable<F, PainterResource&>) std::invoke(f, *this);
+            if constexpr (std::invocable<F>) std::invoke(f);
         });
     }
 
