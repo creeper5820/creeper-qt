@@ -159,7 +159,7 @@ namespace icon_button::pro {
     template <class T>
     concept property_concept = std::derived_from<T, Token> //
         || util::theme::pro::property_concept<T>           //
-        || widget::pro::property_concept<T>;
+        || widget::pro::concept_<T>;
 
     struct checker {
         template <class T> struct result {

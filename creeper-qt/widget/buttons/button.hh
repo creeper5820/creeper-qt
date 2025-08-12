@@ -10,11 +10,11 @@ namespace pro {
 
     template <class Button>
     concept property_concept = std::derived_from<Button, Token> //
-        || widget::pro::property_concept<Button>;
+        || widget::pro::concept_<Button>;
 
     template <typename Callback>
         requires std::invocable<Callback>
-    struct Clickable  : Token {
+    struct Clickable : Token {
         Callback callback;
         explicit Clickable(Callback p)
             : callback(p) { }

@@ -73,14 +73,9 @@ namespace image::pro {
     using BorderWidth = common::pro::BorderWidth<Token>;
 
     template <class T>
-    concept property_concept = std::derived_from<T, Token> || widget::pro::property_concept<T>;
+    concept property_c = std::derived_from<T, Token> || widget::pro::concept_<T>;
 
-    struct checker {
-        template <class T> struct result {
-            static constexpr auto v = property_concept<T>;
-        };
-    };
-
+    CREEPER_DEFINE_CHECK(property_c);
     using namespace widget::pro;
 }
 using Image = Declarative<image::internal::Image, image::pro::checker>;

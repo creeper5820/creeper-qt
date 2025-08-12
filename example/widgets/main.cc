@@ -1,47 +1,37 @@
 #include "creeper-qt/creeper-qt.hh"
-#include <QtWidgets/QtWidgets>
+#include <QtWidgets>
 
-using namespace creeper;
+auto main(int argc, char** argv) -> int {
+    using namespace creeper;
 
-namespace pre {
-namespace internal {
-    auto manager = ThemeManager {
-        kBlueMikuThemePack,
-    };
-}
-namespace pro {
-    auto theme = util::theme::pro::ThemeManager {
-        internal::manager,
-    };
-    auto font = widget::pro::Font { "WenQuanYi Micro Hei", 12 };
+    namespace impro = image::pro;
+    namespace lnpro = linear::pro;
+
+    constexpr auto avatar_url //
+        = "http://i0.hdslb.com/bfs/article/e4e412299e6c038035241b1dc625cb62c8b5513a.jpg";
+
+    auto manager = ThemeManager { kBlueMikuThemePack };
+
+    auto theme = util::theme::pro::ThemeManager { manager };
+    auto font  = widget::pro::Font { "WenQuanYi Micro Hei", 12 };
 
     const auto outlined_button = std::tuple {
-        pre::pro::theme,
-        pre::pro::font,
+        theme,
+        font,
         button::pro::FixedSize { 100, 50 },
         button::pro::Radius { -1 },
         button::pro::BorderWidth { 0.5 },
     };
     const auto navigation_icons = std::tuple {
-        pre::pro::theme,
-        icon_button::pro::color::STANDARD,
+        theme,
+        icon_button::pro::color::TONAL,
         icon_button::pro::shape::DEFAULT_ROUND,
         icon_button::pro::types::DEFAULT,
         icon_button::pro::width::WIDE,
         icon_button::pro::FontIcon { material::icon::kCircle },
-        icon_button::pro::Font { material::outlined::font, 20 },
-        icon_button::pro::FixedSize { 80, 50 },
+        icon_button::pro::Font { material::round::font, 20 },
+        icon_button::pro::FixedSize { 80, 60 },
     };
-}
-namespace lambda {
-    const auto change_color = [] {
-        internal::manager.toggle_color_mode();
-        internal::manager.apply_theme();
-    };
-}
-}
-
-int main(int argc, char* argv[]) {
 
     app::init {
         app::pro::Attribute { Qt::AA_EnableHighDpiScaling },
@@ -49,45 +39,71 @@ int main(int argc, char* argv[]) {
         app::pro::Complete { argc, argv },
     };
 
+    auto avatar_image = (Image*) {};
+
     const auto workspace_navigation = new FilledCard {
-        pre::pro::theme,
+        theme,
         card::pro::Radius { 0 },
 
         card::pro::Layout<Col> {
-            linear::pro::Item<IconButton> {
+            lnpro::SetSpacing { 10 },
+
+            lnpro::Spacing { 20 },
+            lnpro::Item<Image> {
                 { 0, Qt::AlignHCenter },
-                pre::pro::navigation_icons,
+                impro::Bind { avatar_image },
+                impro::FixedSize { 80, 80 },
+                impro::Radius { -1 },
+                impro::ContentScale { ContentScale::CROP },
+                impro::BorderWidth { 3 },
+                impro::PainterResource {
+                    avatar_url,
+                    [&] { avatar_image->update(); },
+                },
+            },
+            lnpro::Item<Text> {
+                { 0, Qt::AlignHCenter },
+                font,
+                text::pro::Text { "creeper5820" },
+            },
+            lnpro::Spacing { 40 },
+            lnpro::Item<IconButton> {
+                { 0, Qt::AlignHCenter },
+                navigation_icons,
                 icon_button::pro::FontIcon { material::icon::kHome },
             },
-            linear::pro::Item<IconButton> {
+            lnpro::Item<IconButton> {
                 { 0, Qt::AlignHCenter },
-                pre::pro::navigation_icons,
+                navigation_icons,
                 icon_button::pro::FontIcon { material::icon::kCancel },
             },
-            linear::pro::Item<IconButton> {
+            lnpro::Item<IconButton> {
                 { 0, Qt::AlignHCenter },
-                pre::pro::navigation_icons,
+                navigation_icons,
                 icon_button::pro::FontIcon { material::icon::kAttachFile },
             },
-            linear::pro::Item<IconButton> {
+            lnpro::Item<IconButton> {
                 { 0, Qt::AlignHCenter },
-                pre::pro::navigation_icons,
+                navigation_icons,
                 icon_button::pro::FontIcon { material::icon::kDashboard },
             },
-            linear::pro::Stretch {
+            lnpro::Stretch {
                 255,
             },
-            linear::pro::Item<OutlinedButton> {
-                pre::pro::outlined_button,
+            lnpro::Item<OutlinedButton> {
+                outlined_button,
                 button::pro::Text { "退出程序" },
                 button::pro::Clickable {
                     [] { QApplication::quit(); },
                 },
             },
-            linear::pro::Item<OutlinedButton> {
-                pre::pro::outlined_button,
+            lnpro::Item<OutlinedButton> {
+                outlined_button,
                 button::pro::Text { "颜色模式" },
-                button::pro::Clickable { pre::lambda::change_color },
+                button::pro::Clickable { [&] {
+                    manager.toggle_color_mode();
+                    manager.apply_theme();
+                } },
             },
         },
     };
@@ -95,17 +111,17 @@ int main(int argc, char* argv[]) {
     auto image = (Image*) {};
 
     const auto background = new FilledCard {
-        pre::pro::theme,
+        theme,
         card::pro::MinimumSize { 720, 480 },
         card::pro::Radius { 0 },
         card::pro::Level { CardLevel::HIGHEST },
 
         card::pro::Layout<Row> {
-            linear::pro::Margin { 0 },
-            linear::pro::SetSpacing { 5 },
+            lnpro::Margin { 0 },
+            lnpro::SetSpacing { 5 },
 
-            linear::pro::Item { workspace_navigation },
-            linear::pro::Item<FilledCard> {
+            lnpro::Item { workspace_navigation },
+            lnpro::Item<FilledCard> {
                 { 255 },
                 card::pro::Layout<Col> {},
             },
@@ -116,6 +132,12 @@ int main(int argc, char* argv[]) {
     window->setCentralWidget(background);
     window->show();
 
-    pre::internal::manager.apply_theme();
+    manager.append_handler(avatar_image, [&](const ThemeManager& manager) {
+        const auto colorscheme = manager.color_scheme();
+        const auto colorborder = colorscheme.secondary_container;
+        avatar_image->set_border_color(colorborder);
+    });
+
+    manager.apply_theme();
     return app::exec();
 }

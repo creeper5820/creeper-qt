@@ -22,6 +22,13 @@ public:                                                                         
     }                                                                                              \
     void apply(const NAMESPACE::property_concept auto& property) { property.apply(*this); }
 
+#define CREEPER_DEFINE_CHECK(CONCEPT)                                                              \
+    struct checker final {                                                                         \
+        template <class T> struct result {                                                         \
+            static constexpr auto v = CONCEPT<T>;                                                  \
+        };                                                                                         \
+    };
+
 namespace creeper {
 
 /// @brief

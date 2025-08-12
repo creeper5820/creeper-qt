@@ -30,7 +30,7 @@ namespace ellipse::pro {
     using BorderColor = common::pro::BorderColor<Token>;
 
     template <typename T>
-    concept property_concept = std::derived_from<T, Token> || widget::pro::property_concept<T>;
+    concept property_concept = std::derived_from<T, Token> || widget::pro::concept_<T>;
 
     struct checker {
         template <class T> struct result {

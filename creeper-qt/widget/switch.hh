@@ -147,7 +147,7 @@ namespace _switch::pro {
 
     template <class Switch>
     concept property_concept = std::derived_from<Switch, Token> //
-        || widget::pro::property_concept<Switch>                //
+        || widget::pro::concept_<Switch>                        //
         || util::theme::pro::property_concept<Switch>;
 
     struct checker {

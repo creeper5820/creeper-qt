@@ -96,7 +96,7 @@ namespace text_field::pro {
 
     template <class TextField>
     concept property_concept = std::derived_from<TextField, Token> //
-        || widget::pro::property_concept<TextField>                //
+        || widget::pro::concept_<TextField>                        //
         || util::theme::pro::property_concept<TextField>;
 
     struct checker {
