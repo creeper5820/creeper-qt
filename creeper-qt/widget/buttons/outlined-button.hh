@@ -41,8 +41,7 @@ namespace outlined_button::internal {
 namespace outlined_button::pro {
 
     template <typename T>
-    concept property_concept =
-        util::theme::pro::property_concept<T> || button::pro::property_concept<T>;
+    concept property_concept = util::theme::pro::concept_<T> || button::pro::property_concept<T>;
 
     struct checker {
         template <class T> struct result {

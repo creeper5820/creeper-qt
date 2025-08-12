@@ -1,5 +1,7 @@
 #include "creeper-qt/creeper-qt.hh"
+#include "creeper-qt/widget/text.hh"
 #include <QtWidgets>
+#include <qnamespace.h>
 
 auto main(int argc, char** argv) -> int {
     using namespace creeper;
@@ -12,24 +14,24 @@ auto main(int argc, char** argv) -> int {
 
     auto manager = ThemeManager { kBlueMikuThemePack };
 
-    auto theme = util::theme::pro::ThemeManager { manager };
-    auto font  = widget::pro::Font { "WenQuanYi Micro Hei", 12 };
+    auto theme_manager = util::theme::pro::ThemeManager { manager };
+    auto font          = widget::pro::Font { "WenQuanYi Micro Hei", 12 };
 
     const auto outlined_button = std::tuple {
-        theme,
+        theme_manager,
         font,
         button::pro::FixedSize { 100, 50 },
         button::pro::Radius { -1 },
         button::pro::BorderWidth { 0.5 },
     };
     const auto navigation_icons = std::tuple {
-        theme,
+        theme_manager,
         icon_button::pro::color::TONAL,
         icon_button::pro::shape::DEFAULT_ROUND,
         icon_button::pro::types::DEFAULT,
         icon_button::pro::width::WIDE,
         icon_button::pro::FontIcon { material::icon::kCircle },
-        icon_button::pro::Font { material::round::font, 20 },
+        icon_button::pro::Font { material::outlined::font, 25 },
         icon_button::pro::FixedSize { 80, 60 },
     };
 
@@ -42,7 +44,7 @@ auto main(int argc, char** argv) -> int {
     auto avatar_image = (Image*) {};
 
     const auto workspace_navigation = new FilledCard {
-        theme,
+        theme_manager,
         card::pro::Radius { 0 },
 
         card::pro::Layout<Col> {
@@ -63,8 +65,12 @@ auto main(int argc, char** argv) -> int {
             },
             lnpro::Item<Text> {
                 { 0, Qt::AlignHCenter },
+                theme_manager,
                 font,
-                text::pro::Text { "creeper5820" },
+                text::pro::FixedWidth { 80 },
+                text::pro::Text { "CREEPER" },
+                text::pro::WordWrap { true },
+                text::pro::Alignment { Qt::AlignCenter },
             },
             lnpro::Spacing { 40 },
             lnpro::Item<IconButton> {
@@ -111,7 +117,7 @@ auto main(int argc, char** argv) -> int {
     auto image = (Image*) {};
 
     const auto background = new FilledCard {
-        theme,
+        theme_manager,
         card::pro::MinimumSize { 720, 480 },
         card::pro::Radius { 0 },
         card::pro::Level { CardLevel::HIGHEST },

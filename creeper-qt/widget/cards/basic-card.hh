@@ -76,7 +76,7 @@ namespace level {
 template <class Card>
 concept property_concept = std::derived_from<Card, Token> //
     || rounded_rect::pro::property_concept<Card>          //
-    || util::theme::pro::property_concept<Card>;
+    || util::theme::pro::concept_<Card>;
 
 struct checker {
     template <class T> struct result {

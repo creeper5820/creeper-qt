@@ -224,6 +224,17 @@ namespace pro {
         void apply(Final& self) const noexcept { widget = &self; }
     };
 
+    // 传入一个方法用来辅助构造，在没有想要的接口时用这个吧
+    template <typename Lambda> struct Apply : Token {
+        Lambda lambda;
+        explicit Apply(Lambda lambda) noexcept
+            : lambda { lambda } { }
+        auto apply(auto& self) const noexcept -> void {
+            if constexpr (std::invocable<Lambda>) lambda();
+            if constexpr (std::invocable<Lambda, decltype(self)>) lambda(self);
+        }
+    };
+
     template <typename T>
     concept concept_ = std::derived_from<T, Token>;
 

@@ -40,7 +40,7 @@ namespace text_button::pro {
     template <typename T>
     concept property_concept = std::derived_from<T, Token> //
         || button::pro::property_concept<T>                //
-        || util::theme::pro::property_concept<T>;
+        || util::theme::pro::concept_<T>;
 
     struct checker {
         template <class T> struct result {

@@ -59,7 +59,7 @@ namespace pro {
     using Token = common::Token<ThemeManager>;
 
     template <typename T>
-    concept property_concept = std::derived_from<T, Token>;
+    concept concept_ = std::derived_from<T, Token>;
 
     struct ColorScheme : public util::theme::ColorScheme, Token {
         using util::theme::ColorScheme::ColorScheme;
