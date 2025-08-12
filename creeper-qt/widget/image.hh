@@ -21,6 +21,11 @@ namespace image::internal {
         auto set_painter_resource(std::unique_ptr<PainterResource>) noexcept -> void;
         auto painter_resource() const noexcept -> PainterResource;
 
+        auto set_opacity(double) noexcept -> void;
+        auto set_radius(double) noexcept -> void;
+        auto set_border_width(double) noexcept -> void;
+        auto set_border_color(QColor) noexcept -> void;
+
     protected:
         auto paintEvent(QPaintEvent*) -> void override;
         auto resizeEvent(QResizeEvent*) -> void override;
@@ -61,6 +66,11 @@ namespace image::pro {
             self.set_painter_resource(std::move(resource));
         }
     };
+
+    using Opacity     = common::pro::Opacity<Token>;
+    using Radius      = common::pro::Radius<Token>;
+    using BorderColor = common::pro::BorderColor<Token>;
+    using BorderWidth = common::pro::BorderWidth<Token>;
 
     template <class T>
     concept property_concept = std::derived_from<T, Token> || widget::pro::property_concept<T>;

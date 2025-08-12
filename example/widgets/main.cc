@@ -77,13 +77,17 @@ int main(int argc, char* argv[]) {
                 { 255 },
                 card::pro::Layout<Col> {
                     linear::pro::Item<Image> {
+                        image::pro::Bind { image },
+                        image::pro::ContentScale { ContentScale::CROP },
+                        image::pro::Radius { 15 },
+                        image::pro::Opacity { 1. },
+                        image::pro::BorderWidth { 5. },
+                        image::pro::BorderColor { Qt::red },
                         image::pro::PainterResource {
                             "https://c-ssl.duitang.com/uploads/blog/202104/08/"
                             "20210408220918_a9e0d.jpg",
                             [&] { image->update(); },
                         },
-                        image::pro::Bind { image },
-                        image::pro::ContentScale { ContentScale::CROP },
                     },
                 },
             },
