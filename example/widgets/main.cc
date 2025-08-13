@@ -1,12 +1,9 @@
 #include "creeper-qt/creeper-qt.hh"
-#include "creeper-qt/widget/text.hh"
 #include <QtWidgets>
-#include <qnamespace.h>
 
 auto main(int argc, char** argv) -> int {
     using namespace creeper;
 
-    namespace impro = image::pro;
     namespace lnpro = linear::pro;
 
     constexpr auto avatar_url //
@@ -26,13 +23,13 @@ auto main(int argc, char** argv) -> int {
     };
     const auto navigation_icons = std::tuple {
         theme_manager,
-        icon_button::pro::color::TONAL,
+        icon_button::pro::color::STANDARD,
         icon_button::pro::shape::DEFAULT_ROUND,
-        icon_button::pro::types::DEFAULT,
-        icon_button::pro::width::WIDE,
+        icon_button::pro::types::TOGGLE_UNSELECTED,
+        icon_button::pro::width::DEFAULT,
         icon_button::pro::FontIcon { material::icon::kCircle },
-        icon_button::pro::Font { material::outlined::font, 25 },
-        icon_button::pro::FixedSize { 80, 60 },
+        icon_button::pro::Font { material::round::font_1 },
+        icon_button::pro::FixedSize { IconButton::kSmallContainerSize },
     };
 
     app::init {
@@ -51,70 +48,77 @@ auto main(int argc, char** argv) -> int {
             lnpro::SetSpacing { 10 },
 
             lnpro::Spacing { 20 },
-            lnpro::Item<Image> {
-                { 0, Qt::AlignHCenter },
-                impro::Bind { avatar_image },
-                impro::FixedSize { 80, 80 },
-                impro::Radius { -1 },
-                impro::ContentScale { ContentScale::CROP },
-                impro::BorderWidth { 3 },
-                impro::PainterResource {
-                    avatar_url,
-                    [&] { avatar_image->update(); },
-                },
-            },
-            lnpro::Item<Text> {
-                { 0, Qt::AlignHCenter },
-                theme_manager,
-                font,
-                text::pro::FixedWidth { 80 },
-                text::pro::Text { "CREEPER" },
-                text::pro::WordWrap { true },
-                text::pro::Alignment { Qt::AlignCenter },
-            },
-            lnpro::Spacing { 40 },
+            lnpro::Margin { 15 },
+            // lnpro::Item<Image> {
+            //     { 0, Qt::AlignHCenter },
+            //     impro::Bind { avatar_image },
+            //     impro::FixedSize { 80, 80 },
+            //     impro::Radius { -1 },
+            //     impro::ContentScale { ContentScale::CROP },
+            //     impro::BorderWidth { 3 },
+            //     impro::PainterResource {
+            //         avatar_url,
+            //         [&] { avatar_image->update(); },
+            //     },
+            // },
+            // lnpro::Item<Text> {
+            //     { 0, Qt::AlignHCenter },
+            //     theme_manager,
+            //     font,
+            //     text::pro::FixedWidth { 80 },
+            //     text::pro::Text { "CREEPER" },
+            //     text::pro::WordWrap { true },
+            //     text::pro::Alignment { Qt::AlignCenter },
+            // },
             lnpro::Item<IconButton> {
                 { 0, Qt::AlignHCenter },
                 navigation_icons,
+                icon_button::pro::color::STANDARD,
                 icon_button::pro::FontIcon { material::icon::kHome },
             },
             lnpro::Item<IconButton> {
                 { 0, Qt::AlignHCenter },
                 navigation_icons,
-                icon_button::pro::FontIcon { material::icon::kCancel },
+                icon_button::pro::color::STANDARD,
+                icon_button::pro::FontIcon { material::icon::kSettings },
             },
             lnpro::Item<IconButton> {
                 { 0, Qt::AlignHCenter },
                 navigation_icons,
-                icon_button::pro::FontIcon { material::icon::kAttachFile },
+                icon_button::pro::color::STANDARD,
+                icon_button::pro::FontIcon { material::icon::kSearch },
             },
             lnpro::Item<IconButton> {
                 { 0, Qt::AlignHCenter },
                 navigation_icons,
-                icon_button::pro::FontIcon { material::icon::kDashboard },
+                icon_button::pro::color::STANDARD,
+                icon_button::pro::FontIcon { material::icon::kFavorite },
             },
+            lnpro::Spacing { 40 },
             lnpro::Stretch {
                 255,
             },
-            lnpro::Item<OutlinedButton> {
-                outlined_button,
-                button::pro::Text { "退出程序" },
-                button::pro::Clickable {
+            lnpro::Item<IconButton> {
+                { 0, Qt::AlignHCenter },
+                navigation_icons,
+                icon_button::pro::types::DEFAULT,
+                icon_button::pro::FontIcon { material::icon::kLogout },
+                icon_button::pro::Clickable {
                     [] { QApplication::quit(); },
                 },
             },
-            lnpro::Item<OutlinedButton> {
-                outlined_button,
-                button::pro::Text { "颜色模式" },
-                button::pro::Clickable { [&] {
+            lnpro::Item<IconButton> {
+                { 0, Qt::AlignHCenter },
+                navigation_icons,
+                icon_button::pro::color::DEFAULT_FILLED,
+                icon_button::pro::FontIcon { material::icon::kDarkMode },
+                icon_button::pro::Clickable { [&] {
                     manager.toggle_color_mode();
                     manager.apply_theme();
                 } },
             },
         },
     };
-
-    auto image = (Image*) {};
 
     const auto background = new FilledCard {
         theme_manager,
@@ -136,13 +140,14 @@ auto main(int argc, char** argv) -> int {
 
     auto window = new QMainWindow {};
     window->setCentralWidget(background);
+    window->setWindowFlag(Qt::Tool);
     window->show();
 
-    manager.append_handler(avatar_image, [&](const ThemeManager& manager) {
-        const auto colorscheme = manager.color_scheme();
-        const auto colorborder = colorscheme.secondary_container;
-        avatar_image->set_border_color(colorborder);
-    });
+    // manager.append_handler(avatar_image, [&](const ThemeManager& manager) {
+    //     const auto colorscheme = manager.color_scheme();
+    //     const auto colorborder = colorscheme.secondary_container;
+    //     avatar_image->set_border_color(colorborder);
+    // });
 
     manager.apply_theme();
     return app::exec();

@@ -162,9 +162,14 @@ namespace pro {
         Callback callback;
         explicit Clickable(Callback callback) noexcept
             : callback(callback) { }
-        void apply(auto& self) const noexcept {
-            QObject::connect(&self, &std::remove_cvref_t<decltype(self)>::clicked,
-                [function = callback, &self] { function(self); });
+        auto apply(auto& self) const noexcept -> void
+            requires std::invocable<Callback, decltype(self)> || std::invocable<Callback>
+        {
+            using widget_t = std::remove_cvref_t<decltype(self)>;
+            QObject::connect(&self, &widget_t::clicked, [function = callback, &self] {
+                if constexpr (std::invocable<Callback, decltype(self)>) function(self);
+                if constexpr (std::invocable<Callback>) function();
+            });
         }
     };
 

@@ -104,6 +104,9 @@ namespace material {
         constexpr auto kCheckCircle = "check_circle";
         constexpr auto kCancel      = "cancel";
         constexpr auto kOpenInNew   = "open_in_new";
+        constexpr auto kLogout      = "logout";
+        constexpr auto kRoutine     = "routine";
+        constexpr auto kDarkMode    = "dark_mode";
 
         // File
         constexpr auto kFolder        = "folder";
