@@ -33,7 +33,7 @@ namespace filled_tonal_button::internal {
 namespace filled_tonal_button::pro {
 
     template <typename T>
-    concept property_concept = util::theme::pro::concept_<T> || button::pro::property_concept<T>;
+    concept property_concept = theme::pro::trait<T> || button::pro::property_concept<T>;
 
     struct checker {
         template <class T> struct result {
@@ -41,7 +41,7 @@ namespace filled_tonal_button::pro {
         };
     };
 
-    using namespace util::theme::pro;
+    using namespace theme::pro;
     using namespace button::pro;
 }
 

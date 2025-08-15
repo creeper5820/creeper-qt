@@ -40,7 +40,7 @@ namespace text_button::pro {
     template <typename T>
     concept property_concept = std::derived_from<T, Token> //
         || button::pro::property_concept<T>                //
-        || util::theme::pro::concept_<T>;
+        || theme::pro::trait<T>;
 
     struct checker {
         template <class T> struct result {
@@ -49,7 +49,7 @@ namespace text_button::pro {
     };
 
     using namespace button::pro;
-    using namespace util::theme::pro;
+    using namespace theme::pro;
 }
 
 using TextButton = Declarative<text_button::internal::TextButton, text_button::pro::checker>;

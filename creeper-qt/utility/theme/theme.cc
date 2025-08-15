@@ -1,10 +1,12 @@
 #include "creeper-qt/utility/theme/theme.hh"
 
-using namespace creeper::util::theme;
+using namespace creeper::theme;
 using Handler = ThemeManager::Handler;
 
 struct ThemeManager::Impl {
-    std::unordered_map<const QWidget*, Handler> handlers;
+    using Key = const QObject*;
+
+    std::unordered_map<Key, Handler> handlers;
     ThemePack theme_pack;
     ColorMode color_mode;
 
@@ -13,13 +15,11 @@ struct ThemeManager::Impl {
             handler(manager);
     }
 
-    void append_handler(const QWidget* key, const Handler& handler) {
+    void append_handler(Key key, const Handler& handler) {
         handlers[key] = handler;
-        QObject::connect(key, &QWidget::destroyed, [this, key] { remove_handler(key); });
+        QObject::connect(key, &QObject::destroyed, [this, key] { remove_handler(key); });
     }
-    void append_handler(const QWidget* key, auto& widget)
-        requires requires { widget.set_color_scheme(ColorScheme {}); }
-    {
+    void append_handler(Key key, color_scheme_setter_trait auto& widget) {
         handlers[key] = [&widget](const ThemeManager& manager) {
             const auto color_mode   = manager.color_mode();
             const auto theme_pack   = manager.theme_pack();
@@ -31,7 +31,7 @@ struct ThemeManager::Impl {
         QObject::connect(key, &QWidget::destroyed, [this, key] { remove_handler(key); });
     }
 
-    void remove_handler(const QWidget* key) { handlers.erase(key); }
+    void remove_handler(Key key) { handlers.erase(key); }
 };
 
 ThemeManager::ThemeManager()
@@ -47,11 +47,11 @@ ThemeManager::~ThemeManager() = default;
 
 void ThemeManager::apply_theme() const { pimpl->apply_theme(*this); }
 
-void ThemeManager::append_handler(const QWidget* key, const Handler& handler) {
+void ThemeManager::append_handler(const QObject* key, const Handler& handler) {
     pimpl->append_handler(key, handler);
 }
 
-void ThemeManager::remove_handler(const QWidget* key) { pimpl->remove_handler(key); }
+void ThemeManager::remove_handler(const QObject* key) { pimpl->remove_handler(key); }
 
 void ThemeManager::set_theme_pack(const ThemePack& pack) { pimpl->theme_pack = pack; }
 void ThemeManager::set_color_mode(const ColorMode& mode) { pimpl->color_mode = mode; }

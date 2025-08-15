@@ -6,17 +6,12 @@
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 
-namespace creeper::util::theme {
+namespace creeper::theme {
 
 struct ThemePack {
-    ColorScheme light;
-    ColorScheme dark;
-
-    const ColorScheme& color_scheme(ColorMode mode) const noexcept {
-        return mode == ColorMode::LIGHT ? light : dark;
-    }
-    ColorScheme& color_scheme(ColorMode mode) noexcept {
-        return mode == ColorMode::LIGHT ? light : dark;
+    ColorScheme light, dark;
+    auto color_scheme(this auto&& self, ColorMode mode) noexcept {
+        return (mode == ColorMode::LIGHT) ? self.light : self.dark;
     }
 };
 
@@ -40,9 +35,9 @@ public:
     /// Note:
     ///   When the widget is destroyed, ThemeManager::remove_handler() will be called automatically
     ///   to remove the associated handler.
-    void append_handler(const QWidget* key, const Handler& handler);
+    void append_handler(const QObject* key, const Handler& handler);
 
-    void remove_handler(const QWidget* key);
+    void remove_handler(const QObject* key);
 
     void set_theme_pack(const ThemePack& pack);
     void set_color_mode(const ColorMode& mode);
@@ -54,44 +49,46 @@ public:
     ColorScheme color_scheme() const;
 };
 
-namespace pro {
-
-    using Token = common::Token<ThemeManager>;
-
-    template <typename T>
-    concept concept_ = std::derived_from<T, Token>;
-
-    struct ColorScheme : public util::theme::ColorScheme, Token {
-        using util::theme::ColorScheme::ColorScheme;
-        explicit ColorScheme(const util::theme::ColorScheme& p)
-            : util::theme::ColorScheme(p) { }
-        void apply(auto& self) const
-            requires requires { self.set_color_scheme(*this); }
-        {
-            self.set_color_scheme(*this);
-        }
-    };
-
-    struct ThemeManager : Token {
-        util::theme::ThemeManager& manager;
-        explicit ThemeManager(util::theme::ThemeManager& p)
-            : manager(p) { }
-        void apply(auto& self) const
-            requires requires { self.load_theme_manager(manager); }
-        {
-            self.load_theme_manager(manager);
-        }
-    };
+template <class T>
+concept color_scheme_setter_trait = requires(T t) {
+    { t.set_color_scheme(ColorScheme {}) };
+};
+template <class T>
+concept theme_manager_loader_trait =
+    requires(T t, ThemeManager& manager) { t.load_theme_manager(manager); };
 
 }
+namespace creeper::theme::pro {
+
+using Token = common::Token<ThemeManager>;
+
+template <typename T>
+concept trait = std::derived_from<T, Token>;
+
+struct ColorScheme : public theme::ColorScheme, Token {
+    using theme::ColorScheme::ColorScheme;
+    explicit ColorScheme(const theme::ColorScheme& p)
+        : theme::ColorScheme(p) { }
+    auto apply(color_scheme_setter_trait auto& self) const noexcept -> void {
+        self.set_color_scheme(*this);
+    }
+};
+
+struct ThemeManager : Token {
+    theme::ThemeManager& manager;
+    explicit ThemeManager(theme::ThemeManager& p)
+        : manager(p) { }
+    auto apply(theme_manager_loader_trait auto& self) const noexcept -> void {
+        self.load_theme_manager(manager);
+    }
+};
 
 }
-
 namespace creeper {
 
-using ColorMode    = util::theme::ColorMode;
-using ColorScheme  = util::theme::ColorScheme;
-using ThemePack    = util::theme::ThemePack;
-using ThemeManager = util::theme::ThemeManager;
+using ColorMode    = theme::ColorMode;
+using ColorScheme  = theme::ColorScheme;
+using ThemePack    = theme::ThemePack;
+using ThemeManager = theme::ThemeManager;
 
 }

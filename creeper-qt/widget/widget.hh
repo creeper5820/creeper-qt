@@ -236,11 +236,11 @@ namespace pro {
     };
 
     template <typename T>
-    concept concept_ = std::derived_from<T, Token>;
+    concept trait = std::derived_from<T, Token>;
 
     struct checker {
         template <class T> struct result {
-            static constexpr auto v = concept_<T>;
+            static constexpr auto v = trait<T>;
         };
     };
 }

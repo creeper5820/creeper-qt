@@ -80,10 +80,10 @@ struct Alignment : Token {
 };
 
 template <class T>
-concept concept_ =
-    std::derived_from<T, Token> || widget::pro::concept_<T> || util::theme::pro::concept_<T>;
+concept trait =
+    std::derived_from<T, Token> || widget::pro::trait<T> || theme::pro::trait<T>;
 
-CREEPER_DEFINE_CHECK(concept_);
+CREEPER_DEFINE_CHECK(trait);
 using namespace widget::pro;
 }
 

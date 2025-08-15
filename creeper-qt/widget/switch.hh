@@ -147,8 +147,8 @@ namespace _switch::pro {
 
     template <class Switch>
     concept property_concept = std::derived_from<Switch, Token> //
-        || widget::pro::concept_<Switch>                        //
-        || util::theme::pro::concept_<Switch>;
+        || widget::pro::trait<Switch>                        //
+        || theme::pro::trait<Switch>;
 
     struct checker {
         template <class T> struct result {
@@ -159,7 +159,7 @@ namespace _switch::pro {
     using Disabled = common::pro::Disabled<Token>;
     using Checked  = common::pro::Checked<Token>;
 
-    using namespace util::theme::pro;
+    using namespace theme::pro;
     using namespace widget::pro;
 }
 /// @note 使用时建议比例 w : h > 7 : 4 ，过冲动画会多占用一些宽度，倘若 w 过短，可能会出现 hover

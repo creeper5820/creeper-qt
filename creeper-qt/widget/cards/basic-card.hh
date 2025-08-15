@@ -76,7 +76,7 @@ namespace level {
 template <class Card>
 concept property_concept = std::derived_from<Card, Token> //
     || rounded_rect::pro::property_concept<Card>          //
-    || util::theme::pro::concept_<Card>;
+    || theme::pro::trait<Card>;
 
 struct checker {
     template <class T> struct result {
@@ -85,7 +85,7 @@ struct checker {
 };
 
 using namespace rounded_rect::pro;
-using namespace util::theme::pro;
+using namespace theme::pro;
 }
 namespace creeper {
 using CardLevel = card::internal::Card::Level;

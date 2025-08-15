@@ -41,7 +41,7 @@ namespace rounded_rect::pro {
     using BorderColor = common::pro::BorderColor<Property>;
 
     template <typename T>
-    concept property_concept = std::derived_from<T, Property> || widget::pro::concept_<T>;
+    concept property_concept = std::derived_from<T, Property> || widget::pro::trait<T>;
 
     struct checker {
         template <class T> struct result {

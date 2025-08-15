@@ -10,7 +10,7 @@ namespace pro {
 
     template <class Button>
     concept property_concept = std::derived_from<Button, Token> //
-        || widget::pro::concept_<Button>;
+        || widget::pro::trait<Button>;
 
     template <typename Callback>
         requires std::invocable<Callback>

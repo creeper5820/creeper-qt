@@ -15,6 +15,7 @@
 #include "creeper-qt/widget/shape/shape.hh"
 
 #include "creeper-qt/widget/image.hh"
+#include "creeper-qt/widget/main-window.hh"
 #include "creeper-qt/widget/switch.hh"
 #include "creeper-qt/widget/text-fields.hh"
 #include "creeper-qt/widget/text.hh"

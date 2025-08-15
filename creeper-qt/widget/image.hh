@@ -66,6 +66,7 @@ namespace image::pro {
             self.set_painter_resource(std::move(resource));
         }
     };
+    using Pixmap = PainterResource;
 
     using Opacity     = common::pro::Opacity<Token>;
     using Radius      = common::pro::Radius<Token>;
@@ -73,7 +74,7 @@ namespace image::pro {
     using BorderWidth = common::pro::BorderWidth<Token>;
 
     template <class T>
-    concept property_c = std::derived_from<T, Token> || widget::pro::concept_<T>;
+    concept property_c = std::derived_from<T, Token> || widget::pro::trait<T>;
 
     CREEPER_DEFINE_CHECK(property_c);
     using namespace widget::pro;

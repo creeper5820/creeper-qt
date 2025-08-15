@@ -22,10 +22,10 @@ public:                                                                         
     }                                                                                              \
     void apply(const NAMESPACE::property_concept auto& property) { property.apply(*this); }
 
-#define CREEPER_DEFINE_CHECK(CONCEPT)                                                              \
+#define CREEPER_DEFINE_CHECK(TRAIT)                                                                \
     struct checker final {                                                                         \
         template <class T> struct result {                                                         \
-            static constexpr auto v = CONCEPT<T>;                                                  \
+            static constexpr auto v = TRAIT<T>;                                                    \
         };                                                                                         \
     };
 
@@ -55,7 +55,7 @@ namespace creeper {
 ///
 /// In Declarative<Impl, checker>
 /// template <> explicit Declarative<
-///         creeper::util::theme::pro::ThemeManager,
+///         creeper::theme::pro::ThemeManager,
 ///         creeper::card::pro::Level,
 ///         creeper::widget::pro::WindowFlag,
 ///         creeper::common::pro::Radius<...>,
