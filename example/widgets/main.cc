@@ -3,16 +3,15 @@
 
 auto main(int argc, char** argv) -> int {
     using namespace creeper;
+    namespace lnpro = linear::pro;
+    namespace impro = image::pro;
+    namespace wipro = main_window::pro;
 
     app::init {
         app::pro::Attribute { Qt::AA_EnableHighDpiScaling },
         app::pro::Attribute { Qt::AA_UseHighDpiPixmaps },
         app::pro::Complete { argc, argv },
     };
-
-    namespace lnpro = linear::pro;
-    namespace impro = image::pro;
-    namespace wipro = main_window::pro;
 
     auto avatar_image = (Image*) {};
 
@@ -103,22 +102,25 @@ auto main(int argc, char** argv) -> int {
                 col::pro::Alignment { Qt::AlignTop },
                 group::pro::Compose {
                     std::array {
-                        "Hello World",
-                        "你好世界",
-                        "こんにちは世界",
+                        std::pair { 1, "Hello World" },
+                        std::pair { 2, "你好世界" },
+                        std::pair { 3, "こんにちは世界" },
                     },
                     [&](auto&& item) {
+                        const auto [index, text] = item;
                         return new TextButton {
                             manager_config,
                             font_config,
                             text_button::pro::FixedSize { 200, 50 },
                             text_button::pro::Text {
-                                std::format("{}", item),
+                                std::format("{} {}", index, text),
                             },
                             text_button::pro::Radius { -1 },
                         };
                     },
                 },
+                group::pro::Foreach {
+                    [](TextButton& button) { qDebug() << '\t' << button.text(); } },
             },
         };
     };
