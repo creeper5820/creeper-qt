@@ -95,13 +95,13 @@ namespace text_field::pro {
     };
 
     template <class TextField>
-    concept property_concept = std::derived_from<TextField, Token> //
+    concept trait = std::derived_from<TextField, Token> //
         || widget::pro::trait<TextField>                        //
         || theme::pro::trait<TextField>;
 
     struct checker {
         template <class T> struct result {
-            static constexpr auto v = property_concept<T>;
+            static constexpr auto v = trait<T>;
         };
     };
 

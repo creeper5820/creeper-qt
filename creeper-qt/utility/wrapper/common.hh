@@ -91,8 +91,13 @@ namespace pro {
     // 通用文本属性
     template <class Token> struct Text : public QString, Token {
         using QString::QString;
-        explicit Text(const QString& text)
+
+        explicit Text(const QString& text) noexcept
             : QString { text } { }
+
+        explicit Text(const std::string& text) noexcept
+            : QString { QString::fromStdString(text) } { }
+
         void apply(auto& self) const
             requires requires { self.setText(*this); }
         {

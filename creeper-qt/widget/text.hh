@@ -35,6 +35,13 @@ using Token = common::Token<internal::Text>;
 struct Text : Token, QString {
     using QString::QString;
     using QString::operator=;
+
+    explicit Text(std::convertible_to<QString> auto&& o) noexcept
+        : QString { o } { }
+
+    explicit Text(const std::string& text) noexcept
+        : QString { QString::fromStdString(text) } { }
+
     auto apply(auto& self) const noexcept -> void
         requires requires { self.setText(QString {}); }
     {
@@ -80,8 +87,7 @@ struct Alignment : Token {
 };
 
 template <class T>
-concept trait =
-    std::derived_from<T, Token> || widget::pro::trait<T> || theme::pro::trait<T>;
+concept trait = std::derived_from<T, Token> || widget::pro::trait<T> || theme::pro::trait<T>;
 
 CREEPER_DEFINE_CHECK(trait);
 using namespace widget::pro;

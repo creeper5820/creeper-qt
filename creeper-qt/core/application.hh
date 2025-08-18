@@ -45,13 +45,13 @@ namespace pro {
     };
 
     template <class T>
-    concept property_concept = std::derived_from<T, Token>;
+    concept trait = std::derived_from<T, Token>;
 
     struct checker {
         template <class T> struct result {
             static constexpr auto v = false;
         };
-        template <property_concept T> struct result<T> {
+        template <trait T> struct result<T> {
             static constexpr auto v = true;
         };
     };

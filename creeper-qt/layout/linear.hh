@@ -63,4 +63,14 @@ namespace creeper {
 using Row = Declarative<QHBoxLayout, linear::pro::checker>;
 using Col = Declarative<QVBoxLayout, linear::pro::checker>;
 
+namespace row = linear;
+namespace col = linear;
+
+namespace internal {
+    inline auto use_the_namespace_alias_to_eliminate_warnings() {
+        std::ignore = row::pro::Token {};
+        std::ignore = col::pro::Token {};
+    }
+}
+
 }

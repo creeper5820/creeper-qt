@@ -9,7 +9,7 @@ namespace pro {
     using Token = common::Token<QAbstractButton>;
 
     template <class Button>
-    concept property_concept = std::derived_from<Button, Token> //
+    concept trait = std::derived_from<Button, Token> //
         || widget::pro::trait<Button>;
 
     template <typename Callback>

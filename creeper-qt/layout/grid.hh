@@ -74,11 +74,11 @@ namespace grid::pro {
     };
 
     template <typename T>
-    concept property_concept = std::derived_from<T, Token>;
+    concept trait = std::derived_from<T, Token>;
 
     struct checker {
         template <class T> struct result {
-            static constexpr auto v = property_concept<T>;
+            static constexpr auto v = trait<T>;
         };
     };
 

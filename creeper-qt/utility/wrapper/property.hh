@@ -8,19 +8,18 @@
 #define CREEPER_DEFINE_CONSTRUCTOR(CLASS, NAMESPACE)                                               \
 public:                                                                                            \
     static_assert(false, "DO NOT USE MACRO METHOD, PLEASE USE DECLARATIVE WRAPPER");               \
-    explicit CLASS(NAMESPACE::property_concept auto... properties) {                               \
+    explicit CLASS(NAMESPACE::trait auto... properties) {                                          \
         (apply(std::forward<decltype(properties)>(properties)), ...);                              \
     }                                                                                              \
-    template <NAMESPACE::property_concept... Args>                                                 \
-    explicit CLASS(                                                                                \
-        const std::tuple<Args...>& tuple, NAMESPACE::property_concept auto... properties) {        \
+    template <NAMESPACE::trait... Args>                                                            \
+    explicit CLASS(const std::tuple<Args...>& tuple, NAMESPACE::trait auto... properties) {        \
         apply(tuple), (apply(std::forward<decltype(properties)>(properties)), ...);                \
     }                                                                                              \
-    template <NAMESPACE::property_concept... Args> void apply(const std::tuple<Args...>& _) {      \
+    template <NAMESPACE::trait... Args> void apply(const std::tuple<Args...>& _) {                 \
         std::apply(                                                                                \
             [this](auto&&... args) { (apply(std::forward<decltype(args)>(args)), ...); }, _);      \
     }                                                                                              \
-    void apply(const NAMESPACE::property_concept auto& property) { property.apply(*this); }
+    void apply(const NAMESPACE::trait auto& property) { property.apply(*this); }
 
 #define CREEPER_DEFINE_CHECK(TRAIT)                                                                \
     struct checker final {                                                                         \
@@ -45,7 +44,7 @@ namespace creeper {
 ///     template <class T> struct result {
 ///         static constexpr auto v = false;
 ///     };
-///     template <property_concept T> struct result<T> {
+///     template <trait T> struct result<T> {
 ///         static constexpr auto v = true;
 ///     };
 /// };
@@ -73,6 +72,8 @@ template <class _widget, class _checker>
         { _checker::template result<void>::v };
     }
 struct Declarative : public _widget {
+    using checker = _checker;
+    using widget  = _widget;
 
     template <class T> using require = _checker::template result<std::remove_cvref_t<T>>;
 

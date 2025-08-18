@@ -4,6 +4,12 @@
 auto main(int argc, char** argv) -> int {
     using namespace creeper;
 
+    app::init {
+        app::pro::Attribute { Qt::AA_EnableHighDpiScaling },
+        app::pro::Attribute { Qt::AA_UseHighDpiPixmaps },
+        app::pro::Complete { argc, argv },
+    };
+
     namespace lnpro = linear::pro;
     namespace impro = image::pro;
     namespace wipro = main_window::pro;
@@ -18,39 +24,105 @@ auto main(int argc, char** argv) -> int {
     auto manager_config = theme::pro::ThemeManager { manager };
     auto font_config    = widget::pro::Font { "WenQuanYi Micro Hei", 12 };
 
-    const auto outlined_button_config = std::tuple {
-        manager_config,
-        font_config,
-        button::pro::FixedSize { 100, 50 },
-        button::pro::Radius { -1 },
-        button::pro::BorderWidth { 0.5 },
-    };
-    const auto navigation_icons_config = std::tuple {
-        manager_config,
-        icon_button::pro::color::STANDARD,
-        icon_button::pro::shape::DEFAULT_ROUND,
-        icon_button::pro::types::TOGGLE_UNSELECTED,
-        icon_button::pro::width::DEFAULT,
-        icon_button::pro::FontIcon { material::icon::kCircle },
-        icon_button::pro::Font { material::round::font_1 },
-        icon_button::pro::FixedSize { IconButton::kSmallContainerSize },
-    };
-
-    const auto NavigationButton = [&](auto icon, auto f) {
-        return lnpro::Item<IconButton> {
-            { 0, Qt::AlignHCenter },
-            navigation_icons_config,
+    const auto NavigationSpace = [&]() noexcept {
+        const auto navigation_icons_config = std::tuple {
+            manager_config,
             icon_button::pro::color::STANDARD,
-            icon_button::pro::FontIcon { icon },
-            icon_button::pro::Clickable { f },
+            icon_button::pro::shape::DEFAULT_ROUND,
+            icon_button::pro::types::TOGGLE_UNSELECTED,
+            icon_button::pro::width::DEFAULT,
+            icon_button::pro::FontIcon { material::icon::kCircle },
+            icon_button::pro::Font { material::round::font_1 },
+            icon_button::pro::FixedSize { IconButton::kSmallContainerSize },
+        };
+        const auto NavigationButton = [&](auto icon, auto f) {
+            return lnpro::Item<IconButton> {
+                { 0, Qt::AlignHCenter },
+                navigation_icons_config,
+                icon_button::pro::color::STANDARD,
+                icon_button::pro::FontIcon { icon },
+                icon_button::pro::Clickable { f },
+            };
+        };
+        return lnpro::Item<FilledCard> {
+            manager_config,
+            card::pro::Radius { 0 },
+
+            card::pro::Layout<Col> {
+                lnpro::SetSpacing { 10 },
+                lnpro::Margin { 15 },
+
+                lnpro::Item<Image> {
+                    { 0, Qt::AlignHCenter },
+                    impro::Bind { avatar_image },
+                    impro::FixedSize { 60, 60 },
+                    impro::Radius { -1 },
+                    impro::ContentScale { ContentScale::CROP },
+                    impro::BorderWidth { 3 },
+                    impro::PainterResource {
+                        avatar_url,
+                        [&] { avatar_image->update(); },
+                    },
+                },
+                lnpro::Spacing { 20 },
+                NavigationButton(material::icon::kHome, [] {}),
+                NavigationButton(material::icon::kSettings, [] {}),
+                NavigationButton(material::icon::kSearch, [] {}),
+                NavigationButton(material::icon::kFavorite, [] {}),
+                lnpro::Spacing { 40 },
+                lnpro::Stretch { 255 },
+                lnpro::Item<IconButton> {
+                    { 0, Qt::AlignHCenter },
+                    navigation_icons_config,
+                    icon_button::pro::types::DEFAULT,
+                    icon_button::pro::FontIcon { material::icon::kLogout },
+                    icon_button::pro::Clickable {
+                        [] { QApplication::quit(); },
+                    },
+                },
+                lnpro::Item<IconButton> {
+                    { 0, Qt::AlignHCenter },
+                    navigation_icons_config,
+                    icon_button::pro::color::DEFAULT_FILLED,
+                    icon_button::pro::FontIcon { material::icon::kDarkMode },
+                    icon_button::pro::Clickable { [&] {
+                        manager.toggle_color_mode();
+                        manager.apply_theme();
+                    } },
+                },
+            },
         };
     };
 
-    app::init {
-        app::pro::Attribute { Qt::AA_EnableHighDpiScaling },
-        app::pro::Attribute { Qt::AA_UseHighDpiPixmaps },
-        app::pro::Complete { argc, argv },
+    const auto Workspace = [&] noexcept {
+        return lnpro::Item<FilledCard> {
+            { 255 },
+            card::pro::Layout<Group<Col, TextButton>> {
+                col::pro::Margin { 20 },
+                col::pro::SetSpacing { 10 },
+                col::pro::Alignment { Qt::AlignTop },
+                group::pro::Compose {
+                    std::array {
+                        "Hello World",
+                        "你好世界",
+                        "こんにちは世界",
+                    },
+                    [&](auto&& item) {
+                        return new TextButton {
+                            manager_config,
+                            font_config,
+                            text_button::pro::FixedSize { 200, 50 },
+                            text_button::pro::Text {
+                                std::format("{}", item),
+                            },
+                            text_button::pro::Radius { -1 },
+                        };
+                    },
+                },
+            },
+        };
     };
+
     ShowWindow {
         [&](MainWindow& window) {
             // Q 键退出
@@ -79,60 +151,11 @@ auto main(int argc, char** argv) -> int {
                 lnpro::Margin { 0 },
                 lnpro::SetSpacing { 5 },
 
-                lnpro::Item<FilledCard> {
-                    manager_config,
-                    card::pro::Radius { 0 },
-
-                    card::pro::Layout<Col> {
-                        lnpro::SetSpacing { 10 },
-                        lnpro::Margin { 15 },
-
-                        lnpro::Item<Image> {
-                            { 0, Qt::AlignHCenter },
-                            impro::Bind { avatar_image },
-                            impro::FixedSize { 60, 60 },
-                            impro::Radius { -1 },
-                            impro::ContentScale { ContentScale::CROP },
-                            impro::BorderWidth { 3 },
-                            impro::PainterResource {
-                                avatar_url,
-                                [&] { avatar_image->update(); },
-                            },
-                        },
-                        lnpro::Spacing { 20 },
-                        NavigationButton(material::icon::kHome, [] {}),
-                        NavigationButton(material::icon::kSettings, [] {}),
-                        NavigationButton(material::icon::kSearch, [] {}),
-                        NavigationButton(material::icon::kFavorite, [] {}),
-                        lnpro::Spacing { 40 },
-                        lnpro::Stretch { 255 },
-                        lnpro::Item<IconButton> {
-                            { 0, Qt::AlignHCenter },
-                            navigation_icons_config,
-                            icon_button::pro::types::DEFAULT,
-                            icon_button::pro::FontIcon { material::icon::kLogout },
-                            icon_button::pro::Clickable {
-                                [] { QApplication::quit(); },
-                            },
-                        },
-                        lnpro::Item<IconButton> {
-                            { 0, Qt::AlignHCenter },
-                            navigation_icons_config,
-                            icon_button::pro::color::DEFAULT_FILLED,
-                            icon_button::pro::FontIcon { material::icon::kDarkMode },
-                            icon_button::pro::Clickable { [&] {
-                                manager.toggle_color_mode();
-                                manager.apply_theme();
-                            } },
-                        },
-                    },
-                },
-                lnpro::Item<FilledCard> {
-                    { 255 },
-                    card::pro::Layout<Col> {},
-                },
+                NavigationSpace(),
+                Workspace(),
             },
         },
     };
+
     return app::exec();
 }

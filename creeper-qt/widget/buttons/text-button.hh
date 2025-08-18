@@ -38,13 +38,13 @@ namespace text_button::pro {
     using Token = common::Token<internal::TextButton>;
 
     template <typename T>
-    concept property_concept = std::derived_from<T, Token> //
-        || button::pro::property_concept<T>                //
+    concept trait = std::derived_from<T, Token> //
+        || button::pro::trait<T>                //
         || theme::pro::trait<T>;
 
     struct checker {
         template <class T> struct result {
-            static constexpr auto v = property_concept<T>;
+            static constexpr auto v = trait<T>;
         };
     };
 

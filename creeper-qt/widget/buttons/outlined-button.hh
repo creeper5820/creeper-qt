@@ -41,11 +41,11 @@ namespace outlined_button::internal {
 namespace outlined_button::pro {
 
     template <typename T>
-    concept property_concept = theme::pro::trait<T> || button::pro::property_concept<T>;
+    concept trait = theme::pro::trait<T> || button::pro::trait<T>;
 
     struct checker {
         template <class T> struct result {
-            static constexpr auto v = property_concept<T>;
+            static constexpr auto v = trait<T>;
         };
     };
 

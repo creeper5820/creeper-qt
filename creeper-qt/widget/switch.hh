@@ -146,13 +146,13 @@ namespace _switch::pro {
     template <typename Callback> using Clickable = common::pro::Clickable<Callback, Token>;
 
     template <class Switch>
-    concept property_concept = std::derived_from<Switch, Token> //
+    concept trait = std::derived_from<Switch, Token> //
         || widget::pro::trait<Switch>                        //
         || theme::pro::trait<Switch>;
 
     struct checker {
         template <class T> struct result {
-            static constexpr auto v = property_concept<T>;
+            static constexpr auto v = trait<T>;
         };
     };
 

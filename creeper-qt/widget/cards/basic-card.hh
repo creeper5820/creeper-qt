@@ -74,13 +74,13 @@ namespace level {
 }
 
 template <class Card>
-concept property_concept = std::derived_from<Card, Token> //
-    || rounded_rect::pro::property_concept<Card>          //
+concept trait = std::derived_from<Card, Token> //
+    || rounded_rect::pro::trait<Card>          //
     || theme::pro::trait<Card>;
 
 struct checker {
     template <class T> struct result {
-        static constexpr auto v = property_concept<T>;
+        static constexpr auto v = trait<T>;
     };
 };
 
