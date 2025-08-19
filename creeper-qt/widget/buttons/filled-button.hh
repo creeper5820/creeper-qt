@@ -42,12 +42,7 @@ namespace filled_button::pro {
     template <typename T>
     concept trait = theme::pro::trait<T> || button::pro::trait<T>;
 
-    struct checker {
-        template <class T> struct result {
-            static constexpr auto v = trait<T>;
-        };
-    };
-
+    CREEPER_DEFINE_CHECK(trait);
     using namespace theme::pro;
     using namespace button::pro;
 }

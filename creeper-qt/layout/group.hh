@@ -72,6 +72,7 @@ using Token = common::Token<internal::Group<QLayout, QWidget>>;
 ///         return new TextButton { ... };
 ///     },
 /// }
+///
 template <typename R, typename F>
     requires internal::foreach_invoke_ranges_trait<R, F>
 struct Compose : Token {
@@ -85,6 +86,11 @@ struct Compose : Token {
     auto apply(auto& self) noexcept { self.compose(ranges, std::move(method)); }
 };
 
+/// @note
+/// 函数参数是组件的引用:
+///
+/// group::pro::Foreach { [](Widget& button) { ... } },
+///
 template <typename F>
     requires(!std::invocable<F>)
 struct Foreach : Token {

@@ -47,17 +47,17 @@ namespace pro = creeper::widget::pro;
 using creeper::Widget;
 
 // 可以使用 tuple 打包属性
-const auto properties = std::tuple {
+const auto props = std::tuple {
     pro::MaximumSize { 200, 100 },
     pro::MinimumSize { 100, 050 },
 };
 
 // 可以直接使用 tuple 进行构造
-auto widget_a = new Widget { properties };
+auto widget_a = new Widget { props };
 
-// 也可以在传入 tuple 后继续传入属性进行差异化修改（只允许一个 tuple 在参数列表开头）
+// 也可以在传入 tuple 后继续传入属性进行差异化修改
 auto widget_b = new Widget {
-    properties,
+    props,
     pro::WindowFlag { Qt::WindowStaysOnTopHint },
 };
 ```
@@ -80,15 +80,15 @@ const auto widget_a = new Widget { ... };
 
 ```cpp
 namespace button::pro {
-    using Text        = common::pro::Text<Property>;
-    using TextColor   = common::pro::TextColor<Property>;
-    using Radius      = common::pro::Radius<Property>;
-    using BorderWidth = common::pro::BorderWidth<Property>;
-    using BorderColor = common::pro::BorderColor<Property>;
-    using Background  = common::pro::Background<Property>;
-    using WaterColor  = common::pro::WaterColor<Property>;
+    using Text        = common::pro::Text<Token>;
+    using TextColor   = common::pro::TextColor<Token>;
+    using Radius      = common::pro::Radius<Token>;
+    using BorderWidth = common::pro::BorderWidth<Token>;
+    using BorderColor = common::pro::BorderColor<Token>;
+    using Background  = common::pro::Background<Token>;
+    using WaterColor  = common::pro::WaterColor<Token>;
 
-    struct Clickable final : Property { ... };
+    template <typename Callback, class Token> struct Clickable : Token;
 }
 ```
 
@@ -101,7 +101,7 @@ namespace button::pro {
 | `BorderColor` | `QColor` |
 | `Background`  | `QColor` |
 | `WaterColor`  | `QColor` |
-| `Clickable`   | `[](){}` |
+| `Clickable`   | `[](self){}` |
 
 ### FilledButton
 

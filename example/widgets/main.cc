@@ -112,10 +112,13 @@ auto main(int argc, char** argv) -> int {
                             manager_config,
                             font_config,
                             text_button::pro::FixedSize { 200, 50 },
+                            text_button::pro::Radius { -1 },
                             text_button::pro::Text {
                                 std::format("{} {}", index, text),
                             },
-                            text_button::pro::Radius { -1 },
+                            text_button::pro::Clickable {
+                                [](auto& self) { qDebug() << "Click:" << self.text(); },
+                            },
                         };
                     },
                 },
