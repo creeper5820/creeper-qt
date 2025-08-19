@@ -90,19 +90,16 @@ namespace pro {
     /// @note 该属性本质是转发构造，有 new 的行为
     template <class T> struct Layout : Token {
         T* layout_;
-        explicit Layout(auto... args)
+
+        explicit Layout(T* pointer) noexcept
+            requires std::convertible_to<decltype(pointer), QLayout*>
+            : layout_ { pointer } { }
+
+        explicit Layout(auto&&... args)
             requires std::constructible_from<T, decltype(args)...>
             : layout_ { new T { std::forward<decltype(args)>(args)... } } { }
+
         void apply(QWidget& widget) const { widget.setLayout(layout_); }
-    };
-    template <> struct Layout<void> : Token {
-        QLayout* layout;
-        explicit Layout(auto* _)
-            requires std::convertible_to<decltype(_), QLayout*>
-        {
-            layout = _;
-        }
-        void apply(QWidget& widget) const { widget.setLayout(layout); }
     };
     struct LayoutDirection : Token {
         Qt::LayoutDirection direction;

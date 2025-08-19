@@ -34,6 +34,7 @@ auto main(int argc, char** argv) -> int {
             icon_button::pro::Font { material::round::font_1 },
             icon_button::pro::FixedSize { IconButton::kSmallContainerSize },
         };
+
         const auto NavigationButton = [&](auto icon, auto f) {
             return lnpro::Item<IconButton> {
                 { 0, Qt::AlignHCenter },
@@ -102,12 +103,11 @@ auto main(int argc, char** argv) -> int {
                 col::pro::Alignment { Qt::AlignTop },
                 group::pro::Compose {
                     std::array {
-                        std::pair { 1, "Hello World" },
-                        std::pair { 2, "你好世界" },
-                        std::pair { 3, "こんにちは世界" },
+                        std::tuple(1, "更衣人偶"),
+                        std::tuple(2, "琉璃的宝石"),
+                        std::tuple(3, "彻夜之歌"),
                     },
-                    [&](auto&& item) {
-                        const auto [index, text] = item;
+                    [&](auto index, auto text) {
                         return new TextButton {
                             manager_config,
                             font_config,
@@ -119,8 +119,10 @@ auto main(int argc, char** argv) -> int {
                         };
                     },
                 },
-                group::pro::Foreach {
-                    [](TextButton& button) { qDebug() << '\t' << button.text(); } },
+                group::pro::Foreach { [](TextButton& button) {
+                    // 类型确定在 Group 声明时传入的模板参数
+                    qDebug() << "  -" << button.text();
+                } },
             },
         };
     };

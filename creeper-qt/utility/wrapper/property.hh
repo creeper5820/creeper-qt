@@ -1,7 +1,7 @@
 #pragma once
 
 #include <tuple>
-#include <type_traits>
+#include <utility>
 
 /// @note 此处不使用 auto... 来作为构造参数，有体谅语法提示的考量，
 ///         为了更有效的编写期检查，还是谨慎地提供构造类型吧
@@ -30,77 +30,84 @@ public:                                                                         
 
 namespace creeper {
 
+template <class T>
+concept checker_trait = requires {
+    { T::template result<void>::v == false };
+};
+
 /// @brief
 /// 声明式包装，非侵入式实现 Setter 的声明式化
 ///
-/// @tparam _widget
-/// 需要包装的组件
+/// 该包装器支持将 std::tuple 与单个 prop 混合传入，不受顺序限制。内部通过
+/// helper 检查 tuple 中的所有元素，递归调用 apply 将属性应用到 底层 Widget。
+/// 利用 CheckerT 延迟模板实例化，在 concept 层面约束属性类型， 从而避免因
+/// 递归参数展开而产生的海量且难以定位的模板错误。
 ///
-/// @tparam _checker
-/// 套两层类型可以延迟模板的实例化，将类型推迟到调用函数时
-/// 这里使用实际绝对不会使用的类型 void 作为检查
-/// 一般写成如下形式:
-/// struct checker {
+/// @tparam WidgetT
+///   需要被包装的组件类型。
+///
+/// @tparam CheckerT
+///   用于延迟模板实例化的“检查器”类型模板。典型形式如下：
+/// struct checker final {
 ///     template <class T> struct result {
-///         static constexpr auto v = false;
-///     };
-///     template <trait T> struct result<T> {
-///         static constexpr auto v = true;
+///         static constexpr auto v = concept<T>;
 ///     };
 /// };
+///
 /// @note
-/// 使用该声明式包装器时，模板参数的递归实例化会导致编译器自动生成一系列参数极多的构造函数，
-/// 例如：
-///
-/// In Declarative<Impl, checker>
-/// template <> explicit Declarative<
-///         creeper::theme::pro::ThemeManager,
-///         creeper::card::pro::Level,
-///         creeper::widget::pro::WindowFlag,
-///         creeper::common::pro::Radius<...>,
-///         creeper::widget::pro::Layout<...>,
-///         >
-///
-/// 一旦中间某一层模板参数类型有误，
-/// 编译器会将错误信息逐层上报，最终导致巨量且难以定位的模板报错。
-/// 因此，在 concept 层面进行类型约束是必要之举，而使用 checker 进行 concept
-/// 注入可以大幅简化开发流程， 以便在编写代码时即可获得清晰的类型错误提示，
-/// 避免编译期出现冗长难读的错误栈。
-///
-template <class _widget, class _checker>
-    requires requires {
-        { _checker::template result<void>::v };
+/// 在不符合 CheckerT 要求的类型被传入时，会在 concept 约束阶段直接报错，
+/// 提供简洁且精准的编译期错误提示，避免编译器自动展开大量构造函数
+/// 导致的冗长错误栈，但编译期报错信息依旧不友好。
+template <class WidgetT, class CheckerT>
+    requires checker_trait<CheckerT>
+struct Declarative : public WidgetT {
+    /* Export widget type */
+    using Widget = WidgetT;
+    /* Export checker type */
+    using Checker = CheckerT;
+
+private:
+    template <typename T, class Checker> /* For help check tuple of props */
+    struct tuple_props_helper {
+        static constexpr bool v = false;
+    };
+    template <typename... Ts, class Checker> /* For helpe check tuple of props */
+    struct tuple_props_helper<std::tuple<Ts...>, Checker> {
+        static constexpr bool v = (Checker::template result<std::remove_cvref_t<Ts>>::v && ...);
+        static_assert(v,
+            "\n[CREEPER-QT] 当你看到我，你便知道你的tuple里塞了错误的配置"
+            "\n[CREEPER-QT] Your tuple contains the wrong configuration"
+            "\n");
+    };
+    template <typename T, class Checker> //
+    struct single_prop_helper {
+        static constexpr bool v = Checker::template result<std::remove_cvref_t<T>>::v;
+    };
+
+public:
+    template <class T> /* For check props */
+    using props_trait = single_prop_helper<std::remove_cvref_t<T>, CheckerT>;
+
+    template <class T> /* For check tuple */
+    using tuple_trait = tuple_props_helper<std::remove_cvref_t<T>, CheckerT>;
+
+    explicit Declarative(auto&&... props) noexcept
+        requires((props_trait<decltype(props)>::v || tuple_trait<decltype(props)>::v) && ...)
+        : WidgetT {} {
+        (apply(std::forward<decltype(props)>(props)), ...);
     }
-struct Declarative : public _widget {
-    using checker = _checker;
-    using widget  = _widget;
 
-    template <class T> using require = _checker::template result<std::remove_cvref_t<T>>;
-
-    explicit Declarative(const auto&... properties) noexcept
-        requires(require<decltype(properties)>::v && ...)
-        : _widget {} {
-        (apply(properties), ...);
-    }
-
-    template <class... _args_1, class... _args_2>
-    explicit Declarative(const std::tuple<_args_1...>& tuple, const _args_2&... properties) noexcept
-        requires(require<_args_1>::v && ...) && (require<_args_2>::v && ...)
-        : _widget {} {
-        apply(tuple), (apply(properties), ...);
-    }
-
-    auto apply(const auto& property) noexcept -> void
-        requires require<decltype(property)>::v
+    auto apply(auto&& tuple) noexcept -> void
+        requires tuple_trait<decltype(tuple)>::v
     {
-        property.apply(*this);
+        std::apply([this](auto&&... args) { (apply(std::forward<decltype(args)>(args)), ...); },
+            std::forward<decltype(tuple)>(tuple));
     }
 
-    template <class... _args>
-    auto apply(const std::tuple<_args...>& tuple) noexcept -> void
-        requires(require<_args>::v && ...)
+    auto apply(auto&& prop) noexcept -> void
+        requires props_trait<decltype(prop)>::v
     {
-        std::apply([this](const auto&... args) { (apply(args), ...); }, tuple);
+        std::forward<decltype(prop)>(prop).apply(*this);
     }
 };
 

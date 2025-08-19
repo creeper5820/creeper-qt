@@ -39,7 +39,15 @@ template <internal::item_trait T> struct Item : Token {
         int stretch         = 0;
         Qt::Alignment align = {};
     } method;
+
     T* item_pointer = nullptr;
+
+    explicit Item(const LayoutMethod& method, T* pointer) noexcept
+        : item_pointer { pointer }
+        , method { method } { }
+
+    explicit Item(T* pointer) noexcept
+        : item_pointer { pointer } { }
 
     explicit Item(const LayoutMethod& method, auto&&... args) noexcept
         requires std::constructible_from<T, decltype(args)...>
@@ -49,13 +57,6 @@ template <internal::item_trait T> struct Item : Token {
     explicit Item(auto&&... args) noexcept
         requires std::constructible_from<T, decltype(args)...>
         : item_pointer { new T { std::forward<decltype(args)>(args)... } } { }
-
-    explicit Item(const LayoutMethod& method, T* pointer) noexcept
-        : item_pointer { pointer }
-        , method { method } { }
-
-    explicit Item(T* pointer) noexcept
-        : item_pointer { pointer } { }
 
     void apply(container_trait auto& layout) const {
         if constexpr (std::is_convertible_v<T*, QWidget*>)
