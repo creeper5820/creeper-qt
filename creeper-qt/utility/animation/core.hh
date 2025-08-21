@@ -8,7 +8,7 @@
 #include <qtimer.h>
 #include <qwidget.h>
 
-namespace creeper::util::animation {
+namespace creeper::animate {
 
 class AnimationCore;
 
@@ -23,8 +23,8 @@ public:
     static constexpr auto kHz = 90;
 
     // 构造完毕后默认不开启，需要添加动画或者手动开启
-    explicit AnimationCore(const std::function<void()>& update_complete_callback, int hz = 60)
-        : update_complete_callback_(update_complete_callback) {
+    explicit AnimationCore(std::function<void()> update_complete_callback, int hz = 90)
+        : update_complete_callback_ { std::move(update_complete_callback) } {
         QObject::connect(&scheduler_, &QTimer::timeout, [this] {
             const auto [first, last] = std::ranges::remove_if(animations_,
                 [](const std::unique_ptr<IAnimation>& animation) { return animation->update(); });

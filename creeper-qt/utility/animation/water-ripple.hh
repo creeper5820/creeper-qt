@@ -9,7 +9,7 @@
 #include <qpainter.h>
 #include <qpainterpath.h>
 
-namespace creeper::util::animation {
+namespace creeper::animate {
 
 struct WaterRippleData {
     QPointF origin;
@@ -17,7 +17,7 @@ struct WaterRippleData {
     double opacity = 1.0;
     bool finished  = false;
 };
-struct WaterRippleAnimation  : IAnimation {
+struct WaterRippleAnimation : IAnimation {
     explicit WaterRippleAnimation(
         const std::shared_ptr<WaterRippleData>& data, double speed, double max_distance, double hz)
         : data(data)
@@ -42,13 +42,12 @@ public:
         , speed { speed }
         , hz { hz } { }
 
-    void clicked(QPointF origin, double max_distance) noexcept {
+    auto clicked(QPointF origin, double max_distance) noexcept -> void {
         auto data = std::make_shared<WaterRippleData>(origin);
         animation_core.append(
             std::make_unique<WaterRippleAnimation>(data, speed, max_distance, hz));
         water_ripples.push_back(std::move(data));
     }
-
     auto renderer(const QPainterPath& clip_path, const QColor& water_color) noexcept {
         return [this, &clip_path, &water_color](QPainter& painter) {
             const auto [_0, _1] = std::ranges::remove_if(water_ripples, [&](const auto& data) {

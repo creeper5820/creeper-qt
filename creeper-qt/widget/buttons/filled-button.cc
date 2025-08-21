@@ -6,7 +6,7 @@ using creeper::util::PainterHelper;
 #include "creeper-qt/utility/animation/core.hh"
 #include "creeper-qt/utility/animation/gradient-color.hh"
 #include "creeper-qt/utility/animation/water-ripple.hh"
-using namespace creeper::util::animation;
+using namespace creeper::animate;
 
 #include "creeper-qt/utility/theme/theme.hh"
 

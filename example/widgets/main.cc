@@ -6,6 +6,7 @@ auto main(int argc, char** argv) -> int {
     namespace lnpro = linear::pro;
     namespace impro = image::pro;
     namespace wipro = main_window::pro;
+    namespace icpro = icon_button::pro;
 
     app::init {
         app::pro::Attribute { Qt::AA_EnableHighDpiScaling },
@@ -26,13 +27,13 @@ auto main(int argc, char** argv) -> int {
     const auto NavigationSpace = [&]() noexcept {
         const auto navigation_icons_config = std::tuple {
             manager_config,
-            icon_button::pro::color::STANDARD,
-            icon_button::pro::shape::DEFAULT_ROUND,
-            icon_button::pro::types::TOGGLE_UNSELECTED,
-            icon_button::pro::width::DEFAULT,
-            icon_button::pro::FontIcon { material::icon::kCircle },
-            icon_button::pro::Font { material::round::font_1 },
-            icon_button::pro::FixedSize { IconButton::kSmallContainerSize },
+            icpro::color::STANDARD,
+            icpro::shape::DEFAULT_ROUND,
+            icpro::types::TOGGLE_UNSELECTED,
+            icpro::width::DEFAULT,
+            icpro::FontIcon { material::icon::kCircle },
+            icpro::Font { material::round::font_1 },
+            icpro::FixedSize { IconButton::kSmallContainerSize },
         };
 
         const auto NavigationButton = [&](auto icon, auto f) {

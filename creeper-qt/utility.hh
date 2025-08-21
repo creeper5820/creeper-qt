@@ -13,4 +13,4 @@
 #include "creeper-qt/utility/content-scale.hh"
 #include "creeper-qt/utility/material-icon.hh"
 #include "creeper-qt/utility/painter-resource.hh"
-#include "creeper-qt/utility/trait.hh"
+#include "creeper-qt/utility/trait/widget.hh"

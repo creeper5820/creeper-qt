@@ -8,8 +8,8 @@
 #include "icon-button.hh"
 
 using namespace creeper::icon_button::internal;
-using creeper::util::animation::AnimationCore;
-using creeper::util::animation::WaterRippleRenderer;
+using creeper::animate::AnimationCore;
+using creeper::animate::WaterRippleRenderer;
 
 constexpr auto kHoverOpacity = double { 0.1 };
 constexpr auto kWaterOpacity = double { 0.4 };
@@ -27,8 +27,8 @@ constexpr auto kThreshold1D = double { 1e-1 };
 constexpr auto kWaterSpeed  = double { 5.0 };
 
 struct IconButton::Impl {
-    using Track4D = util::animation::FinitePidTracker<Eigen::Vector4d>;
-    using Track1D = util::animation::FiniteSringTracker<double>;
+    using Track4D = animate::FinitePidTracker<Eigen::Vector4d>;
+    using Track1D = animate::FiniteSringTracker<double>;
 
     AnimationCore animation_core;
     WaterRippleRenderer water_ripple;

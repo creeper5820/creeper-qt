@@ -4,7 +4,7 @@
 #include "creeper-qt/utility/animation/math.hh"
 #include <eigen3/Eigen/Dense>
 
-namespace creeper::util::animation {
+namespace creeper::animate {
 
 constexpr auto kErrorThreshold = 1e-1;
 

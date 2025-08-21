@@ -4,7 +4,7 @@
 #include <qcolor.h>
 #include <qrect.h>
 
-namespace creeper::util::animation {
+namespace creeper::animate {
 
 template <typename T> inline T update_pid_using_target(T value, T target, double kp = 1) {
     return static_cast<T>(value) + kp * (static_cast<T>(target) - static_cast<T>(value));

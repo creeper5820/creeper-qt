@@ -5,7 +5,7 @@
 #include <eigen3/Eigen/Dense>
 #include <qdebug.h>
 
-namespace creeper::util::animation {
+namespace creeper::animate {
 
 struct GradientColor : IAnimation {
 private:

@@ -7,7 +7,7 @@
 using namespace creeper;
 using namespace creeper::text_field::internal;
 
-using util::animation::AnimationCore;
+using animate::AnimationCore;
 
 struct BasicTextField::Impl {
 public:
@@ -221,7 +221,7 @@ private:
     }
 
     auto update_label_position() -> void {
-        using Tracker = util::animation::FinitePidTracker<double>;
+        using Tracker = animate::FinitePidTracker<double>;
 
         *label_stop_token.value() = true;
         label_stop_token.emplace(std::make_shared<bool>(false));

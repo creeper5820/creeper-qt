@@ -7,7 +7,7 @@
 #include "creeper-qt/utility/painter/helper.hh"
 
 using namespace creeper::_switch::internal;
-using creeper::util::animation::AnimationCore;
+using creeper::animate::AnimationCore;
 
 struct Switch::Impl {
     AnimationCore animation_core;
@@ -150,8 +150,8 @@ struct Switch::Impl {
 
 private:
     void update_switch_ui(Switch&, bool checked, bool disabled = false) {
-        using Tracker4D = util::animation::FinitePidTracker<Eigen::Vector4d>;
-        using Tracker1D = util::animation::FiniteSringTracker<double>;
+        using Tracker4D = animate::FinitePidTracker<Eigen::Vector4d>;
+        using Tracker1D = animate::FiniteSringTracker<double>;
 
         // @TODO: 适配进 MotionScheme
         constexpr double kp = 15.0, ki = 0.0, kd = 0.0, hz = 90;

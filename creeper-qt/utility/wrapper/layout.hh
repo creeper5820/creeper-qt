@@ -1,5 +1,5 @@
 #pragma once
-#include "creeper-qt/utility/trait.hh"
+#include "creeper-qt/utility/trait/widget.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 
 namespace creeper::layout::internal {
