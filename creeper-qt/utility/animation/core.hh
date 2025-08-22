@@ -52,6 +52,4 @@ private:
     void set_status(bool running) { running ? scheduler_.start() : scheduler_.stop(); }
 };
 
-using Renderer = std::function<void(QPainter&)>;
-
 }
