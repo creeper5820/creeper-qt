@@ -3,10 +3,14 @@
 
 auto main(int argc, char** argv) -> int {
     using namespace creeper;
+
+    namespace wipro = widget::pro;
+    namespace thpro = theme::pro;
     namespace lnpro = linear::pro;
     namespace impro = image::pro;
-    namespace wipro = main_window::pro;
+    namespace mwpro = main_window::pro;
     namespace icpro = icon_button::pro;
+    namespace capro = card::pro;
 
     app::init {
         app::pro::Attribute { Qt::AA_EnableHighDpiScaling },
@@ -16,13 +20,13 @@ auto main(int argc, char** argv) -> int {
 
     auto avatar_image = (Image*) {};
 
-    constexpr auto avatar_url //
-        = "http://i0.hdslb.com/bfs/article/e4e412299e6c038035241b1dc625cb62c8b5513a.jpg";
+    constexpr auto avatar_url = "http://i0.hdslb.com/bfs/article/"
+                                "e4e412299e6c038035241b1dc625cb62c8b5513a.jpg";
 
     auto manager = ThemeManager { kBlueMikuThemePack };
 
-    auto manager_config = theme::pro::ThemeManager { manager };
-    auto font_config    = widget::pro::Font { "WenQuanYi Micro Hei", 12 };
+    auto manager_config = thpro::ThemeManager { manager };
+    auto font_config    = wipro::Font { "WenQuanYi Micro Hei", 12 };
 
     const auto NavigationSpace = [&]() noexcept {
         const auto navigation_icons_config = std::tuple {
@@ -47,9 +51,9 @@ auto main(int argc, char** argv) -> int {
         };
         return lnpro::Item<FilledCard> {
             manager_config,
-            card::pro::Radius { 0 },
+            capro::Radius { 0 },
 
-            card::pro::Layout<Col> {
+            capro::Layout<Col> {
                 lnpro::SetSpacing { 10 },
                 lnpro::Margin { 15 },
 
@@ -98,7 +102,7 @@ auto main(int argc, char** argv) -> int {
     const auto Workspace = [&] noexcept {
         return lnpro::Item<FilledCard> {
             { 255 },
-            card::pro::Layout<Group<Col, TextButton>> {
+            capro::Layout<Group<Col, TextButton>> {
                 col::pro::Margin { 20 },
                 col::pro::SetSpacing { 10 },
                 col::pro::Alignment { Qt::AlignTop },
@@ -131,7 +135,9 @@ auto main(int argc, char** argv) -> int {
         };
     };
 
-    ShowWindow {
+    /// @note 有时候 Windows 总是给我来点惊喜，
+    ///       ShowWindow 这么常见命名的函数都放在全局作用域
+    creeper::ShowWindow {
         [&](MainWindow& window) {
             // Q 键退出
             auto shortcut = new QShortcut { Qt::Key_Q, &window };
@@ -148,14 +154,14 @@ auto main(int argc, char** argv) -> int {
 
             manager.apply_theme();
         },
-        wipro::WindowFlag { Qt::Tool },
-        wipro::Central<FilledCard> {
+        mwpro::WindowFlag { Qt::Tool },
+        mwpro::Central<FilledCard> {
             manager_config,
-            card::pro::MinimumSize { 1440, 960 },
-            card::pro::Radius { 0 },
-            card::pro::Level { CardLevel::HIGHEST },
+            capro::MinimumSize { 1440, 960 },
+            capro::Radius { 0 },
+            capro::Level { CardLevel::HIGHEST },
 
-            card::pro::Layout<Row> {
+            capro::Layout<Row> {
                 lnpro::Margin { 0 },
                 lnpro::SetSpacing { 5 },
 
