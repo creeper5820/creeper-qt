@@ -51,7 +51,13 @@ struct PainterResource : public QPixmap {
 
     auto is_error() const noexcept -> bool { return is_error_; }
 
+    auto add_finished_callback(std::invocable<PainterResource&> auto&& f) {
+        finished_callback_ = std::forward<decltype(f)>(f);
+    }
+
 private:
+    std::optional<std::function<void(PainterResource&)>> finished_callback_;
+
     bool is_loading_ = false;
     bool is_error_   = false;
 
@@ -81,6 +87,8 @@ private:
             using F = decltype(f);
             if constexpr (std::invocable<F, PainterResource&>) std::invoke(f, *this);
             if constexpr (std::invocable<F>) std::invoke(f);
+
+            if (finished_callback_) std::invoke(*finished_callback_, *this);
         });
     }
 

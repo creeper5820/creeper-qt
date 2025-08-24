@@ -5,8 +5,6 @@
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 #include "creeper-qt/widget/widget.hh"
 
-#include <qwidget.h>
-
 namespace creeper {
 namespace image::internal {
     class Image : public QWidget {

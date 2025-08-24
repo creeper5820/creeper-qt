@@ -1,16 +1,30 @@
+/// @note
+/// 本示例所使用的 ICON 为 Google 提供的 Material Icons Round
+/// 字体，为正常显示，需要先下载字体并安装：
+/// https://github.com/material-icons/material-icons-font/tree/master/font
+/// 如果使用 Arch Linux，则可以通过 AUR 安装：ttf-material-icons-git，
+/// 使用其他 Nerd Font 也是可以的
+
 #include "creeper-qt/creeper-qt.hh"
 #include <QtWidgets>
 
-auto main(int argc, char** argv) -> int {
-    using namespace creeper;
+namespace short_namespace {
 
-    namespace wipro = widget::pro;
-    namespace thpro = theme::pro;
-    namespace lnpro = linear::pro;
-    namespace impro = image::pro;
-    namespace mwpro = main_window::pro;
-    namespace icpro = icon_button::pro;
-    namespace capro = card::pro;
+using namespace creeper;
+
+namespace wipro = widget::pro;
+namespace thpro = theme::pro;
+namespace grpro = group::pro;
+namespace lnpro = linear::pro;
+namespace impro = image::pro;
+namespace mwpro = main_window::pro;
+namespace icpro = icon_button::pro;
+namespace capro = card::pro;
+namespace tbpro = text_button::pro;
+}
+
+auto main(int argc, char** argv) -> int {
+    using namespace short_namespace;
 
     app::init {
         app::pro::Attribute { Qt::AA_EnableHighDpiScaling },
@@ -18,39 +32,32 @@ auto main(int argc, char** argv) -> int {
         app::pro::Complete { argc, argv },
     };
 
-    auto avatar_image = (Image*) {};
-
     constexpr auto avatar_url = "http://i0.hdslb.com/bfs/article/"
                                 "e4e412299e6c038035241b1dc625cb62c8b5513a.jpg";
 
+    auto avatar_image = (Image*) { nullptr };
+
     auto manager = ThemeManager { kBlueMikuThemePack };
 
-    auto manager_config = thpro::ThemeManager { manager };
-    auto font_config    = wipro::Font { "WenQuanYi Micro Hei", 12 };
+    auto prop_manager = thpro::ThemeManager { manager };
+    auto prop_font    = wipro::Font { "WenQuanYi Micro Hei", 12 };
 
     const auto NavigationSpace = [&]() noexcept {
         const auto navigation_icons_config = std::tuple {
-            manager_config,
+            prop_manager,
             icpro::color::STANDARD,
             icpro::shape::DEFAULT_ROUND,
             icpro::types::TOGGLE_UNSELECTED,
             icpro::width::DEFAULT,
-            icpro::FontIcon { material::icon::kCircle },
+
+            // Font: "Material Icons Round"
             icpro::Font { material::round::font_1 },
+
             icpro::FixedSize { IconButton::kSmallContainerSize },
         };
 
-        const auto NavigationButton = [&](auto icon, auto f) {
-            return lnpro::Item<IconButton> {
-                { 0, Qt::AlignHCenter },
-                navigation_icons_config,
-                icon_button::pro::color::STANDARD,
-                icon_button::pro::FontIcon { icon },
-                icon_button::pro::Clickable { f },
-            };
-        };
         return lnpro::Item<FilledCard> {
-            manager_config,
+            prop_manager,
             capro::Radius { 0 },
 
             capro::Layout<Col> {
@@ -59,6 +66,7 @@ auto main(int argc, char** argv) -> int {
 
                 lnpro::Item<Image> {
                     { 0, Qt::AlignHCenter },
+                    impro::Apply { [](auto& self) {} },
                     impro::Bind { avatar_image },
                     impro::FixedSize { 60, 60 },
                     impro::Radius { -1 },
@@ -66,31 +74,49 @@ auto main(int argc, char** argv) -> int {
                     impro::BorderWidth { 3 },
                     impro::PainterResource {
                         avatar_url,
-                        [&] { avatar_image->update(); },
+                        [] { qDebug() << "[main] Image loading completed"; },
                     },
                 },
                 lnpro::Spacing { 20 },
-                NavigationButton(material::icon::kHome, [] {}),
-                NavigationButton(material::icon::kSettings, [] {}),
-                NavigationButton(material::icon::kSearch, [] {}),
-                NavigationButton(material::icon::kFavorite, [] {}),
+                lnpro::Item<Group<Col, IconButton>> {
+                    { 0, Qt::AlignHCenter },
+                    lnpro::Margin { 0 },
+                    lnpro::Spacing { 10 },
+                    grpro::Compose {
+                        std::array {
+                            std::tuple { "home", material::icon::kHome },
+                            std::tuple { "settings", material::icon::kSettings },
+                            std::tuple { "search", material::icon::kSearch },
+                            std::tuple { "favorite", material::icon::kFavorite },
+                        },
+                        [&](auto name, auto icon) {
+                            return new IconButton {
+                                navigation_icons_config,
+                                icpro::color::STANDARD,
+                                icpro::FontIcon { icon },
+                                icpro::Clickable { [] { } },
+                            };
+                        },
+                        Qt::AlignHCenter,
+                    },
+                },
                 lnpro::Spacing { 40 },
                 lnpro::Stretch { 255 },
                 lnpro::Item<IconButton> {
                     { 0, Qt::AlignHCenter },
                     navigation_icons_config,
-                    icon_button::pro::types::DEFAULT,
-                    icon_button::pro::FontIcon { material::icon::kLogout },
-                    icon_button::pro::Clickable {
+                    icpro::types::DEFAULT,
+                    icpro::FontIcon { material::icon::kLogout },
+                    icpro::Clickable {
                         [] { QApplication::quit(); },
                     },
                 },
                 lnpro::Item<IconButton> {
                     { 0, Qt::AlignHCenter },
                     navigation_icons_config,
-                    icon_button::pro::color::DEFAULT_FILLED,
-                    icon_button::pro::FontIcon { material::icon::kDarkMode },
-                    icon_button::pro::Clickable { [&] {
+                    icpro::color::DEFAULT_FILLED,
+                    icpro::FontIcon { material::icon::kDarkMode },
+                    icpro::Clickable { [&] {
                         manager.toggle_color_mode();
                         manager.apply_theme();
                     } },
@@ -101,12 +127,12 @@ auto main(int argc, char** argv) -> int {
 
     const auto Workspace = [&] noexcept {
         return lnpro::Item<FilledCard> {
-            { 255 },
+            { 255, Qt::AlignCenter },
             capro::Layout<Group<Col, TextButton>> {
-                col::pro::Margin { 20 },
-                col::pro::SetSpacing { 10 },
-                col::pro::Alignment { Qt::AlignTop },
-                group::pro::Compose {
+                lnpro::Margin { 20 },
+                lnpro::SetSpacing { 10 },
+                lnpro::Alignment { Qt::AlignCenter },
+                grpro::Compose {
                     std::array {
                         std::tuple(1, "更衣人偶"),
                         std::tuple(2, "琉璃的宝石"),
@@ -114,22 +140,22 @@ auto main(int argc, char** argv) -> int {
                     },
                     [&](auto index, auto text) {
                         return new TextButton {
-                            manager_config,
-                            font_config,
-                            text_button::pro::FixedSize { 200, 50 },
-                            text_button::pro::Radius { -1 },
-                            text_button::pro::Text {
+                            prop_manager,
+                            prop_font,
+                            tbpro::FixedSize { 200, 50 },
+                            tbpro::Radius { -1 },
+                            tbpro::Text {
                                 std::format("{} {}", index, text),
                             },
-                            text_button::pro::Clickable {
-                                [](auto& self) { qDebug() << "Click:" << self.text(); },
+                            tbpro::Clickable {
+                                [](auto& self) { qDebug() << "[main] Click:" << self.text(); },
                             },
                         };
                     },
                 },
-                group::pro::Foreach { [](TextButton& button) {
+                grpro::Foreach { [](TextButton& button) {
                     // 类型确定在 Group 声明时传入的模板参数
-                    qDebug() << "  -" << button.text();
+                    qDebug() << "[main]  -" << button.text();
                 } },
             },
         };
@@ -141,11 +167,9 @@ auto main(int argc, char** argv) -> int {
         [&](MainWindow& window) {
             // Q 键退出
             auto shortcut = new QShortcut { Qt::Key_Q, &window };
-            shortcut->connect(shortcut, &QShortcut::activated, [&]() {
-                auto focused = QApplication::focusWidget();
-                QApplication::quit();
-            });
-            // 全局主题回调，收到影响的组件生命周期应与 qApp 一致
+            shortcut->connect(shortcut, &QShortcut::activated, &app::quit);
+
+            // 全局主题回调，受到影响的组件生命周期应与 qApp 一致
             manager.append_handler(qApp, [&](const ThemeManager& manager) {
                 const auto colorscheme = manager.color_scheme();
                 const auto colorborder = colorscheme.secondary_container;
@@ -156,8 +180,8 @@ auto main(int argc, char** argv) -> int {
         },
         mwpro::WindowFlag { Qt::Tool },
         mwpro::Central<FilledCard> {
-            manager_config,
-            capro::MinimumSize { 1440, 960 },
+            prop_manager,
+            capro::MinimumSize { 960, 640 },
             capro::Radius { 0 },
             capro::Level { CardLevel::HIGHEST },
 

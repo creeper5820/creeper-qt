@@ -21,13 +21,14 @@ concept foreach_item_trait = foreach_invoke_item_trait<F, T> || foreach_apply_it
 template <typename R, typename F>
 concept foreach_invoke_ranges_trait = foreach_item_trait<F, std::ranges::range_value_t<R>>;
 
-template <layout_trait T, widget_trait W> struct Group : public T {
+template <layout_trait T, widget_trait W>
+struct Group : public T {
     using T::T;
     std::vector<W*> widgets;
 
     template <std::ranges::range R, typename F>
         requires foreach_invoke_ranges_trait<R, F>
-    constexpr auto compose(const R& ranges, F&& f) noexcept -> void {
+    constexpr auto compose(const R& ranges, F&& f, Qt::Alignment a = {}) noexcept -> void {
         for (const auto& item : ranges) {
             using ItemT = decltype(item);
 
@@ -40,7 +41,7 @@ template <layout_trait T, widget_trait W> struct Group : public T {
                 widget_pointer = std::apply(std::move(f), item);
 
             if (widget_pointer != nullptr) {
-                T::addWidget(widget_pointer);
+                T::addWidget(widget_pointer, 0, a);
                 widgets.push_back(widget_pointer);
             }
         }
@@ -78,12 +79,14 @@ template <typename R, typename F>
 struct Compose : Token {
     const R& ranges;
     F method;
+    Qt::Alignment alignment;
 
-    explicit Compose(const R& ranges, F f) noexcept
-        : ranges { ranges }
-        , method { std::move(f) } { }
+    explicit Compose(const R& r, F f, Qt::Alignment a = {}) noexcept
+        : ranges { r }
+        , method { std::move(f) }
+        , alignment { a } { }
 
-    auto apply(auto& self) noexcept { self.compose(ranges, std::move(method)); }
+    auto apply(auto& self) noexcept { self.compose(ranges, std::move(method), alignment); }
 };
 
 /// @note
@@ -108,8 +111,10 @@ struct Foreach : Token {
 template <class T>
 concept trait = std::derived_from<T, Token>;
 
-template <layout_trait L> struct checker final {
-    template <class T> struct result {
+template <layout_trait L>
+struct checker final {
+    template <class T>
+    struct result {
         static constexpr auto v = trait<T> || L::Checker::template result<T>::v;
     };
 };
