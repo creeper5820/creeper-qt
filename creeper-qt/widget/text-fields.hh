@@ -96,15 +96,10 @@ namespace text_field::pro {
 
     template <class TextField>
     concept trait = std::derived_from<TextField, Token> //
-        || widget::pro::trait<TextField>                        //
+        || widget::pro::trait<TextField>                //
         || theme::pro::trait<TextField>;
 
-    struct checker {
-        template <class T> struct result {
-            static constexpr auto v = trait<T>;
-        };
-    };
-
+    CREEPER_DEFINE_CHECK(trait);
     using namespace widget::pro;
     using namespace theme::pro;
 }

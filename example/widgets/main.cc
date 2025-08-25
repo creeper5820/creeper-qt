@@ -21,6 +21,7 @@ namespace mwpro = main_window::pro;
 namespace icpro = icon_button::pro;
 namespace capro = card::pro;
 namespace tbpro = text_button::pro;
+namespace tfpro = text_field::pro;
 }
 
 auto main(int argc, char** argv) -> int {
@@ -32,10 +33,16 @@ auto main(int argc, char** argv) -> int {
         app::pro::Complete { argc, argv },
     };
 
-    constexpr auto avatar_url = "http://i0.hdslb.com/bfs/article/"
-                                "e4e412299e6c038035241b1dc625cb62c8b5513a.jpg";
-
-    auto avatar_image = (Image*) { nullptr };
+    const auto avatar_image = new Image {
+        impro::FixedSize { 60, 60 },
+        impro::Radius { -1 },
+        impro::ContentScale { ContentScale::CROP },
+        impro::BorderWidth { 3 },
+        impro::PainterResource {
+            "http://i0.hdslb.com/bfs/article/e4e412299e6c038035241b1dc625cb62c8b5513a.jpg",
+            [] { qDebug() << "[main] Image loading completed"; },
+        },
+    };
 
     auto manager = ThemeManager { kBlueMikuThemePack };
 
@@ -64,19 +71,7 @@ auto main(int argc, char** argv) -> int {
                 lnpro::SetSpacing { 10 },
                 lnpro::Margin { 15 },
 
-                lnpro::Item<Image> {
-                    { 0, Qt::AlignHCenter },
-                    impro::Apply { [](auto& self) {} },
-                    impro::Bind { avatar_image },
-                    impro::FixedSize { 60, 60 },
-                    impro::Radius { -1 },
-                    impro::ContentScale { ContentScale::CROP },
-                    impro::BorderWidth { 3 },
-                    impro::PainterResource {
-                        avatar_url,
-                        [] { qDebug() << "[main] Image loading completed"; },
-                    },
-                },
+                lnpro::Item { { 0, Qt::AlignHCenter }, avatar_image },
                 lnpro::Spacing { 20 },
                 lnpro::Item<Group<Col, IconButton>> {
                     { 0, Qt::AlignHCenter },
@@ -128,35 +123,49 @@ auto main(int argc, char** argv) -> int {
     const auto Workspace = [&] noexcept {
         return lnpro::Item<FilledCard> {
             { 255, Qt::AlignCenter },
-            capro::Layout<Group<Col, TextButton>> {
+            capro::Layout<Col> {
                 lnpro::Margin { 20 },
                 lnpro::SetSpacing { 10 },
                 lnpro::Alignment { Qt::AlignCenter },
-                grpro::Compose {
-                    std::array {
-                        std::tuple(1, "更衣人偶"),
-                        std::tuple(2, "琉璃的宝石"),
-                        std::tuple(3, "彻夜之歌"),
-                    },
-                    [&](auto index, auto text) {
-                        return new TextButton {
-                            prop_manager,
-                            prop_font,
-                            tbpro::FixedSize { 200, 50 },
-                            tbpro::Radius { -1 },
-                            tbpro::Text {
-                                std::format("{} {}", index, text),
-                            },
-                            tbpro::Clickable {
-                                [](auto& self) { qDebug() << "[main] Click:" << self.text(); },
-                            },
-                        };
+
+                lnpro::Item<FilledTextField> {
+                    prop_manager,
+                    tfpro::LabelText { "Hello World" },
+                    tfpro::LeadingIcon {
+                        material::icon::kSearch,
+                        material::round::font,
                     },
                 },
-                grpro::Foreach { [](TextButton& button) {
-                    // 类型确定在 Group 声明时传入的模板参数
-                    qDebug() << "[main]  -" << button.text();
-                } },
+                lnpro::Item<Group<Col, TextButton>> {
+                    lnpro::Margin { 20 },
+                    lnpro::SetSpacing { 10 },
+                    lnpro::Alignment { Qt::AlignCenter },
+                    grpro::Compose {
+                        std::array {
+                            std::tuple(1, "更衣人偶"),
+                            std::tuple(2, "琉璃的宝石"),
+                            std::tuple(3, "彻夜之歌"),
+                        },
+                        [&](auto index, auto text) {
+                            return new TextButton {
+                                prop_manager,
+                                prop_font,
+                                tbpro::FixedSize { 200, 50 },
+                                tbpro::Radius { -1 },
+                                tbpro::Text {
+                                    std::format("{} {}", index, text),
+                                },
+                                tbpro::Clickable {
+                                    [](auto& self) { qDebug() << "[main] Click:" << self.text(); },
+                                },
+                            };
+                        },
+                    },
+                    grpro::Foreach { [](TextButton& button) {
+                        // 类型确定在 Group 声明时传入的模板参数
+                        qDebug() << "[main]  -" << button.text();
+                    } },
+                },
             },
         };
     };
