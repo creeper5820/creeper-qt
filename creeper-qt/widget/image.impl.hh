@@ -23,6 +23,7 @@ public:
 
         auto painter = QPainter { &self };
         painter.setRenderHint(QPainter::Antialiasing);
+        painter.setRenderHint(QPainter::SmoothPixmapTransform);
         painter.setOpacity(opacity);
 
         if (resource_render && !resource_render->isNull()) {

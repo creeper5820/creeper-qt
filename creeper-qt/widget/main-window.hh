@@ -16,7 +16,8 @@ concept central_widget_trait = requires(T t, QWidget* widget) {
 namespace creeper::main_window::pro {
 using Token = common::Token<QMainWindow>;
 
-template <widget_trait T> struct Central : Token {
+template <widget_trait T>
+struct Central : Token {
     T* widget_pointer;
 
     explicit Central(T* pointer) noexcept

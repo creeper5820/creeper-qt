@@ -7,6 +7,7 @@
 
 #include "creeper-qt/creeper-qt.hh"
 #include <QtWidgets>
+#include <ranges>
 
 namespace short_namespace {
 
@@ -22,7 +23,11 @@ namespace icpro = icon_button::pro;
 namespace capro = card::pro;
 namespace tbpro = text_button::pro;
 namespace tfpro = text_field::pro;
+namespace fcpro = filled_card::pro;
 }
+
+template <typename T>
+using raw_pointer = T*;
 
 auto main(int argc, char** argv) -> int {
     using namespace short_namespace;
@@ -33,7 +38,7 @@ auto main(int argc, char** argv) -> int {
         app::pro::Complete { argc, argv },
     };
 
-    const auto avatar_image = new Image {
+    auto avatar_image = new Image {
         impro::FixedSize { 60, 60 },
         impro::Radius { -1 },
         impro::ContentScale { ContentScale::CROP },
@@ -43,13 +48,14 @@ auto main(int argc, char** argv) -> int {
             [] { qDebug() << "[main] Image loading completed"; },
         },
     };
+    auto material_theme_image = raw_pointer<Image> {};
 
     auto manager = ThemeManager { kBlueMikuThemePack };
 
     auto prop_manager = thpro::ThemeManager { manager };
     auto prop_font    = wipro::Font { "WenQuanYi Micro Hei", 12 };
 
-    const auto NavigationSpace = [&]() noexcept {
+    const auto NavSpace = [&]() noexcept {
         const auto navigation_icons_config = std::tuple {
             prop_manager,
             icpro::color::STANDARD,
@@ -63,7 +69,7 @@ auto main(int argc, char** argv) -> int {
             icpro::FixedSize { IconButton::kSmallContainerSize },
         };
 
-        return lnpro::Item<FilledCard> {
+        return new FilledCard {
             prop_manager,
             capro::Radius { 0 },
 
@@ -80,9 +86,9 @@ auto main(int argc, char** argv) -> int {
                     grpro::Compose {
                         std::array {
                             std::tuple { "home", material::icon::kHome },
-                            std::tuple { "settings", material::icon::kSettings },
+                            std::tuple { "extension", material::icon::kExtension },
                             std::tuple { "search", material::icon::kSearch },
-                            std::tuple { "favorite", material::icon::kFavorite },
+                            std::tuple { "settings", material::icon::kSettings },
                         },
                         [&](auto name, auto icon) {
                             return new IconButton {
@@ -120,22 +126,30 @@ auto main(int argc, char** argv) -> int {
         };
     };
 
-    const auto Workspace = [&] noexcept {
-        return lnpro::Item<FilledCard> {
-            { 255, Qt::AlignCenter },
+    const auto MainSpace = [&] noexcept {
+        return new FilledCard {
+            prop_manager,
             capro::Layout<Col> {
                 lnpro::Margin { 20 },
                 lnpro::SetSpacing { 10 },
-                lnpro::Alignment { Qt::AlignCenter },
 
-                lnpro::Item<FilledTextField> {
-                    prop_manager,
-                    tfpro::LabelText { "Hello World" },
-                    tfpro::LeadingIcon {
-                        material::icon::kSearch,
-                        material::round::font,
+                lnpro::Item<Row> {
+                    { 255 },
+                    lnpro::Margin { 20 },
+
+                    lnpro::Item<Image> {
+                        impro::Bind { material_theme_image },
+                        impro::FixedHeight { 500 },
+                        impro::ContentScale { ContentScale::CROP },
+                        impro::BorderWidth { 5 },
+                        impro::PainterResource {
+                            "https://lh3.googleusercontent.com/"
+                            "1U71piLcGDg-O2CUVDHaShSo-igfXvZzsdu4e_u_Tt8VuAAPPAJFzcMEGE8bTfu20-"
+                            "BVvVS9v2kDSZ9BcDc672z8IVmjsCApRA6gT1e8dpMoYx5BFQ=w1800-rj",
+                        },
                     },
                 },
+
                 lnpro::Item<Group<Col, TextButton>> {
                     lnpro::Margin { 20 },
                     lnpro::SetSpacing { 10 },
@@ -170,6 +184,37 @@ auto main(int argc, char** argv) -> int {
         };
     };
 
+    const auto ContentSpace = [&] noexcept {
+        return new FilledCard {
+            prop_manager,
+            fcpro::Layout<Group<Col, TextButton>> {
+                lnpro::Alignment { Qt::AlignTop | Qt::AlignHCenter },
+                grpro::Compose {
+                    std::views::iota('A', 'Z' + 1),
+                    [&](char c) {
+                        return new TextButton {
+                            prop_manager,
+                            tbpro::FixedWidth { 200 },
+                            tbpro::FixedHeight { 50 },
+                            tbpro::Radius { -1 },
+                            tbpro::Text {
+                                std::format("{}.{}{}{}", int { c - 'A' }, c, c, c),
+                            },
+                            tbpro::Font { "JetBrains Mono" },
+                        };
+                    },
+                    Qt::AlignTop | Qt::AlignHCenter,
+                },
+            },
+        };
+    };
+
+    auto scroll = new QScrollArea {};
+    scroll->setFrameShape(QFrame::NoFrame);
+    scroll->setWidget(ContentSpace());
+    scroll->setContentsMargins(10, 10, 10, 10);
+    scroll->setWidgetResizable(true);
+
     /// @note 有时候 Windows 总是给我来点惊喜，
     ///       ShowWindow 这么常见命名的函数都放在全局作用域
     creeper::ShowWindow {
@@ -183,6 +228,7 @@ auto main(int argc, char** argv) -> int {
                 const auto colorscheme = manager.color_scheme();
                 const auto colorborder = colorscheme.secondary_container;
                 avatar_image->set_border_color(colorborder);
+                material_theme_image->set_border_color(colorborder);
             });
 
             manager.apply_theme();
@@ -198,8 +244,9 @@ auto main(int argc, char** argv) -> int {
                 lnpro::Margin { 0 },
                 lnpro::SetSpacing { 5 },
 
-                NavigationSpace(),
-                Workspace(),
+                lnpro::Item { NavSpace() },
+                lnpro::Item { scroll },
+                lnpro::Item { { 255 }, MainSpace() },
             },
         },
     };

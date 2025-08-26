@@ -78,6 +78,7 @@ namespace material {
         constexpr auto kMoreHoriz     = "more_horiz";
         constexpr auto kNotifications = "notifications";
         constexpr auto kDashboard     = "dashboard";
+        constexpr auto kExtension     = "extension";
 
         // Shape
         constexpr auto kFavorite    = "favorite";
