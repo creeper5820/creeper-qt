@@ -32,7 +32,8 @@ namespace creeper {
 ///   3. 绑定对象被销毁时，内部回调会自动解绑，无内存泄漏风险。
 ///
 /// @date 2025.7.28
-template <class T> struct Mutable : public T {
+template <class T>
+struct Mutable : public T {
 public:
     explicit Mutable(const T& t) noexcept
         : T { t } { }

@@ -6,9 +6,6 @@ namespace creeper::layout::internal {
 
 struct Layout { };
 
-template <class T>
-concept item_trait = widget_trait<T> || layout_trait<T>;
-
 }
 namespace creeper::layout::pro {
 
@@ -34,7 +31,8 @@ using Token = common::Token<internal::Layout>;
 ///     ...
 /// };
 ///
-template <internal::item_trait T> struct Item : Token {
+template <item_trait T>
+struct Item : Token {
     struct LayoutMethod {
         int stretch         = 0;
         Qt::Alignment align = {};
@@ -59,15 +57,14 @@ template <internal::item_trait T> struct Item : Token {
         : item_pointer { new T { std::forward<decltype(args)>(args)... } } { }
 
     void apply(container_trait auto& layout) const {
-        if constexpr (std::is_convertible_v<T*, QWidget*>)
-            layout.addWidget(item_pointer, method.stretch, method.align);
-        if constexpr (std::is_convertible_v<T*, QLayout*>)
-            layout.addLayout(item_pointer, method.stretch);
+        if constexpr (widget_trait<T>) layout.addWidget(item_pointer, method.stretch, method.align);
+        if constexpr (layout_trait<T>) layout.addLayout(item_pointer, method.stretch);
     }
 };
 
 // 传入一个方法用来辅助构造，在没有想要的接口时用这个吧
-template <typename Lambda> struct Apply : Token {
+template <typename Lambda>
+struct Apply : Token {
     Lambda lambda;
     explicit Apply(Lambda lambda) noexcept
         : lambda { lambda } { }

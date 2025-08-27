@@ -17,9 +17,18 @@ template <class T>
 concept layout_pointer_trait = std::convertible_to<T, QLayout*>;
 
 template <class T>
+concept item_trait = widget_trait<T> || layout_trait<T>;
+
+template <class T>
 concept container_trait = requires(T t) {
     { t.addWidget(std::declval<QWidget*>(), int {}, Qt::AlignCenter) };
     { t.addLayout(std::declval<QLayout*>(), int {}) };
+};
+
+template <class T>
+concept area_trait = requires(T t) {
+    { t.setWidget(std::declval<QWidget*>()) };
+    { t.setLayout(std::declval<QLayout*>()) };
 };
 
 template <class T>

@@ -24,6 +24,7 @@ namespace capro = card::pro;
 namespace tbpro = text_button::pro;
 namespace tfpro = text_field::pro;
 namespace fcpro = filled_card::pro;
+namespace fbpro = filled_button::pro;
 }
 
 template <typename T>
@@ -55,6 +56,8 @@ auto main(int argc, char** argv) -> int {
     auto prop_manager = thpro::ThemeManager { manager };
     auto prop_font    = wipro::Font { "WenQuanYi Micro Hei", 12 };
 
+    auto mutable_theme_button_status = Mutable { icpro::types::TOGGLE_UNSELECTED };
+
     const auto NavSpace = [&]() noexcept {
         const auto navigation_icons_config = std::tuple {
             prop_manager,
@@ -63,7 +66,7 @@ auto main(int argc, char** argv) -> int {
             icpro::types::TOGGLE_UNSELECTED,
             icpro::width::DEFAULT,
 
-            // Font: "Material Icons Round"
+            // Font Name: "Material Icons Round"
             icpro::Font { material::round::font_1 },
 
             icpro::FixedSize { IconButton::kSmallContainerSize },
@@ -115,6 +118,7 @@ auto main(int argc, char** argv) -> int {
                 lnpro::Item<IconButton> {
                     { 0, Qt::AlignHCenter },
                     navigation_icons_config,
+                    mutable_theme_button_status,
                     icpro::color::DEFAULT_FILLED,
                     icpro::FontIcon { material::icon::kDarkMode },
                     icpro::Clickable { [&] {
@@ -130,7 +134,8 @@ auto main(int argc, char** argv) -> int {
         return new FilledCard {
             prop_manager,
             capro::Layout<Col> {
-                lnpro::Margin { 20 },
+                lnpro::Alignment { Qt::AlignTop },
+                lnpro::Margin { 10 },
                 lnpro::SetSpacing { 10 },
 
                 lnpro::Item<Row> {
@@ -149,79 +154,68 @@ auto main(int argc, char** argv) -> int {
                         },
                     },
                 },
-
-                lnpro::Item<Group<Col, TextButton>> {
-                    lnpro::Margin { 20 },
-                    lnpro::SetSpacing { 10 },
-                    lnpro::Alignment { Qt::AlignCenter },
-                    grpro::Compose {
-                        std::array {
-                            std::tuple(1, "更衣人偶"),
-                            std::tuple(2, "琉璃的宝石"),
-                            std::tuple(3, "彻夜之歌"),
-                        },
-                        [&](auto index, auto text) {
-                            return new TextButton {
-                                prop_manager,
-                                prop_font,
-                                tbpro::FixedSize { 200, 50 },
-                                tbpro::Radius { -1 },
-                                tbpro::Text {
-                                    std::format("{} {}", index, text),
-                                },
-                                tbpro::Clickable {
-                                    [](auto& self) { qDebug() << "[main] Click:" << self.text(); },
-                                },
-                            };
-                        },
-                    },
-                    grpro::Foreach { [](TextButton& button) {
-                        // 类型确定在 Group 声明时传入的模板参数
-                        qDebug() << "[main]  -" << button.text();
-                    } },
-                },
             },
         };
     };
 
     const auto ContentSpace = [&] noexcept {
+        const auto ButtonGroup = new Group<Col, TextButton> {
+            lnpro::Alignment { Qt::AlignTop | Qt::AlignHCenter },
+            grpro::Compose {
+                std::views::iota('A', 'Z' + 1),
+                [&](char c) {
+                    return new TextButton {
+                        prop_manager,
+                        tbpro::FixedWidth { 200 },
+                        tbpro::FixedHeight { 50 },
+                        tbpro::Radius { -1 },
+                        tbpro::Text {
+                            std::format("{}.{}{}{}", int { c - 'A' }, c, c, c),
+                        },
+                        tbpro::Font { "JetBrains Mono" },
+                        tbpro::Clickable { [](TextButton& button) {
+                            qDebug() << "[main] Clicked" << button.text();
+                        } },
+                    };
+                },
+                Qt::AlignTop | Qt::AlignHCenter,
+            },
+        };
         return new FilledCard {
             prop_manager,
-            fcpro::Layout<Group<Col, TextButton>> {
-                lnpro::Alignment { Qt::AlignTop | Qt::AlignHCenter },
-                grpro::Compose {
-                    std::views::iota('A', 'Z' + 1),
-                    [&](char c) {
-                        return new TextButton {
-                            prop_manager,
-                            tbpro::FixedWidth { 200 },
-                            tbpro::FixedHeight { 50 },
-                            tbpro::Radius { -1 },
-                            tbpro::Text {
-                                std::format("{}.{}{}{}", int { c - 'A' }, c, c, c),
-                            },
-                            tbpro::Font { "JetBrains Mono" },
-                        };
+            fcpro::Radius { 10 },
+            fcpro::Layout<Col> {
+                lnpro::Item<ScrollArea> {
+                    prop_manager,
+                    scroll::pro::ScrollBarPolicy {
+                        Qt::ScrollBarAlwaysOff,
+                        Qt::ScrollBarAlwaysOff,
                     },
-                    Qt::AlignTop | Qt::AlignHCenter,
+                    scroll::pro::Item<Widget> {
+                        wipro::Layout { ButtonGroup },
+                    },
                 },
             },
         };
     };
-
-    auto scroll = new QScrollArea {};
-    scroll->setFrameShape(QFrame::NoFrame);
-    scroll->setWidget(ContentSpace());
-    scroll->setContentsMargins(10, 10, 10, 10);
-    scroll->setWidgetResizable(true);
 
     /// @note 有时候 Windows 总是给我来点惊喜，
     ///       ShowWindow 这么常见命名的函数都放在全局作用域
     creeper::ShowWindow {
         [&](MainWindow& window) {
             // Q 键退出
-            auto shortcut = new QShortcut { Qt::Key_Q, &window };
-            shortcut->connect(shortcut, &QShortcut::activated, &app::quit);
+            QObject::connect(
+                new QShortcut { Qt::Key_Q, &window }, &QShortcut::activated, &app::quit);
+
+            // E 键换主题
+            QObject::connect(new QShortcut { Qt::Key_E, &window }, &QShortcut::activated, [&] {
+                manager.toggle_color_mode();
+                manager.apply_theme();
+
+                mutable_theme_button_status = (manager.color_mode() == ColorMode::LIGHT)
+                    ? icpro::types::TOGGLE_UNSELECTED
+                    : icpro::types::TOGGLE_SELECTED;
+            });
 
             // 全局主题回调，受到影响的组件生命周期应与 qApp 一致
             manager.append_handler(qApp, [&](const ThemeManager& manager) {
@@ -233,20 +227,26 @@ auto main(int argc, char** argv) -> int {
 
             manager.apply_theme();
         },
-        mwpro::WindowFlag { Qt::Tool },
+        mwpro::MinimumSize { 800, 600 },
         mwpro::Central<FilledCard> {
             prop_manager,
-            capro::MinimumSize { 960, 640 },
             capro::Radius { 0 },
             capro::Level { CardLevel::HIGHEST },
 
             capro::Layout<Row> {
                 lnpro::Margin { 0 },
-                lnpro::SetSpacing { 5 },
+                lnpro::SetSpacing { 0 },
 
                 lnpro::Item { NavSpace() },
-                lnpro::Item { scroll },
-                lnpro::Item { { 255 }, MainSpace() },
+                lnpro::Item<Col> {
+                    lnpro::ContentsMargin { 15, 15, 5, 15 },
+                    lnpro::Item { ContentSpace() },
+                },
+                lnpro::Item<Col> {
+                    { 255 },
+                    lnpro::ContentsMargin { 5, 15, 15, 15 },
+                    lnpro::Item { MainSpace() },
+                },
             },
         },
     };

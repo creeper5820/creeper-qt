@@ -4,7 +4,10 @@
 #include <utility>
 
 /// @note 此处不使用 auto... 来作为构造参数，有体谅语法提示的考量，
-///         为了更有效的编写期检查，还是谨慎地提供构造类型吧
+///       为了更有效的编写期检查，还是谨慎地提供构造类型吧
+///
+/// @note 已废弃，大量侵入式的宏是不可控的
+///
 #define CREEPER_DEFINE_CONSTRUCTOR(CLASS, NAMESPACE)                                               \
 public:                                                                                            \
     static_assert(false, "DO NOT USE MACRO METHOD, PLEASE USE DECLARATIVE WRAPPER");               \
@@ -15,15 +18,19 @@ public:                                                                         
     explicit CLASS(const std::tuple<Args...>& tuple, NAMESPACE::trait auto... properties) {        \
         apply(tuple), (apply(std::forward<decltype(properties)>(properties)), ...);                \
     }                                                                                              \
-    template <NAMESPACE::trait... Args> void apply(const std::tuple<Args...>& _) {                 \
+    template <NAMESPACE::trait... Args>                                                            \
+    void apply(const std::tuple<Args...>& _) {                                                     \
         std::apply(                                                                                \
             [this](auto&&... args) { (apply(std::forward<decltype(args)>(args)), ...); }, _);      \
     }                                                                                              \
     void apply(const NAMESPACE::trait auto& property) { property.apply(*this); }
 
+/// @note 少量样板代码的生成是可以接受的
+///
 #define CREEPER_DEFINE_CHECK(TRAIT)                                                                \
     struct checker final {                                                                         \
-        template <class T> struct result {                                                         \
+        template <class T>                                                                         \
+        struct result {                                                                            \
             static constexpr auto v = TRAIT<T>;                                                    \
         };                                                                                         \
     };
