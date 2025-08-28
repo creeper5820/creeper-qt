@@ -1,0 +1,99 @@
+#include <creeper-qt/core/application.hh>
+#include <creeper-qt/layout/group.hh>
+#include <creeper-qt/layout/linear.hh>
+#include <creeper-qt/utility/material-icon.hh>
+#include <creeper-qt/utility/theme/theme.hh>
+#include <creeper-qt/widget/buttons/icon-button.hh>
+#include <creeper-qt/widget/cards/filled-card.hh>
+#include <creeper-qt/widget/image.hh>
+
+using namespace creeper;
+namespace fc = filled_card::pro;
+namespace gr = group::pro;
+namespace ln = linear::pro;
+namespace im = image::pro;
+namespace ic = icon_button::pro;
+namespace ca = card::pro;
+
+auto NavComponent(ThemeManager& manager) noexcept {
+
+    auto avatar_image = new Image {
+        im::FixedSize { 60, 60 },
+        im::Radius { -1 },
+        im::ContentScale { ContentScale::CROP },
+        im::BorderWidth { 3 },
+        im::PainterResource {
+            "http://i0.hdslb.com/bfs/article/e4e412299e6c038035241b1dc625cb62c8b5513a.jpg",
+            [] { qDebug() << "[main] Image loading completed"; },
+        },
+    };
+    manager.append_handler(avatar_image, [avatar_image](const ThemeManager& manager) {
+        const auto colorscheme = manager.color_scheme();
+        const auto colorborder = colorscheme.secondary_container;
+        avatar_image->set_border_color(colorborder);
+    });
+
+    const auto navigation_icons_config = std::tuple {
+        ic::ThemeManager { manager },
+        ic::color::STANDARD,
+        ic::shape::DEFAULT_ROUND,
+        ic::types::TOGGLE_UNSELECTED,
+        ic::width::DEFAULT,
+        ic::Font { material::round::font_1 },
+        ic::FixedSize { IconButton::kSmallContainerSize },
+    };
+
+    return new FilledCard {
+        fc::ThemeManager { manager },
+        ca::Radius { 0 },
+
+        ca::Layout<Col> {
+            ln::SetSpacing { 10 },
+            ln::Margin { 15 },
+
+            ln::Item { { 0, Qt::AlignHCenter }, avatar_image },
+            ln::Spacing { 20 },
+            ln::Item<Group<Col, IconButton>> {
+                { 0, Qt::AlignHCenter },
+                ln::Margin { 0 },
+                ln::Spacing { 10 },
+                gr::Compose {
+                    std::array {
+                        std::tuple { "home", material::icon::kHome },
+                        std::tuple { "extension", material::icon::kExtension },
+                        std::tuple { "search", material::icon::kSearch },
+                        std::tuple { "settings", material::icon::kSettings },
+                    },
+                    [&](auto name, auto icon) {
+                        return new IconButton {
+                            navigation_icons_config,
+                            ic::color::STANDARD,
+                            ic::FontIcon { icon },
+                            ic::Clickable { [] { } },
+                        };
+                    },
+                    Qt::AlignHCenter,
+                },
+            },
+            ln::Spacing { 40 },
+            ln::Stretch { 255 },
+            ln::Item<IconButton> {
+                { 0, Qt::AlignHCenter },
+                navigation_icons_config,
+                ic::types::DEFAULT,
+                ic::FontIcon { material::icon::kLogout },
+                ic::Clickable { &app::quit },
+            },
+            ln::Item<IconButton> {
+                { 0, Qt::AlignHCenter },
+                navigation_icons_config,
+                ic::color::DEFAULT_FILLED,
+                ic::FontIcon { material::icon::kDarkMode },
+                ic::Clickable { [&] {
+                    manager.toggle_color_mode();
+                    manager.apply_theme();
+                } },
+            },
+        },
+    };
+}

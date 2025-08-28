@@ -93,6 +93,9 @@ if(BUILD_EXAMPLE)
     add_executable(
         widgets
         example/widgets/main.cc
+        example/widgets/list.cc
+        example/widgets/view.cc
+        example/widgets/nav.cc
     )
     target_link_libraries(
         widgets

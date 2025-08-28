@@ -106,8 +106,14 @@ struct Item : Token {
     auto apply(area_trait auto& layout) const noexcept -> void {
         if constexpr (widget_trait<T>) {
             layout.setWidget(item_pointer);
-        } else if constexpr (layout_trait<T>) {
-            layout.setLayout(item_pointer);
+        }
+        // NOTE: 这里可能有调整的空间，直接设置 Layout，
+        //       布局 Size 行为是不正确的
+        else if constexpr (layout_trait<T>) {
+            const auto content = new Widget {
+                widget::pro::Layout { item_pointer },
+            };
+            layout.setWidget(content);
         }
     }
 };
