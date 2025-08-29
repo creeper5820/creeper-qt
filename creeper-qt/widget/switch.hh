@@ -143,26 +143,22 @@ namespace _switch::pro {
             : QColor(color) { }
         void apply(auto& self) const { self.set_hover_color_checked(*this); }
     };
-    template <typename Callback> using Clickable = common::pro::Clickable<Callback, Token>;
-
-    template <class Switch>
-    concept trait = std::derived_from<Switch, Token> //
-        || widget::pro::trait<Switch>                        //
-        || theme::pro::trait<Switch>;
-
-    struct checker {
-        template <class T> struct result {
-            static constexpr auto v = trait<T>;
-        };
-    };
+    template <typename Callback>
+    using Clickable = common::pro::Clickable<Callback, Token>;
 
     using Disabled = common::pro::Disabled<Token>;
     using Checked  = common::pro::Checked<Token>;
+
+    template <class Switch>
+    concept trait = std::derived_from<Switch, Token>;
+
+    CREEPER_DEFINE_CHECK(trait);
 
     using namespace theme::pro;
     using namespace widget::pro;
 }
 /// @note 使用时建议比例 w : h > 7 : 4 ，过冲动画会多占用一些宽度，倘若 w 过短，可能会出现 hover
 /// 层画面被截断的情况
-using Switch = Declarative<_switch::internal::Switch, _switch::pro::checker>;
+using Switch = Declarative<_switch::internal::Switch,
+    CheckerOr<_switch::pro::checker, widget::pro::checker, theme::pro::checker>>;
 }

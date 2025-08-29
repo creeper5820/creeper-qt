@@ -13,27 +13,45 @@ namespace grpro = group::pro;
 namespace tbpro = text_button::pro;
 namespace fcpro = filled_card::pro;
 
+constexpr auto list_items = std::array {
+    "泥土",
+    "石头",
+    "橡木木板",
+    "圆石",
+    "沙子",
+    "沙砾",
+    "玻璃",
+    "铁矿石",
+    "钻石矿石",
+    "岩浆",
+    "水",
+    "萤石",
+    "下界岩",
+    "黑曜石",
+    "基岩",
+    "红石",
+    "青金石块",
+    "金块",
+    "海绵",
+    "绿宝石块",
+};
+
 auto ListComponent(ThemeManager& manager) noexcept {
 
     const auto ButtonGroup = new Group<Col, TextButton> {
         lnpro::Alignment { Qt::AlignTop | Qt::AlignHCenter },
         grpro::Compose {
-            std::views::enumerate(std::views::iota('A', 'Z' + 1)),
-            [&](int i, char c) {
+            std::views::enumerate(list_items),
+            [&](int i, auto c) {
                 return new TextButton {
                     tbpro::ThemeManager { manager },
-                    tbpro::FixedWidth { 200 },
-                    tbpro::FixedHeight { 50 },
+                    tbpro::FixedWidth { 120 },
+                    tbpro::FixedHeight { 30 },
                     tbpro::Radius { -1 },
-                    tbpro::Text {
-                        std::format("{}.{}{}{}", i, c, c, c),
-                    },
+                    tbpro::Text { std::format("{}.{}", i, c) },
                     tbpro::Font { "JetBrains Mono" },
                     tbpro::Clickable {
-                        [c](TextButton& button) {
-                            auto egg = (c == 'Z') ? "绝区零" : button.text();
-                            qDebug() << "[main] Clicked" << egg;
-                        },
+                        [c](TextButton& button) { qDebug() << "[main] Clicked" << c; },
                     },
                 };
             },

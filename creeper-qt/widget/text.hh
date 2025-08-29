@@ -60,7 +60,7 @@ struct Color : Token, QColor {
 };
 struct WordWrap : Token {
     bool on;
-    explicit WordWrap(bool on)
+    constexpr explicit WordWrap(bool on)
         : on { on } { }
     auto apply(auto& self) const noexcept -> void
         requires requires { self.setWordWrap(bool {}); }
@@ -77,7 +77,7 @@ struct AdjustSize : Token {
 };
 struct Alignment : Token {
     Qt::AlignmentFlag alignment;
-    explicit Alignment(Qt::AlignmentFlag alignment) noexcept
+    constexpr explicit Alignment(Qt::AlignmentFlag alignment) noexcept
         : alignment { alignment } { }
     auto apply(auto& self) const noexcept -> void
         requires requires { self.setAlignment(Qt::AlignCenter); }

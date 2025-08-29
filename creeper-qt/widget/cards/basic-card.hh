@@ -13,9 +13,17 @@ constexpr auto kElevatedShadowOffsetY    = double { 2 };
 
 constexpr auto kOutlinedWidth = double { 1.5 };
 
-class Card : public Declarative<rounded_rect::internal::RoundedRect, rounded_rect::pro::checker> {
+class Card : public RoundedRect {
 public:
-    enum class Level { LOWEST, LOW, DEFAULT, HIGH, HIGHEST } level { Level::DEFAULT };
+    enum class Level {
+        LOWEST,
+        LOW,
+        DEFAULT,
+        HIGH,
+        HIGHEST,
+    };
+
+    Level level = Level::DEFAULT;
 
 public:
     explicit Card() noexcept
@@ -74,19 +82,18 @@ namespace level {
 }
 
 template <class Card>
-concept trait = std::derived_from<Card, Token> //
-    || rounded_rect::pro::trait<Card>          //
-    || theme::pro::trait<Card>;
+concept trait = std::derived_from<Card, Token>;
 
-struct checker {
-    template <class T> struct result {
-        static constexpr auto v = trait<T>;
-    };
-};
+CREEPER_DEFINE_CHECK(trait);
 
 using namespace rounded_rect::pro;
 using namespace theme::pro;
 }
 namespace creeper {
+
 using CardLevel = card::internal::Card::Level;
+
+using BasicCard = Declarative<card::internal::Card,
+    CheckerOr<card::pro::checker, rounded_rect::pro::checker, theme::pro::checker>>;
+
 }

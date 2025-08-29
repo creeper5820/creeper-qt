@@ -19,7 +19,7 @@ using raw_pointer = T*;
 
 auto NavComponent(ThemeManager&) noexcept -> raw_pointer<FilledCard>;
 auto ListComponent(ThemeManager&) noexcept -> raw_pointer<FilledCard>;
-auto ViewComponent(ThemeManager& manager) noexcept -> raw_pointer<FilledCard>;
+auto ViewComponent(ThemeManager&) noexcept -> raw_pointer<FilledCard>;
 
 auto main(int argc, char** argv) -> int {
 
@@ -39,7 +39,7 @@ auto main(int argc, char** argv) -> int {
             auto shortcut = new QShortcut { Qt::Key_Q, &window };
             QObject::connect(shortcut, &QShortcut::activated, &app::quit);
         },
-        mwpro::MinimumSize { 800, 600 },
+        mwpro::MinimumSize { 1080, 720 },
         mwpro::Central<FilledCard> {
             capro::ThemeManager { manager },
             capro::Radius { 0 },
@@ -57,7 +57,15 @@ auto main(int argc, char** argv) -> int {
                 lnpro::Item<Col> {
                     { 255 },
                     lnpro::ContentsMargin { 5, 15, 15, 15 },
-                    lnpro::Item { ViewComponent(manager) },
+                    lnpro::Item<ScrollArea> {
+                        scroll::pro::ThemeManager { manager },
+                        scroll::pro::HorizontalScrollBarPolicy {
+                            Qt::ScrollBarAlwaysOff,
+                        },
+                        scroll::pro::Item {
+                            ViewComponent(manager),
+                        },
+                    },
                 },
             },
         },

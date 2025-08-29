@@ -3,9 +3,9 @@
 
 namespace creeper {
 namespace elevated_card::internal {
-    class Impl : public card::internal::Card {
+    class ElevatedCard : public BasicCard {
     public:
-        explicit Impl() {
+        explicit ElevatedCard() {
             using namespace card::internal;
             shadow_effect.setBlurRadius(kElevatedShadowBlurRadius);
             shadow_effect.setOffset(kElevatedShadowOffsetX, kElevatedShadowOffsetY);
@@ -19,7 +19,7 @@ namespace elevated_card::internal {
             shadow_color.setAlphaF(kElevatedShadowOpacity);
 
             shadow_effect.setColor(shadow_color);
-            card::internal::Card::set_color_scheme(scheme);
+            Card::set_color_scheme(scheme);
         }
 
         void load_theme_manager(ThemeManager& manager) {
@@ -35,5 +35,5 @@ namespace elevated_card::internal {
 namespace elevated_card::pro {
     using namespace card::pro;
 }
-using ElevatedCard = Declarative<elevated_card::internal::Impl, card::pro::checker>;
+using ElevatedCard = Declarative<elevated_card::internal::ElevatedCard, BasicCard::Checker>;
 }

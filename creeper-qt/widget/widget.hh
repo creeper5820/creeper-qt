@@ -88,7 +88,8 @@ namespace pro {
     // 显示相关
 
     /// @note 该属性本质是转发构造，有 new 的行为
-    template <class T> struct Layout : Token {
+    template <class T>
+    struct Layout : Token {
         T* layout_;
 
         explicit Layout(T* pointer) noexcept
@@ -213,7 +214,8 @@ namespace pro {
     /// @tparam Final 需要绑定的组件类型（自动推导，无需显式指定）
     ///
     /// @date 2025-06-19
-    template <class Final> struct Bind : Token {
+    template <class Final>
+    struct Bind : Token {
         Final*& widget;
         explicit Bind(Final*& widget) noexcept
             requires std::is_pointer<Final*>::value
@@ -222,7 +224,8 @@ namespace pro {
     };
 
     // 传入一个方法用来辅助构造，在没有想要的接口时用这个吧
-    template <typename Lambda> struct Apply : Token {
+    template <typename Lambda>
+    struct Apply : Token {
         Lambda lambda;
         explicit Apply(Lambda lambda) noexcept
             : lambda { lambda } { }

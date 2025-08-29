@@ -6,7 +6,8 @@
 #include <qwidget.h>
 
 namespace creeper::common {
-template <typename Instance> struct Token {
+template <typename Instance>
+struct Token {
     void apply(auto& self) const {
         const auto self_name = typeid(self).name();
         const auto prop_name = typeid(this).name();
@@ -17,7 +18,8 @@ template <typename Instance> struct Token {
 namespace pro {
 
     // 特殊属性，用于绑定自身指针
-    template <class Token, class Final> struct Bind : Token {
+    template <class Token, class Final>
+    struct Bind : Token {
         Final*& widget;
         explicit Bind(Final*& p)
             : widget(p) { };
@@ -25,7 +27,8 @@ namespace pro {
     };
 
     // 设置组建透明度
-    template <class Token> struct Opacity : Token {
+    template <class Token>
+    struct Opacity : Token {
         double opacity;
         explicit Opacity(double opacity) noexcept
             : opacity { opacity } { }
@@ -37,28 +40,78 @@ namespace pro {
     };
 
     // 通用半径长度
-    template <class Token> struct RadiusX : Token {
+    template <class Token>
+    struct RadiusNxNy : Token {
         double radius;
-        explicit RadiusX(double p) { radius = p; }
-        void apply(auto& self) const
+        constexpr explicit RadiusNxNy(double radius)
+            : radius { radius } { }
+        auto apply(auto& self) const -> void
+            requires requires { self.set_radius_nx_ny(radius); }
+        {
+            self.set_radius_nx_ny(radius);
+        }
+    };
+    template <class Token>
+    struct RadiusPxPy : Token {
+        double radius;
+        constexpr explicit RadiusPxPy(double radius)
+            : radius { radius } { }
+        auto apply(auto& self) const -> void
+            requires requires { self.set_radius_px_py(radius); }
+        {
+            self.set_radius_px_py(radius);
+        }
+    };
+    template <class Token>
+    struct RadiusNxPy : Token {
+        double radius;
+        constexpr explicit RadiusNxPy(double radius)
+            : radius { radius } { }
+        auto apply(auto& self) const -> void
+            requires requires { self.set_radius_nx_py(radius); }
+        {
+            self.set_radius_nx_py(radius);
+        }
+    };
+    template <class Token>
+    struct RadiusPxNy : Token {
+        double radius;
+        constexpr explicit RadiusPxNy(double radius)
+            : radius { radius } { }
+        auto apply(auto& self) const -> void
+            requires requires { self.set_radius_px_ny(radius); }
+        {
+            self.set_radius_px_ny(radius);
+        }
+    };
+    template <class Token>
+    struct RadiusX : Token {
+        double radius;
+        constexpr explicit RadiusX(double radius)
+            : radius { radius } { }
+        auto apply(auto& self) const -> void
             requires requires { self.set_radius_x(radius); }
         {
             self.set_radius_x(radius);
         }
     };
-    template <class Token> struct RadiusY : Token {
+    template <class Token>
+    struct RadiusY : Token {
         double radius;
-        explicit RadiusY(double p) { radius = p; }
-        void apply(auto& self) const
+        constexpr explicit RadiusY(double radius)
+            : radius { radius } { }
+        auto apply(auto& self) const -> void
             requires requires { self.set_radius_y(radius); }
         {
             self.set_radius_y(radius);
         }
     };
-    template <class Token> struct Radius : Token {
+    template <class Token>
+    struct Radius : Token {
         double radius;
-        explicit Radius(double p) { radius = p; }
-        void apply(auto& self) const
+        constexpr explicit Radius(double radius)
+            : radius { radius } { }
+        auto apply(auto& self) const -> void
             requires requires { self.set_radius(radius); }
         {
             self.set_radius(radius);
@@ -66,7 +119,8 @@ namespace pro {
     };
 
     // 通用边界宽度
-    template <class Token> struct BorderWidth : Token {
+    template <class Token>
+    struct BorderWidth : Token {
         double border;
         explicit BorderWidth(double p) { border = p; }
         void apply(auto& self) const
@@ -77,7 +131,8 @@ namespace pro {
     };
 
     // 通用边界颜色
-    template <class Token> struct BorderColor : public QColor, Token {
+    template <class Token>
+    struct BorderColor : public QColor, Token {
         using QColor::QColor;
         explicit BorderColor(const QColor& color)
             : QColor(color) { }
@@ -89,7 +144,8 @@ namespace pro {
     };
 
     // 通用文本属性
-    template <class Token> struct Text : public QString, Token {
+    template <class Token>
+    struct Text : public QString, Token {
         using QString::QString;
 
         explicit Text(const QString& text) noexcept
@@ -106,7 +162,8 @@ namespace pro {
     };
 
     // 通用文字颜色
-    template <class Token> struct TextColor : public QColor, Token {
+    template <class Token>
+    struct TextColor : public QColor, Token {
         using QColor::QColor;
         explicit TextColor(const QColor& color)
             : QColor(color) { }
@@ -118,7 +175,8 @@ namespace pro {
     };
 
     // 通用背景颜色
-    template <class Token> struct Background : public QColor, Token {
+    template <class Token>
+    struct Background : public QColor, Token {
         using QColor::QColor;
         explicit Background(const QColor& color)
             : QColor(color) { }
@@ -130,7 +188,8 @@ namespace pro {
     };
 
     // 通用水波纹颜色
-    template <class Token> struct WaterColor : public QColor, Token {
+    template <class Token>
+    struct WaterColor : public QColor, Token {
         using QColor::QColor;
         explicit WaterColor(const QColor& color)
             : QColor(color) { }
@@ -142,7 +201,8 @@ namespace pro {
     };
 
     // 通用禁止属性
-    template <class Token> struct Disabled : Token {
+    template <class Token>
+    struct Disabled : Token {
         bool disabled;
         explicit Disabled(bool p) { disabled = p; }
         void apply(auto& self) const
@@ -153,7 +213,8 @@ namespace pro {
     };
 
     // 通用 Checked 属性
-    template <class Token> struct Checked : Token {
+    template <class Token>
+    struct Checked : Token {
         bool checked;
         explicit Checked(bool p) { checked = p; }
         void apply(auto& self) const
@@ -163,7 +224,8 @@ namespace pro {
         }
     };
 
-    template <typename Callback, class Token> struct Clickable : Token {
+    template <typename Callback, class Token>
+    struct Clickable : Token {
         Callback callback;
         explicit Clickable(Callback callback) noexcept
             : callback(callback) { }

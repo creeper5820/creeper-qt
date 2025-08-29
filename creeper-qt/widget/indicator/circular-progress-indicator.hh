@@ -17,7 +17,7 @@ namespace creeper::circular_progress_indicator::pro {
 using Token = common::Token<internal::CircularProgressIndicator>;
 
 template <class T>
-concept trait = std::derived_from<T, Token> || widget::pro::trait<T>;
+concept trait = std::derived_from<T, Token>;
 
 CREEPER_DEFINE_CHECK(trait);
 using namespace widget::pro;

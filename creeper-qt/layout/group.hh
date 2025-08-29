@@ -35,10 +35,10 @@ struct Group : public T {
             auto widget_pointer = (W*) {};
 
             if constexpr (foreach_invoke_item_trait<F, ItemT>)
-                widget_pointer = std::invoke(std::move(f), item);
+                widget_pointer = std::invoke(f, item);
 
             else if constexpr (foreach_apply_item_trait<F, ItemT>)
-                widget_pointer = std::apply(std::move(f), item);
+                widget_pointer = std::apply(f, item);
 
             if (widget_pointer != nullptr) {
                 T::addWidget(widget_pointer, 0, a);
@@ -86,7 +86,9 @@ struct Compose : Token {
         , method { std::move(f) }
         , alignment { a } { }
 
-    auto apply(auto& self) noexcept { self.compose(ranges, std::move(method), alignment); }
+    auto apply(auto& self) noexcept -> void { //
+        self.compose(ranges, std::move(method), alignment);
+    }
 };
 
 /// @note
@@ -111,19 +113,12 @@ struct Foreach : Token {
 template <class T>
 concept trait = std::derived_from<T, Token>;
 
-template <layout_trait L>
-struct checker final {
-    template <class T>
-    struct result {
-        static constexpr auto v = trait<T> || L::Checker::template result<T>::v;
-    };
+CREEPER_DEFINE_CHECK(trait)
 };
-
-};
-
 namespace creeper {
 
 template <layout_trait T, widget_trait W>
-using Group = Declarative<group::internal::Group<T, W>, group::pro::checker<T>>;
+using Group =
+    Declarative<group::internal::Group<T, W>, CheckerOr<group::pro::checker, typename T::Checker>>;
 
 }

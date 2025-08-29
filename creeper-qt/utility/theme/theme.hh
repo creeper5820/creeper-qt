@@ -5,6 +5,7 @@
 #include "creeper-qt/utility/theme/color-scheme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
+#include "creeper-qt/utility/wrapper/property.hh"
 
 namespace creeper::theme {
 
@@ -62,9 +63,6 @@ namespace creeper::theme::pro {
 
 using Token = common::Token<ThemeManager>;
 
-template <typename T>
-concept trait = std::derived_from<T, Token>;
-
 struct ColorScheme : public theme::ColorScheme, Token {
     using theme::ColorScheme::ColorScheme;
     explicit ColorScheme(const theme::ColorScheme& p)
@@ -82,6 +80,11 @@ struct ThemeManager : Token {
         self.load_theme_manager(manager);
     }
 };
+
+template <typename T>
+concept trait = std::derived_from<T, Token>;
+
+CREEPER_DEFINE_CHECK(trait);
 
 }
 namespace creeper {

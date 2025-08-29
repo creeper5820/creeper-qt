@@ -42,6 +42,21 @@ concept checker_trait = requires {
     { T::template result<void>::v == false };
 };
 
+template <checker_trait... Ts>
+struct CheckerOr {
+    template <class T>
+    struct result {
+        static constexpr auto v = (Ts::template result<T>::v || ...);
+    };
+};
+template <checker_trait... Ts>
+struct CheckerAnd {
+    template <class T>
+    struct result {
+        static constexpr auto v = (Ts::template result<T>::v && ...);
+    };
+};
+
 /// @brief
 /// 声明式包装，非侵入式实现 Setter 的声明式化
 ///

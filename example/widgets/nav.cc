@@ -1,6 +1,7 @@
 #include <creeper-qt/core/application.hh>
 #include <creeper-qt/layout/group.hh>
 #include <creeper-qt/layout/linear.hh>
+#include <creeper-qt/layout/mutual-exclusion-group.hh>
 #include <creeper-qt/utility/material-icon.hh>
 #include <creeper-qt/utility/theme/theme.hh>
 #include <creeper-qt/widget/buttons/icon-button.hh>
@@ -10,10 +11,10 @@
 using namespace creeper;
 namespace fc = filled_card::pro;
 namespace gr = group::pro;
+namespace sg = select_group::pro;
 namespace ln = linear::pro;
 namespace im = image::pro;
 namespace ic = icon_button::pro;
-namespace ca = card::pro;
 
 auto NavComponent(ThemeManager& manager) noexcept {
 
@@ -35,25 +36,26 @@ auto NavComponent(ThemeManager& manager) noexcept {
 
     const auto navigation_icons_config = std::tuple {
         ic::ThemeManager { manager },
-        ic::color::STANDARD,
-        ic::shape::DEFAULT_ROUND,
-        ic::types::TOGGLE_UNSELECTED,
-        ic::width::DEFAULT,
+        ic::ColorStandard,
+        ic::ShapeRound,
+        ic::TypesToggleUnselected,
+        ic::WidthDefault,
         ic::Font { material::round::font_1 },
         ic::FixedSize { IconButton::kSmallContainerSize },
     };
 
     return new FilledCard {
         fc::ThemeManager { manager },
-        ca::Radius { 0 },
+        fc::Radius { 0 },
+        fc::Level { CardLevel::HIGHEST },
 
-        ca::Layout<Col> {
+        fc::Layout<Col> {
             ln::SetSpacing { 10 },
             ln::Margin { 15 },
 
             ln::Item { { 0, Qt::AlignHCenter }, avatar_image },
             ln::Spacing { 20 },
-            ln::Item<Group<Col, IconButton>> {
+            ln::Item<SelectGroup<Col, IconButton>> {
                 { 0, Qt::AlignHCenter },
                 ln::Margin { 0 },
                 ln::Spacing { 10 },
@@ -67,27 +69,28 @@ auto NavComponent(ThemeManager& manager) noexcept {
                     [&](auto name, auto icon) {
                         return new IconButton {
                             navigation_icons_config,
-                            ic::color::STANDARD,
+                            ic::ColorStandard,
                             ic::FontIcon { icon },
                             ic::Clickable { [] { } },
                         };
                     },
                     Qt::AlignHCenter,
                 },
+                sg::SignalInjection { &IconButton::clicked },
             },
             ln::Spacing { 40 },
             ln::Stretch { 255 },
             ln::Item<IconButton> {
                 { 0, Qt::AlignHCenter },
                 navigation_icons_config,
-                ic::types::DEFAULT,
+                ic::TypesDefault,
                 ic::FontIcon { material::icon::kLogout },
                 ic::Clickable { &app::quit },
             },
             ln::Item<IconButton> {
                 { 0, Qt::AlignHCenter },
                 navigation_icons_config,
-                ic::color::DEFAULT_FILLED,
+                ic::ColorFilled,
                 ic::FontIcon { material::icon::kDarkMode },
                 ic::Clickable { [&] {
                     manager.toggle_color_mode();

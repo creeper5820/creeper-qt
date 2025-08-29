@@ -15,6 +15,8 @@ public:
     explicit ScrollArea() noexcept {
         viewport()->setStyleSheet("background:transparent;");
         setStyleSheet("QScrollArea{background:transparent;}");
+
+        setWidgetResizable(true);
     }
 
     void set_color_scheme(const ColorScheme& scheme) {
@@ -119,7 +121,7 @@ struct Item : Token {
 };
 
 template <class T>
-concept trait = std::derived_from<T, Token> || widget::pro::trait<T> || theme::pro::trait<T>;
+concept trait = std::derived_from<T, Token>;
 
 CREEPER_DEFINE_CHECK(trait);
 using namespace widget::pro;
@@ -127,6 +129,7 @@ using namespace theme::pro;
 }
 namespace creeper {
 
-using ScrollArea = Declarative<scroll::internal::ScrollArea, scroll::pro::checker>;
+using ScrollArea = Declarative<scroll::internal::ScrollArea,
+    CheckerOr<scroll::pro::checker, widget::pro::checker, theme::pro::checker>>;
 
 }
