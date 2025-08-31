@@ -57,8 +57,14 @@ static auto ItemComponent(ThemeManager& manager) noexcept {
                 wave_circle::pro::FlangeRadius { 20 },
                 wave_circle::pro::OverallRadius { 75 },
                 wave_circle::pro::ProtrudingRatio { 0.8 },
-                wave_circle::pro::Background { manager.color_scheme().surface_container_lowest },
                 wave_circle::pro::BorderColor { Qt::transparent },
+                wave_circle::pro::Apply { [&manager](WaveCircle& self) {
+                    manager.append_handler(&self, [&](const ThemeManager& manager) {
+                        const auto colorscheme = manager.color_scheme();
+                        const auto colorborder = colorscheme.surface_container_lowest;
+                        self.set_background(colorborder);
+                    });
+                } },
             },
             col::pro::Item<FilledCard> {
                 card::pro::ThemeManager { manager },
