@@ -30,12 +30,13 @@ namespace ellipse::pro {
     using BorderColor = common::pro::BorderColor<Token>;
 
     template <typename T>
-    concept trait = std::derived_from<T, Token> || widget::pro::trait<T>;
+    concept trait = std::derived_from<T, Token>;
 
-    CREEPER_DEFINE_CHECK(trait)
+    CREEPER_DEFINE_CHECKER(trait)
     using namespace widget::pro;
 }
 
-using Ellipse = Declarative<ellipse::internal::Ellipse, ellipse::pro::checker>;
+using Ellipse =
+    Declarative<ellipse::internal::Ellipse, CheckerOr<ellipse::pro::checker, widget::pro::checker>>;
 
 }

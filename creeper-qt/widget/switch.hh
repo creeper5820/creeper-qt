@@ -152,7 +152,7 @@ namespace _switch::pro {
     template <class Switch>
     concept trait = std::derived_from<Switch, Token>;
 
-    CREEPER_DEFINE_CHECK(trait);
+    CREEPER_DEFINE_CHECKER(trait);
 
     using namespace theme::pro;
     using namespace widget::pro;

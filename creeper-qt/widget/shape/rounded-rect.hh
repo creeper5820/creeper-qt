@@ -69,13 +69,15 @@ private:
 
         auto path = QPainterPath {};
 
-        auto half_width  = rect.width() / 2.0;
-        auto half_height = rect.height() / 2.0;
+        const auto half_width  = rect.width() / 2.0;
+        const auto half_height = rect.height() / 2.0;
 
-        tl = qMin(tl, qMin(half_width, half_height));
-        tr = qMin(tr, qMin(half_width, half_height));
-        br = qMin(br, qMin(half_width, half_height));
-        bl = qMin(bl, qMin(half_width, half_height));
+        const auto max_radius = std::min(half_width, half_height);
+
+        tl = tl < 0 ? max_radius : std::min(tl, max_radius);
+        tr = tr < 0 ? max_radius : std::min(tr, max_radius);
+        br = br < 0 ? max_radius : std::min(br, max_radius);
+        bl = bl < 0 ? max_radius : std::min(bl, max_radius);
 
         path.moveTo(rect.topLeft() + QPointF(tl, 0));
 
@@ -117,13 +119,14 @@ using BorderWidth = common::pro::BorderWidth<Token>;
 using BorderColor = common::pro::BorderColor<Token>;
 
 template <typename T>
-concept trait = std::derived_from<T, Token> || widget::pro::trait<T>;
+concept trait = std::derived_from<T, Token>;
 
-CREEPER_DEFINE_CHECK(trait)
+CREEPER_DEFINE_CHECKER(trait)
 using namespace widget::pro;
 }
 namespace creeper {
 
-using RoundedRect = Declarative<rounded_rect::internal::RoundedRect, rounded_rect::pro::checker>;
+using RoundedRect = Declarative<rounded_rect::internal::RoundedRect,
+    CheckerOr<rounded_rect::pro::checker, widget::pro::checker>>;
 
 }

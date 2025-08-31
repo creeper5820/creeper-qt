@@ -36,7 +36,7 @@ struct Central : Token {
 template <class T>
 concept trait = std::derived_from<T, Token> || widget::pro::trait<T>;
 
-CREEPER_DEFINE_CHECK(trait);
+CREEPER_DEFINE_CHECKER(trait);
 using namespace widget::pro;
 }
 namespace creeper {

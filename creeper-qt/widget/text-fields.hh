@@ -99,7 +99,7 @@ namespace text_field::pro {
         || widget::pro::trait<TextField>                //
         || theme::pro::trait<TextField>;
 
-    CREEPER_DEFINE_CHECK(trait);
+    CREEPER_DEFINE_CHECKER(trait);
     using namespace widget::pro;
     using namespace theme::pro;
 }

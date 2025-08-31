@@ -84,7 +84,7 @@ namespace level {
 template <class Card>
 concept trait = std::derived_from<Card, Token>;
 
-CREEPER_DEFINE_CHECK(trait);
+CREEPER_DEFINE_CHECKER(trait);
 
 using namespace rounded_rect::pro;
 using namespace theme::pro;
@@ -94,6 +94,7 @@ namespace creeper {
 using CardLevel = card::internal::Card::Level;
 
 using BasicCard = Declarative<card::internal::Card,
-    CheckerOr<card::pro::checker, rounded_rect::pro::checker, theme::pro::checker>>;
+    CheckerOr<card::pro::checker, rounded_rect::pro::checker, theme::pro::checker,
+        widget::pro::checker>>;
 
 }

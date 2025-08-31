@@ -16,7 +16,7 @@ using Token = common::Token<internal::Stacked>;
 template <typename T>
 concept trait = std::derived_from<T, Token> || layout::pro::trait<T>;
 
-CREEPER_DEFINE_CHECK(trait);
+CREEPER_DEFINE_CHECKER(trait);
 using namespace layout::pro;
 }
 

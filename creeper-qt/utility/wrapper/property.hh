@@ -3,58 +3,64 @@
 #include <tuple>
 #include <utility>
 
-/// @note 此处不使用 auto... 来作为构造参数，有体谅语法提示的考量，
-///       为了更有效的编写期检查，还是谨慎地提供构造类型吧
-///
-/// @note 已废弃，大量侵入式的宏是不可控的
-///
-#define CREEPER_DEFINE_CONSTRUCTOR(CLASS, NAMESPACE)                                               \
-public:                                                                                            \
-    static_assert(false, "DO NOT USE MACRO METHOD, PLEASE USE DECLARATIVE WRAPPER");               \
-    explicit CLASS(NAMESPACE::trait auto... properties) {                                          \
-        (apply(std::forward<decltype(properties)>(properties)), ...);                              \
-    }                                                                                              \
-    template <NAMESPACE::trait... Args>                                                            \
-    explicit CLASS(const std::tuple<Args...>& tuple, NAMESPACE::trait auto... properties) {        \
-        apply(tuple), (apply(std::forward<decltype(properties)>(properties)), ...);                \
-    }                                                                                              \
-    template <NAMESPACE::trait... Args>                                                            \
-    void apply(const std::tuple<Args...>& _) {                                                     \
-        std::apply(                                                                                \
-            [this](auto&&... args) { (apply(std::forward<decltype(args)>(args)), ...); }, _);      \
-    }                                                                                              \
-    void apply(const NAMESPACE::trait auto& property) { property.apply(*this); }
-
-/// @note 少量样板代码的生成是可以接受的
-///
-#define CREEPER_DEFINE_CHECK(TRAIT)                                                                \
+// 少量样板代码的生成宏是可以接受的，
+// 等 concept 可以作为参数的那一天，这个宏就可以废弃了
+#define CREEPER_DEFINE_CHECKER(TRAIT)                                                              \
     struct checker final {                                                                         \
         template <class T>                                                                         \
-        struct result {                                                                            \
-            static constexpr auto v = TRAIT<T>;                                                    \
-        };                                                                                         \
+        static constexpr auto result = TRAIT<T>;                                                   \
     };
 
 namespace creeper {
 
+/// CHECKER
 template <class T>
 concept checker_trait = requires {
-    { T::template result<void>::v == false };
+    { T::template result<void> };
 };
 
 template <checker_trait... Ts>
 struct CheckerOr {
     template <class T>
-    struct result {
-        static constexpr auto v = (Ts::template result<T>::v || ...);
-    };
+    static constexpr auto result = (Ts::template result<T> || ...);
 };
 template <checker_trait... Ts>
 struct CheckerAnd {
     template <class T>
-    struct result {
-        static constexpr auto v = (Ts::template result<T>::v && ...);
-    };
+    static constexpr auto result = (Ts::template result<T> && ...);
+};
+
+/// PROP
+template <class Token, typename T, auto interface>
+struct SetterProp : Token {
+    T value;
+
+    constexpr explicit SetterProp(T value) noexcept
+        : value { std::move(value) } { }
+
+    constexpr explicit operator T(this auto&& self) noexcept { return self.value; }
+
+    template <typename O>
+    auto operator=(O&& other) noexcept -> SetterProp&
+        requires std::assignable_from<T&, O>
+    {
+        value = std::forward<O>(other);
+        return *this;
+    }
+
+    auto apply(auto& self) const noexcept -> void
+        requires requires { interface(self, std::declval<T>()); }
+    {
+        interface(self, value);
+    }
+};
+template <class Token, auto interface>
+struct ActionProp : Token {
+    auto apply(auto& self) const noexcept -> void
+        requires requires { interface(self); }
+    {
+        interface(self);
+    }
 };
 
 /// @brief
@@ -80,54 +86,54 @@ struct CheckerAnd {
 /// 在不符合 CheckerT 要求的类型被传入时，会在 concept 约束阶段直接报错，
 /// 提供简洁且精准的编译期错误提示，避免编译器自动展开大量构造函数
 /// 导致的冗长错误栈，但编译期报错信息依旧不友好。
-template <class WidgetT, class CheckerT>
-    requires checker_trait<CheckerT>
-struct Declarative : public WidgetT {
-    /* Export widget type */
-    using Widget = WidgetT;
-    /* Export checker type */
-    using Checker = CheckerT;
-
+///
+template <class W, checker_trait checker>
+struct Declarative : public W {
 private:
-    template <typename T, class Checker> /* For help check tuple of props */
-    struct tuple_props_helper {
-        static constexpr bool v = false;
-    };
-    template <typename... Ts, class Checker> /* For helpe check tuple of props */
-    struct tuple_props_helper<std::tuple<Ts...>, Checker> {
-        static constexpr bool v = (Checker::template result<std::remove_cvref_t<Ts>>::v && ...);
-        static_assert(v,
-            "\n[CREEPER-QT] 当你看到我，你便知道你的tuple里塞了错误的配置"
-            "\n[CREEPER-QT] Your tuple contains the wrong configuration"
-            "\n");
-    };
-    template <typename T, class Checker> //
-    struct single_prop_helper {
-        static constexpr bool v = Checker::template result<std::remove_cvref_t<T>>::v;
-    };
+    // For helpe check single props
+    // 这里没法子塞一个 static_assert，无论如何这里都会被尝试错误地实例化
+    template <typename T, class checker_>
+    static constexpr auto impl_props_trait = checker_::template result<std::remove_cvref_t<T>>;
+
+    // For help check tuple of props
+    // 使用 SFINAE 真是抱歉呢，没找到方便处理 tuple 的方法真是不好意思呢
+    template <typename T, class checker_>
+    static constexpr auto impl_tuple_trait = false;
+
+    template <typename... Ts, class checker_>
+    static constexpr auto impl_tuple_trait<std::tuple<Ts...>, checker_> =
+        (impl_props_trait<Ts, checker_> && ...);
 
 public:
-    template <class T> /* For check props */
-    using props_trait = single_prop_helper<std::remove_cvref_t<T>, CheckerT>;
+    /* Export widget type */
+    using Widget = W;
 
-    template <class T> /* For check tuple */
-    using tuple_trait = tuple_props_helper<std::remove_cvref_t<T>, CheckerT>;
+    /* Export checker type */
+    using Checker = checker;
 
+    /* For check props */
+    template <class T>
+    static constexpr auto props_trait = impl_props_trait<std::remove_cvref_t<T>, checker>;
+
+    /* For check tuple */
+    template <class T>
+    static constexpr auto tuple_trait = impl_tuple_trait<std::remove_cvref_t<T>, checker>;
+
+public:
+    // 铁血的，热血的，冷血的声明式构造接口
     explicit Declarative(auto&&... props) noexcept
-        requires((props_trait<decltype(props)>::v || tuple_trait<decltype(props)>::v) && ...)
-        : WidgetT {} {
+        requires((props_trait<decltype(props)> || tuple_trait<decltype(props)>) && ...)
+        : W {} {
         (apply(std::forward<decltype(props)>(props)), ...);
     }
-
     auto apply(auto&& tuple) noexcept -> void
-        requires tuple_trait<decltype(tuple)>::v
+        requires tuple_trait<decltype(tuple)>
     {
         std::apply([this](auto&&... args) { (apply(std::forward<decltype(args)>(args)), ...); },
             std::forward<decltype(tuple)>(tuple));
     }
-
     auto apply(auto&& prop) noexcept -> void
-        requires props_trait<decltype(prop)>::v
+        requires props_trait<decltype(prop)>
     {
         std::forward<decltype(prop)>(prop).apply(*this);
     }

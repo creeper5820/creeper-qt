@@ -72,10 +72,11 @@ namespace image::pro {
     using BorderWidth = common::pro::BorderWidth<Token>;
 
     template <class T>
-    concept property_c = std::derived_from<T, Token> || widget::pro::trait<T>;
+    concept trait = std::derived_from<T, Token>;
 
-    CREEPER_DEFINE_CHECK(property_c);
+    CREEPER_DEFINE_CHECKER(trait);
     using namespace widget::pro;
 }
-using Image = Declarative<image::internal::Image, image::pro::checker>;
+using Image =
+    Declarative<image::internal::Image, CheckerOr<image::pro::checker, widget::pro::checker>>;
 }

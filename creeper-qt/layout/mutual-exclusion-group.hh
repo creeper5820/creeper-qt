@@ -59,7 +59,7 @@ struct SignalInjection : Token {
     }
 };
 
-CREEPER_DEFINE_CHECK(trait);
+CREEPER_DEFINE_CHECKER(trait);
 using namespace group::pro;
 }
 namespace creeper {

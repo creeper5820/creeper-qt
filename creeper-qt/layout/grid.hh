@@ -76,7 +76,7 @@ namespace grid::pro {
     template <typename T>
     concept trait = std::derived_from<T, Token>;
 
-    CREEPER_DEFINE_CHECK(trait);
+    CREEPER_DEFINE_CHECKER(trait);
 
 }
 using Grid = Declarative<grid::internal::Grid, grid::pro::checker>;

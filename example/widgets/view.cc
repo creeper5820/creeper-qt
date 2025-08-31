@@ -1,3 +1,4 @@
+#include "creeper-qt/widget/shape/wave-circle.hh"
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/utility/material-icon.hh>
 #include <creeper-qt/widget/buttons/icon-button.hh>
@@ -9,39 +10,36 @@ using namespace creeper;
 namespace capro = card::pro;
 namespace lnpro = linear::pro;
 namespace impro = image::pro;
-namespace tfpro = text_field::pro;
 namespace ibpro = icon_button::pro;
 
 static auto SearchComponent(ThemeManager& manager) noexcept {
     return new Row {
-        lnpro::Item<FilledTextField> {
-            { 255 },
-            tfpro::ThemeManager { manager },
-            tfpro::MinimumWidth { 400 },
-            tfpro::LabelText { "Search" },
-            tfpro::FixedHeight { 50 },
-            tfpro::LeadingIcon { material::icon::kSearch, material::outlined::font },
+        lnpro::Item<FilledCard> {
+            capro::ThemeManager { manager },
+            capro::FixedHeight { 40 },
+            capro::Radius { -1 },
+            capro::Level { CardLevel::HIGHEST },
         },
-        lnpro::Spacing { 40 },
+        lnpro::Spacing { 20 },
         lnpro::Item<IconButton> {
             ibpro::ThemeManager { manager },
             ibpro::FixedSize { 40, 40 },
             ibpro::Color { IconButton::Color::TONAL },
-            ibpro::Font { material::kOutlinedSmallFont },
+            ibpro::Font { material::kRoundSmallFont },
             ibpro::FontIcon { material::icon::kAdd },
         },
         lnpro::Item<IconButton> {
             ibpro::ThemeManager { manager },
             ibpro::FixedSize { 40, 40 },
             ibpro::Color { IconButton::Color::TONAL },
-            ibpro::Font { material::kOutlinedSmallFont },
+            ibpro::Font { material::kRoundSmallFont },
             ibpro::FontIcon { material::icon::kFavorite },
         },
         lnpro::Item<IconButton> {
             ibpro::ThemeManager { manager },
             ibpro::FixedSize { 40, 40 },
             ibpro::Color { IconButton::Color::TONAL },
-            ibpro::Font { material::kOutlinedSmallFont },
+            ibpro::Font { material::kRoundSmallFont },
             ibpro::FontIcon { material::icon::kFolder },
         },
     };
@@ -53,10 +51,14 @@ static auto ItemComponent(ThemeManager& manager) noexcept {
             col::pro::SetSpacing { 5 },
             col::pro::Margin { 10 },
 
-            col::pro::Item<FilledCard> {
-                card::pro::ThemeManager { manager },
-                card::pro::Level { CardLevel::LOWEST },
-                card::pro::FixedSize { 150, 200 },
+            col::pro::Item<WaveCircle> {
+                wave_circle::pro::FixedSize { 150, 200 },
+                wave_circle::pro::FlangeNumber { 8 },
+                wave_circle::pro::FlangeRadius { 20 },
+                wave_circle::pro::OverallRadius { 75 },
+                wave_circle::pro::ProtrudingRatio { 0.8 },
+                wave_circle::pro::Background { manager.color_scheme().surface_container_lowest },
+                wave_circle::pro::BorderColor { Qt::transparent },
             },
             col::pro::Item<FilledCard> {
                 card::pro::ThemeManager { manager },
@@ -108,21 +110,18 @@ auto ViewComponent(ThemeManager& manager) noexcept {
             },
             lnpro::Item { BannerComponent(manager) },
             lnpro::Item<Row> {
-                lnpro::Alignment { Qt::AlignHCenter },
                 lnpro::Item { ItemComponent(manager) },
                 lnpro::Item { ItemComponent(manager) },
                 lnpro::Item { ItemComponent(manager) },
                 lnpro::Item { ItemComponent(manager) },
             },
             lnpro::Item<Row> {
-                lnpro::Alignment { Qt::AlignHCenter },
                 lnpro::Item { ItemComponent(manager) },
                 lnpro::Item { ItemComponent(manager) },
                 lnpro::Item { ItemComponent(manager) },
                 lnpro::Item { ItemComponent(manager) },
             },
             lnpro::Item<Row> {
-                lnpro::Alignment { Qt::AlignHCenter },
                 lnpro::Item { ItemComponent(manager) },
                 lnpro::Item { ItemComponent(manager) },
                 lnpro::Item { ItemComponent(manager) },

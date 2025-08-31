@@ -152,7 +152,7 @@ using Clickable = common::pro::Clickable<Callback, Token>;
 template <class T>
 concept trait = std::derived_from<T, Token>;
 
-CREEPER_DEFINE_CHECK(trait);
+CREEPER_DEFINE_CHECKER(trait);
 
 using namespace widget::pro;
 using namespace theme::pro;

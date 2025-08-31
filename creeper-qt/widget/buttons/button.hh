@@ -22,5 +22,5 @@ using WaterColor  = common::pro::WaterColor<Token>;
 template <typename Callback>
 using Clickable = common::pro::Clickable<Callback, Token>;
 
-CREEPER_DEFINE_CHECK(trait)
+CREEPER_DEFINE_CHECKER(trait)
 }
