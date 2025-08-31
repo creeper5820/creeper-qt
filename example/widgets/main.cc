@@ -36,8 +36,8 @@ auto main(int argc, char** argv) -> int {
     creeper::ShowWindow {
         [&](MainWindow& window) {
             // Q 键退出
-            auto shortcut = new QShortcut { Qt::Key_Q, &window };
-            QObject::connect(shortcut, &QShortcut::activated, &app::quit);
+            auto shortcut_q = new QShortcut { Qt::Key_Q, &window };
+            QObject::connect(shortcut_q, &QShortcut::activated, &app::quit);
         },
         mwpro::MinimumSize { 1080, 720 },
         mwpro::Central<FilledCard> {
