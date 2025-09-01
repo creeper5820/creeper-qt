@@ -1,9 +1,9 @@
-#include "creeper-qt/widget/shape/wave-circle.hh"
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/utility/material-icon.hh>
 #include <creeper-qt/widget/buttons/icon-button.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/image.hh>
+#include <creeper-qt/widget/shape/wave-circle.hh>
 #include <creeper-qt/widget/text-fields.hh>
 
 using namespace creeper;

@@ -4,11 +4,13 @@
 
 <h1>CREEPER-QT</h1>
 
-[组件文档](./doc/widgets.md) | [主题文档](./doc/utility.md) | [视频演示](https://www.bilibili.com/video/BV1GAq5YZEtr/?share_source=copy_web&vd_source=64f4d9d099bf51aa199961a8349d034b)
+[组件文档](./doc/widgets.md) | [视频演示](https://www.bilibili.com/video/BV1GAq5YZEtr/?share_source=copy_web&vd_source=64f4d9d099bf51aa199961a8349d034b)
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=9ccbfb) ![GitHub Repo stars](https://img.shields.io/github/stars/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=b9c8da) ![GitHub repo size](https://img.shields.io/github/repo-size/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=d3bfe6)
 
 `creeper-qt` 是基于 `Qt5` 开发的 UI 集成库，轻量简洁，组件外观大体遵循 `Google Material Design3`，同时改造了老式的命令式调用，使组件构造和配置可以在同一时间完成，添加了主题管理，支持切换明亮和黑暗主题和各种配色，动效部分基于 PID 控制器和弹簧模型等迭代算法，带来更流畅的动画体验和打断效果
+
+欢迎 PR 和 ISSUE！
 
 </div>
 
@@ -23,7 +25,6 @@
 <div align=center>
     <img src="doc/image/filled-text-field.gif" width=50%>
 </div>
-
 
 <img src="doc/image/example-login.png" title="" alt="example-login" data-align="center">
 
