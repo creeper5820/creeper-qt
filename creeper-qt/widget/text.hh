@@ -2,9 +2,8 @@
 
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
-#include "creeper-qt/widget/widget.hh"
+#include "creeper-qt/utility/wrapper/widget.hh"
 #include <qlabel.h>
-#include <qnamespace.h>
 
 namespace creeper::text::internal {
 
@@ -28,9 +27,17 @@ public:
 };
 
 }
-
 namespace creeper::text::pro {
 using Token = common::Token<internal::Text>;
+
+using Color = SetterProp<Token, QColor, [](auto& self, const auto& v) { self.set_color(v); }>;
+
+using WordWrap = SetterProp<Token, bool, [](auto& self, const auto& v) { self.setWordWrap(v); }>;
+
+using AdjustSize = ActionProp<Token, [](auto& self) { self.adjustSize(); }>;
+
+using Alignment =
+    SetterProp<Token, Qt::Alignment, [](auto& self, const auto& v) { self.setAlignment(v); }>;
 
 struct Text : Token, QString {
     using QString::QString;
@@ -48,51 +55,17 @@ struct Text : Token, QString {
         self.setText(*this);
     }
 };
-struct Color : Token, QColor {
-    using QColor::QColor;
-    using QColor::operator=;
-    using QColor::operator==;
-    auto apply(auto& self) const noexcept -> void
-        requires requires { self.set_color(QColor {}); }
-    {
-        self.set_color(*this);
-    }
-};
-struct WordWrap : Token {
-    bool on;
-    constexpr explicit WordWrap(bool on)
-        : on { on } { }
-    auto apply(auto& self) const noexcept -> void
-        requires requires { self.setWordWrap(bool {}); }
-    {
-        self.setWordWrap(on);
-    }
-};
-struct AdjustSize : Token {
-    auto apply(auto& self) const noexcept -> void
-        requires requires { self.adjustSize(); }
-    {
-        self.adjustSize();
-    }
-};
-struct Alignment : Token {
-    Qt::AlignmentFlag alignment;
-    constexpr explicit Alignment(Qt::AlignmentFlag alignment) noexcept
-        : alignment { alignment } { }
-    auto apply(auto& self) const noexcept -> void
-        requires requires { self.setAlignment(Qt::AlignCenter); }
-    {
-        self.setAlignment(alignment);
-    }
-};
 
 template <class T>
-concept trait = std::derived_from<T, Token> || widget::pro::trait<T> || theme::pro::trait<T>;
+concept trait = std::derived_from<T, Token>;
 
 CREEPER_DEFINE_CHECKER(trait);
 using namespace widget::pro;
+using namespace theme::pro;
 }
-
 namespace creeper {
-using Text = Declarative<text::internal::Text, text::pro::checker>;
+
+using Text = Declarative<text::internal::Text,
+    CheckerOr<text::pro::checker, widget::pro::checker, theme::pro::checker>>;
+
 }

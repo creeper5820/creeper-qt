@@ -47,16 +47,16 @@ auto main(int argc, char** argv) -> int {
 
             capro::Layout<Row> {
                 lnpro::Margin { 0 },
-                lnpro::SetSpacing { 0 },
+                lnpro::Spacing { 0 },
 
                 lnpro::Item { NavComponent(manager) },
                 lnpro::Item<Col> {
-                    lnpro::ContentsMargin { 15, 15, 5, 15 },
+                    lnpro::ContentsMargin { { 15, 15, 5, 15 } },
                     lnpro::Item { ListComponent(manager) },
                 },
                 lnpro::Item<Col> {
                     { 255 },
-                    lnpro::ContentsMargin { 5, 15, 15, 15 },
+                    lnpro::ContentsMargin { { 5, 15, 15, 15 } },
                     lnpro::Item<ScrollArea> {
                         scroll::pro::ThemeManager { manager },
                         scroll::pro::HorizontalScrollBarPolicy {

@@ -1,3 +1,4 @@
+#include <creeper-qt/layout/flow.hh>
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/utility/material-icon.hh>
 #include <creeper-qt/widget/buttons/icon-button.hh>
@@ -5,12 +6,21 @@
 #include <creeper-qt/widget/image.hh>
 #include <creeper-qt/widget/shape/wave-circle.hh>
 #include <creeper-qt/widget/text-fields.hh>
+#include <creeper-qt/widget/text.hh>
 
 using namespace creeper;
 namespace capro = card::pro;
 namespace lnpro = linear::pro;
 namespace impro = image::pro;
 namespace ibpro = icon_button::pro;
+
+template <std::size_t N>
+constexpr auto repeat(std::invocable<std::size_t> auto&& f) {
+    std::ranges::for_each(std::views::iota(std::size_t { 0 }, N), f);
+}
+constexpr auto repeat(std::size_t n, std::invocable<std::size_t> auto&& f) {
+    std::ranges::for_each(std::views::iota(std::size_t { 0 }, n), f);
+}
 
 static auto SearchComponent(ThemeManager& manager) noexcept {
     return new Row {
@@ -20,7 +30,7 @@ static auto SearchComponent(ThemeManager& manager) noexcept {
             capro::Radius { -1 },
             capro::Level { CardLevel::HIGHEST },
         },
-        lnpro::Spacing { 20 },
+        lnpro::SpacingItem { 20 },
         lnpro::Item<IconButton> {
             ibpro::ThemeManager { manager },
             ibpro::FixedSize { 40, 40 },
@@ -44,11 +54,11 @@ static auto SearchComponent(ThemeManager& manager) noexcept {
         },
     };
 }
-static auto ItemComponent(ThemeManager& manager) noexcept {
+static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
     return new Widget {
         widget::pro::Layout<Col> {
             col::pro::Alignment { Qt::AlignTop | Qt::AlignLeft },
-            col::pro::SetSpacing { 5 },
+            col::pro::Spacing { 5 },
             col::pro::Margin { 10 },
 
             col::pro::Item<WaveCircle> {
@@ -70,6 +80,17 @@ static auto ItemComponent(ThemeManager& manager) noexcept {
                 card::pro::ThemeManager { manager },
                 card::pro::Level { CardLevel::LOW },
                 card::pro::FixedSize { 150, 30 },
+                card::pro::Layout<Row> {
+                    row::pro::Item<Text> {
+                        text::pro::Text { QString { "Item %1" }.arg(index) },
+                        text::pro::Apply { [&manager](Text& self) {
+                            manager.append_handler(&self, [&](const ThemeManager& manager) {
+                                const auto scheme = manager.color_scheme();
+                                self.set_color(scheme.primary);
+                            });
+                        } },
+                    },
+                },
             },
             col::pro::Item<FilledCard> {
                 card::pro::ThemeManager { manager },
@@ -85,7 +106,6 @@ static auto BannerComponent(ThemeManager& manager) noexcept {
         impro::SizePolicy { QSizePolicy::Expanding },
         impro::BorderWidth { 5 },
         impro::FixedHeight { 300 },
-        impro::MaximumWidth { 750 },
         impro::PainterResource {
             "https://c-ssl.duitang.com/uploads/blog/202103/16/20210316112119_181c8.jpeg",
         },
@@ -104,34 +124,24 @@ auto ViewComponent(ThemeManager& manager) noexcept {
         capro::ThemeManager { manager },
         capro::SizePolicy { QSizePolicy::Expanding },
         capro::Layout<Col> {
-            lnpro::Alignment { Qt::AlignTop | Qt::AlignHCenter },
+            lnpro::Alignment { Qt::AlignTop },
             lnpro::Margin { 10 },
-            lnpro::SetSpacing { 10 },
+            lnpro::Spacing { 10 },
 
             lnpro::Item<Widget> {
-                widget::pro::MaximumWidth { 750 },
                 widget::pro::Layout {
                     SearchComponent(manager),
                 },
             },
             lnpro::Item { BannerComponent(manager) },
-            lnpro::Item<Row> {
-                lnpro::Item { ItemComponent(manager) },
-                lnpro::Item { ItemComponent(manager) },
-                lnpro::Item { ItemComponent(manager) },
-                lnpro::Item { ItemComponent(manager) },
-            },
-            lnpro::Item<Row> {
-                lnpro::Item { ItemComponent(manager) },
-                lnpro::Item { ItemComponent(manager) },
-                lnpro::Item { ItemComponent(manager) },
-                lnpro::Item { ItemComponent(manager) },
-            },
-            lnpro::Item<Row> {
-                lnpro::Item { ItemComponent(manager) },
-                lnpro::Item { ItemComponent(manager) },
-                lnpro::Item { ItemComponent(manager) },
-                lnpro::Item { ItemComponent(manager) },
+            lnpro::Item<Flow> {
+                flow::pro::RowSpacing { 10 },
+                flow::pro::ColSpacing { 10 },
+                flow::pro::RowLimit { 6 },
+                flow::pro::Apply { [&](Flow& self) {
+                    repeat(
+                        1'000, [&](auto index) { self.addWidget(ItemComponent(manager, index)); });
+                } },
             },
         },
     };

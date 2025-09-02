@@ -50,15 +50,15 @@ auto NavComponent(ThemeManager& manager) noexcept {
         fc::Level { CardLevel::HIGHEST },
 
         fc::Layout<Col> {
-            ln::SetSpacing { 10 },
+            ln::Spacing { 10 },
             ln::Margin { 15 },
 
             ln::Item { { 0, Qt::AlignHCenter }, avatar_image },
-            ln::Spacing { 20 },
+            ln::SpacingItem { 20 },
             ln::Item<SelectGroup<Col, IconButton>> {
                 { 0, Qt::AlignHCenter },
                 ln::Margin { 0 },
-                ln::Spacing { 10 },
+                ln::SpacingItem { 10 },
                 gr::Compose {
                     std::array {
                         std::tuple { "home", material::icon::kHome },
@@ -78,7 +78,7 @@ auto NavComponent(ThemeManager& manager) noexcept {
                 },
                 sg::SignalInjection { &IconButton::clicked },
             },
-            ln::Spacing { 40 },
+            ln::SpacingItem { 40 },
             ln::Stretch { 255 },
             ln::Item<IconButton> {
                 { 0, Qt::AlignHCenter },

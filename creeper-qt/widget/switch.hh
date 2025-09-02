@@ -4,7 +4,7 @@
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
-#include "creeper-qt/widget/widget.hh"
+#include "creeper-qt/utility/wrapper/widget.hh"
 
 #include <qabstractbutton.h>
 
@@ -56,93 +56,48 @@ namespace _switch::pro {
 
     /// @note 碎碎念，这么多颜色，真的会用得上么...
 
-    struct TrackColorUnchecked : public QColor, Token {
-        using QColor::QColor;
-        explicit TrackColorUnchecked(const QColor& color)
-            : QColor(color) { }
-        void apply(auto& self) const { self.set_track_color_unchecked(*this); }
-    };
-    struct TrackColorChecked : public QColor, Token {
-        using QColor::QColor;
-        explicit TrackColorChecked(const QColor& color)
-            : QColor(color) { }
-        void apply(auto& self) const { self.set_track_color_checked(*this); }
-    };
-    struct TrackColorUncheckedDisabled : public QColor, Token {
-        using QColor::QColor;
-        explicit TrackColorUncheckedDisabled(const QColor& color)
-            : QColor(color) { }
-        void apply(auto& self) const { self.set_track_color_unchecked_disabled(*this); }
-    };
-    struct TrackColorCheckedDisabled : public QColor, Token {
-        using QColor::QColor;
-        explicit TrackColorCheckedDisabled(const QColor& color)
-            : QColor(color) { }
-        void apply(auto& self) const { self.set_track_color_checked_disabled(*this); }
-    };
+    using TrackColorUnchecked = SetterProp<Token, QColor,
+        [](auto& self, const QColor& v) { self.set_track_color_unchecked(v); }>;
 
-    struct HandleColorUnchecked : public QColor, Token {
-        using QColor::QColor;
-        explicit HandleColorUnchecked(const QColor& color)
-            : QColor(color) { }
-        void apply(auto& self) const { self.set_handle_color_unchecked(*this); }
-    };
-    struct HandleColorChecked : public QColor, Token {
-        using QColor::QColor;
-        explicit HandleColorChecked(const QColor& color)
-            : QColor(color) { }
-        void apply(auto& self) const { self.set_handle_color_checked(*this); }
-    };
-    struct HandleColorUncheckedDisabled : public QColor, Token {
-        using QColor::QColor;
-        explicit HandleColorUncheckedDisabled(const QColor& color)
-            : QColor(color) { }
-        void apply(auto& self) const { self.set_handle_color_unchecked_disabled(*this); }
-    };
-    struct HandleColorCheckedDisabled : public QColor, Token {
-        using QColor::QColor;
-        explicit HandleColorCheckedDisabled(const QColor& color)
-            : QColor(color) { }
-        void apply(auto& self) const { self.set_handle_color_checked_disabled(*this); }
-    };
+    using TrackColorChecked = SetterProp<Token, QColor,
+        [](auto& self, const QColor& v) { self.set_track_color_checked(v); }>;
 
-    struct OutlineColorUnchecked : public QColor, Token {
-        using QColor::QColor;
-        explicit OutlineColorUnchecked(const QColor& color)
-            : QColor(color) { }
-        void apply(auto& self) const { self.set_outline_color_unchecked(*this); }
-    };
-    struct OutlineColorChecked : public QColor, Token {
-        using QColor::QColor;
-        explicit OutlineColorChecked(const QColor& color)
-            : QColor(color) { }
-        void apply(auto& self) const { self.set_outline_color_checked(*this); }
-    };
-    struct OutlineColorUncheckedDisabled : public QColor, Token {
-        using QColor::QColor;
-        explicit OutlineColorUncheckedDisabled(const QColor& color)
-            : QColor(color) { }
-        void apply(auto& self) const { self.set_outline_color_unchecked_disabled(*this); }
-    };
-    struct OutlineColorCheckedDisabled : public QColor, Token {
-        using QColor::QColor;
-        explicit OutlineColorCheckedDisabled(const QColor& color)
-            : QColor(color) { }
-        void apply(auto& self) const { self.set_outline_color_checked_disabled(*this); }
-    };
+    using TrackColorUncheckedDisabled = SetterProp<Token, QColor,
+        [](auto& self, const QColor& v) { self.set_track_color_unchecked_disabled(v); }>;
 
-    struct HoverColorUnchecked : public QColor, Token {
-        using QColor::QColor;
-        explicit HoverColorUnchecked(const QColor& color)
-            : QColor(color) { }
-        void apply(auto& self) const { self.set_hover_color_unchecked(*this); }
-    };
-    struct HoverColorChecked : public QColor, Token {
-        using QColor::QColor;
-        explicit HoverColorChecked(const QColor& color)
-            : QColor(color) { }
-        void apply(auto& self) const { self.set_hover_color_checked(*this); }
-    };
+    using TrackColorCheckedDisabled = SetterProp<Token, QColor,
+        [](auto& self, const QColor& v) { self.set_track_color_checked_disabled(v); }>;
+
+    using HandleColorUnchecked = SetterProp<Token, QColor,
+        [](auto& self, const QColor& v) { self.set_handle_color_unchecked(v); }>;
+
+    using HandleColorChecked = SetterProp<Token, QColor,
+        [](auto& self, const QColor& v) { self.set_handle_color_checked(v); }>;
+
+    using HandleColorUncheckedDisabled = SetterProp<Token, QColor,
+        [](auto& self, const QColor& v) { self.set_handle_color_unchecked_disabled(v); }>;
+
+    using HandleColorCheckedDisabled = SetterProp<Token, QColor,
+        [](auto& self, const QColor& v) { self.set_handle_color_checked_disabled(v); }>;
+
+    using OutlineColorUnchecked = SetterProp<Token, QColor,
+        [](auto& self, const QColor& v) { self.set_outline_color_unchecked(v); }>;
+
+    using OutlineColorChecked = SetterProp<Token, QColor,
+        [](auto& self, const QColor& v) { self.set_outline_color_checked(v); }>;
+
+    using OutlineColorUncheckedDisabled = SetterProp<Token, QColor,
+        [](auto& self, const QColor& v) { self.set_outline_color_unchecked_disabled(v); }>;
+
+    using OutlineColorCheckedDisabled = SetterProp<Token, QColor,
+        [](auto& self, const QColor& v) { self.set_outline_color_checked_disabled(v); }>;
+
+    using HoverColorUnchecked = SetterProp<Token, QColor,
+        [](auto& self, const QColor& v) { self.set_hover_color_unchecked(v); }>;
+
+    using HoverColorChecked = SetterProp<Token, QColor,
+        [](auto& self, const QColor& v) { self.set_hover_color_checked(v); }>;
+
     template <typename Callback>
     using Clickable = common::pro::Clickable<Callback, Token>;
 
@@ -153,7 +108,6 @@ namespace _switch::pro {
     concept trait = std::derived_from<Switch, Token>;
 
     CREEPER_DEFINE_CHECKER(trait);
-
     using namespace theme::pro;
     using namespace widget::pro;
 }

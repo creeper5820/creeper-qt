@@ -54,6 +54,13 @@ struct SetterProp : Token {
         interface(self, value);
     }
 };
+template <class Token, typename T, auto interface>
+struct DerivedProp : T, Token {
+    using T::T;
+    explicit DerivedProp(const T& value)
+        : T(value) { }
+    auto apply(auto& self) const -> void { interface(self, *this); }
+};
 template <class Token, auto interface>
 struct ActionProp : Token {
     auto apply(auto& self) const noexcept -> void
