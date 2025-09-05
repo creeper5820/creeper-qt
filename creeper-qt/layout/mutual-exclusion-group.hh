@@ -41,8 +41,8 @@ constexpr inline auto no_action_as_token = [](auto& w, bool on) { };
 }
 namespace creeper::mutual_exclusion_group::pro {
 
-using Token =
-    common::Token<internal::MutualExclusionGroup<QLayout, QWidget, internal::no_action_as_token>>;
+struct TokenContext { };
+using Token = common::Token<TokenContext>;
 
 template <typename T>
 concept trait = std::derived_from<T, Token> || group::pro::trait<T>;

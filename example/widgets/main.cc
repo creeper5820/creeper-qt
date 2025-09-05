@@ -5,21 +5,22 @@
 /// 如果使用 Arch Linux，则可以通过 AUR 安装：ttf-material-icons-git，
 /// 使用其他 Nerd Font 也是可以的
 
-#include "creeper-qt/creeper-qt.hh"
-#include <QtWidgets>
+#include "component.hh"
+#include <qshortcut.h>
+
+#include <creeper-qt/core/application.hh>
+#include <creeper-qt/layout/linear.hh>
+#include <creeper-qt/layout/scroll.hh>
+#include <creeper-qt/utility/theme/preset/blue-miku.hh>
+#include <creeper-qt/utility/theme/theme.hh>
+#include <creeper-qt/widget/cards/filled-card.hh>
+#include <creeper-qt/widget/main-window.hh>
 
 using namespace creeper;
 
 namespace lnpro = linear::pro;
 namespace mwpro = main_window::pro;
 namespace capro = card::pro;
-
-template <typename T>
-using raw_pointer = T*;
-
-auto NavComponent(ThemeManager&) noexcept -> raw_pointer<FilledCard>;
-auto ListComponent(ThemeManager&) noexcept -> raw_pointer<FilledCard>;
-auto ViewComponent(ThemeManager&) noexcept -> raw_pointer<FilledCard>;
 
 auto main(int argc, char** argv) -> int {
 

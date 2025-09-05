@@ -10,13 +10,13 @@
 
 using namespace creeper;
 namespace fc = filled_card::pro;
-namespace gr = group::pro;
 namespace sg = select_group::pro;
 namespace ln = linear::pro;
 namespace im = image::pro;
 namespace ic = icon_button::pro;
 
-auto NavComponent(ThemeManager& manager) noexcept {
+auto NavComponent(ThemeManager& manager,
+    std::function<void(const std::string_view&)> switch_view_function) noexcept {
 
     auto avatar_image = new Image {
         im::FixedSize { 60, 60 },
@@ -59,19 +59,23 @@ auto NavComponent(ThemeManager& manager) noexcept {
                 { 0, Qt::AlignHCenter },
                 ln::Margin { 0 },
                 ln::SpacingItem { 10 },
-                gr::Compose {
+                sg::Compose {
                     std::array {
                         std::tuple { "home", material::icon::kHome },
                         std::tuple { "extension", material::icon::kExtension },
                         std::tuple { "search", material::icon::kSearch },
                         std::tuple { "settings", material::icon::kSettings },
                     },
-                    [&](auto name, auto icon) {
+                    [&](std::string_view name, auto icon) {
+                        const auto status = (name == "home") //
+                            ? ic::TypesToggleSelected
+                            : ic::TypesToggleUnselected;
                         return new IconButton {
                             navigation_icons_config,
+                            status,
                             ic::ColorStandard,
                             ic::FontIcon { icon },
-                            ic::Clickable { [] { } },
+                            ic::Clickable { [=] { switch_view_function(name); } },
                         };
                     },
                     Qt::AlignHCenter,
