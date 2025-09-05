@@ -17,12 +17,14 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
+# For #include "creeper-qt/..."
 include_directories(.)
 
 # 库文件收集
-file(GLOB_RECURSE PROJECT_CC CONFIGURE_DEPENDS "creeper-qt/*.cc")
-file(GLOB_RECURSE PROJECT_HH CONFIGURE_DEPENDS "creeper-qt/*.hh")
-
+file(
+    GLOB_RECURSE PROJECT_CC
+    CONFIGURE_DEPENDS "creeper-qt/*.cc"
+)
 add_library(${PROJECT_NAME}
     SHARED
     ${PROJECT_CC}
@@ -90,16 +92,17 @@ add_custom_command(TARGET "uninstall" POST_BUILD
 
 # 示例应用构建
 if(BUILD_EXAMPLE)
+    file(
+        GLOB_RECURSE WIDGETS_CC
+        CONFIGURE_DEPENDS "example/widgets/*.cc"
+    )
     add_executable(
         widgets
-        example/widgets/main.cc
-        example/widgets/list.cc
-        example/widgets/view.cc
-        example/widgets/nav.cc
+        ${WIDGETS_CC}
     )
     target_link_libraries(
         widgets
-        creeper-qt
+        creeper-qt::widgets
         Qt5::Widgets
     )
 
