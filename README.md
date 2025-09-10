@@ -232,3 +232,7 @@ cat install_manifest.txt
 - [ ] 给自己做一个设置中心吧
 
 - [ ] 做一个日历模组
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=creeper5820/creeper-qt&type=Date)](https://www.star-history.com/#creeper5820/creeper-qt&Date)
