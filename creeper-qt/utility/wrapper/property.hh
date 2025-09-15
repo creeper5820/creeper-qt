@@ -78,10 +78,10 @@ struct ActionProp : Token {
 /// 利用 CheckerT 延迟模板实例化，在 concept 层面约束属性类型， 从而避免因
 /// 递归参数展开而产生的海量且难以定位的模板错误。
 ///
-/// @tparam WidgetT
+/// @tparam W
 ///   需要被包装的组件类型。
 ///
-/// @tparam CheckerT
+/// @tparam checker
 ///   用于延迟模板实例化的“检查器”类型模板。典型形式如下：
 /// struct checker final {
 ///     template <class T> struct result {
@@ -90,7 +90,7 @@ struct ActionProp : Token {
 /// };
 ///
 /// @note
-/// 在不符合 CheckerT 要求的类型被传入时，会在 concept 约束阶段直接报错，
+/// 在不符合 checker 要求的类型被传入时，会在 concept 约束阶段直接报错，
 /// 提供简洁且精准的编译期错误提示，避免编译器自动展开大量构造函数
 /// 导致的冗长错误栈，但编译期报错信息依旧不友好。
 ///
@@ -103,7 +103,7 @@ private:
     static constexpr auto impl_props_trait = checker_::template result<std::remove_cvref_t<T>>;
 
     // For help check tuple of props
-    // 使用 SFINAE 真是抱歉呢，没找到方便处理 tuple 的方法真是不好意思呢
+    // 使用 SFINAE 真是抱歉，没找到方便处理 tuple 的方法真是不好意思呢
     template <typename T, class checker_>
     static constexpr auto impl_tuple_trait = false;
 

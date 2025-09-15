@@ -5,6 +5,7 @@
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/image.hh>
 #include <creeper-qt/widget/shape/wave-circle.hh>
+#include <creeper-qt/widget/sliders.hh>
 #include <creeper-qt/widget/text-fields.hh>
 #include <creeper-qt/widget/text.hh>
 
@@ -14,16 +15,17 @@ namespace lnpro = linear::pro;
 namespace impro = image::pro;
 namespace ibpro = icon_button::pro;
 
-template <std::size_t N>
-constexpr auto repeat(std::invocable<std::size_t> auto&& f) {
-    std::ranges::for_each(std::views::iota(std::size_t { 0 }, N), f);
+namespace repeat_literals {
+auto operator*(std::invocable<std::size_t> auto&& f, std::size_t n) {
+    std::ranges::for_each(std::views::iota(std::size_t { 0 }, n), std::forward<decltype(f)>(f));
 }
-constexpr auto repeat(std::size_t n, std::invocable<std::size_t> auto&& f) {
-    std::ranges::for_each(std::views::iota(std::size_t { 0 }, n), f);
+auto operator*(std::size_t n, std::invocable<std::size_t> auto&& f) {
+    std::ranges::for_each(std::views::iota(std::size_t { 0 }, n), std::forward<decltype(f)>(f));
+}
 }
 
 static auto SearchComponent(ThemeManager& manager) noexcept {
-    return new Row {
+    const auto row = new Row {
         lnpro::Item<FilledCard> {
             capro::ThemeManager { manager },
             capro::FixedHeight { 40 },
@@ -52,6 +54,9 @@ static auto SearchComponent(ThemeManager& manager) noexcept {
             ibpro::Font { material::kRoundSmallFont },
             ibpro::FontIcon { material::icon::kFolder },
         },
+    };
+    return new Widget {
+        widget::pro::Layout { row },
     };
 }
 static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
@@ -128,19 +133,18 @@ auto ViewComponent(ThemeManager& manager) noexcept {
             lnpro::Margin { 10 },
             lnpro::Spacing { 10 },
 
-            lnpro::Item<Widget> {
-                widget::pro::Layout {
-                    SearchComponent(manager),
-                },
-            },
+            lnpro::Item { SearchComponent(manager) },
             lnpro::Item { BannerComponent(manager) },
+            lnpro::Item<Slider> {
+                slider::pro::FixedHeight { 50 },
+            },
             lnpro::Item<Flow> {
                 flow::pro::RowSpacing { 10 },
                 flow::pro::ColSpacing { 10 },
                 flow::pro::RowLimit { 6 },
                 flow::pro::Apply { [&](Flow& self) {
-                    repeat(
-                        1'000, [&](auto index) { self.addWidget(ItemComponent(manager, index)); });
+                    using namespace repeat_literals;
+                    1'000 * [&](auto i) { self.addWidget(ItemComponent(manager, i)); };
                 } },
             },
         },

@@ -39,6 +39,11 @@ auto main(int argc, char** argv) -> int {
             // Q 键退出
             auto shortcut_q = new QShortcut { Qt::Key_Q, &window };
             QObject::connect(shortcut_q, &QShortcut::activated, &app::quit);
+
+            // C 键居中
+            auto shortcut_c = new QShortcut { Qt::Key_C, &window };
+            QObject::connect(shortcut_c, &QShortcut::activated,
+                [&window] { window.apply(mwpro::MoveCenter {}); });
         },
         mwpro::MinimumSize { 1080, 720 },
         mwpro::Central<FilledCard> {

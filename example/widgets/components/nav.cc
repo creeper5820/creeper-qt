@@ -16,7 +16,7 @@ namespace im = image::pro;
 namespace ic = icon_button::pro;
 
 auto NavComponent(ThemeManager& manager,
-    std::function<void(const std::string_view&)> switch_view_function) noexcept {
+    std::function<void(const std::string_view&)> switch_view_callback) noexcept {
 
     auto avatar_image = new Image {
         im::FixedSize { 60, 60 },
@@ -75,7 +75,7 @@ auto NavComponent(ThemeManager& manager,
                             status,
                             ic::ColorStandard,
                             ic::FontIcon { icon },
-                            ic::Clickable { [=] { switch_view_function(name); } },
+                            ic::Clickable { [=] { switch_view_callback(name); } },
                         };
                     },
                     Qt::AlignHCenter,

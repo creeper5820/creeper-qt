@@ -4,6 +4,7 @@
 #include "creeper-qt/utility/wrapper/property.hh"
 
 #include <qgraphicseffect.h>
+#include <qscreen.h>
 
 namespace creeper::widget {
 
@@ -71,6 +72,25 @@ namespace pro {
         DerivedProp<Token, QString, [](auto& self, const QString& v) { self.setWindowRole(v); }>;
     using WindowFilePath = DerivedProp<Token, QString,
         [](auto& self, const QString& v) { self.setWindowFilePath(v); }>;
+
+    struct MoveCenter : Token {
+        auto apply(QWidget& self) const noexcept -> void {
+            const auto screen = self.screen();
+
+            const auto screen_geometry = screen->availableGeometry();
+            const auto screen_width    = screen_geometry.width();
+            const auto screen_height   = screen_geometry.height();
+
+            const auto widget_geometry = self.geometry();
+            const auto widget_width    = widget_geometry.width();
+            const auto widget_height   = widget_geometry.height();
+
+            const auto x = (screen_width - widget_width) / 2;
+            const auto y = (screen_height - widget_height) / 2;
+
+            self.move(x, y);
+        }
+    };
 
     struct SizePolicy : Token {
         QSizePolicy::Policy v, h;
