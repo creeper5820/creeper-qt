@@ -1,8 +1,8 @@
 #pragma once
 
 #include "creeper-qt/utility/wrapper/property.hh"
+#include "creeper-qt/utility/wrapper/widget.hh"
 #include "creeper-qt/widget/shape/shape.hh"
-#include "creeper-qt/widget/widget.hh"
 #include <qpainter.h>
 #include <qpainterpath.h>
 
