@@ -1,4 +1,5 @@
 #pragma once
+#include "creeper-qt/utility/qt_wrapper/margin_setter.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 
 namespace creeper::layout::pro {
@@ -15,8 +16,7 @@ using Alignment = SetterProp<Token, Qt::Alignment,
 using Spacing =
     SetterProp<Token, int, [](auto& self, const auto& spacing) { self.setSpacing(spacing); }>;
 
-using Margin =
-    SetterProp<Token, int, [](auto& self, const auto& margin) { self.setMargin(margin); }>;
+using Margin = SetterProp<Token, int, qt::margin_setter>;
 
 using Widget =
     SetterProp<Token, QWidget*, [](auto& self, const auto& widget) { self.addWidget(widget); }>;

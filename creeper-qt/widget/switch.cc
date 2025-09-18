@@ -50,7 +50,7 @@ void Switch::set_outline_color_checked_disabled(const QColor& color) {
 void Switch::set_hover_color_unchecked(const QColor& color) { pimpl->hover_unchecked = color; }
 void Switch::set_hover_color_checked(const QColor& color) { pimpl->hover_checked = color; }
 
-void Switch::enterEvent(QEvent* event) {
+void Switch::enterEvent(qt::EnterEvent* event) {
     pimpl->enter_event(*this, *event);
     QAbstractButton::enterEvent(event);
 }

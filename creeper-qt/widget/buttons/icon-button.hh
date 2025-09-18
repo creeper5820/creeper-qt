@@ -3,12 +3,12 @@
 #include <qabstractbutton.h>
 #include <qpainter.h>
 
+#include "creeper-qt/utility/qt_wrapper/enter_event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
-
-#include "creeper-qt/widget/widget.hh"
+#include "creeper-qt/utility/wrapper/widget.hh"
 
 namespace creeper::icon_button::internal {
 class IconButton : public QAbstractButton {
@@ -75,7 +75,7 @@ public:
     // TODO: 详细的颜色自定义接口有缘再写
 
 protected:
-    auto enterEvent(QEvent*) -> void override;
+    auto enterEvent(qt::EnterEvent*) -> void override;
     auto leaveEvent(QEvent*) -> void override;
 
     auto paintEvent(QPaintEvent*) -> void override;
@@ -84,67 +84,35 @@ protected:
 namespace creeper::icon_button::pro {
 using Token = common::Token<internal::IconButton>;
 
-struct Icon : public QIcon, Token {
-    using QIcon::QIcon;
-    explicit Icon(const QIcon& icon)
-        : QIcon { icon } { }
-    void apply(auto& self) const { self.set_icon(*this); }
-};
-struct FontIcon : public QString, Token {
-    using QString::QString;
-    explicit FontIcon(const QString& icon)
-        : QString { icon } { }
-    void apply(auto& self) const { self.set_icon(*this); }
-};
+using Icon =
+    creeper::DerivedProp<Token, QIcon, [](auto& self, const auto& v) { self.set_icon(v); }>;
+using FontIcon =
+    creeper::DerivedProp<Token, QString, [](auto& self, const auto& v) { self.set_icon(v); }>;
 
-struct Color : Token {
-    using Enum = internal::IconButton::Color;
-    Enum color;
-    constexpr explicit Color(Enum p) { color = p; }
-    void apply(auto& self) const { self.set_color(color); }
-};
-inline constexpr auto ColorFilled   = Color { Color::Enum::DEFAULT_FILLED };
-inline constexpr auto ColorOutlined = Color { Color::Enum::OUTLINED };
-inline constexpr auto ColorStandard = Color { Color::Enum::STANDARD };
-inline constexpr auto ColorTonal    = Color { Color::Enum::TONAL };
+using Color = creeper::SetterProp<Token, internal::IconButton::Color,
+    [](auto& self, const auto& v) { self.set_color(v); }>;
+using Shape = creeper::SetterProp<Token, internal::IconButton::Shape,
+    [](auto& self, const auto& v) { self.set_shape(v); }>;
+using Types = creeper::SetterProp<Token, internal::IconButton::Types,
+    [](auto& self, const auto& v) { self.set_types(v); }>;
+using Width = creeper::SetterProp<Token, internal::IconButton::Width,
+    [](auto& self, const auto& v) { self.set_width(v); }>;
 
-struct Shape : Token {
-    using Enum = internal::IconButton::Shape;
-    Enum shape;
+constexpr auto ColorFilled   = Color { internal::IconButton::Color::DEFAULT_FILLED };
+constexpr auto ColorOutlined = Color { internal::IconButton::Color::OUTLINED };
+constexpr auto ColorStandard = Color { internal::IconButton::Color::STANDARD };
+constexpr auto ColorTonal    = Color { internal::IconButton::Color::TONAL };
 
-    constexpr explicit Shape(Enum p)
-        : shape { p } { }
+constexpr auto ShapeRound  = Shape { internal::IconButton::Shape::DEFAULT_ROUND };
+constexpr auto ShapeSquare = Shape { internal::IconButton::Shape::SQUARE };
 
-    void apply(auto& self) const { self.set_shape(shape); }
-};
-inline constexpr auto ShapeRound  = Shape { Shape::Enum::DEFAULT_ROUND };
-inline constexpr auto ShapeSquare = Shape { Shape::Enum::SQUARE };
+constexpr auto TypesDefault          = Types { internal::IconButton::Types::DEFAULT };
+constexpr auto TypesToggleSelected   = Types { internal::IconButton::Types::TOGGLE_SELECTED };
+constexpr auto TypesToggleUnselected = Types { internal::IconButton::Types::TOGGLE_UNSELECTED };
 
-struct Types : Token {
-    using Enum = internal::IconButton::Types;
-    Enum types;
-
-    constexpr explicit Types(Enum p)
-        : types { p } { }
-
-    void apply(auto& self) const { self.set_types(types); }
-};
-inline constexpr auto TypesDefault          = Types { Types::Enum::DEFAULT };
-inline constexpr auto TypesToggleSelected   = Types { Types::Enum::TOGGLE_SELECTED };
-inline constexpr auto TypesToggleUnselected = Types { Types::Enum::TOGGLE_UNSELECTED };
-
-struct Width : Token {
-    using Enum = internal::IconButton::Width;
-    Enum width;
-
-    constexpr explicit Width(Enum p)
-        : width { p } { }
-
-    void apply(auto& self) const { self.set_width(width); }
-};
-inline constexpr auto WidthDefault = Width { Width::Enum::DEFAULT };
-inline constexpr auto WidthNarrow  = Width { Width::Enum::NARROW };
-inline constexpr auto WidthWide    = Width { Width::Enum::WIDE };
+constexpr auto WidthDefault = Width { internal::IconButton::Width::DEFAULT };
+constexpr auto WidthNarrow  = Width { internal::IconButton::Width::NARROW };
+constexpr auto WidthWide    = Width { internal::IconButton::Width::WIDE };
 
 template <typename Callback>
 using Clickable = common::pro::Clickable<Callback, Token>;

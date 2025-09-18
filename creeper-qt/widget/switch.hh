@@ -1,5 +1,6 @@
 #pragma once
 
+#include "creeper-qt/utility/qt_wrapper/enter_event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
@@ -43,7 +44,7 @@ namespace _switch::internal {
 
     protected:
         // 添加 Hover 动画
-        void enterEvent(QEvent* event) override;
+        void enterEvent(qt::EnterEvent* event) override;
         void leaveEvent(QEvent* event) override;
 
         // 实现视觉效果

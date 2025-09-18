@@ -186,7 +186,7 @@ public:
 
     auto resize(QResizeEvent*) -> void { has_adjust_margin = false; }
 
-    auto enter_event(QEvent*) -> void {
+    auto enter_event(qt::EnterEvent*) -> void {
         is_hovered = true;
         self.update();
     }

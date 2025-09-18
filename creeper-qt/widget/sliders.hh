@@ -3,7 +3,7 @@
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
+#include "creeper-qt/widget/widget.hh"
 
 namespace creeper::slider::internal {
 

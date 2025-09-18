@@ -12,7 +12,8 @@ set(CMAKE_AUTOMOC ON)
 
 add_compile_options(-Os -O3)
 
-find_package(Qt5 REQUIRED COMPONENTS Widgets Network)
+set(QT_VERSION Qt5)
+find_package(${QT_VERSION} REQUIRED COMPONENTS Widgets Network)
 find_package(Eigen3 REQUIRED)
 
 # For #include "creeper-qt/..."
@@ -33,8 +34,8 @@ add_library(
 )
 target_link_libraries(
     ${PROJECT_NAME} PUBLIC
-    Qt5::Widgets
-    Qt5::Network
+    ${QT_VERSION}::Widgets
+    ${QT_VERSION}::Network
 )
 
 # 创建安装目标
@@ -110,7 +111,7 @@ if(BUILD_EXAMPLE)
     target_link_libraries(
         widgets
         creeper-qt
-        Qt5::Widgets
+        ${QT_VERSION}::Widgets
     )
 
     set(APP widgets)

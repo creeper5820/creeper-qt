@@ -137,6 +137,7 @@ auto ViewComponent(ThemeManager& manager) noexcept {
             lnpro::Item { BannerComponent(manager) },
             lnpro::Item<Slider> {
                 slider::pro::FixedHeight { 50 },
+                slider::pro::OnValueChange { [](double) {} },
             },
             lnpro::Item<Flow> {
                 flow::pro::RowSpacing { 10 },

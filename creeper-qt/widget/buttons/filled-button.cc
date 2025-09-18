@@ -71,7 +71,7 @@ public:
         }
     }
 
-    void enter_event(QAbstractButton& self, QEvent* event) {
+    void enter_event(QAbstractButton& self, qt::EnterEvent* event) {
         animation_core.append(std::make_unique<GradientColor>(hover_color, kHoverColor, 0.1,
             [this](const QColor& color) { return hover_color = color, !is_mouse_hover; }));
         is_mouse_hover = true;
@@ -153,7 +153,7 @@ void FilledButton::paintEvent(QPaintEvent* event) {
     pimpl->paint_event(*this, event);
     /* Disable QAbstractButton::paintEvent */;
 }
-void FilledButton::enterEvent(QEvent* event) {
+void FilledButton::enterEvent(qt::EnterEvent* event) {
     pimpl->enter_event(*this, event);
     QAbstractButton::enterEvent(event);
 }

@@ -36,7 +36,7 @@ auto BasicTextField::resizeEvent(QResizeEvent* event) -> void {
     QLineEdit::resizeEvent(event);
 }
 
-auto BasicTextField::enterEvent(QEvent* event) -> void {
+auto BasicTextField::enterEvent(qt::EnterEvent* event) -> void {
     pimpl->enter_event(event);
     QLineEdit::enterEvent(event);
 }

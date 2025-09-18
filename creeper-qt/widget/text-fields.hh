@@ -1,8 +1,9 @@
 #pragma once
 
+#include "creeper-qt/utility/qt_wrapper/enter_event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
-#include "creeper-qt/widget/widget.hh"
+#include "creeper-qt/utility/wrapper/widget.hh"
 
 #include <qlineedit.h>
 
@@ -61,8 +62,8 @@ namespace text_field::internal {
     protected:
         void resizeEvent(QResizeEvent*) override;
 
+        void enterEvent(qt::EnterEvent*) override;
         void leaveEvent(QEvent*) override;
-        void enterEvent(QEvent*) override;
 
         void focusInEvent(QFocusEvent*) override;
         void focusOutEvent(QFocusEvent*) override;
@@ -95,9 +96,7 @@ namespace text_field::pro {
     };
 
     template <class TextField>
-    concept trait = std::derived_from<TextField, Token> //
-        || widget::pro::trait<TextField>                //
-        || theme::pro::trait<TextField>;
+    concept trait = std::derived_from<TextField, Token>;
 
     CREEPER_DEFINE_CHECKER(trait);
     using namespace widget::pro;
@@ -105,13 +104,15 @@ namespace text_field::pro {
 }
 
 struct FilledTextField
-    : public Declarative<text_field::internal::BasicTextField, text_field::pro::checker> {
+    : public Declarative<text_field::internal::BasicTextField,
+          CheckerOr<text_field::pro::checker, widget::pro::checker, theme::pro::checker>> {
     using Declarative::Declarative;
     void paintEvent(QPaintEvent*) override;
 };
 
 struct OutlinedTextField
-    : public Declarative<text_field::internal::BasicTextField, text_field::pro::checker> {
+    : public Declarative<text_field::internal::BasicTextField,
+          CheckerOr<text_field::pro::checker, widget::pro::checker, theme::pro::checker>> {
     using Declarative::Declarative;
     void paintEvent(QPaintEvent*) override;
 };

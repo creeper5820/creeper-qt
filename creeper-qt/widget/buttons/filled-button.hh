@@ -1,10 +1,11 @@
 #pragma once
 
+#include "creeper-qt/utility/qt_wrapper/enter_event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
+#include "creeper-qt/utility/wrapper/widget.hh"
 #include "creeper-qt/widget/buttons/button.hh"
-#include "creeper-qt/widget/widget.hh"
 #include "qabstractbutton.h"
 
 namespace creeper::filled_button::internal {
@@ -31,7 +32,7 @@ public:
 protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
 
-    void enterEvent(QEvent* event) override;
+    void enterEvent(qt::EnterEvent* event) override;
     void leaveEvent(QEvent* event) override;
 
     void paintEvent(QPaintEvent* event) override;
