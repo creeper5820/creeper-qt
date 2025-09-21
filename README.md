@@ -39,7 +39,7 @@ cmake_minimum_required(VERSION 3.22)
 
 project(hello-world)
 
-# Qt5 是项目依赖的库，记得导入
+# Qt 是项目依赖的库，记得导入
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 find_package(creeper-qt REQUIRED)
 
@@ -104,7 +104,7 @@ int main(int argc, char* argv[]) {
 - `gcc-13` 及以上，支持完整 range 等特性
 - `cmake`
 - `eigen`
-- `qt-5`
+- `qt-5 / qt-6`
 
 ```zsh
 # on arch linux
@@ -128,9 +128,13 @@ git clone https://github.com/creeper5820/creeper-qt
 Edit your `CMakeLists.txt`:
 
 ```cmake
-include_directories(${库的根路径})
-add_executable(${EXAMPLE_NAME}
+include_directories(
+    ${库的根路径}
+)
+add_executable(
+    ${EXAMPLE_NAME}
     ${这个库所有的 .cc 文件}
+    ${某些用到 MOC 的 .hh 文件}
 )
 target_link_libraries(
     ${EXAMPLE_NAME}
@@ -211,26 +215,19 @@ cat install_manifest.txt
 ./widgets.exe
 ```
 
-需要注意的是, 如果在本机而不是MSYS2中打开编译好的可执行文件, 会报找不到Qt的dll, 因为在MSYS2下载的Qt没有暴露在Windows环境中
-
-## 风格约定
-
-### 绘图函数调用的参数遵从下面的顺序
-
-1. 内容项，类似于 Text
-2. 颜色配置项
-3. 形状配置项
+需要注意的是, 如果在本机而不是 MSYS2 中打开编译好的可执行文件, 会报找不到 Qt 的 dll, 因为在 MSYS2 下载的 Qt 没有暴露在 Windows 环境中
 
 ## 待做事项
 
+- [ ] 等接口稳定后 release 一个版本然后开始迭代版本号
+  - 接口设计目前基本稳定，多数修改不会影响下游
+- [ ] 全组件表格展示
 - [ ] 增加更多的组件
-
+  - 至 `2025.09.18`，组件数量还是不太够，需要继续添加
 - [ ] 按钮的禁止效果
-
 - [ ] 增加视图容器，原生的不可用
-
-- [ ] 给自己做一个设置中心吧
-
+  - 目前已实现无动画的 Flow 布局
+- [ ] 做一个设置中心吧
 - [ ] 做一个日历模组
 
 ## Star History
