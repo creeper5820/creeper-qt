@@ -32,6 +32,16 @@ auto main(int argc, char** argv) -> int {
 
     auto manager = ThemeManager { kBlueMikuThemePack };
 
+    auto nav_component_state = NavComponentState {
+        .manager = manager,
+        .switch_callback =
+            [](const std::string_view& name) {
+                qDebug() << "[nav] Switch to <" << name.data() << ">";
+            },
+    };
+    auto list_component_state = ListComponentState { .manager = manager };
+    auto view_component_state = ViewComponentState { .manager = manager };
+
     /// @note 有时候 Windows 总是给我来点惊喜，
     ///       ShowWindow 这么常见命名的函数都放在全局作用域
     creeper::ShowWindow {
@@ -55,10 +65,12 @@ auto main(int argc, char** argv) -> int {
                 lnpro::Margin { 0 },
                 lnpro::Spacing { 0 },
 
-                lnpro::Item { NavComponent(manager) },
+                lnpro::Item {
+                    NavComponent(nav_component_state),
+                },
                 lnpro::Item<Col> {
                     lnpro::ContentsMargin { { 15, 15, 5, 15 } },
-                    lnpro::Item { ListComponent(manager) },
+                    lnpro::Item { ListComponent(list_component_state) },
                 },
                 lnpro::Item<Col> {
                     { 255 },
@@ -69,7 +81,7 @@ auto main(int argc, char** argv) -> int {
                             Qt::ScrollBarAlwaysOff,
                         },
                         scroll::pro::Item {
-                            ViewComponent(manager),
+                            ViewComponent(view_component_state),
                         },
                     },
                 },

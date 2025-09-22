@@ -1,3 +1,5 @@
+#include "example/widgets/component.hh"
+
 #include <creeper-qt/core/application.hh>
 #include <creeper-qt/layout/group.hh>
 #include <creeper-qt/layout/linear.hh>
@@ -15,8 +17,7 @@ namespace ln = linear::pro;
 namespace im = image::pro;
 namespace ic = icon_button::pro;
 
-auto NavComponent(ThemeManager& manager,
-    std::function<void(const std::string_view&)> switch_view_callback) noexcept {
+auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
 
     auto avatar_image = new Image {
         im::FixedSize { 60, 60 },
@@ -28,14 +29,14 @@ auto NavComponent(ThemeManager& manager,
             [] { qDebug() << "[main] Image loading completed"; },
         },
     };
-    manager.append_handler(avatar_image, [avatar_image](const ThemeManager& manager) {
+    state.manager.append_handler(avatar_image, [avatar_image](const ThemeManager& manager) {
         const auto colorscheme = manager.color_scheme();
         const auto colorborder = colorscheme.secondary_container;
         avatar_image->set_border_color(colorborder);
     });
 
     const auto navigation_icons_config = std::tuple {
-        ic::ThemeManager { manager },
+        ic::ThemeManager { state.manager },
         ic::ColorStandard,
         ic::ShapeRound,
         ic::TypesToggleUnselected,
@@ -45,7 +46,7 @@ auto NavComponent(ThemeManager& manager,
     };
 
     return new FilledCard {
-        fc::ThemeManager { manager },
+        fc::ThemeManager { state.manager },
         fc::Radius { 0 },
         fc::Level { CardLevel::HIGHEST },
 
@@ -75,7 +76,7 @@ auto NavComponent(ThemeManager& manager,
                             status,
                             ic::ColorStandard,
                             ic::FontIcon { icon },
-                            ic::Clickable { [=] { switch_view_callback(name); } },
+                            ic::Clickable { [=] { state.switch_callback(name); } },
                         };
                     },
                     Qt::AlignHCenter,
@@ -97,8 +98,8 @@ auto NavComponent(ThemeManager& manager,
                 ic::ColorFilled,
                 ic::FontIcon { material::icon::kDarkMode },
                 ic::Clickable { [&] {
-                    manager.toggle_color_mode();
-                    manager.apply_theme();
+                    state.manager.toggle_color_mode();
+                    state.manager.apply_theme();
                 } },
             },
         },

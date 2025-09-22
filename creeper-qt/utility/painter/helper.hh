@@ -61,6 +61,10 @@ public:
     }
 
 public:
+    inline PainterHelper& point(const QColor& color, double radius, const QPointF& point) {
+        pen_only({ color, radius * 2 }).drawPoint(point);
+        return *this;
+    }
     inline PainterHelper& ellipse(const QColor& background, const QColor& border_color,
         double border_width, const QRectF& rect) {
 

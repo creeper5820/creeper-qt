@@ -103,8 +103,8 @@ using Token = common::Token<internal::Slider>;
 
 template <typename F>
 struct OnValueChange : Token {
-    std::decay_t<F> f;
-    explicit OnValueChange(F&& f) noexcept
+    F f;
+    explicit OnValueChange(F f) noexcept
         requires std::invocable<F, double>
         : f { std::forward<decltype(f)>(f) } { }
     auto apply(auto& self) const noexcept -> void {

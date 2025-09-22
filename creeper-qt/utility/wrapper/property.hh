@@ -8,7 +8,7 @@
 #define CREEPER_DEFINE_CHECKER(TRAIT)                                                              \
     struct checker final {                                                                         \
         template <class T>                                                                         \
-        static constexpr auto result = TRAIT<T>;                                                   \
+        static constexpr bool result = TRAIT<T>;                                                   \
     };
 
 namespace creeper {
@@ -22,12 +22,12 @@ concept checker_trait = requires {
 template <checker_trait... Ts>
 struct CheckerOr {
     template <class T>
-    static constexpr auto result = (Ts::template result<T> || ...);
+    static constexpr bool result = (Ts::template result<T> || ...);
 };
 template <checker_trait... Ts>
 struct CheckerAnd {
     template <class T>
-    static constexpr auto result = (Ts::template result<T> && ...);
+    static constexpr bool result = (Ts::template result<T> && ...);
 };
 
 /// PROP

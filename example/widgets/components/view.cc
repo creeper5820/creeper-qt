@@ -1,3 +1,5 @@
+#include "example/widgets/component.hh"
+
 #include <creeper-qt/layout/flow.hh>
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/utility/material-icon.hh>
@@ -124,20 +126,25 @@ static auto BannerComponent(ThemeManager& manager) noexcept {
     };
 }
 
-auto ViewComponent(ThemeManager& manager) noexcept {
+auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
     return new FilledCard {
-        capro::ThemeManager { manager },
+        capro::ThemeManager { state.manager },
         capro::SizePolicy { QSizePolicy::Expanding },
         capro::Layout<Col> {
             lnpro::Alignment { Qt::AlignTop },
             lnpro::Margin { 10 },
             lnpro::Spacing { 10 },
 
-            lnpro::Item { SearchComponent(manager) },
-            lnpro::Item { BannerComponent(manager) },
-            lnpro::Item<Slider> {
-                slider::pro::FixedHeight { 50 },
-                slider::pro::OnValueChange { [](double) {} },
+            lnpro::Item { SearchComponent(state.manager) },
+            lnpro::Item { BannerComponent(state.manager) },
+            lnpro::Item<Row> {
+                lnpro::SpacingItem { 255 },
+                lnpro::Item<Slider> {
+                    slider::pro::FixedHeight { 50 },
+                    slider::pro::FixedWidth { 300 },
+                    slider::pro::OnValueChange { [](double) {} },
+                },
+                lnpro::SpacingItem { 255 },
             },
             lnpro::Item<Flow> {
                 flow::pro::RowSpacing { 10 },
@@ -145,7 +152,7 @@ auto ViewComponent(ThemeManager& manager) noexcept {
                 flow::pro::RowLimit { 6 },
                 flow::pro::Apply { [&](Flow& self) {
                     using namespace repeat_literals;
-                    1'000 * [&](auto i) { self.addWidget(ItemComponent(manager, i)); };
+                    1'000 * [&](auto i) { self.addWidget(ItemComponent(state.manager, i)); };
                 } },
             },
         },

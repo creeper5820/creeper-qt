@@ -1,3 +1,5 @@
+#include "example/widgets/component.hh"
+
 #include <creeper-qt/core/application.hh>
 #include <creeper-qt/layout/group.hh>
 #include <creeper-qt/layout/linear.hh>
@@ -36,7 +38,7 @@ constexpr auto list_items = std::array {
     "绿宝石块",
 };
 
-auto ListComponent(ThemeManager& manager) noexcept {
+auto ListComponent(ListComponentState& state) noexcept -> raw_pointer<QWidget> {
 
     const auto ButtonGroup = new Group<Col, TextButton> {
         lnpro::Alignment { Qt::AlignTop | Qt::AlignHCenter },
@@ -44,7 +46,7 @@ auto ListComponent(ThemeManager& manager) noexcept {
             std::views::enumerate(list_items),
             [&](int i, auto c) {
                 return new TextButton {
-                    tbpro::ThemeManager { manager },
+                    tbpro::ThemeManager { state.manager },
                     tbpro::FixedWidth { 120 },
                     tbpro::FixedHeight { 30 },
                     tbpro::Radius { -1 },
@@ -59,11 +61,11 @@ auto ListComponent(ThemeManager& manager) noexcept {
         },
     };
     return new FilledCard {
-        fcpro::ThemeManager { manager },
+        fcpro::ThemeManager { state.manager },
         fcpro::Radius { 10 },
         fcpro::Layout<Col> {
             lnpro::Item<ScrollArea> {
-                scroll::pro::ThemeManager { manager },
+                scroll::pro::ThemeManager { state.manager },
                 scroll::pro::ScrollBarPolicy {
                     Qt::ScrollBarAlwaysOff,
                     Qt::ScrollBarAlwaysOff,

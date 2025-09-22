@@ -44,9 +44,6 @@ namespace creeper::mutual_exclusion_group::pro {
 struct TokenContext { };
 using Token = common::Token<TokenContext>;
 
-template <typename T>
-concept trait = std::derived_from<T, Token> || group::pro::trait<T>;
-
 template <typename Signal>
 struct SignalInjection : Token {
     Signal signal;
@@ -59,6 +56,9 @@ struct SignalInjection : Token {
     }
 };
 
+template <typename T>
+concept trait = std::derived_from<T, Token> || group::pro::trait<T>;
+
 CREEPER_DEFINE_CHECKER(trait);
 using namespace group::pro;
 }
@@ -66,24 +66,24 @@ namespace creeper {
 
 template <layout_trait T, widget_trait W, auto switch_function>
     requires mutual_exclusion_group::internal::switch_function_trait<switch_function, W>
-using MutualEXclusionGroup =
+using MutualExclusionGroup =
     mutual_exclusion_group::internal::MutualExclusionGroup<T, W, switch_function>;
 
 template <layout_trait T, widget_trait W>
 using CheckGroup = Declarative<
-    MutualEXclusionGroup<T, W, mutual_exclusion_group::internal::checked_switch_function>,
+    MutualExclusionGroup<T, W, mutual_exclusion_group::internal::checked_switch_function>,
     CheckerOr<mutual_exclusion_group::pro::checker, typename T::Checker>>;
 namespace check_group = mutual_exclusion_group;
 
 template <layout_trait T, widget_trait W>
 using OpenGroup = Declarative<
-    MutualEXclusionGroup<T, W, mutual_exclusion_group::internal::opened_switch_function>,
+    MutualExclusionGroup<T, W, mutual_exclusion_group::internal::opened_switch_function>,
     CheckerOr<mutual_exclusion_group::pro::checker, typename T::Checker>>;
 namespace open_group = mutual_exclusion_group;
 
 template <layout_trait T, widget_trait W>
 using SelectGroup = Declarative<
-    MutualEXclusionGroup<T, W, mutual_exclusion_group::internal::selected_switch_function>,
+    MutualExclusionGroup<T, W, mutual_exclusion_group::internal::selected_switch_function>,
     CheckerOr<mutual_exclusion_group::pro::checker, typename T::Checker>>;
 namespace select_group = mutual_exclusion_group;
 
