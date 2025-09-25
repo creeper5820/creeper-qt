@@ -1,5 +1,6 @@
 #include "sliders.hh"
 
+#include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/painter/helper.hh"
 
 #include <qevent.h>
@@ -11,7 +12,8 @@ using namespace creeper::slider::internal;
 struct Slider::Impl {
 public:
     explicit Impl(Slider& self) noexcept
-        : self { self } { }
+        : self { self }
+        , animatable { self } { }
 
     auto set_direction(Qt::ArrowType direction) noexcept -> void {
         this->direction = direction;
@@ -53,8 +55,10 @@ public:
                ? QPointF { handle_thickness + progress * handle_groove, 0.5 * self.height() }
                : QPointF { 0.5 * self.width(), handle_thickness + progress * handle_groove };
 
-        const auto handle_w = is_horizontal() ? handle_thickness : handle_length;
-        const auto handle_h = is_horizontal() ? handle_length : handle_thickness;
+        const auto handle_thickness_real = pressed ? 0.5 * handle_thickness : handle_thickness;
+
+        const auto handle_w = is_horizontal() ? handle_thickness_real : handle_length;
+        const auto handle_h = is_horizontal() ? handle_length : handle_thickness_real;
 
         const auto handle_rectangle = QRectF {
             handle_center.x() - handle_w / 2.0,
@@ -107,13 +111,12 @@ public:
             .done();
     }
     auto mouse_release_event(QMouseEvent* event) noexcept -> void {
-        if (changed) {
-            changed = false;
-            emit self.signal_value_change_finished(progress);
-        }
+        pressed = false;
+        update_progress(event->pos());
+        emit self.signal_value_change_finished(progress);
     }
     auto mouse_press_event(QMouseEvent* event) noexcept -> void {
-        // TODO: 判断值是否改变
+        pressed = true;
         update_progress(event->pos());
         emit self.signal_value_change(progress);
     }
@@ -127,19 +130,24 @@ private:
         return direction == Qt::RightArrow || direction == Qt::LeftArrow;
     }
     auto update_progress(const QPoint& position) noexcept -> void {
+        const auto w = self.width();
+        const auto h = self.height();
+        const auto x = position.x();
+        const auto y = position.y();
+
         auto handle_thickness = measurements.handle_width;
-        auto spindle_length   = int {};
-        auto spindle_position = int {};
+        auto spindle_len      = int {};
+        auto spindle_pos      = int {};
 
         if (!is_horizontal()) {
-            spindle_length   = self.height() - 2 * handle_thickness;
-            spindle_position = position.y() - 1 * handle_thickness;
+            spindle_len = h - 2 * handle_thickness;
+            spindle_pos = y - 1 * handle_thickness;
         } else {
-            spindle_length   = self.width() - 2 * handle_thickness;
-            spindle_position = position.x() - 1 * handle_thickness;
+            spindle_len = w - 2 * handle_thickness;
+            spindle_pos = x - 1 * handle_thickness;
         }
 
-        progress = static_cast<double>(spindle_position) / spindle_length;
+        progress = static_cast<double>(spindle_pos) / spindle_len;
         progress = std::clamp(progress, 0., 1.);
 
         self.update();
@@ -150,6 +158,7 @@ private:
     int steps       = 0;
     bool changed    = false;
     bool enabled    = true;
+    bool pressed    = false;
 
     Qt::ArrowType direction = Qt::RightArrow;
 
@@ -157,4 +166,5 @@ private:
     Measurements measurements = Measurements::Xs();
 
     Slider& self;
+    Animatable animatable;
 };

@@ -1,14 +1,16 @@
 #pragma once
 
+#include <eigen3/Eigen/Dense>
+
 #include "creeper-qt/utility/animation/core.hh"
 #include "creeper-qt/utility/animation/math.hh"
-#include <eigen3/Eigen/Dense>
 
 namespace creeper::animate {
 
 constexpr auto kErrorThreshold = 1e-1;
 
-template <typename T> struct FinitePidTracker : public IAnimation {
+template <typename T>
+struct FinitePidTracker : public IAnimation {
     explicit FinitePidTracker(const std::shared_ptr<T>& current, const T& target,
         const std::shared_ptr<bool>& stop_token, double kp, double ki, double kd, double hz,
         double error_threshold = kErrorThreshold)
@@ -48,7 +50,8 @@ template <typename T> struct FinitePidTracker : public IAnimation {
     T last_error = zero<T>();
 };
 
-template <typename T> struct FiniteSringTracker  : IAnimation {
+template <typename T>
+struct FiniteSringTracker : IAnimation {
 
     FiniteSringTracker(const std::shared_ptr<T>& current, const T& target,
         const std::shared_ptr<bool>& stop_token, double k, double d, double hz,
