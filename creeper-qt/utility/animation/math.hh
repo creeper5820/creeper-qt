@@ -6,37 +6,49 @@
 
 namespace creeper::animate {
 
-template <typename T> inline T update_pid_using_target(T value, T target, double kp = 1) {
+template <typename T>
+inline T update_pid_using_target(T value, T target, double kp = 1) {
     return static_cast<T>(value) + kp * (static_cast<T>(target) - static_cast<T>(value));
 }
 
-template <typename T> inline T update_pid_using_error(T value, T error, double kp = 1) {
+template <typename T>
+inline T update_pid_using_error(T value, T error, double kp = 1) {
     return static_cast<T>(value) + kp * static_cast<T>(error);
 }
 
-template <typename T> inline T zero();
+template <typename T>
+inline T zero();
 
-template <> inline double zero() { return 0.; }
+template <>
+inline double zero() {
+    return 0.;
+}
 inline double calculate_error(double error) { return std::abs(error); }
 
-template <> inline Eigen::Vector2d zero() { return Eigen::Vector2d::Zero(); }
+template <>
+inline Eigen::Vector2d zero() {
+    return Eigen::Vector2d::Zero();
+}
 inline double calculate_error(const Eigen::Vector2d& error) { return std::abs(error.norm()); }
 
-template <> inline Eigen::Vector4d zero() { return Eigen::Vector4d::Zero(); }
+template <>
+inline Eigen::Vector4d zero() {
+    return Eigen::Vector4d::Zero();
+}
 inline double calculate_error(const Eigen::Vector4d& error) { return std::abs(error.norm()); }
 
 }
 
 namespace creeper {
 
-inline Eigen::Vector4d from_color(const QColor& color) {
+inline auto from_color(const QColor& color) -> Eigen::Vector4d {
     return Eigen::Vector4d(color.red(), color.green(), color.blue(), color.alpha());
 }
-inline QColor from_vector4(const Eigen::Vector4d& vector) {
+inline auto from_vector4(const Eigen::Vector4d& vector) -> QColor {
     return QColor(vector[0], vector[1], vector[2], vector[3]);
 }
 
-inline QRectF extract_rect(const QRectF& rect, double w_weight, double h_weight) {
+inline auto extract_rect(const QRectF& rect, double w_weight, double h_weight) -> QRectF {
     double rw, rh;
     if (rect.width() * h_weight > rect.height() * w_weight) {
         rh = rect.height();

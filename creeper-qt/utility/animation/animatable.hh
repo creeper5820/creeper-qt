@@ -5,18 +5,15 @@
 
 namespace creeper {
 
-/// Animatable -> controller -> user
-///                  |
-/// Animatable <- updater
-///
+/// @note
+/// Ends after the calculation is completed or the controller call ends
+struct ITransitionTask {
+    virtual ~ITransitionTask() noexcept    = 0;
+    virtual auto update() noexcept -> bool = 0;
+};
+
 class Animatable {
     CREEPER_PIMPL_DEFINITION(Animatable)
-
-public:
-    template <typename T, class U>
-    class Controller {
-        std::shared_ptr<U> updater;
-    };
 
 public:
     explicit Animatable(QWidget& widget) noexcept;
@@ -24,8 +21,7 @@ public:
     auto set_frame_rate(int hz) noexcept -> void;
     auto get_frame_rate() const noexcept -> int;
 
-    template <class Controller>
-    auto make_transition() noexcept -> std::unique_ptr<Controller>;
+    auto push_transition_task(std::unique_ptr<ITransitionTask> task) noexcept -> void;
 };
 
 }
