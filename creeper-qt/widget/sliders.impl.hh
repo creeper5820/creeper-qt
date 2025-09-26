@@ -1,6 +1,7 @@
 #include "sliders.hh"
 
 #include "creeper-qt/utility/animation/animatable.hh"
+#include "creeper-qt/utility/animation/transition.hh"
 #include "creeper-qt/utility/painter/helper.hh"
 
 #include <qevent.h>
@@ -13,7 +14,17 @@ struct Slider::Impl {
 public:
     explicit Impl(Slider& self) noexcept
         : self { self }
-        , animatable { self } { }
+        , animatable { self } {
+
+        auto state = std::make_shared<PidState<double>>();
+
+        state->value  = progress;
+        state->target = progress;
+
+        state->config.kp = 20.0;
+
+        position = make_transition(animatable, state);
+    }
 
     auto set_direction(Qt::ArrowType direction) noexcept -> void {
         this->direction = direction;
@@ -52,8 +63,8 @@ public:
         const auto handle_radius    = 0.5 * handle_thickness;
         const auto handle_groove    = self.width() - 2 * handle_thickness;
         const auto handle_center    = is_horizontal()
-               ? QPointF { handle_thickness + progress * handle_groove, 0.5 * self.height() }
-               : QPointF { 0.5 * self.width(), handle_thickness + progress * handle_groove };
+               ? QPointF { handle_thickness + *position * handle_groove, 0.5 * self.height() }
+               : QPointF { 0.5 * self.width(), handle_thickness + *position * handle_groove };
 
         const auto handle_thickness_real = pressed ? 0.5 * handle_thickness : handle_thickness;
 
@@ -129,11 +140,11 @@ private:
     auto is_horizontal() const noexcept -> bool {
         return direction == Qt::RightArrow || direction == Qt::LeftArrow;
     }
-    auto update_progress(const QPoint& position) noexcept -> void {
+    auto update_progress(const QPoint& point) noexcept -> void {
         const auto w = self.width();
         const auto h = self.height();
-        const auto x = position.x();
-        const auto y = position.y();
+        const auto x = point.x();
+        const auto y = point.y();
 
         auto handle_thickness = measurements.handle_width;
         auto spindle_len      = int {};
@@ -150,15 +161,17 @@ private:
         progress = static_cast<double>(spindle_pos) / spindle_len;
         progress = std::clamp(progress, 0., 1.);
 
-        self.update();
+        position->transition_to(progress);
     }
 
 private:
     double progress = 0.0;
-    int steps       = 0;
-    bool changed    = false;
-    bool enabled    = true;
-    bool pressed    = false;
+    std::unique_ptr<TransitionValue<PidState<double>>> position;
+
+    int steps    = 0;
+    bool changed = false;
+    bool enabled = true;
+    bool pressed = false;
 
     Qt::ArrowType direction = Qt::RightArrow;
 

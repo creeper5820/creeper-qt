@@ -8,7 +8,7 @@ namespace creeper {
 /// @note
 /// Ends after the calculation is completed or the controller call ends
 struct ITransitionTask {
-    virtual ~ITransitionTask() noexcept    = 0;
+    virtual ~ITransitionTask() noexcept    = default;
     virtual auto update() noexcept -> bool = 0;
 };
 
