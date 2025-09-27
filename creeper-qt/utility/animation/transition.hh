@@ -47,7 +47,7 @@ public:
 
     auto transition_to(T to) noexcept -> void {
         // Update target of state
-        state->set_target(to);
+        state->set_target(std::move(to));
 
         // Clear last transition task
         if (running) {
@@ -58,6 +58,11 @@ public:
         // Push new transition task
         auto task = std::make_unique<TransitionTask<State>>(state, running);
         animatable.push_transition_task(std::move(task));
+    }
+    auto snap_to(T to) noexcept -> void {
+        state->set_value(std::move(to));
+        state->set_target(std::move(to));
+        if (running) *running = false;
     }
 
 private:
@@ -124,12 +129,22 @@ struct PidState : public NormalAccessor {
         TimePoint last_timestamp;
     } details;
 
-    static constexpr T EPSILON = std::numeric_limits<T>::epsilon() * 100.0;
+    static constexpr T EPSILON = std::numeric_limits<T>::epsilon() * 1e5;
 
     auto set_target(T new_target) noexcept -> void {
-        target                 = new_target;
-        details.last_error     = target - value;
-        details.last_timestamp = Clock::now();
+        target = new_target;
+
+        const auto current_time = Clock::now();
+
+        using namespace std::chrono_literals;
+        const auto threshold = 16ms;
+
+        const auto elapsed_time = current_time - details.last_timestamp;
+
+        if (elapsed_time > threshold) {
+            details.last_error     = target - value;
+            details.last_timestamp = current_time;
+        }
     }
 
     auto update() noexcept -> bool {

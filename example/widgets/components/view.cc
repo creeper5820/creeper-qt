@@ -3,6 +3,7 @@
 #include <creeper-qt/layout/flow.hh>
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/utility/material-icon.hh>
+#include <creeper-qt/utility/wrapper/mutable.hh>
 #include <creeper-qt/widget/buttons/icon-button.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/image.hh>
@@ -126,7 +127,44 @@ static auto BannerComponent(ThemeManager& manager) noexcept {
     };
 }
 
+static constexpr auto slider_measurements = Slider::Measurements::S();
+
 auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
+    const auto SliderComponent = [&] {
+        const auto mutable_text =
+            std::make_shared<Mutable<text::pro::Text>>(text::pro::Text { "0.000" });
+
+        return new Row {
+            lnpro::Alignment { Qt::AlignLeft },
+            lnpro::Item<FilledCard> {
+                filled_card::pro::ThemeManager { state.manager },
+                filled_card::pro::FixedSize { 100, slider_measurements.track_height },
+                filled_card::pro::Radius { static_cast<double>(slider_measurements.track_shape) },
+                filled_card::pro::Level { CardLevel::LOWEST },
+                filled_card::pro::Layout<Row> {
+                    lnpro::Spacing { 0 },
+                    lnpro::Margin { 0 },
+                    lnpro::Item<Text> {
+                        text::pro::ThemeManager { state.manager },
+                        text::pro::Alignment { Qt::AlignCenter },
+                        text::pro::FixedWidth { 100 },
+                        *mutable_text,
+                    },
+                },
+            },
+            lnpro::Item<Slider> {
+                slider::pro::ThemeManager { state.manager },
+                slider::pro::Measurements { slider_measurements },
+                slider::pro::FixedHeight { slider_measurements.minimum_height() },
+                slider::pro::FixedWidth { 300 },
+                slider::pro::OnValueChange { [mutable_text](double progress) mutable {
+                    const auto new_string = QString::number(progress, 'f', 3);
+                    *mutable_text         = text::pro::Text { new_string };
+                } },
+            },
+        };
+    };
+
     return new FilledCard {
         capro::ThemeManager { state.manager },
         capro::SizePolicy { QSizePolicy::Expanding },
@@ -138,13 +176,19 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
             lnpro::Item { SearchComponent(state.manager) },
             lnpro::Item { BannerComponent(state.manager) },
             lnpro::Item<Row> {
-                lnpro::SpacingItem { 255 },
-                lnpro::Item<Slider> {
-                    slider::pro::FixedHeight { 50 },
-                    slider::pro::FixedWidth { 300 },
-                    slider::pro::OnValueChange { [](double) {} },
+                lnpro::Margin { 20 },
+                lnpro::Spacing { 15 },
+                lnpro::Item<Col> {
+                    lnpro::Item { SliderComponent() },
+                    lnpro::Item { SliderComponent() },
+                    lnpro::Item { SliderComponent() },
                 },
-                lnpro::SpacingItem { 255 },
+                lnpro::Item<FilledCard> {
+                    { 255 },
+                    filled_card::pro::ThemeManager { state.manager },
+                    filled_card::pro::Level { CardLevel::LOWEST },
+                    filled_card::pro::FixedHeight { slider_measurements.minimum_height() * 3 + 20 },
+                },
             },
             lnpro::Item<Flow> {
                 flow::pro::RowSpacing { 10 },

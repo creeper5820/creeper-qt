@@ -8,6 +8,13 @@
 #include <qnamespace.h>
 #include <qpainter.h>
 
+/// TODO:
+/// [ ] Adapt other directions
+/// [ ] Add Disable status
+/// [ ] Add Inset icon
+/// [ ] Add Stops
+/// [ ] Add Value indicator
+
 using namespace creeper::slider::internal;
 
 struct Slider::Impl {
@@ -16,14 +23,17 @@ public:
         : self { self }
         , animatable { self } {
 
-        auto state = std::make_shared<PidState<double>>();
+        // Transition For Handle Position
+        {
+            auto state = std::make_shared<PidState<double>>();
 
-        state->value  = progress;
-        state->target = progress;
+            state->value  = progress;
+            state->target = progress;
 
-        state->config.kp = 20.0;
+            state->config.kp = 20.0;
 
-        position = make_transition(animatable, state);
+            position = make_transition(animatable, state);
+        }
     }
 
     auto set_direction(Qt::ArrowType direction) noexcept -> void {
@@ -39,6 +49,58 @@ public:
         self.update();
     }
 
+    void set_color_scheme(const ColorScheme& scheme) {
+
+        // Alpha 97 (约 38%): 用于禁用状态的文本、图标等前景元素 (Text/Icon).
+        auto on_surface_disabled_foreground = scheme.on_surface;
+        on_surface_disabled_foreground.setAlpha(97);
+
+        // Alpha 31 (约 12%): 用于禁用状态的轨道、填充、容器等背景元素 (Container/Track).
+        auto on_surface_disabled_container = scheme.on_surface;
+        on_surface_disabled_container.setAlpha(31);
+
+        // --- 启用 (Enabled) 状态映射 ---
+        auto& enabled = color_specs.enabled;
+
+        // 1. 值指示器 (气泡)
+        enabled.value_indicator = scheme.inverse_surface;
+        enabled.value_text      = scheme.inverse_on_surface;
+
+        // 2. 停止点指示器 (Stop Indicators)
+        enabled.stop_indicator_active   = scheme.primary;
+        enabled.stop_indicator_inactive = scheme.secondary_container;
+
+        // 3. 轨道 (Track)
+        enabled.track_active   = scheme.primary;
+        enabled.track_inactive = scheme.secondary_container;
+
+        // 4. 拖动把手 (Handle)
+        enabled.handle = scheme.primary;
+
+        // --- 禁用 (Disabled) 状态映射 ---
+        auto& disabled = color_specs.disabled;
+
+        // 1. 值指示器 (气泡) - 气泡本身被禁用时，其背景和文字也应是禁用色
+        disabled.value_indicator = on_surface_disabled_container;
+        disabled.value_text      = on_surface_disabled_foreground;
+
+        // 2. 停止点指示器
+        disabled.stop_indicator_active   = on_surface_disabled_container;
+        disabled.stop_indicator_inactive = on_surface_disabled_container;
+
+        // 3. 轨道
+        disabled.track_active   = on_surface_disabled_container;
+        disabled.track_inactive = on_surface_disabled_container;
+
+        // 4. 拖动把手
+        disabled.handle = on_surface_disabled_container;
+    }
+
+    auto load_theme_manager(ThemeManager& manager) -> void {
+        manager.append_handler(&self,
+            [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
+    }
+
 public:
     auto paint_event(QPaintEvent*) -> void {
 
@@ -48,7 +110,8 @@ public:
         painter.setRenderHint(QPainter::Antialiasing);
 
         // TODO: Develop some util to simplify those calculating
-        constexpr auto handle_spacing = int { 4 };
+        const auto handle_spacing = double { 1.5 * measurements.handle_width };
+        const auto common_radius  = double { 0.5 * measurements.handle_width };
 
         // Points of 4 corner
         const auto& point_tl = self.geometry().bottomLeft();
@@ -72,10 +135,10 @@ public:
         const auto handle_h = is_horizontal() ? handle_length : handle_thickness_real;
 
         const auto handle_rectangle = QRectF {
-            handle_center.x() - handle_w / 2.0,
-            handle_center.y() - handle_h / 2.0,
-            static_cast<qreal>(handle_w),
-            static_cast<qreal>(handle_h),
+            handle_center.x() - 0.5 * handle_w,
+            handle_center.y() - 0.5 * handle_h,
+            handle_w,
+            handle_h,
         };
 
         // Outline center of 4 sides
@@ -101,15 +164,17 @@ public:
         const auto track_color_2 = color.track_inactive;
         const auto track_shape   = measurements.track_shape;
 
+        // Stop Indicator
+
         util::PainterHelper { painter }
 
             // Track Part 1
-            .rounded_rectangle(
-                track_color_1, Qt::transparent, 0, track_1, track_shape, 2, 2, track_shape)
+            .rounded_rectangle(track_color_1, Qt::transparent, 0, track_1, track_shape,
+                common_radius, common_radius, track_shape)
 
             // Track Part 2
-            .rounded_rectangle(
-                track_color_2, Qt::transparent, 0, track_2, 2, track_shape, track_shape, 2)
+            .rounded_rectangle(track_color_2, Qt::transparent, 0, track_2, common_radius,
+                track_shape, track_shape, common_radius)
 
             // Stop Indicator
             // TODO:
@@ -169,7 +234,6 @@ private:
     std::unique_ptr<TransitionValue<PidState<double>>> position;
 
     int steps    = 0;
-    bool changed = false;
     bool enabled = true;
     bool pressed = false;
 

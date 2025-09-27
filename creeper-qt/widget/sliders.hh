@@ -42,6 +42,8 @@ public:
 
         int inset_icon_size = 0;
 
+        constexpr auto minimum_height() const { return handle_height; }
+
         static constexpr auto Xs() {
             return Measurements {
                 .track_height    = 16,
@@ -84,6 +86,12 @@ public:
         }
     };
 
+public:
+    auto set_color_scheme(const ColorScheme&) -> void;
+    auto set_measurements(const Measurements&) -> void;
+
+    auto load_theme_manager(ThemeManager&) -> void;
+
 signals:
     auto signal_value_change(double) -> void;
     auto signal_value_change_finished(double) -> void;
@@ -111,6 +119,9 @@ struct OnValueChange : Token {
         QObject::connect(&self, &internal::Slider::signal_value_change, f);
     }
 };
+
+using Measurements = SetterProp<Token, internal::Slider::Measurements,
+    [](auto& self, const auto& v) { self.set_measurements(v); }>;
 
 template <class T>
 concept trait = std::derived_from<T, Token>;

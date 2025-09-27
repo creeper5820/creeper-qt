@@ -5,6 +5,16 @@ Slider::Slider()
 
 Slider::~Slider() = default;
 
+auto Slider::set_color_scheme(const ColorScheme& scheme) -> void {
+    pimpl->set_color_scheme(scheme);
+}
+auto Slider::set_measurements(const Measurements& measurements) -> void {
+    pimpl->set_measurements(measurements);
+}
+auto Slider::load_theme_manager(ThemeManager& manager) -> void {
+    pimpl->load_theme_manager(manager);
+}
+
 auto Slider::mousePressEvent(QMouseEvent* event) -> void {
     pimpl->mouse_press_event(event);
     Widget::mousePressEvent(event);
