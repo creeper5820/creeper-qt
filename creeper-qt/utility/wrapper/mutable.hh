@@ -38,6 +38,9 @@ public:
     explicit Mutable(const T& t) noexcept
         : T { t } { }
 
+    explicit Mutable(std::constructible_from<T> auto&&... args) noexcept
+        : T { std::forward<decltype(args)>(args)... } { }
+
     Mutable(const Mutable&) = delete;
     Mutable(Mutable&&)      = delete;
 

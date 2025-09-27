@@ -131,8 +131,7 @@ static constexpr auto slider_measurements = Slider::Measurements::S();
 
 auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
     const auto SliderComponent = [&] {
-        const auto mutable_text =
-            std::make_shared<Mutable<text::pro::Text>>(text::pro::Text { "0.000" });
+        const auto mutable_text = std::make_shared<Mutable<text::pro::Text>>("0.000");
 
         return new Row {
             lnpro::Alignment { Qt::AlignLeft },
@@ -157,10 +156,12 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                 slider::pro::Measurements { slider_measurements },
                 slider::pro::FixedHeight { slider_measurements.minimum_height() },
                 slider::pro::FixedWidth { 300 },
-                slider::pro::OnValueChange { [mutable_text](double progress) mutable {
-                    const auto new_string = QString::number(progress, 'f', 3);
-                    *mutable_text         = text::pro::Text { new_string };
-                } },
+                slider::pro::OnValueChange {
+                    [mutable_text](double progress) mutable {
+                        auto string   = QString::number(progress, 'f', 3);
+                        *mutable_text = text::pro::Text { string };
+                    },
+                },
             },
         };
     };

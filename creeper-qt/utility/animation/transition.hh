@@ -16,6 +16,7 @@ concept transition_state_trait = requires(T& t) {
     { t.update() } -> std::same_as<bool>;
 };
 
+// Functor like lambda
 template <transition_state_trait State>
 struct TransitionTask : public ITransitionTask {
 public:
