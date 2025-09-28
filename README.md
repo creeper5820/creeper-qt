@@ -18,12 +18,22 @@
 
 <img src="doc/image/blue-style-widgets.png" title="" alt="buttons" data-align="center">
 
-<div align=center>
-    <img src="doc/image/switch-working.gif" width=50%>
+<div style="display: flex; justify-content: center; gap: 20px; align-items: center;">
+    <div style="width: 50%; max-width: 400px; text-align: center;">
+        <img src="doc/image/switch-working.gif" style="width: 100%; height: auto; display: block;"> 
+    </div>
+    <div style="width: 50%; max-width: 400px; text-align: center;">
+        <img src="doc/image/filled-text-field.gif" style="width: 100%; height: auto; display: block;">
+    </div>
 </div>
 
-<div align=center>
-    <img src="doc/image/filled-text-field.gif" width=50%>
+<div style="display: flex; justify-content: center; gap: 20px; align-items: center;">
+    <div style="width: 50%; max-width: 400px; text-align: center;">
+        <img src="doc/image/sliders-day.png" style="width: 100%; height: auto; display: block;"> 
+    </div>
+    <div style="width: 50%; max-width: 400px; text-align: center;">
+        <img src="doc/image/sliders-night.png" style="width: 100%; height: auto; display: block;">
+    </div>
 </div>
 
 <img src="doc/image/example-login.png" title="" alt="example-login" data-align="center">
