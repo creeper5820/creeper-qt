@@ -34,7 +34,7 @@ struct FinitePidTracker : public IAnimation {
 
         *current = *current + T { output * dt };
 
-        return calculate_error(error) < error_threshold || *stop_token;
+        return magnitude(error) < error_threshold || *stop_token;
     }
 
     std::shared_ptr<T> current;
@@ -75,7 +75,7 @@ struct FiniteSringTracker : IAnimation {
         velocity = velocity + a_total * dt;
         *current = *current + velocity * dt;
 
-        return (calculate_error(error) < error_threshold && std::abs(velocity) < error_threshold)
+        return (magnitude(error) < error_threshold && std::abs(velocity) < error_threshold)
             || *stop_token;
     }
 

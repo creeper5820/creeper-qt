@@ -282,9 +282,6 @@ private:
     }
 
 private:
-    BasicTextField& self;
-    AnimationCore animation_core;
-
     double text_margin_l = 10;
     double text_margin_r = 10;
     double text_margin_u = 20;
@@ -309,6 +306,12 @@ private:
     QString trailing_code;
     QString trailing_font;
 
+    AnimationCore animation_core;
+
+    // TODO: Animatable animatable;
+
     std::shared_ptr<double> label_position = std::make_shared<double>(0);
     std::optional<std::shared_ptr<bool>> label_stop_token { std::make_shared<bool>() };
+
+    BasicTextField& self;
 };

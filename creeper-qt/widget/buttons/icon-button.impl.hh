@@ -1,15 +1,13 @@
 #pragma once
 
-#include "creeper-qt/utility/animation/core.hh"
-#include "creeper-qt/utility/animation/math.hh"
-#include "creeper-qt/utility/animation/motion-system.hh"
-#include "creeper-qt/utility/animation/water-ripple.hh"
-#include "creeper-qt/utility/painter/helper.hh"
 #include "icon-button.hh"
 
+#include "creeper-qt/utility/animation/animatable.hh"
+#include "creeper-qt/utility/animation/transition.hh"
+#include "creeper-qt/utility/animation/water-ripple.hh"
+#include "creeper-qt/utility/painter/helper.hh"
+
 using namespace creeper::icon_button::internal;
-using creeper::animate::AnimationCore;
-using creeper::animate::WaterRippleRenderer;
 
 constexpr auto kHoverOpacity = double { 0.1 };
 constexpr auto kWaterOpacity = double { 0.4 };
@@ -21,18 +19,10 @@ constexpr double kp = 15.0, ki = 0.0, kd = 0.0;
 constexpr auto kSpringK = double { 400.0 };
 constexpr auto kSpringD = double { 15.0 };
 
-constexpr auto kAnimationHz = int { 90 };
-constexpr auto kThreshold4D = double { 1.0 };
 constexpr auto kThreshold1D = double { 1e-1 };
 constexpr auto kWaterSpeed  = double { 5.0 };
 
 struct IconButton::Impl {
-    using Track4D = animate::FinitePidTracker<Eigen::Vector4d>;
-    using Track1D = animate::FiniteSringTracker<double>;
-
-    AnimationCore animation_core;
-    WaterRippleRenderer water_ripple;
-    std::vector<std::shared_ptr<bool>> stop_tokens;
 
     bool is_hovered = false;
 
@@ -61,18 +51,40 @@ struct IconButton::Impl {
 
     QColor water_color = Qt::gray;
 
-    std::shared_ptr<double> container_radius_current { std::make_shared<double>(0) };
+    Animatable animatable;
+    WaterRippleRenderer water_ripple;
 
-    std::shared_ptr<Eigen::Vector4d> container_color_current { std::make_shared<Eigen::Vector4d>(
-        Eigen::Vector4d::Zero()) };
-    std::shared_ptr<Eigen::Vector4d> icon_color_current { std::make_shared<Eigen::Vector4d>(
-        Eigen::Vector4d::Zero()) };
-    std::shared_ptr<Eigen::Vector4d> outline_color_current { std::make_shared<Eigen::Vector4d>(
-        Eigen::Vector4d::Zero()) };
+    std::unique_ptr<TransitionValue<SpringState<double>>> now_container_radius;
+    std::unique_ptr<TransitionValue<PidState<Eigen::Vector4d>>> now_color_container;
+    std::unique_ptr<TransitionValue<PidState<Eigen::Vector4d>>> now_color_icon;
+    std::unique_ptr<TransitionValue<PidState<Eigen::Vector4d>>> now_color_outline;
 
     explicit Impl(IconButton& self) noexcept
-        : animation_core { [&self] { self.update(); }, kAnimationHz }
-        , water_ripple { animation_core, kWaterSpeed, kAnimationHz } {
+        : animatable { self }
+        , water_ripple { animatable, kWaterSpeed } {
+
+        {
+            auto state = std::make_shared<SpringState<double>>();
+
+            state->config.error_threshold = kThreshold1D;
+            state->config.k               = kSpringK;
+            state->config.d               = kSpringD;
+
+            now_container_radius = make_transition(animatable, std::move(state));
+        }
+        {
+            constexpr auto make_state = [] {
+                auto state = std::make_shared<PidState<Eigen::Vector4d>>();
+
+                state->config.kp = kp;
+                state->config.ki = ki;
+                state->config.kd = kd;
+                return state;
+            };
+            now_color_container = make_transition(animatable, make_state());
+            now_color_icon      = make_transition(animatable, make_state());
+            now_color_outline   = make_transition(animatable, make_state());
+        }
 
         QObject::connect(&self, &IconButton::clicked, [this, &self] {
             if (types == Types::DEFAULT) {
@@ -86,24 +98,24 @@ struct IconButton::Impl {
         });
     }
 
-    void enter_event(IconButton& self, const QEvent& event) {
+    auto enter_event(IconButton& self, const QEvent& event) {
         self.setCursor(Qt::PointingHandCursor);
         is_hovered = true;
     }
 
-    void leave_event(IconButton& self, const QEvent& event) { is_hovered = false; }
+    auto leave_event(IconButton& self, const QEvent& event) { is_hovered = false; }
 
-    void paint_event(IconButton& self, const QPaintEvent& event) {
+    auto paint_event(IconButton& self, const QPaintEvent& event) {
         // TODO: 做计算数据缓存优化，特别是 Resize 相关的计算
         const auto icon = self.icon();
 
-        const auto container_color = from_vector4(*container_color_current);
-        const auto icon_color      = from_vector4(*icon_color_current);
-        const auto outline_color   = from_vector4(*outline_color_current);
+        const auto color_container = from_vector4(*now_color_container);
+        const auto color_icon      = from_vector4(*now_color_icon);
+        const auto color_outline   = from_vector4(*now_color_outline);
 
         const auto hover_color = is_hovered ? get_hover_color() : Qt::transparent;
 
-        const auto container_radius = *container_radius_current;
+        const auto container_radius = *now_container_radius;
         const auto container_rect   = container_rectangle(self);
 
         auto clip_path = QPainterPath {};
@@ -112,36 +124,36 @@ struct IconButton::Impl {
         auto renderer = QPainter { &self };
         util::PainterHelper { renderer }
             .set_render_hint(QPainter::Antialiasing)
-            .rounded_rectangle(container_color, outline_color, kOutlineWidth, container_rect,
+            .rounded_rectangle(color_container, color_outline, kOutlineWidth, container_rect,
                 container_radius, container_radius)
             .apply(water_ripple.renderer(clip_path, water_color))
-            .simple_text(font_icon, self.font(), icon_color, container_rect, Qt::AlignCenter)
+            .simple_text(font_icon, self.font(), color_icon, container_rect, Qt::AlignCenter)
             .rounded_rectangle(
                 hover_color, Qt::transparent, 0, container_rect, container_radius, container_radius)
             .done();
     }
 
-    void set_types_type(IconButton& self, Types types) {
+    auto set_types_type(IconButton& self, Types types) {
         this->types = types;
         update_animation_status(self);
     }
 
-    void set_color_type(IconButton& self, Color color) {
+    auto set_color_type(IconButton& self, Color color) {
         this->color = color;
         update_animation_status(self);
     }
 
-    void set_shape_type(IconButton& self, Shape shape) {
+    auto set_shape_type(IconButton& self, Shape shape) {
         this->shape = shape;
         update_animation_status(self);
     }
 
-    void set_width_type(IconButton& self, Width width) {
+    auto set_width_type(IconButton& self, Width width) {
         this->width = width;
         update_animation_status(self);
     }
 
-    void set_color_scheme(IconButton& self, const ColorScheme& scheme) {
+    auto set_color_scheme(IconButton& self, const ColorScheme& scheme) {
         switch (color) {
         case Color::DEFAULT_FILLED:
             container_color = scheme.primary;
@@ -212,55 +224,40 @@ struct IconButton::Impl {
         update_animation_status(self);
     }
 
-    void load_theme_manager(IconButton& self, ThemeManager& manager) {
+    auto load_theme_manager(IconButton& self, ThemeManager& manager) {
         manager.append_handler(&self, [this, &self](const ThemeManager& manager) {
             set_color_scheme(self, manager.color_scheme());
         });
     }
 
 private:
-    void update_animation_status(IconButton& self) {
-        const auto stop_token = std::make_shared<bool>(false);
+    auto update_animation_status(IconButton& self) -> void {
 
-        const auto container_color_target //
-            = (types == Types::DEFAULT)         ? container_color
-            : (types == Types::TOGGLE_SELECTED) ? container_color_selected
-                                                : container_color_unselected;
+        const auto container_color_target = (types == Types::DEFAULT) ? container_color : //
+            (types == Types::TOGGLE_SELECTED) ? container_color_selected
+                                              : container_color_unselected;
+        now_color_container->transition_to(from_color(container_color_target));
 
-        animation_core.append(std::make_unique<Track4D>(container_color_current, //
-            from_color(container_color_target), stop_token, kp, ki, kd, kAnimationHz,
-            kThreshold4D));
-
-        const auto icon_color_target //
-            = (types == Types::DEFAULT)         ? icon_color
-            : (types == Types::TOGGLE_SELECTED) ? icon_color_selected
-                                                : icon_color_unselected;
-        animation_core.append(std::make_unique<Track4D>(icon_color_current,
-            from_color(icon_color_target), stop_token, kp, ki, kd, kAnimationHz, kThreshold4D));
+        const auto icon_color_target = (types == Types::DEFAULT) ? icon_color : //
+            (types == Types::TOGGLE_SELECTED) ? icon_color_selected
+                                              : icon_color_unselected;
+        now_color_icon->transition_to(from_color(icon_color_target));
 
         const auto outline_color_target //
             = (types == Types::DEFAULT)         ? outline_color
             : (types == Types::TOGGLE_SELECTED) ? outline_color_selected
                                                 : outline_color_unselected;
-        animation_core.append(std::make_unique<Track4D>(outline_color_current,
-            from_color(outline_color_target), stop_token, kp, ki, kd, kAnimationHz, kThreshold4D));
+        now_color_outline->transition_to(from_color(outline_color_target));
 
         const auto rectangle     = container_rectangle(self);
         const auto radius_round  = std::min<double>(rectangle.width(), rectangle.height()) / 2.;
         const auto radius_target = (types == Types::TOGGLE_SELECTED || shape == Shape::SQUARE)
             ? radius_round * kSquareRatio
             : radius_round * 1.0;
-        animation_core.append(std::make_unique<Track1D>(container_radius_current, radius_target,
-            stop_token, kSpringK, kSpringD, kAnimationHz, kThreshold1D));
-
-        for (auto& stop_token : stop_tokens)
-            *stop_token = true;
-
-        stop_tokens.clear();
-        stop_tokens.push_back(std::move(stop_token));
+        now_container_radius->transition_to(radius_target);
     }
 
-    QColor get_hover_color() const noexcept {
+    auto get_hover_color() const noexcept -> QColor {
         switch (types) {
         case Types::DEFAULT:
             return hover_color;
@@ -272,13 +269,13 @@ private:
         return { /* 不可能到达的彼岸 */ };
     }
 
-    void toggle_status() {
+    auto toggle_status() -> void {
         if (types == Types::TOGGLE_UNSELECTED) types = Types::TOGGLE_SELECTED;
         else if (types == Types::TOGGLE_SELECTED) types = Types::TOGGLE_UNSELECTED;
     }
 
     // 设计指南上的大小全是固定的，十分不自由，故转成比例
-    QRectF container_rectangle(IconButton& self) {
+    auto container_rectangle(IconButton& self) -> QRectF {
         return (width == Width::DEFAULT) ? (extract_rect(self.rect(), 1, 1))
             : (width == Width::NARROW)   ? (extract_rect(self.rect(), 1, kWidthRatio))
                                          : (extract_rect(self.rect(), kWidthRatio, 1));

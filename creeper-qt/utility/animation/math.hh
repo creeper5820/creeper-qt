@@ -7,48 +7,39 @@
 namespace creeper::animate {
 
 template <typename T>
-inline T update_pid_using_target(T value, T target, double kp = 1) {
-    return static_cast<T>(value) + kp * (static_cast<T>(target) - static_cast<T>(value));
+constexpr auto zero() noexcept {
+    if constexpr (std::is_arithmetic_v<T>) {
+        return T { 0 };
+    } else if constexpr (requires { T::Zero(); }) {
+        return T::Zero();
+    } else {
+        static_assert(sizeof(T) == 0, "zero() not implemented for this type");
+    }
 }
 
 template <typename T>
-inline T update_pid_using_error(T value, T error, double kp = 1) {
-    return static_cast<T>(value) + kp * static_cast<T>(error);
+constexpr auto magnitude(const T& error) noexcept {
+    if constexpr (std::is_arithmetic_v<T>) {
+        return std::abs(error);
+    } else if constexpr (requires { error.norm(); }) {
+        return std::abs(error.norm());
+    } else {
+        static_assert(sizeof(T) == 0, "magnitude() not implemented for this type");
+    }
 }
-
-template <typename T>
-inline T zero();
-
-template <>
-inline double zero() {
-    return 0.;
-}
-inline double calculate_error(double error) { return std::abs(error); }
-
-template <>
-inline Eigen::Vector2d zero() {
-    return Eigen::Vector2d::Zero();
-}
-inline double calculate_error(const Eigen::Vector2d& error) { return std::abs(error.norm()); }
-
-template <>
-inline Eigen::Vector4d zero() {
-    return Eigen::Vector4d::Zero();
-}
-inline double calculate_error(const Eigen::Vector4d& error) { return std::abs(error.norm()); }
 
 }
 
 namespace creeper {
 
-inline auto from_color(const QColor& color) -> Eigen::Vector4d {
+constexpr auto from_color(const QColor& color) -> Eigen::Vector4d {
     return Eigen::Vector4d(color.red(), color.green(), color.blue(), color.alpha());
 }
-inline auto from_vector4(const Eigen::Vector4d& vector) -> QColor {
+constexpr auto from_vector4(const Eigen::Vector4d& vector) -> QColor {
     return QColor(vector[0], vector[1], vector[2], vector[3]);
 }
 
-inline auto extract_rect(const QRectF& rect, double w_weight, double h_weight) -> QRectF {
+constexpr auto extract_rect(const QRectF& rect, double w_weight, double h_weight) -> QRectF {
     double rw, rh;
     if (rect.width() * h_weight > rect.height() * w_weight) {
         rh = rect.height();

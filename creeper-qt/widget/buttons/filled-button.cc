@@ -1,27 +1,16 @@
 #include "filled-button.hh"
 
-#include "creeper-qt/utility/painter/helper.hh"
-using creeper::util::PainterHelper;
-
-#include "creeper-qt/utility/animation/core.hh"
-#include "creeper-qt/utility/animation/gradient-color.hh"
+#include "creeper-qt/utility/animation/transition.hh"
 #include "creeper-qt/utility/animation/water-ripple.hh"
-using namespace creeper::animate;
-
+#include "creeper-qt/utility/painter/helper.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 
 namespace creeper::filled_button::internal {
 
-constexpr auto kAnimationHz = int { 90 };
-constexpr auto kThreshold4D = double { 1.0 };
-constexpr auto kThreshold1D = double { 1e-1 };
-constexpr auto kWaterSpeed  = double { 5.0 };
+constexpr auto kWaterSpeed = double { 5.0 };
 
 struct FilledButton::Impl {
 public:
-    AnimationCore animation_core;
-    WaterRippleRenderer water_ripple;
-
     bool enable_water_ripple = true;
     double water_ripple_step = 5.;
 
@@ -35,13 +24,27 @@ public:
     QColor water_color = Qt::black;
 
     QColor kHoverColor  = QColor { 0, 0, 0, 30 };
-    QColor hover_color  = Qt::transparent;
     bool is_mouse_hover = false;
+
+    Animatable animatable;
+    WaterRippleRenderer water_ripple;
+
+    std::unique_ptr<TransitionValue<PidState<Eigen::Vector4d>>> hover_color;
 
 public:
     explicit Impl(QAbstractButton& self)
-        : animation_core([&self] { self.update(); }, kAnimationHz)
-        , water_ripple { animation_core, kWaterSpeed, kAnimationHz } { }
+        : animatable { self }
+        , water_ripple { animatable, kWaterSpeed } {
+        {
+            auto state = std::make_shared<PidState<Eigen::Vector4d>>();
+
+            state->config.kp = 20;
+            state->config.ki = 0;
+            state->config.kd = 0;
+
+            hover_color = make_transition(animatable, std::move(state));
+        }
+    }
 
     void paint_event(QAbstractButton& self, QPaintEvent* event) {
 
@@ -50,9 +53,10 @@ public:
             : this->radius;
 
         const auto button_path = make_rounded_rectangle_path(self.rect(), radius);
+        const auto hover_color = from_vector4(*this->hover_color);
 
         auto painter = QPainter { &self };
-        PainterHelper { painter }
+        util::PainterHelper { painter }
             .set_render_hint(QPainter::RenderHint::Antialiasing)
             .set_opacity(1.)
             .rounded_rectangle(background, border_color, border_width, self.rect(), radius, radius)
@@ -60,7 +64,8 @@ public:
             .set_opacity(1.)
             .rounded_rectangle(hover_color, Qt::transparent, 0, self.rect(), radius, radius)
             .set_opacity(1.)
-            .simple_text(self.text(), self.font(), text_color, self.rect(), Qt::AlignCenter);
+            .simple_text(self.text(), self.font(), text_color, self.rect(), Qt::AlignCenter)
+            .done();
     }
 
     void mouse_release_event(QAbstractButton& self, QMouseEvent* event) {
@@ -72,14 +77,12 @@ public:
     }
 
     void enter_event(QAbstractButton& self, qt::EnterEvent* event) {
-        animation_core.append(std::make_unique<GradientColor>(hover_color, kHoverColor, 0.1,
-            [this](const QColor& color) { return hover_color = color, !is_mouse_hover; }));
+        hover_color->transition_to(from_color(kHoverColor));
         is_mouse_hover = true;
     }
 
     void leave_event(QAbstractButton& self, QEvent* event) {
-        animation_core.append(std::make_unique<GradientColor>(hover_color, Qt::transparent, 0.1,
-            [this](const QColor& color) { return hover_color = color, is_mouse_hover; }));
+        hover_color->transition_to(from_color(Qt::transparent));
         is_mouse_hover = false;
     }
 

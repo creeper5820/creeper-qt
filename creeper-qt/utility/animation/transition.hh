@@ -1,4 +1,8 @@
+#pragma once
+
 #include "animatable.hh"
+#include "creeper-qt/utility/animation/math.hh"
+
 #include <cmath>
 #include <qdebug.h>
 
@@ -44,6 +48,12 @@ public:
         : animatable { animatable }
         , state { std::move(state) } { }
 
+    auto get_state() const noexcept -> const State& { return *state; }
+
+    auto get_value() const noexcept { return state->get_value(); }
+
+    auto get_target() const noexcept { return state->get_target(); }
+
     operator T() const noexcept { return state->get_value(); }
 
     auto transition_to(T to) noexcept -> void {
@@ -85,29 +95,6 @@ struct NormalAccessor {
     auto set_target(this auto& self, auto t) { self.target = t; }
 };
 
-struct LinearFloatState : public NormalAccessor {
-    using ValueT = float;
-
-    float value;
-    float target;
-
-    auto update() noexcept -> bool {
-
-        constexpr auto kStepSize = 0.01f;
-
-        const auto diff = target - value;
-        const auto step = std::copysign(kStepSize, diff);
-
-        if (std::abs(diff) <= 0.03f) {
-            value = target;
-            return false;
-        } else {
-            value += step;
-            return true;
-        }
-    }
-};
-
 template <typename T>
 struct PidState : public NormalAccessor {
     using ValueT = T;
@@ -115,22 +102,22 @@ struct PidState : public NormalAccessor {
     using Clock     = std::chrono::steady_clock;
     using TimePoint = Clock::time_point;
 
-    T value;
-    T target;
+    T value  = animate::zero<T>();
+    T target = animate::zero<T>();
 
     struct {
-        T kp = 1.0;
-        T ki = 0.0;
-        T kd = 0.1;
+        double kp = 1.0;
+        double ki = 0.0;
+        double kd = 0.1;
     } config;
 
     struct {
-        T integral_error = 0.0;
-        T last_error     = 0.0;
+        T integral_error = animate::zero<T>();
+        T last_error     = animate::zero<T>();
         TimePoint last_timestamp;
     } details;
 
-    static constexpr T EPSILON = std::numeric_limits<T>::epsilon() * 1e5;
+    static constexpr auto EPSILON = 1e-4;
 
     auto set_target(T new_target) noexcept -> void {
         target = new_target;
@@ -157,19 +144,20 @@ struct PidState : public NormalAccessor {
         const auto now      = Clock::now();
         const auto duration = now - details.last_timestamp;
 
-        const auto dt = std::chrono::duration<T>(duration).count();
+        const auto dt = std::chrono::duration<double>(duration).count();
 
         if (dt <= 0.0) {
             details.last_timestamp = now;
-            return std::abs(target - value) > EPSILON;
+            return animate::magnitude(target - value) > EPSILON;
         }
 
         const auto current_error = target - value;
 
-        if (std::abs(current_error) <= EPSILON && std::abs(details.last_error) <= EPSILON) {
+        if (animate::magnitude(current_error) <= EPSILON
+            && animate::magnitude(details.last_error) <= EPSILON) {
             value                  = target;
-            details.integral_error = 0.0;
-            details.last_error     = 0.0;
+            details.integral_error = animate::zero<T>();
+            details.last_error     = animate::zero<T>();
             details.last_timestamp = now;
             return false;
         }
@@ -190,6 +178,68 @@ struct PidState : public NormalAccessor {
         details.last_timestamp = now;
 
         return true;
+    }
+};
+
+template <typename T>
+struct SpringState : public NormalAccessor {
+    using ValueT    = T;
+    using Clock     = std::chrono::steady_clock;
+    using TimePoint = Clock::time_point;
+
+    T value;
+    T target;
+
+    T velocity = animate::zero<T>();
+
+    TimePoint last_timestamp = Clock::now();
+
+    struct {
+        double k               = 1.0;
+        double d               = 0.1;
+        double error_threshold = 1e-4;
+    } config;
+
+    auto set_target(T new_target) noexcept -> void {
+        target = new_target;
+
+        const auto current_time = Clock::now();
+
+        using namespace std::chrono_literals;
+        const auto threshold = 16ms;
+
+        const auto elapsed_time = current_time - last_timestamp;
+
+        if (elapsed_time > threshold) {
+            const auto error = target - value;
+            velocity         = animate::zero<T>();
+            last_timestamp   = current_time;
+        }
+    }
+
+    auto update() noexcept -> bool {
+        const auto now      = Clock::now();
+        const auto duration = now - last_timestamp;
+        const double dt     = std::chrono::duration<double>(duration).count();
+
+        if (dt <= 0.0) {
+            last_timestamp = now;
+            return std::abs(animate::magnitude(target - value)) > config.error_threshold;
+        }
+
+        const auto error     = value - target;
+        const auto a_force   = -config.k * error;
+        const auto a_damping = -config.d * velocity;
+        const auto a_total   = a_force + a_damping;
+
+        velocity += a_total * dt;
+        value += velocity * dt;
+
+        last_timestamp = now;
+
+        const bool done = animate::magnitude(error) < config.error_threshold
+            && std::abs(velocity) < config.error_threshold;
+        return !done;
     }
 };
 

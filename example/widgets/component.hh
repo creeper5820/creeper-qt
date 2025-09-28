@@ -8,7 +8,9 @@ using raw_pointer = T*;
 
 struct NavComponentState {
     creeper::ThemeManager& manager;
-    std::function<void(const std::string_view&)> switch_callback;
+    std::function<void(int, const std::string_view&)> switch_callback;
+
+    std::vector<std::tuple<std::string_view, std::string_view>> buttons_context;
 };
 auto NavComponent(NavComponentState&) noexcept -> raw_pointer<QWidget>;
 

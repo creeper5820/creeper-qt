@@ -29,11 +29,11 @@ auto operator*(std::size_t n, std::invocable<std::size_t> auto&& f) {
 
 static auto SearchComponent(ThemeManager& manager) noexcept {
     const auto row = new Row {
-        lnpro::Item<FilledCard> {
-            capro::ThemeManager { manager },
-            capro::FixedHeight { 40 },
-            capro::Radius { -1 },
-            capro::LevelHighest,
+        lnpro::Item<FilledTextField> {
+            text_field::pro::ThemeManager { manager },
+            text_field::pro::FixedHeight { 50 },
+            text_field::pro::LeadingIcon { material::icon::kSearch, material::round::font },
+            text_field::pro::LabelText { "你好世界！" },
         },
         lnpro::SpacingItem { 20 },
         lnpro::Item<IconButton> {
@@ -163,7 +163,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                     },
                 },
                 slider::pro::OnValueChangeFinished {
-                    [](double num) { qDebug() << "[View] Slider changed:" << num; } },
+                    [](double num) { qDebug() << "[view] Slider changed:" << num; } },
             },
         };
     };

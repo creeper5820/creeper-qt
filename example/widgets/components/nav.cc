@@ -19,7 +19,7 @@ namespace ic = icon_button::pro;
 
 auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
 
-    auto avatar_image = new Image {
+    const auto AvatarComponent = new Image {
         im::FixedSize { 60, 60 },
         im::Radius { -1 },
         im::ContentScale { ContentScale::CROP },
@@ -29,10 +29,10 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
             [] { qDebug() << "[main] Image loading completed"; },
         },
     };
-    state.manager.append_handler(avatar_image, [avatar_image](const ThemeManager& manager) {
+    state.manager.append_handler(AvatarComponent, [AvatarComponent](const ThemeManager& manager) {
         const auto colorscheme = manager.color_scheme();
         const auto colorborder = colorscheme.secondary_container;
-        avatar_image->set_border_color(colorborder);
+        AvatarComponent->set_border_color(colorborder);
     });
 
     const auto navigation_icons_config = std::tuple {
@@ -54,29 +54,30 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
             ln::Spacing { 10 },
             ln::Margin { 15 },
 
-            ln::Item { { 0, Qt::AlignHCenter }, avatar_image },
+            ln::Item {
+                { 0, Qt::AlignHCenter },
+                AvatarComponent,
+            },
             ln::SpacingItem { 20 },
             ln::Item<SelectGroup<Col, IconButton>> {
                 { 0, Qt::AlignHCenter },
                 ln::Margin { 0 },
                 ln::SpacingItem { 10 },
                 sg::Compose {
-                    std::array {
-                        std::tuple { "home", material::icon::kHome },
-                        std::tuple { "extension", material::icon::kExtension },
-                        std::tuple { "search", material::icon::kSearch },
-                        std::tuple { "settings", material::icon::kSettings },
-                    },
-                    [&](std::string_view name, auto icon) {
-                        const auto status = (name == "home") //
+                    state.buttons_context | std::views::enumerate,
+                    [&](int index, const auto& context) {
+                        const auto& [name, icon] = context;
+
+                        const auto status = (index == 0) //
                             ? ic::TypesToggleSelected
                             : ic::TypesToggleUnselected;
+
                         return new IconButton {
                             navigation_icons_config,
                             status,
                             ic::ColorStandard,
-                            ic::FontIcon { icon },
-                            ic::Clickable { [=] { state.switch_callback(name); } },
+                            ic::FontIcon { icon.data() },
+                            ic::Clickable { [=] { state.switch_callback(index, name); } },
                         };
                     },
                     Qt::AlignHCenter,

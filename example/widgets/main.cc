@@ -11,7 +11,10 @@
 #include <creeper-qt/core/application.hh>
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/layout/scroll.hh>
+#include <creeper-qt/utility/material-icon.hh>
 #include <creeper-qt/utility/theme/preset/blue-miku.hh>
+#include <creeper-qt/utility/theme/preset/gloden-harvest.hh>
+#include <creeper-qt/utility/theme/preset/green.hh>
 #include <creeper-qt/utility/theme/theme.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/main-window.hh>
@@ -33,10 +36,29 @@ auto main(int argc, char** argv) -> int {
 
     auto nav_component_state = NavComponentState {
         .manager = manager,
-        .switch_callback =
-            [](const std::string_view& name) {
-                qDebug() << "[nav] Switch to <" << name.data() << ">";
-            },
+        .switch_callback = [&manager](int index, const auto& name) {
+            qDebug() << "[nav] Switch to <" << name.data() << ">";
+
+            constexpr auto packs = std::array{
+                kBlueMikuThemePack,
+                kGreenThemePack,
+                kGoldenHarvestThemePack,
+            };
+            try {
+                manager.set_theme_pack(packs.at(index));
+            } catch (const std::out_of_range& e) {
+                manager.set_theme_pack(packs[0]);
+                qDebug() << "[nav] Fallback to kBlueMikuThemePack";
+            }
+            manager.apply_theme();
+        },
+        .buttons_context = {
+            {"0", material::icon::kHome},
+            {"1", material::icon::kStar},
+            {"2", material::icon::kFavorite},
+            {"3", material::icon::kExtension},
+            {"4", material::icon::kLogout},
+        },
     };
     auto list_component_state = ListComponentState { .manager = manager };
     auto view_component_state = ViewComponentState { .manager = manager };

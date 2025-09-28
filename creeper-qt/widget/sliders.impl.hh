@@ -32,7 +32,7 @@ public:
 
             state->config.kp = 20.0;
 
-            position = make_transition(animatable, state);
+            position = make_transition(animatable, std::move(state));
         }
     }
 
@@ -167,6 +167,7 @@ public:
         // Stop Indicator
 
         util::PainterHelper { painter }
+            .set_render_hint(QPainter::Antialiasing)
 
             // Track Part 1
             .rounded_rectangle(track_color_1, Qt::transparent, 0, track_1, track_shape,
