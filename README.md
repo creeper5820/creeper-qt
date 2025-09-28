@@ -8,7 +8,7 @@
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=9ccbfb) ![GitHub Repo stars](https://img.shields.io/github/stars/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=b9c8da) ![GitHub repo size](https://img.shields.io/github/repo-size/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=d3bfe6)
 
-`creeper-qt` 是基于 `Qt5` 开发的 UI 集成库，轻量简洁，组件外观大体遵循 `Google Material Design3`，同时改造了老式的命令式调用，使组件构造和配置可以在同一时间完成，添加了主题管理，支持切换明亮和黑暗主题和各种配色，动效部分基于 PID 控制器和弹簧模型等迭代算法，带来更流畅的动画体验和打断效果
+`creeper-qt` 是基于 `Qt` 开发的 UI 集成库，轻量简洁，组件外观大体遵循 `Google Material Design3`，同时改造了老式的命令式调用，使组件构造和配置可以在同一时间完成，添加了主题管理，支持切换明亮和黑暗主题和各种配色，动效部分基于 PID 控制器和弹簧模型等迭代算法，带来更流畅的动画体验和打断效果
 
 欢迎 PR 和 ISSUE！
 
@@ -48,7 +48,7 @@ cmake_minimum_required(VERSION 3.22)
 project(hello-world)
 
 # Qt 是项目依赖的库，记得导入
-find_package(Qt5 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
 find_package(creeper-qt REQUIRED)
 
 # Eigen 是 Header only 的，不用 find 也可以，只要保证
@@ -71,7 +71,7 @@ add_executable(${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME}
     creeper-qt::creeper-qt
-    Qt5::Widgets
+    Qt6::Widgets
 )
 ```
 
@@ -91,9 +91,9 @@ int main(int argc, char* argv[]) {
 
     namespace pro = filled_button::pro;
     auto button   = FilledButton {
-        pro::ThemeManager { theme_manager }, // 与主题管理器绑定
-        pro::FixedSize { 100, 50 },          // 设置固定大小
-        pro::Text { "你好世界" },            // 设置文字
+        pro::ThemeManager { theme_manager },    // 与主题管理器绑定
+        pro::FixedSize { 100, 50 },             // 设置固定大小
+        pro::Text { "你好世界" },                // 设置文字
         pro::Clickable { [] { qDebug() << "Hello World"; } },
     };
     button.show();
@@ -109,18 +109,26 @@ int main(int argc, char* argv[]) {
 
 ### 项目依赖
 
-- `gcc-13` 及以上，支持完整 range 等特性
+- `C++23` 及以上
 - `cmake`
 - `eigen`
 - `qt-5 / qt-6`
 
 ```zsh
+# For Qt6
 # on arch linux
-sudo pacman -S eigen qt5-base
+sudo pacman -S eigen qt6-base
 
 # on ubuntu
 # ubuntu 默认 gcc 版本比较低，建议使用 ppa 下载较新的版本
 # 或者直接下载二进制文件放进环境中
+sudo apt install libeigen3-dev qt6-base-dev
+
+# For Qt5
+# on arch linux
+sudo pacman -S eigen qt5-base
+
+# on ubuntu
 sudo apt install libeigen3-dev qtbase5-dev
 ```
 
@@ -142,11 +150,11 @@ include_directories(
 add_executable(
     ${EXAMPLE_NAME}
     ${这个库所有的 .cc 文件}
-    ${某些用到 MOC 的 .hh 文件}
+    ${这个库所有的 .hh 文件}
 )
 target_link_libraries(
     ${EXAMPLE_NAME}
-    Qt5::Widgets
+    Qt6::Widgets
 )
 ```
 
@@ -155,14 +163,19 @@ target_link_libraries(
 ```bash
 # 下载这个项目
 git clone https://github.com/creeper5820/creeper-qt
+
 # 进入项目根目录
 cd creeper-qt
+
 # build
 cmake -B build
 cmake --build build
+
+# 启动例程
+./build/widgets
+
 # 下载到全局环境中，理论上是 /usr/local 里面
-cd build && sudo make install
-./widgets
+sudo cmake --build build -j --target install
 ```
 
 ### 方式三 Windows 平台编译安装
@@ -182,10 +195,10 @@ cd build && sudo make install
 pacman -Sy
 
 ## 安装编译使用的工具链
-pacman -S  mingw-w64-x86_64-toolchain
+pacman -S mingw-w64-x86_64-toolchain
 
-## 安装 Qt5
-pacman -S mingw64/mingw-w64-x86_64-qt5
+## 安装 Qt6
+pacman -S mingw64/mingw-w64-x86_64-qt6
 
 ## 安装依赖
 pacman -S mingw-w64-x86_64-eigen3
@@ -194,7 +207,7 @@ pacman -S mingw-w64-x86_64-eigen3
 pacman -Ss eigen3
 ```
 
-到这里就可以编译这个库了, 如果还是会有一些依赖问题, 可以Google一下如何在MSYS2中安装QT5
+到这里就可以编译这个库了, 如果还是会有一些依赖问题, 可以Google一下如何在MSYS2中安装Qt6
 
 ```sh
 ## 依然是在MSYS2环境中
@@ -202,7 +215,7 @@ pacman -Ss eigen3
 mkdir build
 
 ## 在根目录进行项目配置
-## 请务必使用"MinGW Makefiles"
+## 使用"MinGW Makefiles"或者“Ninja”
 ## CMAKE_INSTALL_PREFIX 参数指定了安装目录, 
 ## 默认的下载目录一般会是 C:/Program Files (x86)/
 ## 会提示没有权限
@@ -210,7 +223,7 @@ cmake -G "MinGW Makefiles" -B build -DCMAKE_INSTALL_PREFIX="C:/xxx/xxx/"
 
 ## 编译之
 ## 或者在build目录下使用 mingw32-make -j
-cmake --build build
+cmake --build build -j
 
 ## 安装库, 注意调用的是mingw的make
 ## 直接使用make可能会出现错误
@@ -235,8 +248,8 @@ cat install_manifest.txt
 - [ ] 按钮的禁止效果
 - [ ] 增加视图容器，原生的不可用
   - 目前已实现无动画的 Flow 布局
-- [ ] 做一个设置中心吧
-- [ ] 做一个日历模组
+- [ ] 提供一个日历模组组件
+- [ ] 提供一个设置中心例子
 
 ## Star History
 
