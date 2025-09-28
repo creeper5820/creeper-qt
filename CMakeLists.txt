@@ -6,13 +6,13 @@ set(BUILD_EXAMPLE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE "Release")
 
 set(CMAKE_AUTOMOC ON)
 
 add_compile_options(-Os -O3)
 
-set(QT_VERSION Qt5)
+set(QT_VERSION Qt6)
 find_package(${QT_VERSION} REQUIRED COMPONENTS Widgets Network)
 find_package(Eigen3 REQUIRED)
 
@@ -51,7 +51,9 @@ install(
 install(
     DIRECTORY "${PROJECT_NAME}/"
     DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
-    FILES_MATCHING PATTERN "*.hh"
+    FILES_MATCHING
+        PATTERN "*.hh"
+        PATTERN "*.impl.hh" EXCLUDE
 )
 
 # 导出 Targets 文件

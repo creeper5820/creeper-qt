@@ -110,15 +110,12 @@ namespace creeper::slider::pro {
 using Token = common::Token<internal::Slider>;
 
 template <typename F>
-struct OnValueChange : Token {
-    F f;
-    explicit OnValueChange(F f) noexcept
-        requires std::invocable<F, double>
-        : f { std::forward<decltype(f)>(f) } { }
-    auto apply(auto& self) const noexcept -> void {
-        QObject::connect(&self, &internal::Slider::signal_value_change, f);
-    }
-};
+using OnValueChange =
+    common::pro::SignalInjection<F, Token, &internal::Slider::signal_value_change>;
+
+template <typename F>
+using OnValueChangeFinished =
+    common::pro::SignalInjection<F, Token, &internal::Slider::signal_value_change_finished>;
 
 using Measurements = SetterProp<Token, internal::Slider::Measurements,
     [](auto& self, const auto& v) { self.set_measurements(v); }>;

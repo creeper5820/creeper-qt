@@ -132,5 +132,39 @@ namespace pro {
         }
     };
 
+    // 自定义信号回调注册
+
+    namespace internal {
+        template <typename T>
+        struct FunctionArgs;
+
+        template <class C, class R, class... Args>
+        struct FunctionArgs<auto (C::*)(Args...)->R> {
+            using type = std::tuple<Args...>;
+        };
+        template <class C, class R, class... Args>
+        struct FunctionArgs<auto (C::*)(Args...) const->R> {
+            using type = std::tuple<Args...>;
+        };
+
+        template <typename F, typename Tuple>
+        concept tuple_invocable_trait = requires(F&& f, Tuple&& t) {
+            std::apply(std::forward<F>(f), std::forward<Tuple>(t)); //
+        };
+    }
+
+    template <typename F, class Token, auto signal>
+    struct SignalInjection : Token {
+        F f;
+
+        using SignalArgs = typename internal::FunctionArgs<decltype(signal)>::type;
+
+        explicit SignalInjection(F f) noexcept
+            requires internal::tuple_invocable_trait<F, SignalArgs>
+            : f { std::forward<decltype(f)>(f) } { }
+
+        auto apply(auto& self) const noexcept { QObject::connect(&self, signal, f); }
+    };
+
 }
 }

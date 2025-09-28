@@ -15,7 +15,7 @@ struct Complete : Token {
     char** argument_array;
     int application_flags;
 
-    explicit Complete(int& argc, char* argv[], int flags = QCoreApplication::ApplicationFlags)
+    explicit Complete(int& argc, char* argv[], int flags = ::QCoreApplication::ApplicationFlags)
         : argument_count { argc }
         , argument_array { argv }
         , application_flags { flags } { }
@@ -30,16 +30,15 @@ struct Complete : Token {
 };
 
 struct Attribute : Token {
-    using Enum = Qt::ApplicationAttribute;
 
-    Qt::ApplicationAttribute attribute;
+    ::Qt::ApplicationAttribute attribute;
     bool on;
 
-    explicit Attribute(Qt::ApplicationAttribute attribute, bool on = true) noexcept
+    explicit Attribute(::Qt::ApplicationAttribute attribute, bool on = true) noexcept
         : attribute { attribute }
         , on { on } { }
 
-    void apply(auto&) const noexcept { QApplication::setAttribute(attribute, on); }
+    void apply(auto&) const noexcept { ::QApplication::setAttribute(attribute, on); }
 };
 
 template <class T>
@@ -57,4 +56,10 @@ inline auto quit() { return ::QApplication::quit(); }
 
 inline auto focus_widget() { return ::QApplication::focusWidget(); }
 inline auto focus_object() { return ::QApplication::focusObject(); }
+
+#if QT_DEPRECATED_SINCE(6, 0)
+#define AA_EnableHighDpiScaling AA_AttributeCount
+#define AA_UseHighDpiPixmaps AA_AttributeCount
+#endif
+
 }

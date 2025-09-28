@@ -33,6 +33,11 @@ public:
             rounded_rect::pro::Radius { kCardRadius },
         } { }
 
+    auto set_level(Level level) noexcept {
+        this->level = level;
+        update();
+    }
+
     void set_color_scheme(const ColorScheme& scheme) {
         switch (level) {
         case card::internal::Card::Level::LOWEST:
@@ -64,22 +69,14 @@ namespace creeper::card::pro {
 
 using Token = common::Token<internal::Card>;
 
-struct Level : Token {
-    using Enum = internal::Card::Level;
-    Enum level { Enum::DEFAULT };
+using Level =
+    SetterProp<Token, internal::Card::Level, [](auto& self, const auto& v) { self.set_level(v); }>;
 
-    explicit Level(Enum level)
-        : level { level } { }
-
-    void apply(auto& self) const { self.level = level; }
-};
-namespace level {
-    inline const auto DEFAULT = Level { Level::Enum::DEFAULT };
-    inline const auto HIGHEST = Level { Level::Enum::HIGHEST };
-    inline const auto HIGH    = Level { Level::Enum::HIGH };
-    inline const auto LOWEST  = Level { Level::Enum::LOWEST };
-    inline const auto LOW     = Level { Level::Enum::LOW };
-}
+constexpr auto LevelDefault = Level { internal::Card::Level::DEFAULT };
+constexpr auto LevelHigh    = Level { internal::Card::Level::HIGH };
+constexpr auto LevelHighest = Level { internal::Card::Level::HIGHEST };
+constexpr auto LevelLow     = Level { internal::Card::Level::LOW };
+constexpr auto LevelLowest  = Level { internal::Card::Level::LOWEST };
 
 template <class Card>
 concept trait = std::derived_from<Card, Token>;

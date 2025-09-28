@@ -33,7 +33,7 @@ static auto SearchComponent(ThemeManager& manager) noexcept {
             capro::ThemeManager { manager },
             capro::FixedHeight { 40 },
             capro::Radius { -1 },
-            capro::Level { CardLevel::HIGHEST },
+            capro::LevelHighest,
         },
         lnpro::SpacingItem { 20 },
         lnpro::Item<IconButton> {
@@ -86,7 +86,7 @@ static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
             },
             col::pro::Item<FilledCard> {
                 card::pro::ThemeManager { manager },
-                card::pro::Level { CardLevel::LOW },
+                card::pro::LevelLow,
                 card::pro::FixedSize { 150, 30 },
                 card::pro::Layout<Row> {
                     row::pro::Item<Text> {
@@ -102,7 +102,7 @@ static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
             },
             col::pro::Item<FilledCard> {
                 card::pro::ThemeManager { manager },
-                card::pro::Level { CardLevel::LOW },
+                card::pro::LevelLow,
                 card::pro::FixedSize { 100, 30 },
             },
         },
@@ -139,7 +139,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                 filled_card::pro::ThemeManager { state.manager },
                 filled_card::pro::FixedSize { 100, slider_measurements.track_height },
                 filled_card::pro::Radius { static_cast<double>(slider_measurements.track_shape) },
-                filled_card::pro::Level { CardLevel::LOWEST },
+                filled_card::pro::LevelLowest,
                 filled_card::pro::Layout<Row> {
                     lnpro::Spacing { 0 },
                     lnpro::Margin { 0 },
@@ -162,6 +162,8 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                         *mutable_text = text::pro::Text { string };
                     },
                 },
+                slider::pro::OnValueChangeFinished {
+                    [](double num) { qDebug() << "[View] Slider changed:" << num; } },
             },
         };
     };
@@ -187,7 +189,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                 lnpro::Item<FilledCard> {
                     { 255 },
                     filled_card::pro::ThemeManager { state.manager },
-                    filled_card::pro::Level { CardLevel::LOWEST },
+                    filled_card::pro::LevelLowest,
                     filled_card::pro::FixedHeight { slider_measurements.minimum_height() * 3 + 20 },
                 },
             },

@@ -23,7 +23,6 @@ namespace mwpro = main_window::pro;
 namespace capro = card::pro;
 
 auto main(int argc, char** argv) -> int {
-
     app::init {
         app::pro::Attribute { Qt::AA_EnableHighDpiScaling },
         app::pro::Attribute { Qt::AA_UseHighDpiPixmaps },
