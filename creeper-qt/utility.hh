@@ -1,6 +1,6 @@
+#include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/animation/core.hh"
-#include "creeper-qt/utility/animation/gradient-color.hh"
-#include "creeper-qt/utility/animation/motion-system.hh"
+#include "creeper-qt/utility/animation/transition.hh"
 #include "creeper-qt/utility/animation/water-ripple.hh"
 
 #include "creeper-qt/utility/painter/helper.hh"

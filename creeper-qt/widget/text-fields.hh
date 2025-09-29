@@ -19,6 +19,48 @@ namespace text_field::internal {
         friend OutlinedTextField;
 
     public:
+        struct Tokens {
+            QColor container;
+            QColor caret;
+            QColor active_indicator;
+
+            QColor input_text;
+            QColor label_text;
+            QColor supporting_text;
+
+            QColor leading_icon;
+            QColor trailing_icon;
+        };
+        struct ColorSpecs {
+            QColor state_layer;
+            QColor selection_container;
+
+            Tokens enabled;
+            Tokens disabled;
+            Tokens focused;
+            Tokens error;
+        };
+
+        struct Measurements {
+            int container_height = 56;
+
+            int icon_rect_size  = 24;
+            int input_rect_size = 24;
+            int label_rect_size = 16;
+
+            int standard_font_height = 16;
+
+            int col_padding                      = 8;
+            int row_padding_without_icons        = 16;
+            int row_padding_with_icons           = 12;
+            int row_padding_populated_label_text = 4;
+
+            int padding_icons_text = 16;
+
+            int supporting_text_and_character_counter_top_padding = 4;
+            int supporting_text_and_character_counter_row_padding = 16;
+        };
+
         void set_color_scheme(const ColorScheme&);
 
         void load_theme_manager(ThemeManager&);
@@ -37,27 +79,7 @@ namespace text_field::internal {
 
         void set_trailling_icon(const QString& code, const QString& font);
 
-        struct ColorList {
-            QColor container;
-            QColor caret;
-            QColor active_indicator;
-
-            QColor input_text;
-            QColor label_text;
-            QColor supporting_text;
-
-            QColor leading_icon;
-            QColor trailing_icon;
-        };
-        struct {
-            QColor state_layer;
-            QColor selection_container;
-
-            ColorList enabled;
-            ColorList disabled;
-            ColorList focused;
-            ColorList error;
-        } color;
+        auto set_measurements(const Measurements& measurements) noexcept -> void;
 
     protected:
         void resizeEvent(QResizeEvent*) override;
@@ -72,19 +94,11 @@ namespace text_field::internal {
 namespace text_field::pro {
     using Token = common::Token<internal::BasicTextField>;
 
-    struct ClearButton : Token {
-        bool enabled;
-        explicit ClearButton(bool enabled)
-            : enabled { enabled } { }
-        void apply(auto& self) const { self.setClearButtonEnabled(enabled); }
-    };
+    using ClearButton = SetterProp<Token, bool,
+        [](auto& self, bool enable) { self.setClearButtonEnabled(enable); }>;
 
-    struct LabelText : public QString, Token {
-        using QString::QString;
-        explicit LabelText(const QString& text)
-            : QString { text } { }
-        void apply(auto& self) const { self.set_label_text(*this); }
-    };
+    using LabelText = common::pro::String<Token,
+        [](auto& self, const auto& string) { self.set_label_text(string); }>;
 
     struct LeadingIcon : Token {
         QString code;

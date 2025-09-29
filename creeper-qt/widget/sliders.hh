@@ -92,6 +92,9 @@ public:
 
     auto load_theme_manager(ThemeManager&) -> void;
 
+    auto set_progress(double) noexcept -> void;
+    auto get_progress() const noexcept -> double;
+
 signals:
     auto signal_value_change(double) -> void;
     auto signal_value_change_finished(double) -> void;
@@ -119,6 +122,8 @@ using OnValueChangeFinished =
 
 using Measurements = SetterProp<Token, internal::Slider::Measurements,
     [](auto& self, const auto& v) { self.set_measurements(v); }>;
+
+using Progress = SetterProp<Token, double, [](auto& self, auto v) { self.set_progress(v); }>;
 
 template <class T>
 concept trait = std::derived_from<T, Token>;

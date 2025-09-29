@@ -1,5 +1,7 @@
 #include "filled-button.hh"
 
+#include "creeper-qt/utility/animation/math.hh"
+#include "creeper-qt/utility/animation/state/pid.hh"
 #include "creeper-qt/utility/animation/transition.hh"
 #include "creeper-qt/utility/animation/water-ripple.hh"
 #include "creeper-qt/utility/painter/helper.hh"

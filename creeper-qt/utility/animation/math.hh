@@ -28,6 +28,17 @@ constexpr auto magnitude(const T& error) noexcept {
     }
 }
 
+template <typename T>
+constexpr auto normalize(const T& error) noexcept {
+    if constexpr (std::is_arithmetic_v<T>) {
+        return error;
+    } else if constexpr (requires { error.norm(); }) {
+        return error.norm();
+    } else {
+        static_assert(sizeof(T) == 0, "magnitude() not implemented for this type");
+    }
+}
+
 }
 
 namespace creeper {

@@ -1,6 +1,7 @@
 #include "sliders.hh"
 
 #include "creeper-qt/utility/animation/animatable.hh"
+#include "creeper-qt/utility/animation/state/pid.hh"
 #include "creeper-qt/utility/animation/transition.hh"
 #include "creeper-qt/utility/painter/helper.hh"
 
@@ -100,6 +101,18 @@ public:
         manager.append_handler(&self,
             [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
     }
+
+    auto set_progress(double progress, bool animatable = true) noexcept -> void {
+        this->progress = std::clamp(progress, 0.0, 1.0);
+        if (animatable) {
+            this->position->transition_to(progress);
+        } else {
+            this->position->snap_to(progress);
+            this->self.update();
+        }
+    }
+
+    auto get_progress() const noexcept -> double { return progress; }
 
 public:
     auto paint_event(QPaintEvent*) -> void {

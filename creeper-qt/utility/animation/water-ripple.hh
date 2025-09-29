@@ -1,5 +1,6 @@
 #pragma once
 
+#include "creeper-qt/utility/animation/state/accessor.hh"
 #include "creeper-qt/utility/animation/transition.hh"
 
 #include <QColor>

@@ -15,6 +15,13 @@ auto Slider::load_theme_manager(ThemeManager& manager) -> void {
     pimpl->load_theme_manager(manager);
 }
 
+auto Slider::set_progress(double progress) noexcept -> void {
+    pimpl->set_progress(progress); //
+}
+auto Slider::get_progress() const noexcept -> double {
+    return pimpl->get_progress(); //
+}
+
 auto Slider::mousePressEvent(QMouseEvent* event) -> void {
     pimpl->mouse_press_event(event);
     Widget::mousePressEvent(event);

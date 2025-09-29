@@ -3,36 +3,30 @@
 
 #include <qpainter.h>
 
-#include "creeper-qt/utility/animation/motion-system.hh"
+#include "creeper-qt/utility/animation/animatable.hh"
+#include "creeper-qt/utility/animation/state/pid.hh"
+#include "creeper-qt/utility/animation/state/spring.hh"
+#include "creeper-qt/utility/animation/transition.hh"
 #include "creeper-qt/utility/painter/helper.hh"
 
 using namespace creeper::_switch::internal;
-using creeper::animate::AnimationCore;
 
 struct Switch::Impl {
-    AnimationCore animation_core;
-    std::vector<std::shared_ptr<bool>> stop_tokens;
 
     bool checked  = false;
     bool disabled = false;
     bool hovered  = false;
 
-    std::shared_ptr<Eigen::Vector4d> track { std::make_shared<Eigen::Vector4d>(
-        Eigen::Vector4d::Zero()) };
     QColor track_unchecked;
     QColor track_checked;
     QColor track_unchecked_disabled;
     QColor track_checked_disabled;
 
-    std::shared_ptr<Eigen::Vector4d> handle { std::make_shared<Eigen::Vector4d>(
-        Eigen::Vector4d::Zero()) };
     QColor handle_unchecked;
     QColor handle_checked;
     QColor handle_unchecked_disabled;
     QColor handle_checked_disabled;
 
-    std::shared_ptr<Eigen::Vector4d> outline { std::make_shared<Eigen::Vector4d>(
-        Eigen::Vector4d::Zero()) };
     QColor outline_unchecked;
     QColor outline_checked;
     QColor outline_unchecked_disabled;
@@ -41,14 +35,47 @@ struct Switch::Impl {
     QColor hover_unchecked;
     QColor hover_checked;
 
-    std::shared_ptr<double> position { std::make_shared<double>(0) };
     static constexpr double position_unchecked = 0.0;
     static constexpr double position_checked   = 1.0;
 
-    explicit Impl(Switch& self)
-        : animation_core([&self] { self.update(); }, 90) {
-        QObject::connect(&self, &Switch::clicked, //
-            [this, &self] { set_checked(self, !checked); });
+    Animatable animatable;
+
+    std::unique_ptr<TransitionValue<PidState<Eigen::Vector4d>>> track;
+    std::unique_ptr<TransitionValue<PidState<Eigen::Vector4d>>> handle;
+    std::unique_ptr<TransitionValue<PidState<Eigen::Vector4d>>> outline;
+
+    std::unique_ptr<TransitionValue<SpringState<double>>> position;
+
+    explicit Impl(Switch& self) noexcept
+        : animatable(self) {
+
+        // @TODO: 适配进 MotionScheme
+        constexpr double kp = 15.0, ki = 0.0, kd = 0.0, hz = 90;
+        constexpr double k = 400, d = 22;
+        {
+            constexpr auto make_state = [] {
+                auto state = std::make_shared<PidState<Eigen::Vector4d>>();
+
+                state->config.kp = kp;
+                state->config.ki = ki;
+                state->config.kd = kd;
+
+                return state;
+            };
+            track   = make_transition(animatable, make_state());
+            handle  = make_transition(animatable, make_state());
+            outline = make_transition(animatable, make_state());
+        }
+        {
+            auto state = std::make_shared<SpringState<double>>();
+
+            state->config.k = k;
+            state->config.d = d;
+
+            position = make_transition(animatable, std::move(state));
+        }
+
+        QObject::connect(&self, &Switch::clicked, [this, &self] { set_checked(self, !checked); });
     }
 
     void set_color_scheme(Switch& self, const ColorScheme& scheme) {
@@ -145,51 +172,33 @@ struct Switch::Impl {
                 outline_rect, outline_radius, outline_radius)
             .ellipse(from_vector4(*handle), Qt::transparent, 0, handle_point, handle_radius,
                 handle_radius)
-            .ellipse(hover_color, Qt::transparent, 0, handle_point, hover_radius, hover_radius);
+            .ellipse(hover_color, Qt::transparent, 0, handle_point, hover_radius, hover_radius)
+            .done();
     }
 
 private:
-    void update_switch_ui(Switch&, bool checked, bool disabled = false) {
-        using Tracker4D = animate::FinitePidTracker<Eigen::Vector4d>;
-        using Tracker1D = animate::FiniteSringTracker<double>;
-
-        // @TODO: 适配进 MotionScheme
-        constexpr double kp = 15.0, ki = 0.0, kd = 0.0, hz = 90;
-        constexpr double k = 400, d = 22;
-
-        auto stop_token = std::make_shared<bool>(false);
+    auto update_switch_ui(Switch&, bool checked, bool disabled = false) -> void {
 
         // 添加 Switch 轨道颜色动画
         const auto track_target = disabled
             ? (checked ? track_checked_disabled : track_unchecked_disabled)
             : (checked ? track_checked : track_unchecked);
-        animation_core.append(std::make_unique<Tracker4D>(
-            track, from_color(track_target), stop_token, kp, ki, kd, hz));
+        track->transition_to(from_color(track_target));
 
         // 添加 Switch 指示器颜色动画
         const auto handle_target = disabled
             ? (checked ? handle_checked_disabled : handle_unchecked_disabled)
             : (checked ? handle_checked : handle_unchecked);
-        animation_core.append(std::make_unique<Tracker4D>(
-            handle, from_color(handle_target), stop_token, kp, ki, kd, hz));
+        handle->transition_to(from_color(handle_target));
 
         // 添加 Switch 外边框颜色动画
         const auto outline_target = disabled
             ? (checked ? outline_checked_disabled : outline_unchecked_disabled)
             : (checked ? outline_checked : outline_unchecked);
-        animation_core.append(std::make_unique<Tracker4D>(
-            outline, from_color(outline_target), stop_token, kp, ki, kd, hz));
+        outline->transition_to(from_color(outline_target));
 
         // 添加 Switch 运动动画
         const auto position_target = checked ? position_checked : position_unchecked;
-        animation_core.append(std::make_unique<Tracker1D>( //
-            position, position_target, stop_token, k, d, hz));
-
-        // 打断动画，将 token 设为 true 后清空，动画类持有的 token 会随着动画的结束而释放
-        for (auto& stop_token : stop_tokens)
-            *stop_token = true;
-
-        stop_tokens.clear();
-        stop_tokens.push_back(std::move(stop_token));
+        position->transition_to(position_target);
     }
 };

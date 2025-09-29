@@ -69,6 +69,9 @@ using WindowRole =
 using WindowFilePath =
     DerivedProp<Token, QString, [](auto& self, const QString& v) { self.setWindowFilePath(v); }>;
 
+using ToolTip =
+    DerivedProp<Token, QString, [](auto& self, const QString& tip) { self.setToolTip(tip); }>;
+
 struct MoveCenter : Token {
     auto apply(QWidget& self) const noexcept -> void {
         const auto screen = self.screen();

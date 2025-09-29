@@ -1,79 +1,92 @@
-#include "creeper-qt/utility/animation/core.hh"
-#include "creeper-qt/utility/animation/motion-system.hh"
 #include "text-fields.hh"
+
+#include "creeper-qt/utility/animation/animatable.hh"
+#include "creeper-qt/utility/animation/state/pid.hh"
+#include "creeper-qt/utility/animation/transition.hh"
+#include "creeper-qt/utility/painter/helper.hh"
+
 #include <qpainter.h>
 #include <qpainterpath.h>
 
-using namespace creeper;
 using namespace creeper::text_field::internal;
-
-using animate::AnimationCore;
 
 struct BasicTextField::Impl {
 public:
     explicit Impl(BasicTextField& self) noexcept
         : self { self }
-        , animation_core { [&self] { self.update(); }, AnimationCore::kHz } {
+        , animatable { self } {
+
+        {
+            auto state = std::make_shared<PidState<double>>();
+
+            state->config.kp      = 12.0;
+            state->config.ki      = 00.0;
+            state->config.kd      = 00.0;
+            state->config.epsilon = 1e-1;
+
+            label_position = make_transition(animatable, std::move(state));
+        }
+
         self.setAlignment(Qt::AlignVCenter);
+        set_measurements(Measurements {});
     }
 
     /// @note https://m3.material.io/components/text-fields/specs
     auto set_color_scheme(const ColorScheme& scheme) -> void {
 
-        self.color.enabled.container        = scheme.surface_container_highest;
-        self.color.enabled.label_text       = scheme.on_surface_variant;
-        self.color.enabled.leading_icon     = scheme.on_surface_variant;
-        self.color.enabled.trailing_icon    = scheme.on_surface_variant;
-        self.color.enabled.active_indicator = scheme.on_surface_variant;
-        self.color.enabled.supporting_text  = scheme.on_surface_variant;
-        self.color.enabled.input_text       = scheme.on_surface;
-        self.color.enabled.caret            = scheme.primary;
+        color_specs.enabled.container        = scheme.surface_container_highest;
+        color_specs.enabled.label_text       = scheme.on_surface_variant;
+        color_specs.enabled.leading_icon     = scheme.on_surface_variant;
+        color_specs.enabled.trailing_icon    = scheme.on_surface_variant;
+        color_specs.enabled.active_indicator = scheme.on_surface_variant;
+        color_specs.enabled.supporting_text  = scheme.on_surface_variant;
+        color_specs.enabled.input_text       = scheme.on_surface;
+        color_specs.enabled.caret            = scheme.primary;
 
-        self.color.disabled.container = scheme.on_surface;
-        self.color.disabled.container.setAlphaF(0.04);
-        self.color.disabled.label_text = scheme.on_surface;
-        self.color.disabled.label_text.setAlphaF(0.38);
-        self.color.disabled.leading_icon = scheme.on_surface;
-        self.color.disabled.leading_icon.setAlphaF(0.38);
-        self.color.disabled.trailing_icon = scheme.on_surface;
-        self.color.disabled.trailing_icon.setAlphaF(0.38);
-        self.color.disabled.supporting_text = scheme.on_surface;
-        self.color.disabled.supporting_text.setAlphaF(0.38);
-        self.color.disabled.input_text = scheme.on_surface;
-        self.color.disabled.input_text.setAlphaF(0.38);
-        self.color.disabled.active_indicator = scheme.on_surface;
-        self.color.disabled.active_indicator.setAlphaF(0.38);
+        color_specs.disabled.container = scheme.on_surface;
+        color_specs.disabled.container.setAlphaF(0.04);
+        color_specs.disabled.label_text = scheme.on_surface;
+        color_specs.disabled.label_text.setAlphaF(0.38);
+        color_specs.disabled.leading_icon = scheme.on_surface;
+        color_specs.disabled.leading_icon.setAlphaF(0.38);
+        color_specs.disabled.trailing_icon = scheme.on_surface;
+        color_specs.disabled.trailing_icon.setAlphaF(0.38);
+        color_specs.disabled.supporting_text = scheme.on_surface;
+        color_specs.disabled.supporting_text.setAlphaF(0.38);
+        color_specs.disabled.input_text = scheme.on_surface;
+        color_specs.disabled.input_text.setAlphaF(0.38);
+        color_specs.disabled.active_indicator = scheme.on_surface;
+        color_specs.disabled.active_indicator.setAlphaF(0.38);
 
-        self.color.focused.container        = scheme.surface_container_highest;
-        self.color.focused.label_text       = scheme.primary;
-        self.color.focused.leading_icon     = scheme.on_surface_variant;
-        self.color.focused.trailing_icon    = scheme.on_surface_variant;
-        self.color.focused.input_text       = scheme.on_surface;
-        self.color.focused.supporting_text  = scheme.on_surface_variant;
-        self.color.focused.active_indicator = scheme.primary;
+        color_specs.focused.container        = scheme.surface_container_highest;
+        color_specs.focused.label_text       = scheme.primary;
+        color_specs.focused.leading_icon     = scheme.on_surface_variant;
+        color_specs.focused.trailing_icon    = scheme.on_surface_variant;
+        color_specs.focused.input_text       = scheme.on_surface;
+        color_specs.focused.supporting_text  = scheme.on_surface_variant;
+        color_specs.focused.active_indicator = scheme.primary;
 
-        self.color.error.container        = scheme.surface_container_highest;
-        self.color.error.active_indicator = scheme.error;
-        self.color.error.label_text       = scheme.error;
-        self.color.error.input_text       = scheme.on_surface;
-        self.color.error.supporting_text  = scheme.error;
-        self.color.error.leading_icon     = scheme.on_surface_variant;
-        self.color.error.trailing_icon    = scheme.error;
-        self.color.error.caret            = scheme.error;
+        color_specs.error.container        = scheme.surface_container_highest;
+        color_specs.error.active_indicator = scheme.error;
+        color_specs.error.label_text       = scheme.error;
+        color_specs.error.input_text       = scheme.on_surface;
+        color_specs.error.supporting_text  = scheme.error;
+        color_specs.error.leading_icon     = scheme.on_surface_variant;
+        color_specs.error.trailing_icon    = scheme.error;
+        color_specs.error.caret            = scheme.error;
 
-        self.color.state_layer = scheme.on_surface;
-        self.color.state_layer.setAlphaF(0.08);
-        self.color.selection_container = scheme.primary;
-        self.color.selection_container.setAlphaF(0.38);
+        color_specs.state_layer = scheme.on_surface;
+        color_specs.state_layer.setAlphaF(0.08);
+        color_specs.selection_container = scheme.primary;
+        color_specs.selection_container.setAlphaF(0.38);
 
-        const auto color = color_list();
-        sync_basic_text_style(             //
-            color.input_text,              //
-            Qt::transparent,               //
-            color.input_text,              //
-            self.color.selection_container //
+        const auto& color = color_list();
+        sync_basic_text_style(              //
+            color.input_text,               //
+            Qt::transparent,                //
+            color.input_text,               //
+            color_specs.selection_container //
         );
-        update_ui_state();
     }
 
     auto load_theme_manager(ThemeManager& manager) -> void {
@@ -85,43 +98,35 @@ public:
     auto set_label_text(const QString& text) -> void { label_text = text; }
 
     auto set_leading_icon(const QString& code, const QString& font) -> void {
-        leading_code = code;
-        leading_font = font;
+        leading_code      = code;
+        leading_font_name = font;
 
-        has_adjust_margin = false;
-        use_leading_icon  = true;
+        is_update_component_ref = false;
+        use_leading_icon        = true;
+    }
+
+    auto set_measurements(const Measurements& measurements) noexcept -> void {
+        this->measurements = measurements;
+        self.setFixedHeight(measurements.container_height);
+
+        is_update_component_ref = false;
     }
 
     auto paint_filled(QPaintEvent*) -> void {
         const auto rect  = self.rect();
         const auto color = color_list();
 
-        update_margin();
+        constexpr auto container_radius = 5;
 
-        auto container_path = QPainterPath {};
-        {
-            const auto p0 = rect.bottomLeft();
-            const auto p1 = rect.bottomRight();
-            const auto p2 = rect.topRight();
-            const auto p3 = rect.topLeft();
-            const auto r  = int { 5 };
-
-            container_path.moveTo(p0);
-            container_path.lineTo(p1);
-            container_path.lineTo(p2.x(), p2.y() + r);
-            container_path.arcTo(p2.x() - 2 * r, p2.y(), 2 * r, 2 * r, 0, 90);
-            container_path.lineTo(p3.x() + r, p3.y());
-            container_path.arcTo(p3.x(), p3.y(), 2 * r, 2 * r, 90, 90);
-            container_path.lineTo(p0);
-        }
+        update_component_ref();
 
         auto painter = QPainter { &self };
         // Container
         {
-            painter.setBrush(color.container);
-            painter.setPen(Qt::NoPen);
-            painter.setRenderHint(QPainter::Antialiasing);
-            painter.drawPath(container_path);
+            util::PainterHelper { painter }
+                .set_render_hint(QPainter::Antialiasing)
+                .rounded_rectangle(color.container, Qt::transparent, 0, rect, container_radius,
+                    container_radius, 0, 0);
         }
         // Active Indicator
         {
@@ -132,59 +137,74 @@ public:
             painter.drawLine(p0, p1);
         }
         // Leading icon
+
         if (!leading_icon.isNull()) {
             //
         } else if (!leading_code.isEmpty()) {
-            const auto height = self.height() / 3;
-            const auto rect   = QRectF {
-                QPointF(text_margin_l, 0),
-                QPointF(text_margin_l + self.width(), self.height()),
+
+            const auto rect = QRectF {
+                1.0 * measurements.row_padding_with_icons,
+                0.5 * (measurements.container_height - measurements.icon_rect_size),
+                1.0 * measurements.icon_rect_size,
+                1.0 * measurements.icon_rect_size,
             };
 
-            auto font = QFont { leading_font };
-            font.setPointSizeF(height);
+            painter.save();
 
             painter.setBrush(Qt::NoBrush);
             painter.setPen(QPen { color.leading_icon });
-            painter.setFont(font);
-            painter.drawText(rect, leading_code, { Qt::AlignVCenter });
+            painter.setFont(leading_icon_font);
+            painter.drawText(rect, leading_code, { Qt::AlignCenter });
+
+            painter.restore();
         }
         // Label Text
         if (!label_text.isEmpty()) {
-            const auto position    = self.text().isEmpty() ? *label_position : 1.;
-            const auto margins     = self.textMargins();
-            const auto rect_bottom = QRectF {
-                QPointF(margins.left(), 0),
-                QPointF(self.width() - margins.right(), self.height()),
+
+            const auto position = self.text().isEmpty() ? *label_position : 1.;
+            const auto margins  = self.textMargins();
+
+            const auto center_label_padding =
+                0.5 * (measurements.container_height - measurements.icon_rect_size);
+            const auto rect_center = QRectF {
+                QPointF(margins.left(), center_label_padding),
+                QPointF(self.width() - margins.right(), self.height() - center_label_padding),
             };
             const auto rect_top = QRectF {
-                QPointF(margins.left(), 0),
+                QPointF(margins.left(), measurements.col_padding),
                 QPointF(self.width() - margins.right(), margins.top()),
             };
-            const auto rect = interpolate(rect_bottom, rect_top, position);
 
-            auto font  = self.font();
-            auto ratio = 1. - 0.3 * position;
-            auto size  = font.pointSizeF() * ratio;
-            font.setPointSizeF(size);
+            const auto rect = interpolate(rect_center, rect_top, position);
+
+            const auto scale = 1. - position * 0.25;
+
+            const auto anchor = QPointF { rect.left(), rect.center().y() };
+
+            painter.save();
+
+            painter.translate(anchor);
+            painter.scale(scale, scale);
+            painter.translate(-anchor);
 
             painter.setBrush(Qt::NoBrush);
             painter.setPen(QPen { color.label_text });
-            painter.setFont(font);
-            painter.drawText(rect, label_text, { Qt::AlignVCenter });
+            painter.setFont(standard_text_font);
+            painter.setRenderHint(QPainter::Antialiasing);
+            painter.drawText(rect, label_text, { Qt::AlignVCenter | Qt::AlignLeading });
+
+            painter.restore();
         }
         // Hovered State Layer
         if (is_hovered) {
-            painter.setBrush(self.color.state_layer);
-            painter.setPen(Qt::NoPen);
-            painter.setRenderHint(QPainter::Antialiasing);
-            painter.drawPath(container_path);
+            util::PainterHelper { painter }
+                .set_render_hint(QPainter::Antialiasing)
+                .rounded_rectangle(color_specs.state_layer, Qt::transparent, 0, rect,
+                    container_radius, container_radius, 0, 0);
         }
     }
 
     auto paint_outlined(QPaintEvent*) -> void { }
-
-    auto resize(QResizeEvent*) -> void { has_adjust_margin = false; }
 
     auto enter_event(qt::EnterEvent*) -> void {
         is_hovered = true;
@@ -207,29 +227,35 @@ public:
     }
 
 private:
-    auto update_ui_state() -> void { }
+    auto update_component_ref() -> void {
+        if (is_update_component_ref) return;
 
-    auto update_margin() -> void {
-        if (has_adjust_margin) return;
+        const auto padding_with_icon = measurements.row_padding_with_icons
+            + measurements.icon_rect_size + measurements.padding_icons_text;
+        const auto padding_without_icon = measurements.row_padding_without_icons;
 
-        const auto magic   = 0.6;
-        const auto padding = use_leading_icon ? self.height() * magic : 0;
+        const auto left_padding = use_leading_icon ? padding_with_icon : padding_without_icon;
+        const auto tail_padding = use_trailing_icon ? padding_with_icon : padding_without_icon;
 
-        self.setTextMargins(text_margin_l + padding, text_margin_u, text_margin_r, text_margin_d);
+        const auto input_padding_top    = measurements.col_padding + measurements.label_rect_size;
+        const auto input_padding_bottom = measurements.col_padding;
 
-        has_adjust_margin = true;
+        self.setTextMargins(left_padding, input_padding_top, tail_padding, input_padding_bottom);
+
+        auto font = self.font();
+        font.setPixelSize(measurements.standard_font_height);
+        self.setFont(font);
+
+        standard_text_font = self.font();
+        standard_text_font.setPixelSize(measurements.standard_font_height);
+
+        leading_icon_font = QFont { leading_font_name };
+        leading_icon_font.setPointSizeF(measurements.icon_rect_size);
+
+        is_update_component_ref = true;
     }
 
-    auto update_label_position() -> void {
-        using Tracker = animate::FinitePidTracker<double>;
-
-        *label_stop_token.value() = true;
-        label_stop_token.emplace(std::make_shared<bool>(false));
-
-        constexpr double kp = 15.0, ki = 0.0, kd = 0.0;
-        animation_core.append(std::make_unique<Tracker>(label_position, is_focused ? 1.0 : 0.0,
-            *label_stop_token, kp, ki, kd, AnimationCore::kHz, 1e-3));
-    }
+    auto update_label_position() -> void { label_position->transition_to(is_focused ? 1.0 : 0.0); }
 
     auto sync_basic_text_style(const QColor& text, const QColor& background,
         const QColor& selection_text, const QColor& selection_background) -> void {
@@ -259,11 +285,11 @@ private:
                 .arg(to_rgba(selection_background)));
     }
 
-    auto color_list() const -> ColorList const& {
-        return is_disable ? self.color.disabled
-            : is_error    ? self.color.error
-            : is_focused  ? self.color.focused
-                          : self.color.enabled;
+    auto color_list() const -> Tokens const& {
+        return is_disable ? color_specs.disabled
+            : is_error    ? color_specs.error
+            : is_focused  ? color_specs.focused
+                          : color_specs.enabled;
     }
     auto line_width() const -> double {
         constexpr auto normal_width = 1;
@@ -282,36 +308,35 @@ private:
     }
 
 private:
-    double text_margin_l = 10;
-    double text_margin_r = 10;
-    double text_margin_u = 20;
-    double text_margin_d = 10;
+    Measurements measurements;
+    ColorSpecs color_specs;
 
-    bool is_disable = false;
-    bool is_hovered = false;
-    bool is_focused = false;
-    bool is_error   = false;
+    bool is_disable              = false;
+    bool is_hovered              = false;
+    bool is_focused              = false;
+    bool is_error                = false;
+    bool is_update_component_ref = false;
 
     QString label_text;
     QString hint_text;
     QString supporting_text;
 
     bool use_leading_icon  = false;
-    bool has_adjust_margin = false;
+    bool use_trailing_icon = false;
+
     QIcon leading_icon;
     QString leading_code;
-    QString leading_font;
+    QString leading_font_name;
 
     QIcon trailing_icon;
     QString trailing_code;
     QString trailing_font;
 
-    AnimationCore animation_core;
+    QFont leading_icon_font;
+    QFont standard_text_font;
 
-    // TODO: Animatable animatable;
-
-    std::shared_ptr<double> label_position = std::make_shared<double>(0);
-    std::optional<std::shared_ptr<bool>> label_stop_token { std::make_shared<bool>() };
+    Animatable animatable;
+    std::unique_ptr<TransitionValue<PidState<double>>> label_position;
 
     BasicTextField& self;
 };

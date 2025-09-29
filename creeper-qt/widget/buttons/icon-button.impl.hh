@@ -3,6 +3,8 @@
 #include "icon-button.hh"
 
 #include "creeper-qt/utility/animation/animatable.hh"
+#include "creeper-qt/utility/animation/state/pid.hh"
+#include "creeper-qt/utility/animation/state/spring.hh"
 #include "creeper-qt/utility/animation/transition.hh"
 #include "creeper-qt/utility/animation/water-ripple.hh"
 #include "creeper-qt/utility/painter/helper.hh"

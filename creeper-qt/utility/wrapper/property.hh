@@ -57,9 +57,22 @@ struct SetterProp : Token {
 template <class Token, typename T, auto interface>
 struct DerivedProp : T, Token {
     using T::T;
-    explicit DerivedProp(const T& value)
-        : T(value) { }
-    auto apply(auto& self) const -> void { interface(self, *this); }
+
+    template <typename... Args>
+        requires std::constructible_from<T, Args&&...>
+    constexpr explicit DerivedProp(Args&&... args)
+        : T(std::forward<Args>(args)...) { }
+
+    template <typename U>
+        requires requires(T& t, U&& u) { t = std::forward<U>(u); }
+    auto operator=(U&& value) -> DerivedProp& {
+        T::operator=(std::forward<U>(value));
+        return *this;
+    }
+
+    auto apply(this auto const& self, auto& widget) noexcept -> void {
+        interface(widget, static_cast<const T&>(self));
+    }
 };
 template <class Token, auto interface>
 struct ActionProp : Token {

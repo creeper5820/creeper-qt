@@ -28,7 +28,10 @@ public:
 
 }
 namespace creeper::text::pro {
+
 using Token = common::Token<internal::Text>;
+
+using Text = common::pro::Text<Token>;
 
 using Color = SetterProp<Token, QColor, [](auto& self, const auto& v) { self.set_color(v); }>;
 
@@ -38,23 +41,6 @@ using AdjustSize = ActionProp<Token, [](auto& self) { self.adjustSize(); }>;
 
 using Alignment =
     SetterProp<Token, Qt::Alignment, [](auto& self, const auto& v) { self.setAlignment(v); }>;
-
-struct Text : Token, QString {
-    using QString::QString;
-    using QString::operator=;
-
-    explicit Text(std::convertible_to<QString> auto&& o) noexcept
-        : QString { o } { }
-
-    explicit Text(const std::string& text) noexcept
-        : QString { QString::fromStdString(text) } { }
-
-    auto apply(auto& self) const noexcept -> void
-        requires requires { self.setText(QString {}); }
-    {
-        self.setText(*this);
-    }
-};
 
 template <class T>
 concept trait = std::derived_from<T, Token>;

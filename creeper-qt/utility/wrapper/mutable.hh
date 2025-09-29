@@ -56,18 +56,23 @@ public:
                 self.update();
             },
         });
-        QObject::connect(&self, &QWidget::destroyed,
-            [pointer = &self, this] //
-            { callbacks_.erase(pointer); });
+        QObject::connect(&self, &QObject::destroyed, //
+            [pointer = &self, this] { callbacks_.erase(pointer); });
     }
-    auto set(const T& t) noexcept -> void {
-        static_cast<T&>(*this) = t;
+    template <typename U>
+    auto set(U&& u) noexcept -> Mutable<T>&
+        requires requires(T& t, U&& u) { t = std::forward<U>(u); }
+    {
+        static_cast<T&>(*this) = std::forward<U>(u);
         for (const auto& [_, f] : callbacks_)
             f(*this);
-    }
-    auto operator=(const T& t) noexcept -> Mutable<T>& {
-        set(t);
         return *this;
+    }
+    template <typename U>
+    auto operator=(U&& u) noexcept -> Mutable<T>&
+        requires requires(T& t, U&& u) { t = std::forward<U>(u); }
+    {
+        return set(std::forward<U>(u));
     }
 
 private:

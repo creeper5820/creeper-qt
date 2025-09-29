@@ -89,22 +89,33 @@ namespace pro {
     using Checked = SetterProp<Token, bool, [](auto& self, bool v) { self.set_checked(v); }>;
 
     // 通用文本属性
-    template <class Token>
-    struct Text : public QString, Token {
+    template <class Token, auto setter>
+    struct String : public QString, Token {
         using QString::QString;
 
-        explicit Text(const QString& text) noexcept
+        explicit String(const QString& text) noexcept
             : QString { text } { }
-
-        explicit Text(const std::string& text) noexcept
+        explicit String(const std::string& text) noexcept
             : QString { QString::fromStdString(text) } { }
 
+        auto operator=(const QString& text) noexcept {
+            QString::operator=(text);
+            return *this;
+        }
+        auto operator=(QString&& text) noexcept {
+            QString::operator=(std::move(text));
+            return *this;
+        }
+
         void apply(auto& self) const
-            requires requires { self.setText(*this); }
+            requires requires { setter(self, *this); }
         {
-            self.setText(*this);
+            setter(self, *this);
         }
     };
+
+    template <class Token>
+    using Text = String<Token, [](auto& self, const auto& string) { self.setText(string); }>;
 
     // 通用指针绑定
     template <class Token, class Final>

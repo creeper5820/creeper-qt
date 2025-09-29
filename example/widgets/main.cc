@@ -6,7 +6,10 @@
 /// 使用其他 Nerd Font 也是可以的
 
 #include "component.hh"
+
+#include <qdatetime.h>
 #include <qshortcut.h>
+#include <qstandardpaths.h>
 
 #include <creeper-qt/core/application.hh>
 #include <creeper-qt/layout/linear.hh>
@@ -66,7 +69,7 @@ auto main(int argc, char** argv) -> int {
     /// @note 有时候 Windows 总是给我来点惊喜，
     ///       ShowWindow 这么常见命名的函数都放在全局作用域
     creeper::ShowWindow {
-        [&](MainWindow& window) {
+        [&](MainWindow& window) noexcept {
             // Q 键退出
             auto shortcut_q = new QShortcut { Qt::Key_Q, &window };
             QObject::connect(shortcut_q, &QShortcut::activated, &app::quit);
@@ -75,6 +78,24 @@ auto main(int argc, char** argv) -> int {
             auto shortcut_c = new QShortcut { Qt::Key_C, &window };
             QObject::connect(shortcut_c, &QShortcut::activated,
                 [&window] { window.apply(mwpro::MoveCenter {}); });
+
+            // S 键保存截图
+            auto shortcut_s = new QShortcut { Qt::Key_S, &window };
+            QObject::connect(shortcut_s, &QShortcut::activated, [&] {
+                const auto pixmap = window.grab();
+                const auto format = "yyyy-MM-dd_HH-mm-ss";
+                const auto stamp  = QDateTime::currentDateTime().toString(format);
+
+                const auto filename =
+                    QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)
+                    + window.tr("/MainWindow-Screenshot-%1.png").arg(stamp);
+
+                if (pixmap.save(filename)) {
+                    qDebug() << "截图已保存至:" << filename;
+                } else {
+                    qDebug() << "截图保存失败";
+                }
+            });
         },
         mwpro::MinimumSize { 1080, 720 },
         mwpro::Central<FilledCard> {

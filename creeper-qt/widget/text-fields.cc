@@ -31,8 +31,12 @@ auto BasicTextField::set_trailling_icon(const QIcon& text) -> void { }
 
 auto BasicTextField::set_trailling_icon(const QString& code, const QString& font) -> void { }
 
+auto BasicTextField::set_measurements(const Measurements& measurements) noexcept -> void {
+    pimpl->set_measurements(measurements);
+}
+
 auto BasicTextField::resizeEvent(QResizeEvent* event) -> void {
-    pimpl->resize(event);
+    //
     QLineEdit::resizeEvent(event);
 }
 
@@ -55,6 +59,8 @@ auto BasicTextField::focusOutEvent(QFocusEvent* event) -> void {
     pimpl->focus_out(event);
     QLineEdit::focusOutEvent(event);
 }
+
+using namespace creeper;
 
 auto FilledTextField::paintEvent(QPaintEvent* event) -> void {
     pimpl->paint_filled(event);

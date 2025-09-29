@@ -6,11 +6,15 @@
 #include <creeper-qt/utility/wrapper/mutable.hh>
 #include <creeper-qt/widget/buttons/icon-button.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
+#include <creeper-qt/widget/cards/outlined-card.hh>
 #include <creeper-qt/widget/image.hh>
 #include <creeper-qt/widget/shape/wave-circle.hh>
 #include <creeper-qt/widget/sliders.hh>
+#include <creeper-qt/widget/switch.hh>
 #include <creeper-qt/widget/text-fields.hh>
 #include <creeper-qt/widget/text.hh>
+
+#include <random>
 
 using namespace creeper;
 namespace capro = card::pro;
@@ -27,13 +31,16 @@ auto operator*(std::size_t n, std::invocable<std::size_t> auto&& f) {
 }
 }
 
-static auto SearchComponent(ThemeManager& manager) noexcept {
+static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noexcept {
+
+    const auto slogen = std::make_shared<Mutable<text_field::pro::LabelText>>( //
+        "BanG Dream! It’s MyGO!!!!!");
+
     const auto row = new Row {
         lnpro::Item<FilledTextField> {
             text_field::pro::ThemeManager { manager },
-            text_field::pro::FixedHeight { 50 },
             text_field::pro::LeadingIcon { material::icon::kSearch, material::round::font },
-            text_field::pro::LabelText { "你好世界！" },
+            *slogen,
         },
         lnpro::SpacingItem { 20 },
         lnpro::Item<IconButton> {
@@ -41,7 +48,8 @@ static auto SearchComponent(ThemeManager& manager) noexcept {
             ibpro::FixedSize { 40, 40 },
             ibpro::Color { IconButton::Color::TONAL },
             ibpro::Font { material::kRoundSmallFont },
-            ibpro::FontIcon { material::icon::kAdd },
+            ibpro::FontIcon { "change_circle" },
+            ibpro::Clickable { refresh_callback },
         },
         lnpro::Item<IconButton> {
             ibpro::ThemeManager { manager },
@@ -49,6 +57,22 @@ static auto SearchComponent(ThemeManager& manager) noexcept {
             ibpro::Color { IconButton::Color::TONAL },
             ibpro::Font { material::kRoundSmallFont },
             ibpro::FontIcon { material::icon::kFavorite },
+            ibpro::Clickable { [slogen] {
+                constexpr auto random_slogen = [] {
+                    constexpr auto slogens = std::array {
+                        "为什么要演奏《春日影》！",
+                        "我从来不觉得玩乐队开心过。",
+                        "我好想…成为人啊！",
+                        "那你愿意……跟我组一辈子的乐队吗？",
+                        "过去软弱的我…已经死了。",
+                    };
+                    static std::random_device rd;
+                    static std::mt19937 gen(rd());
+                    std::uniform_int_distribution<> dist(0, slogens.size() - 1);
+                    return QString::fromUtf8(slogens[dist(gen)]);
+                };
+                *slogen = random_slogen();
+            } },
         },
         lnpro::Item<IconButton> {
             ibpro::ThemeManager { manager },
@@ -63,6 +87,7 @@ static auto SearchComponent(ThemeManager& manager) noexcept {
     };
 }
 static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
+
     return new Widget {
         widget::pro::Layout<Col> {
             col::pro::Alignment { Qt::AlignTop | Qt::AlignLeft },
@@ -130,9 +155,33 @@ static auto BannerComponent(ThemeManager& manager) noexcept {
 static constexpr auto slider_measurements = Slider::Measurements::S();
 
 auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
-    const auto SliderComponent = [&] {
-        const auto mutable_text = std::make_shared<Mutable<text::pro::Text>>("0.000");
 
+    const auto texts = std::array {
+        std::make_shared<Mutable<text::pro::Text>>("0.500"),
+        std::make_shared<Mutable<text::pro::Text>>("0.500"),
+        std::make_shared<Mutable<text::pro::Text>>("0.500"),
+    };
+    const auto progresses = std::array {
+        std::make_shared<Mutable<slider::pro::Progress>>(0.5),
+        std::make_shared<Mutable<slider::pro::Progress>>(0.5),
+        std::make_shared<Mutable<slider::pro::Progress>>(0.5),
+    };
+
+    const auto SwitchRow = [&] {
+        return new Row {
+            row::pro::Item<Switch> {
+                _switch::pro::ThemeManager { state.manager },
+                _switch::pro::FixedSize { 70, 40 },
+            },
+            row::pro::Item<FilledCard> {
+                card::pro::ThemeManager { state.manager },
+                card::pro::FixedHeight { 40 },
+            },
+        };
+    };
+
+    const auto SliderComponent = [&](std::shared_ptr<Mutable<text::pro::Text>> s,
+                                     std::shared_ptr<Mutable<slider::pro::Progress>> progress) {
         return new Row {
             lnpro::Alignment { Qt::AlignLeft },
             lnpro::Item<FilledCard> {
@@ -147,7 +196,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                         text::pro::ThemeManager { state.manager },
                         text::pro::Alignment { Qt::AlignCenter },
                         text::pro::FixedWidth { 100 },
-                        *mutable_text,
+                        *s,
                     },
                 },
             },
@@ -156,11 +205,9 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                 slider::pro::Measurements { slider_measurements },
                 slider::pro::FixedHeight { slider_measurements.minimum_height() },
                 slider::pro::FixedWidth { 300 },
+                *progress,
                 slider::pro::OnValueChange {
-                    [mutable_text](double progress) mutable {
-                        auto string   = QString::number(progress, 'f', 3);
-                        *mutable_text = text::pro::Text { string };
-                    },
+                    [=](double progress) { *s = QString::number(progress, 'f', 3); },
                 },
                 slider::pro::OnValueChangeFinished {
                     [](double num) { qDebug() << "[view] Slider changed:" << num; } },
@@ -176,21 +223,41 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
             lnpro::Margin { 10 },
             lnpro::Spacing { 10 },
 
-            lnpro::Item { SearchComponent(state.manager) },
+            lnpro::Item {
+                SearchComponent(state.manager,
+                    [texts, progresses] {
+                        constexpr auto random_unit = []() {
+                            static std::random_device rd;
+                            static std::mt19937 gen(rd());
+                            static std::uniform_real_distribution<double> dist(0.0, 1.0);
+                            return dist(gen);
+                        };
+                        for (auto&& [string, number] : std::views::zip(texts, progresses)) {
+                            auto v  = random_unit();
+                            *number = v;
+                            *string = QString::number(v, 'f', 3);
+                        }
+                    }),
+            },
             lnpro::Item { BannerComponent(state.manager) },
             lnpro::Item<Row> {
                 lnpro::Margin { 20 },
                 lnpro::Spacing { 15 },
                 lnpro::Item<Col> {
-                    lnpro::Item { SliderComponent() },
-                    lnpro::Item { SliderComponent() },
-                    lnpro::Item { SliderComponent() },
+                    lnpro::Item { SliderComponent(texts.at(0), progresses.at(0)) },
+                    lnpro::Item { SliderComponent(texts.at(1), progresses.at(1)) },
+                    lnpro::Item { SliderComponent(texts.at(2), progresses.at(2)) },
                 },
-                lnpro::Item<FilledCard> {
+                lnpro::Item<OutlinedCard> {
                     { 255 },
-                    filled_card::pro::ThemeManager { state.manager },
-                    filled_card::pro::LevelLowest,
-                    filled_card::pro::FixedHeight { slider_measurements.minimum_height() * 3 + 20 },
+                    card::pro::ThemeManager { state.manager },
+                    card::pro::LevelLowest,
+                    card::pro::FixedHeight { slider_measurements.minimum_height() * 3 + 40 },
+                    card::pro::Layout<Col> {
+                        lnpro::Item { SwitchRow() },
+                        lnpro::Item { SwitchRow() },
+                        lnpro::Item { SwitchRow() },
+                    },
                 },
             },
             lnpro::Item<Flow> {
