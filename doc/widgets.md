@@ -74,7 +74,7 @@ const auto widget_a = new Widget { ... };
 - 暗色主题：内置 `kBlueMikuDarkColorScheme`
 - 亮色主题：内置 `kBlueMikuLightColorScheme`
 
-![buttons](image/blue-style-widgets.png)
+![buttons](https://creeper5820.com/creeper-qt/blue-style-widgets.png)
 
 ### 通用属性定义
 
@@ -92,15 +92,15 @@ namespace button::pro {
 }
 ```
 
-| `PROPERTY`    | `TYPE`   |
-| ------------- | ---------|
-| `Text`        | `QString`|
-| `TextColor`   | `QColor` |
-| `Radius`      | `double` |
-| `BorderWidth` | `double` |
-| `BorderColor` | `QColor` |
-| `Background`  | `QColor` |
-| `WaterColor`  | `QColor` |
+| `PROPERTY`    | `TYPE`       |
+| ------------- | ------------ |
+| `Text`        | `QString`    |
+| `TextColor`   | `QColor`     |
+| `Radius`      | `double`     |
+| `BorderWidth` | `double`     |
+| `BorderColor` | `QColor`     |
+| `Background`  | `QColor`     |
+| `WaterColor`  | `QColor`     |
 | `Clickable`   | `[](self){}` |
 
 ### FilledButton
@@ -177,7 +177,7 @@ auto button = XxxxButton { properties };
 ### Switch
 
 <div align=center>
-    <img src="image/switch-working.gif" width=400>
+    <img src="https://creeper5820.com/creeper-qt/switch-working.gif" width=400>
     <br/>
     <br/>
 </div>
@@ -194,7 +194,7 @@ auto button = XxxxButton { properties };
 属性：
 
 | `PROPERTIES`                    | `TYPE`             |
-| ------------------------------- | -----------------  |
+| ------------------------------- | ------------------ |
 | `TrackColorUnchecked`           | `QColor`           |
 | `TrackColorChecked`             | `QColor`           |
 | `TrackColorUncheckedDisabled`   | `QColor`           |
@@ -214,7 +214,7 @@ auto button = XxxxButton { properties };
 ### FilledTextField
 
 <div align=center>
-    <img src="image/filled-text-field.gif" width=400>
+    <img src="https://creeper5820.com/creeper-qt/filled-text-field.gif" width=400>
     <br/>
     <br/>
 </div>

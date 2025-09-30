@@ -1,6 +1,6 @@
 <div align=center>
 
-<div align=center><img src="doc/image/creeper-qt.jpg" width=400></div>
+<div align=center><img src="https://creeper5820.com/creeper-qt/creeper-qt.jpg" width=400></div>
 
 <h1>CREEPER-QT</h1>
 
@@ -16,26 +16,20 @@
 
 ## 效果展示
 
-<img src="doc/image/blue-style-widgets.png" title="" alt="buttons" data-align="center">
+<img src="https://creeper5820.com/creeper-qt/blue-style-widgets.png" title="" alt="buttons" data-align="center">
 
-<img src="doc/image/example-login.png" title="" alt="example-login" data-align="center">
+<img src="https://creeper5820.com/creeper-qt/example-login.png" title="" alt="example-login" data-align="center">
 
-<img src="doc/image/example-widgets.png" title="" alt="example-widgets" data-align="center">
+<img src="https://creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-30.png" title="" alt="example-widgets" data-align="center">
+
+<img src="https://creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-38.png" title="" alt="example-widgets" data-align="center">
 
 <div align=center>
-    <img src="doc/image/switch-working.gif" width=50%>
+    <img src="https://creeper5820.com/creeper-qt/switch-working.gif" width=50%>
 </div>
 
 <div align=center>
-    <img src="doc/image/filled-text-field.gif" width=50%>
-</div>
-
-<div align=center>
-    <img src="doc/image/sliders-day.png" width=50%>
-</div>
-
-<div align=center>
-    <img src="doc/image/sliders-night.png" width=50%>
+    <img src="https://creeper5820.com/creeper-qt/filled-text-field.gif" width=50%>
 </div>
 
 ## 调用示例
@@ -182,7 +176,7 @@ sudo cmake --build build -j --target install
 
 我推荐使用MSYS2环境使用这个库: [MYSY2-INSTALLATION](https://www.msys2.org/docs/installer/)
 
-<img src="doc/image/windows-neofetch.png" title="" alt="win" data-align="center">
+<img src="https://creeper5820.com/creeper-qt/windows-neofetch.png" title="" alt="win" data-align="center">
 
 看呐, 我没有使用Linux (
 
