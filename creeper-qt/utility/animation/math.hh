@@ -39,6 +39,35 @@ constexpr auto normalize(const T& error) noexcept {
     }
 }
 
+template <typename T>
+constexpr auto interpolate(const T& start, const T& end, double t) noexcept -> T {
+
+    const auto clamped_t = std::clamp(t, 0., 1.);
+
+    if constexpr (std::is_arithmetic_v<T>) {
+        return static_cast<T>(start + (end - start) * clamped_t);
+    } else if constexpr ( //
+        requires(const T& a, const T& b, const double f) {
+            { a - b } -> std::convertible_to<T>;
+            { a * f } -> std::convertible_to<T>;
+            { a + b } -> std::convertible_to<T>;
+        }) {
+        return start + (end - start) * clamped_t;
+    } else {
+        static_assert(sizeof(T) == 0,
+            "interpolate() requires T to be an arithmetic type or define +, -, and scalar "
+            "multiplication.");
+    }
+}
+
+constexpr auto interpolate(const QRectF& start, const QRectF& end, double position) -> QRectF {
+    position = qBound(0.0, position, 1.0);
+    auto _1  = start.left() + (end.left() - start.left()) * position;
+    auto _2  = start.top() + (end.top() - start.top()) * position;
+    auto _3  = start.width() + (end.width() - start.width()) * position;
+    auto _4  = start.height() + (end.height() - start.height()) * position;
+    return { _1, _2, _3, _4 };
+}
 }
 
 namespace creeper {

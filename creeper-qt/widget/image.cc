@@ -16,7 +16,7 @@ auto Image::set_content_scale(ContentScale scale) noexcept -> void {
 }
 auto Image::content_scale() const noexcept -> ContentScale { return pimpl->content_scale; }
 
-auto Image::set_painter_resource(std::unique_ptr<PainterResource> resource) noexcept -> void {
+auto Image::set_painter_resource(std::shared_ptr<PainterResource> resource) noexcept -> void {
     pimpl->resource_origin = std::move(resource);
     pimpl->resource_origin->add_finished_callback([this](auto&) { update(); });
     pimpl->request_regenerate = true;

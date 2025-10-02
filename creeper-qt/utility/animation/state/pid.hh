@@ -20,7 +20,7 @@ struct PidState : public NormalAccessor {
         double kp      = 1.0;
         double ki      = 0.0;
         double kd      = 0.1;
-        double epsilon = 1e-4;
+        double epsilon = 1e-3;
     } config;
 
     struct {

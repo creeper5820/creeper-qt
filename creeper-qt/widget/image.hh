@@ -3,7 +3,7 @@
 #include "creeper-qt/utility/painter-resource.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/widget/widget.hh"
+#include "creeper-qt/utility/wrapper/widget.hh"
 
 namespace creeper {
 namespace image::internal {
@@ -16,7 +16,7 @@ namespace image::internal {
         auto set_content_scale(ContentScale) noexcept -> void;
         auto content_scale() const noexcept -> ContentScale;
 
-        auto set_painter_resource(std::unique_ptr<PainterResource>) noexcept -> void;
+        auto set_painter_resource(std::shared_ptr<PainterResource>) noexcept -> void;
         auto painter_resource() const noexcept -> PainterResource;
 
         auto set_opacity(double) noexcept -> void;
@@ -49,14 +49,14 @@ namespace image::pro {
     };
     struct PainterResource : Token {
         using T = creeper::PainterResource;
-        mutable std::unique_ptr<T> resource;
+        mutable std::shared_ptr<T> resource;
 
-        explicit PainterResource(std::unique_ptr<T> resource) noexcept
+        explicit PainterResource(std::shared_ptr<T> resource) noexcept
             : resource { std::move(resource) } { }
 
         explicit PainterResource(auto&&... args) noexcept
             requires std::constructible_from<T, decltype(args)...>
-            : resource { std::make_unique<T>(std::forward<decltype(args)>(args)...) } { }
+            : resource { std::make_shared<T>(std::forward<decltype(args)>(args)...) } { }
 
         auto apply(auto& self) const noexcept -> void
             requires requires { self.set_painter_resource(std::move(resource)); }

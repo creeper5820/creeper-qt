@@ -68,9 +68,9 @@ struct IconButton::Impl {
         {
             auto state = std::make_shared<SpringState<double>>();
 
-            state->config.error_threshold = kThreshold1D;
-            state->config.k               = kSpringK;
-            state->config.d               = kSpringD;
+            state->config.epsilon = kThreshold1D;
+            state->config.k       = kSpringK;
+            state->config.d       = kSpringD;
 
             now_container_radius = make_transition(animatable, std::move(state));
         }

@@ -37,7 +37,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
         "BanG Dream! It’s MyGO!!!!!");
 
     const auto row = new Row {
-        lnpro::Item<FilledTextField> {
+        lnpro::Item<OutlinedTextField> {
             text_field::pro::ThemeManager { manager },
             text_field::pro::LeadingIcon { material::icon::kSearch, material::round::font },
             *slogen,
@@ -134,14 +134,26 @@ static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
     };
 }
 static auto BannerComponent(ThemeManager& manager) noexcept {
+    using source_type = std::string_view;
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
+
+    const auto sources = std::array {
+        source_type( // 大户爱
+            "https://c-ssl.duitang.com/uploads/blog/202103/16/20210316112119_181c8.jpeg"),
+        source_type( // 长期素食
+            "https://c-ssl.duitang.com/uploads/blog/202506/28/V2SOXgQEFm7Q626.jpeg"),
+        source_type( // 长期素食
+            "https://c-ssl.duitang.com/uploads/blog/202411/25/pGSGeMXVcBx95ZO.jpeg"),
+        source_type( // MYGO
+            "https://c-ssl.duitang.com/uploads/blog/202507/02/4ESmYpG3Fo8L4mA.jpeg"),
+    };
+
     return new Image {
         impro::ContentScale { ContentScale::CROP },
         impro::SizePolicy { QSizePolicy::Expanding },
-        impro::BorderWidth { 5 },
+        impro::BorderWidth { 3 },
         impro::FixedHeight { 300 },
-        impro::PainterResource {
-            "https://c-ssl.duitang.com/uploads/blog/202103/16/20210316112119_181c8.jpeg",
-        },
+        impro::PainterResource { sources.at(std::rand() % sources.size()) },
         impro::Apply { [&manager](Image& self) {
             manager.append_handler(&self, [&](const ThemeManager& manager) {
                 const auto colorscheme = manager.color_scheme();

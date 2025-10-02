@@ -28,10 +28,8 @@ public:
         {
             auto state = std::make_shared<PidState<double>>();
 
-            state->value  = progress;
-            state->target = progress;
-
-            state->config.kp = 20.0;
+            state->config.kp      = 20.0;
+            state->config.epsilon = 1e-4;
 
             position = make_transition(animatable, std::move(state));
         }
@@ -97,40 +95,27 @@ public:
         disabled.handle = on_surface_disabled_container;
     }
 
-    auto load_theme_manager(ThemeManager& manager) -> void {
-        manager.append_handler(&self,
-            [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
-    }
+    auto load_theme_manager(ThemeManager& manager) { manager.append_handler(&self, self); }
 
-    auto set_progress(double progress, bool animatable = true) noexcept -> void {
+    auto set_progress(double progress, bool animatable = true) noexcept {
         this->progress = std::clamp(progress, 0.0, 1.0);
         if (animatable) {
             this->position->transition_to(progress);
         } else {
-            this->position->snap_to(progress);
-            this->self.update();
+            this->position->snap_to(progress), self.update();
         }
     }
 
-    auto get_progress() const noexcept -> double { return progress; }
+    auto get_progress() const noexcept { return progress; }
 
 public:
     auto paint_event(QPaintEvent*) -> void {
 
         const auto& color = enabled ? color_specs.enabled : color_specs.disabled;
 
-        auto painter = QPainter { &self };
-        painter.setRenderHint(QPainter::Antialiasing);
-
         // TODO: Develop some util to simplify those calculating
         const auto handle_spacing = double { 1.5 * measurements.handle_width };
         const auto common_radius  = double { 0.5 * measurements.handle_width };
-
-        // Points of 4 corner
-        const auto& point_tl = self.geometry().bottomLeft();
-        const auto& point_tr = self.geometry().bottomRight();
-        const auto& point_bl = self.geometry().topLeft();
-        const auto& point_br = self.geometry().topRight();
 
         // Handle shape
         const auto handle_color     = color.handle;
@@ -179,6 +164,8 @@ public:
 
         // Stop Indicator
 
+        auto painter = QPainter { &self };
+
         util::PainterHelper { painter }
             .set_render_hint(QPainter::Antialiasing)
 
@@ -201,16 +188,22 @@ public:
             .done();
     }
     auto mouse_release_event(QMouseEvent* event) noexcept -> void {
+        if (!enabled) return;
+
         pressed = false;
         update_progress(event->pos());
         emit self.signal_value_change_finished(progress);
     }
     auto mouse_press_event(QMouseEvent* event) noexcept -> void {
+        if (!enabled) return;
+
         pressed = true;
         update_progress(event->pos());
         emit self.signal_value_change(progress);
     }
     auto mouse_move_event(QMouseEvent* event) noexcept -> void {
+        if (!enabled) return;
+
         update_progress(event->pos());
         emit self.signal_value_change(progress);
     }
@@ -225,16 +218,16 @@ private:
         const auto x = point.x();
         const auto y = point.y();
 
-        auto handle_thickness = measurements.handle_width;
-        auto spindle_len      = int {};
-        auto spindle_pos      = int {};
+        auto spindle_len = int {};
+        auto spindle_pos = int {};
 
+        const auto thickness = measurements.handle_width;
         if (!is_horizontal()) {
-            spindle_len = h - 2 * handle_thickness;
-            spindle_pos = y - 1 * handle_thickness;
+            spindle_len = h - 2 * thickness;
+            spindle_pos = y - 1 * thickness;
         } else {
-            spindle_len = w - 2 * handle_thickness;
-            spindle_pos = x - 1 * handle_thickness;
+            spindle_len = w - 2 * thickness;
+            spindle_pos = x - 1 * thickness;
         }
 
         progress = static_cast<double>(spindle_pos) / spindle_len;
@@ -245,17 +238,17 @@ private:
 
 private:
     double progress = 0.0;
-    std::unique_ptr<TransitionValue<PidState<double>>> position;
-
-    int steps    = 0;
-    bool enabled = true;
-    bool pressed = false;
+    uint steps      = 0;
+    bool enabled    = true;
+    bool pressed    = false;
 
     Qt::ArrowType direction = Qt::RightArrow;
 
     ColorSpecs color_specs    = ColorSpecs {};
     Measurements measurements = Measurements::Xs();
 
-    Slider& self;
     Animatable animatable;
+    std::unique_ptr<TransitionValue<PidState<double>>> position;
+
+    Slider& self;
 };

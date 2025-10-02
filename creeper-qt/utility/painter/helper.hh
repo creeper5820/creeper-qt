@@ -5,13 +5,17 @@
 
 namespace creeper::util {
 
+auto print_paint_event_count() noexcept -> void;
+
 /// @brief 隐藏冗杂的细节，解放命令式的绘图调用
 class PainterHelper {
 public:
     using Renderer = std::function<void(QPainter&)>;
 
     explicit PainterHelper(QPainter& painter)
-        : painter(painter) { }
+        : painter(painter) {
+        print_paint_event_count();
+    }
 
     inline void done() { }
 

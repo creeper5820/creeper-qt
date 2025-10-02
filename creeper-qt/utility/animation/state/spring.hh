@@ -20,9 +20,9 @@ struct SpringState : public NormalAccessor {
     TimePoint last_timestamp = Clock::now();
 
     struct {
-        double k               = 1.0;
-        double d               = 0.1;
-        double error_threshold = 1e-4;
+        double k       = 1.0;
+        double d       = 0.1;
+        double epsilon = 1e-1;
     } config;
 
     auto set_target(T new_target) noexcept -> void {
@@ -49,7 +49,7 @@ struct SpringState : public NormalAccessor {
 
         if (dt <= 0.0) {
             last_timestamp = now;
-            return std::abs(animate::magnitude(target - value)) > config.error_threshold;
+            return std::abs(animate::magnitude(target - value)) > config.epsilon;
         }
 
         const auto error     = value - target;
@@ -62,8 +62,8 @@ struct SpringState : public NormalAccessor {
 
         last_timestamp = now;
 
-        const bool done = animate::magnitude(error) < config.error_threshold
-            && std::abs(velocity) < config.error_threshold;
+        const bool done =
+            animate::magnitude(error) < config.epsilon && std::abs(velocity) < config.epsilon;
 
         if (done) velocity = animate::zero<T>();
         return !done;

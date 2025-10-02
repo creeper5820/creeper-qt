@@ -9,6 +9,16 @@
 
 namespace creeper::theme {
 
+class ThemeManager;
+
+template <class T>
+concept color_scheme_setter_trait = requires(T t) {
+    { t.set_color_scheme(ColorScheme {}) };
+};
+template <class T>
+concept theme_manager_loader_trait =
+    requires(T t, ThemeManager& manager) { t.load_theme_manager(manager); };
+
 struct ThemePack {
     ColorScheme light, dark;
     auto color_scheme(this auto&& self, ColorMode mode) noexcept {
@@ -38,6 +48,16 @@ public:
     ///   to remove the associated handler.
     void append_handler(const QObject* key, const Handler& handler);
 
+    auto append_handler(color_scheme_setter_trait auto& widget) { append_handler(&widget, widget); }
+    auto append_handler(const QObject* key, color_scheme_setter_trait auto& widget) {
+        const auto handler = [&widget](const ThemeManager& manager) {
+            const auto color_mode = manager.color_mode();
+            const auto theme_pack = manager.theme_pack();
+            widget.set_color_scheme(theme_pack.color_scheme(color_mode));
+        };
+        append_handler(key, std::move(handler));
+    }
+
     void remove_handler(const QObject* key);
 
     void set_theme_pack(const ThemePack& pack);
@@ -49,14 +69,6 @@ public:
 
     ColorScheme color_scheme() const;
 };
-
-template <class T>
-concept color_scheme_setter_trait = requires(T t) {
-    { t.set_color_scheme(ColorScheme {}) };
-};
-template <class T>
-concept theme_manager_loader_trait =
-    requires(T t, ThemeManager& manager) { t.load_theme_manager(manager); };
 
 }
 namespace creeper::theme::pro {

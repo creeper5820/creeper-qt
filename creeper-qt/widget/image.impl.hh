@@ -74,9 +74,9 @@ public:
     double radius  = 10.;
     double opacity = 01.;
 
-    std::unique_ptr<PainterResource> resource_origin {};
-    std::unique_ptr<PainterResource> resource_render {
-        std::make_unique<PainterResource>(QPixmap {}),
+    std::shared_ptr<PainterResource> resource_origin {};
+    std::shared_ptr<PainterResource> resource_render {
+        std::make_shared<PainterResource>(QPixmap {}),
     };
 
     Image& self;

@@ -34,6 +34,8 @@ struct PainterResource : public QPixmap {
         }
     }
 
+    ~PainterResource() noexcept { *resource_exiting = false; }
+
     template <typename T>
     explicit PainterResource(T&& other) noexcept
         requires std::convertible_to<T, QPixmap>
@@ -61,6 +63,8 @@ private:
     bool is_loading_ = false;
     bool is_error_   = false;
 
+    std::shared_ptr<bool> resource_exiting = std::make_shared<bool>(true);
+
     auto download_resource_from_network(const QUrl& url, auto&& f) noexcept -> void
         requires painter_resource::finished_callback_c<decltype(f)>
     {
@@ -69,7 +73,14 @@ private:
         auto manager = new QNetworkAccessManager;
         auto replay  = manager->get(QNetworkRequest { url });
 
+        auto resource_exiting = this->resource_exiting;
         QObject::connect(replay, &QNetworkReply::finished, [=, this] {
+            if (!*resource_exiting) {
+                qWarning() << "[PainterResource] Async task aborted: "
+                              "Resource instance has been destroyed.";
+                return;
+            }
+
             const auto error = replay->error();
             const auto data  = replay->readAll();
             if (error != QNetworkReply::NoError) {

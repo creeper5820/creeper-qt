@@ -10,25 +10,14 @@ struct ThemeManager::Impl {
     ThemePack theme_pack;
     ColorMode color_mode;
 
-    void apply_theme(const ThemeManager& manager) const {
+    auto apply_theme(const ThemeManager& manager) const {
         for (auto& [_, handler] : handlers)
             handler(manager);
     }
 
-    void append_handler(Key key, const Handler& handler) {
+    auto append_handler(Key key, const Handler& handler) {
         handlers[key] = handler;
         QObject::connect(key, &QObject::destroyed, [this, key] { remove_handler(key); });
-    }
-    void append_handler(Key key, color_scheme_setter_trait auto& widget) {
-        handlers[key] = [&widget](const ThemeManager& manager) {
-            const auto color_mode   = manager.color_mode();
-            const auto theme_pack   = manager.theme_pack();
-            const auto color_scheme = color_mode == ColorMode::LIGHT //
-                ? theme_pack.light
-                : theme_pack.dark;
-            widget.set_color_scheme(color_scheme);
-        };
-        QObject::connect(key, &QWidget::destroyed, [this, key] { remove_handler(key); });
     }
 
     void remove_handler(Key key) { handlers.erase(key); }

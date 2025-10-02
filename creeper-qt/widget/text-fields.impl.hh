@@ -3,7 +3,10 @@
 #include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/animation/state/pid.hh"
 #include "creeper-qt/utility/animation/transition.hh"
+#include "creeper-qt/utility/painter/common.hh"
+#include "creeper-qt/utility/painter/container.hh"
 #include "creeper-qt/utility/painter/helper.hh"
+#include "creeper-qt/utility/painter/shape.hh"
 
 #include <qpainter.h>
 #include <qpainterpath.h>
@@ -19,10 +22,10 @@ public:
         {
             auto state = std::make_shared<PidState<double>>();
 
-            state->config.kp      = 12.0;
+            state->config.kp      = 20.0;
             state->config.ki      = 00.0;
             state->config.kd      = 00.0;
-            state->config.epsilon = 1e-1;
+            state->config.epsilon = 1e-2;
 
             label_position = make_transition(animatable, std::move(state));
         }
@@ -42,6 +45,7 @@ public:
         color_specs.enabled.supporting_text  = scheme.on_surface_variant;
         color_specs.enabled.input_text       = scheme.on_surface;
         color_specs.enabled.caret            = scheme.primary;
+        color_specs.enabled.outline          = scheme.outline;
 
         color_specs.disabled.container = scheme.on_surface;
         color_specs.disabled.container.setAlphaF(0.04);
@@ -57,6 +61,8 @@ public:
         color_specs.disabled.input_text.setAlphaF(0.38);
         color_specs.disabled.active_indicator = scheme.on_surface;
         color_specs.disabled.active_indicator.setAlphaF(0.38);
+        color_specs.disabled.outline = scheme.outline;
+        color_specs.disabled.outline.setAlphaF(0.38);
 
         color_specs.focused.container        = scheme.surface_container_highest;
         color_specs.focused.label_text       = scheme.primary;
@@ -65,6 +71,7 @@ public:
         color_specs.focused.input_text       = scheme.on_surface;
         color_specs.focused.supporting_text  = scheme.on_surface_variant;
         color_specs.focused.active_indicator = scheme.primary;
+        color_specs.focused.outline          = scheme.primary;
 
         color_specs.error.container        = scheme.surface_container_highest;
         color_specs.error.active_indicator = scheme.error;
@@ -74,13 +81,14 @@ public:
         color_specs.error.leading_icon     = scheme.on_surface_variant;
         color_specs.error.trailing_icon    = scheme.error;
         color_specs.error.caret            = scheme.error;
+        color_specs.error.outline          = scheme.error;
 
         color_specs.state_layer = scheme.on_surface;
         color_specs.state_layer.setAlphaF(0.08);
         color_specs.selection_container = scheme.primary;
         color_specs.selection_container.setAlphaF(0.38);
 
-        const auto& color = color_list();
+        const auto& color = get_color_tokens();
         sync_basic_text_style(              //
             color.input_text,               //
             Qt::transparent,                //
@@ -98,27 +106,27 @@ public:
     auto set_label_text(const QString& text) -> void { label_text = text; }
 
     auto set_leading_icon(const QString& code, const QString& font) -> void {
-        leading_code      = code;
+        leading_icon_code = code;
         leading_font_name = font;
 
-        is_update_component_ref = false;
-        use_leading_icon        = true;
+        is_update_component_status = false;
+        use_leading_icon           = true;
     }
 
     auto set_measurements(const Measurements& measurements) noexcept -> void {
         this->measurements = measurements;
-        self.setFixedHeight(measurements.container_height);
+        self.setFixedHeight(measurements.container_height + measurements.standard_font_height);
 
-        is_update_component_ref = false;
+        is_update_component_status = false;
     }
 
     auto paint_filled(QPaintEvent*) -> void {
         const auto rect  = self.rect();
-        const auto color = color_list();
+        const auto color = get_color_tokens();
 
         constexpr auto container_radius = 5;
 
-        update_component_ref();
+        update_component_status(FieldType::FILLED);
 
         auto painter = QPainter { &self };
         // Container
@@ -133,14 +141,14 @@ public:
             const auto p0 = rect.bottomLeft();
             const auto p1 = rect.bottomRight();
             painter.setBrush(Qt::NoBrush);
-            painter.setPen(QPen { color.active_indicator, line_width() });
+            painter.setPen(QPen { color.active_indicator, filled_line_width() });
             painter.drawLine(p0, p1);
         }
         // Leading icon
 
         if (!leading_icon.isNull()) {
             //
-        } else if (!leading_code.isEmpty()) {
+        } else if (!leading_icon_code.isEmpty()) {
 
             const auto rect = QRectF {
                 1.0 * measurements.row_padding_with_icons,
@@ -154,7 +162,7 @@ public:
             painter.setBrush(Qt::NoBrush);
             painter.setPen(QPen { color.leading_icon });
             painter.setFont(leading_icon_font);
-            painter.drawText(rect, leading_code, { Qt::AlignCenter });
+            painter.drawText(rect, leading_icon_code, { Qt::AlignCenter });
 
             painter.restore();
         }
@@ -175,7 +183,7 @@ public:
                 QPointF(self.width() - margins.right(), margins.top()),
             };
 
-            const auto rect = interpolate(rect_center, rect_top, position);
+            const auto rect = animate::interpolate(rect_center, rect_top, position);
 
             const auto scale = 1. - position * 0.25;
 
@@ -204,7 +212,115 @@ public:
         }
     }
 
-    auto paint_outlined(QPaintEvent*) -> void { }
+    auto paint_outlined(QPaintEvent*) -> void {
+        const auto& measurements = this->measurements;
+        const auto& color_tokens = get_color_tokens();
+
+        update_component_status(FieldType::OUTLINED);
+        {
+            using namespace painter;
+            using namespace painter::common::pro;
+            auto painter = qt::painter { &self };
+
+            /// Cache Calculate
+            const auto container_width  = self.width();
+            const auto container_height = measurements.container_height;
+
+            const auto input_leading_padding  = use_leading_icon
+                 ? measurements.row_padding_with_icons + measurements.icon_rect_size
+                    + measurements.padding_icons_text
+                 : measurements.row_padding_without_icons;
+            const auto input_trailing_padding = use_trailing_icon
+                ? measurements.row_padding_with_icons + measurements.icon_rect_size
+                    + measurements.padding_icons_text
+                : measurements.row_padding_without_icons;
+            const auto input_vertical_padding =
+                0.5 * (measurements.container_height - measurements.icon_rect_size);
+
+            /// Container
+            const auto container_size      = qt::size(self.width(), container_height);
+            const auto container_thickness = is_focused ? 2. : is_hovered ? 1.5 : 1.;
+
+            /// Leading Icon
+            const auto leading_box_size = use_leading_icon
+                ? qt::size(measurements.icon_rect_size, container_height)
+                : qt::size(0, 0);
+
+            /// Label Text
+            const auto position   = self.text().isEmpty() ? *label_position : 1.;
+            const auto text_scale = animate::interpolate(1., 0.75, position);
+
+            auto text_option = qt::text_option {};
+            text_option.setWrapMode(QTextOption::NoWrap);
+            text_option.setAlignment(Qt::AlignLeading | Qt::AlignVCenter);
+
+            const auto text_width = measure_text(standard_text_font, label_text, text_option);
+
+            auto label_origin = qt::point {};
+            auto label_size   = qt::size {};
+            {
+                const auto begin_y = input_vertical_padding;
+                const auto final_y = -0.5 * measurements.standard_font_height;
+
+                const auto top_padding  = use_leading_icon ? measurements.row_padding_with_icons
+                                                           : measurements.row_padding_without_icons;
+                const auto begin_origin = qt::point(input_leading_padding, begin_y);
+                const auto final_origin = qt::point(top_padding, final_y);
+
+                const auto begin_size = qt::size(text_width, measurements.icon_rect_size);
+                const auto final_size =
+                    qt::size(text_scale * text_width, measurements.standard_font_height);
+
+                label_origin = animate::interpolate(begin_origin, final_origin, position);
+                label_size   = animate::interpolate(begin_size, final_size, position);
+            }
+            const auto label_background_size = qt::size {
+                label_size.width() + 2 * measurements.row_padding_populated_label_text,
+                label_size.height(),
+            };
+
+            Paint::Box {
+                BoxImpl { self.size(), Qt::AlignCenter },
+                Paint::Surface {
+                    SurfaceImpl { container_size },
+                    Paint::Buffer {
+                        BufferImpl { container_size },
+                        Paint::RoundedRectangle {
+                            Size { container_size },
+                            Outline { color_tokens.outline, container_thickness },
+                            Radiuses { 5 },
+                        },
+                        Paint::EraseRectangle {
+                            Origin { label_origin },
+                            Size { label_background_size },
+                        },
+                    },
+                    Paint::Box {
+                        BoxImpl { label_background_size, Qt::AlignHCenter, label_origin },
+                        Paint::Text {
+                            TextOption { text_option },
+                            Font { standard_text_font },
+                            Size { label_background_size },
+                            Text { label_text },
+                            Color { color_tokens.label_text },
+                            Scale { text_scale },
+                        },
+                    },
+                    Paint::Box {
+                        BoxImpl { leading_box_size, Qt::AlignCenter,
+                            { static_cast<qreal>(measurements.row_padding_with_icons), 0 } },
+                        Paint::Text {
+                            TextOption { Qt::AlignCenter },
+                            Size { leading_box_size },
+                            Font { leading_icon_font },
+                            Text { leading_icon_code },
+                            Color { color_tokens.leading_icon },
+                        },
+                    },
+                },
+            }(painter);
+        }
+    }
 
     auto enter_event(qt::EnterEvent*) -> void {
         is_hovered = true;
@@ -227,8 +343,10 @@ public:
     }
 
 private:
-    auto update_component_ref() -> void {
-        if (is_update_component_ref) return;
+    enum class FieldType { FILLED, OUTLINED };
+
+    auto update_component_status(FieldType type) -> void {
+        if (is_update_component_status) return;
 
         const auto padding_with_icon = measurements.row_padding_with_icons
             + measurements.icon_rect_size + measurements.padding_icons_text;
@@ -237,10 +355,20 @@ private:
         const auto left_padding = use_leading_icon ? padding_with_icon : padding_without_icon;
         const auto tail_padding = use_trailing_icon ? padding_with_icon : padding_without_icon;
 
-        const auto input_padding_top    = measurements.col_padding + measurements.label_rect_size;
-        const auto input_padding_bottom = measurements.col_padding;
-
-        self.setTextMargins(left_padding, input_padding_top, tail_padding, input_padding_bottom);
+        switch (type) {
+        case FieldType::FILLED: {
+            const auto top_padding = measurements.col_padding + measurements.label_rect_size;
+            const auto bot_padding = measurements.col_padding;
+            self.setTextMargins(left_padding, top_padding, tail_padding, bot_padding);
+            break;
+        }
+        case FieldType::OUTLINED: {
+            const auto input_padding =
+                0.5 * (measurements.container_height - measurements.input_rect_size);
+            self.setTextMargins(left_padding, input_padding, tail_padding, input_padding);
+            break;
+        }
+        }
 
         auto font = self.font();
         font.setPixelSize(measurements.standard_font_height);
@@ -250,9 +378,10 @@ private:
         standard_text_font.setPixelSize(measurements.standard_font_height);
 
         leading_icon_font = QFont { leading_font_name };
-        leading_icon_font.setPointSizeF(measurements.icon_rect_size);
+        leading_icon_font.setPointSizeF(
+            0.5 * (measurements.standard_font_height + measurements.icon_rect_size));
 
-        is_update_component_ref = true;
+        is_update_component_status = true;
     }
 
     auto update_label_position() -> void { label_position->transition_to(is_focused ? 1.0 : 0.0); }
@@ -285,37 +414,35 @@ private:
                 .arg(to_rgba(selection_background)));
     }
 
-    auto color_list() const -> Tokens const& {
+    auto get_color_tokens() const -> ColorSpecs::Tokens const& {
         return is_disable ? color_specs.disabled
             : is_error    ? color_specs.error
             : is_focused  ? color_specs.focused
                           : color_specs.enabled;
     }
-    auto line_width() const -> double {
+
+    auto filled_line_width() const -> double {
         constexpr auto normal_width = 1;
         constexpr auto active_width = 3;
         return (is_focused && !is_disable) ? active_width : normal_width;
     }
 
-    static constexpr auto interpolate(const QRectF& r1, const QRectF& r2, qreal position)
-        -> QRectF {
-        position = qBound(0.0, position, 1.0);
-        auto _1  = r1.left() + (r2.left() - r1.left()) * position;
-        auto _2  = r1.top() + (r2.top() - r1.top()) * position;
-        auto _3  = r1.width() + (r2.width() - r1.width()) * position;
-        auto _4  = r1.height() + (r2.height() - r1.height()) * position;
-        return { _1, _2, _3, _4 };
+    constexpr auto measure_text(const QFont& font, const QString& text, const QTextOption& options)
+        -> double {
+        const auto fm   = QFontMetricsF(font);
+        const auto size = fm.size(Qt::TextSingleLine, text);
+        return size.width();
     }
 
 private:
     Measurements measurements;
     ColorSpecs color_specs;
 
-    bool is_disable              = false;
-    bool is_hovered              = false;
-    bool is_focused              = false;
-    bool is_error                = false;
-    bool is_update_component_ref = false;
+    bool is_disable                 = false;
+    bool is_hovered                 = false;
+    bool is_focused                 = false;
+    bool is_error                   = false;
+    bool is_update_component_status = false;
 
     QString label_text;
     QString hint_text;
@@ -325,7 +452,7 @@ private:
     bool use_trailing_icon = false;
 
     QIcon leading_icon;
-    QString leading_code;
+    QString leading_icon_code;
     QString leading_font_name;
 
     QIcon trailing_icon;

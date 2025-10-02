@@ -19,26 +19,29 @@ namespace text_field::internal {
         friend OutlinedTextField;
 
     public:
-        struct Tokens {
-            QColor container;
-            QColor caret;
-            QColor active_indicator;
-
-            QColor input_text;
-            QColor label_text;
-            QColor supporting_text;
-
-            QColor leading_icon;
-            QColor trailing_icon;
-        };
         struct ColorSpecs {
-            QColor state_layer;
-            QColor selection_container;
+            struct Tokens {
+                QColor container;
+                QColor caret;
+                QColor active_indicator;
+
+                QColor input_text;
+                QColor label_text;
+                QColor supporting_text;
+
+                QColor leading_icon;
+                QColor trailing_icon;
+
+                QColor outline;
+            };
 
             Tokens enabled;
             Tokens disabled;
             Tokens focused;
             Tokens error;
+
+            QColor state_layer;
+            QColor selection_container;
         };
 
         struct Measurements {
@@ -59,6 +62,8 @@ namespace text_field::internal {
 
             int supporting_text_and_character_counter_top_padding = 4;
             int supporting_text_and_character_counter_row_padding = 16;
+
+            auto icon_size() const { return QSize { icon_rect_size, icon_rect_size }; }
         };
 
         void set_color_scheme(const ColorScheme&);
