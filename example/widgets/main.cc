@@ -13,6 +13,7 @@
 
 #include <creeper-qt/core/application.hh>
 #include <creeper-qt/layout/linear.hh>
+#include <creeper-qt/layout/mixer.hh>
 #include <creeper-qt/layout/scroll.hh>
 #include <creeper-qt/utility/material-icon.hh>
 #include <creeper-qt/utility/theme/preset/blue-miku.hh>
@@ -39,7 +40,7 @@ auto main(int argc, char** argv) -> int {
 
     auto nav_component_state = NavComponentState {
         .manager = manager,
-        .switch_callback = [&manager](int index, const auto& name) {
+        .switch_callback = [&](int index, const auto& name) {
             qDebug() << "[nav] Switch to <" << name.data() << ">";
 
             constexpr auto packs = std::array{
@@ -66,9 +67,11 @@ auto main(int argc, char** argv) -> int {
     auto list_component_state = ListComponentState { .manager = manager };
     auto view_component_state = ViewComponentState { .manager = manager };
 
+    auto mask_window = (MixerMask*) {};
+
     /// @note 有时候 Windows 总是给我来点惊喜，
     ///       ShowWindow 这么常见命名的函数都放在全局作用域
-    creeper::ShowWindow {
+    creeper::ShowWindow<MainWindow> {
         [&](MainWindow& window) noexcept {
             // Q 键退出
             auto shortcut_q = new QShortcut { Qt::Key_Q, &window };
@@ -95,6 +98,11 @@ auto main(int argc, char** argv) -> int {
                 } else {
                     qDebug() << "截图保存失败";
                 }
+            });
+
+            manager.append_begin_callback([=](const auto&) {
+                auto const point = mask_window->mapFromGlobal(QCursor::pos());
+                mask_window->initiate_animation(point);
             });
         },
         mwpro::MinimumSize { 1080, 720 },
@@ -129,6 +137,7 @@ auto main(int argc, char** argv) -> int {
                 },
             },
         },
+        mixer::pro::SetMixerMask { mask_window },
     };
 
     manager.apply_theme();

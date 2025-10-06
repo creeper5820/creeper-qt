@@ -58,6 +58,9 @@ public:
         append_handler(key, std::move(handler));
     }
 
+    auto append_begin_callback(const Handler&) noexcept -> void;
+    auto append_final_callback(const Handler&) noexcept -> void;
+
     void remove_handler(const QObject* key);
 
     void set_theme_pack(const ThemePack& pack);

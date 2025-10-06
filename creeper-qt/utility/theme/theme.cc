@@ -7,12 +7,18 @@ struct ThemeManager::Impl {
     using Key = const QObject*;
 
     std::unordered_map<Key, Handler> handlers;
+    std::vector<Handler> begin_callbacks;
+    std::vector<Handler> final_callbacks;
     ThemePack theme_pack;
     ColorMode color_mode;
 
     auto apply_theme(const ThemeManager& manager) const {
-        for (auto& [_, handler] : handlers)
-            handler(manager);
+        for (auto const& callback : begin_callbacks)
+            callback(manager);
+        for (auto& [_, callback] : handlers)
+            callback(manager);
+        for (auto const& callback : final_callbacks)
+            callback(manager);
     }
 
     auto append_handler(Key key, const Handler& handler) {
@@ -38,6 +44,13 @@ void ThemeManager::apply_theme() const { pimpl->apply_theme(*this); }
 
 void ThemeManager::append_handler(const QObject* key, const Handler& handler) {
     pimpl->append_handler(key, handler);
+}
+
+auto ThemeManager::append_begin_callback(const Handler& callback) noexcept -> void {
+    pimpl->begin_callbacks.push_back(callback);
+}
+auto ThemeManager::append_final_callback(const Handler& callback) noexcept -> void {
+    pimpl->final_callbacks.push_back(callback);
 }
 
 void ThemeManager::remove_handler(const QObject* key) { pimpl->remove_handler(key); }

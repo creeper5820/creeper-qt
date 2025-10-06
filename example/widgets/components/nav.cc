@@ -75,7 +75,7 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
                         return new IconButton {
                             navigation_icons_config,
                             status,
-                            ic::ColorStandard,
+                            ic::ColorFilled,
                             ic::FontIcon { icon.data() },
                             ic::Clickable { [=] { state.switch_callback(index, name); } },
                         };

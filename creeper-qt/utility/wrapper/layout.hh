@@ -1,5 +1,6 @@
 #pragma once
 #include "creeper-qt/utility/qt_wrapper/margin_setter.hh"
+#include "creeper-qt/utility/trait/widget.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 
 namespace creeper::layout::pro {
@@ -18,8 +19,20 @@ using Spacing =
 
 using Margin = SetterProp<Token, int, qt::margin_setter>;
 
-using Widget =
-    SetterProp<Token, QWidget*, [](auto& self, const auto& widget) { self.addWidget(widget); }>;
+template <widget_trait T>
+struct Widget : Token {
+
+    T* item_pointer = nullptr;
+
+    explicit Widget(T* pointer) noexcept
+        : item_pointer { pointer } { }
+
+    explicit Widget(auto&&... args) noexcept
+        requires std::constructible_from<T, decltype(args)...>
+        : item_pointer { new T { std::forward<decltype(args)>(args)... } } { }
+
+    auto apply(auto& layout) const { layout.addWidget(item_pointer); }
+};
 
 // 传入一个方法用来辅助构造，在没有想要的接口时用这个吧
 template <typename Lambda>

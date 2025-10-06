@@ -44,6 +44,7 @@ using WindowOpacity =
     SetterProp<Token, double, [](auto& self, double v) { self.setWindowOpacity(v); }>;
 
 using Parent = SetterProp<Token, QWidget*, [](auto& self, QWidget* v) { self.setParent(v); }>;
+using Child  = SetterProp<Token, QWidget*, [](auto& self, QWidget* v) { v->setParent(&self); }>;
 
 using MinimumSize =
     DerivedProp<Token, QSize, [](auto& self, const QSize& v) { self.setMinimumSize(v); }>;
