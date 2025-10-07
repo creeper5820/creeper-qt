@@ -3,6 +3,7 @@
 #include <creeper-qt/layout/flow.hh>
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/utility/material-icon.hh>
+#include <creeper-qt/utility/wrapper/mutable-value.hh>
 #include <creeper-qt/utility/wrapper/mutable.hh>
 #include <creeper-qt/widget/buttons/icon-button.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
@@ -33,14 +34,17 @@ auto operator*(std::size_t n, std::invocable<std::size_t> auto&& f) {
 
 static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noexcept {
 
-    const auto slogen = std::make_shared<Mutable<text_field::pro::LabelText>>( //
-        "BanG Dream! It’s MyGO!!!!!");
+    auto slogen_context = std::make_shared<MutableValue<QString>>();
+    slogen_context->set_silent("BanG Dream! It’s MyGO!!!!!");
 
     const auto row = new Row {
         lnpro::Item<OutlinedTextField> {
             text_field::pro::ThemeManager { manager },
             text_field::pro::LeadingIcon { material::icon::kSearch, material::round::font },
-            *slogen,
+            MutableForward {
+                text_field::pro::LabelText {},
+                slogen_context,
+            },
         },
         lnpro::SpacingItem { 20 },
         lnpro::Item<IconButton> {
@@ -57,7 +61,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
             ibpro::Color { IconButton::Color::TONAL },
             ibpro::Font { material::kRoundSmallFont },
             ibpro::FontIcon { material::icon::kFavorite },
-            ibpro::Clickable { [slogen] {
+            ibpro::Clickable { [slogen_context] {
                 constexpr auto random_slogen = [] {
                     constexpr auto slogens = std::array {
                         "为什么要演奏《春日影》！",
@@ -71,7 +75,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                     std::uniform_int_distribution<> dist(0, slogens.size() - 1);
                     return QString::fromUtf8(slogens[dist(gen)]);
                 };
-                *slogen = random_slogen();
+                *slogen_context = random_slogen();
             } },
         },
         lnpro::Item<IconButton> {

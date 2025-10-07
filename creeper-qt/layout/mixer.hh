@@ -16,6 +16,8 @@ public:
         : QWidget { widget }
         , animatable { *this } {
 
+        QWidget::setAttribute(Qt::WA_TransparentForMouseEvents);
+
         mask_frame.fill(Qt::transparent);
         {
             auto state = std::make_shared<PidState<double>>();
@@ -27,8 +29,6 @@ public:
 
             mask_radius = make_transition(animatable, std::move(state));
         }
-        QWidget::setVisible(false);
-        QWidget::setAttribute(Qt::WA_TransparentForMouseEvents);
     }
 
     auto initiate_animation(QPoint const& point) noexcept {
@@ -43,8 +43,8 @@ public:
         mask_point = point;
         mask_frame = widget->grab();
 
+        update_animation = true;
         QWidget::setFixedSize(widget->size());
-        QWidget::setVisible(true);
     }
     auto initiate_animation(int x, int y) noexcept {
         // Forward Point
@@ -53,35 +53,39 @@ public:
 
 protected:
     auto paintEvent(QPaintEvent* e) -> void override {
-        if (std::abs(*mask_radius - 1.) > 1e-2) {
-            auto const w = QWidget::width();
-            auto const h = QWidget::height();
-            auto const x = std::sqrt(w * w + h * h);
+        if (!update_animation) return;
 
-            auto painter = QPainter { this };
+        auto const w = QWidget::width();
+        auto const h = QWidget::height();
+        auto const x = std::sqrt(w * w + h * h);
 
-            auto const radius = double { *mask_radius * x };
-            auto const round  = [&] {
-                auto path = QPainterPath {};
-                path.addRect(QWidget::rect());
+        auto painter = QPainter { this };
 
-                auto inner = QPainterPath();
-                inner.addEllipse(mask_point, radius, radius);
+        auto const radius = double { *mask_radius * x };
+        auto const round  = [&] {
+            auto path = QPainterPath {};
+            path.addRect(QWidget::rect());
 
-                return path.subtracted(inner);
-            }();
-            painter.setClipPath(round);
-            painter.setClipping(true);
+            auto inner = QPainterPath();
+            inner.addEllipse(mask_point, radius, radius);
 
-            painter.drawPixmap(QWidget::rect(), mask_frame);
-        } else {
-            QWidget::setVisible(false);
+            return path.subtracted(inner);
+        }();
+        painter.setClipPath(round);
+        painter.setClipping(true);
+
+        painter.drawPixmap(QWidget::rect(), mask_frame);
+
+        if (std::abs(*mask_radius - 1.) < 1e-2) {
+            update_animation = false;
         }
     }
 
 private:
     QPixmap mask_frame;
     QPointF mask_point;
+
+    bool update_animation = false;
 
     Animatable animatable;
     std::unique_ptr<TransitionValue<PidState<double>>> mask_radius;

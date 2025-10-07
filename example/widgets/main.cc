@@ -99,13 +99,8 @@ auto main(int argc, char** argv) -> int {
                     qDebug() << "截图保存失败";
                 }
             });
-
-            manager.append_begin_callback([=](const auto&) {
-                auto const point = mask_window->mapFromGlobal(QCursor::pos());
-                mask_window->initiate_animation(point);
-            });
         },
-        mwpro::MinimumSize { 1080, 720 },
+        mwpro::BaseSize { 1080, 720 },
         mwpro::Central<FilledCard> {
             capro::ThemeManager { manager },
             capro::Radius { 0 },
@@ -141,5 +136,10 @@ auto main(int argc, char** argv) -> int {
     };
 
     manager.apply_theme();
+    manager.append_begin_callback([=](const auto&) {
+        // 未 Apply 前，Mask 会呈现灰色
+        auto const point = mask_window->mapFromGlobal(QCursor::pos());
+        mask_window->initiate_animation(point);
+    });
     return app::exec();
 }
