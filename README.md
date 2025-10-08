@@ -4,7 +4,7 @@
 
 <h1>CREEPER-QT</h1>
 
-[组件文档](./doc/widgets.md) | [视频演示](https://www.bilibili.com/video/BV1GAq5YZEtr/?share_source=copy_web&vd_source=64f4d9d099bf51aa199961a8349d034b)
+[组件文档](./doc/widgets.md) | [视频演示](https://www.bilibili.com/video/BV1JbxjzZEJ5)
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=9ccbfb) ![GitHub Repo stars](https://img.shields.io/github/stars/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=b9c8da) ![GitHub repo size](https://img.shields.io/github/repo-size/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=d3bfe6)
 
@@ -31,73 +31,6 @@
 <div align=center>
     <img src="https://creeper5820.com/creeper-qt/filled-text-field.gif" width=50%>
 </div>
-
-## 调用示例
-
-使用 Cmake 导入
-
-```cmake
-cmake_minimum_required(VERSION 3.22)
-
-project(hello-world)
-
-# Qt 是项目依赖的库，记得导入
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
-find_package(creeper-qt REQUIRED)
-
-# Eigen 是 Header only 的，不用 find 也可以，只要保证
-# 环境中能搜寻到头文件
-# 如果只是二次开发的话，就不需要该库了
-# Eigen 只在实现时用到了
-find_package(Eigen3 REQUIRED)
-
-# 在 Windows 下, 安装目录如果没有暴露在环境变量, 
-# 需要手动指定一下, 项目才能找到头文件
-# dll 文件在我这能找到, 没有在其他电脑上测过, 可能需要注意一下
-# include_directories(D:/Software/msys2/usr/include/)
-
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
-
-add_executable(${PROJECT_NAME}
-    main.cc
-)
-target_link_libraries(${PROJECT_NAME}
-    creeper-qt::creeper-qt
-    Qt6::Widgets
-)
-```
-
-然后在项目中使用：
-
-```cpp
-#include < ... >
-
-int main(int argc, char* argv[]) {
-    using namespace creeper;
-
-    // Qt 运行时初始化
-    auto application = new QApplication { argc, argv };
-
-    // 创建主题管理器，可以传入主题包
-    auto theme_manager = ThemeManager { kBlueMikuThemePack };
-
-    namespace pro = filled_button::pro;
-    auto button   = FilledButton {
-        pro::ThemeManager { theme_manager },    // 与主题管理器绑定
-        pro::FixedSize { 100, 50 },             // 设置固定大小
-        pro::Text { "你好世界" },                // 设置文字
-        pro::Clickable { [] { qDebug() << "Hello World"; } },
-    };
-    button.show();
-
-    // 将主题应用到注册过的组件中
-    theme_manager.apply_theme();
-
-    return application->exec();
-}
-```
 
 ## 安装指南
 
@@ -138,6 +71,8 @@ git clone https://github.com/creeper5820/creeper-qt
 Edit your `CMakeLists.txt`:
 
 ```cmake
+set(CMAKE_AUTOMOC ON)
+
 include_directories(
     ${库的根路径}
 )
@@ -231,6 +166,73 @@ cat install_manifest.txt
 ```
 
 需要注意的是, 如果在本机而不是 MSYS2 中打开编译好的可执行文件, 会报找不到 Qt 的 dll, 因为在 MSYS2 下载的 Qt 没有暴露在 Windows 环境中
+
+## 调用示例
+
+使用 Cmake 导入
+
+```cmake
+cmake_minimum_required(VERSION 3.22)
+
+project(hello-world)
+
+# Qt 是项目依赖的库，记得导入
+find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(creeper-qt REQUIRED)
+
+# Eigen 是 Header only 的，不用 find 也可以，只要保证
+# 环境中能搜寻到头文件
+# 如果只是二次开发的话，就不需要该库了
+# Eigen 只在实现时用到了
+find_package(Eigen3 REQUIRED)
+
+# 在 Windows 下, 安装目录如果没有暴露在环境变量, 
+# 需要手动指定一下, 项目才能找到头文件
+# dll 文件在我这能找到, 没有在其他电脑上测过, 可能需要注意一下
+# include_directories(D:/Software/msys2/usr/include/)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+
+add_executable(${PROJECT_NAME}
+    main.cc
+)
+target_link_libraries(${PROJECT_NAME}
+    creeper-qt::creeper-qt
+    Qt6::Widgets
+)
+```
+
+然后在项目中使用：
+
+```cpp
+#include < ... >
+
+int main(int argc, char* argv[]) {
+    using namespace creeper;
+
+    // Qt 运行时初始化
+    auto application = new QApplication { argc, argv };
+
+    // 创建主题管理器，可以传入主题包
+    auto theme_manager = ThemeManager { kBlueMikuThemePack };
+
+    namespace pro = filled_button::pro;
+    auto button   = FilledButton {
+        pro::ThemeManager { theme_manager },    // 与主题管理器绑定
+        pro::FixedSize { 100, 50 },             // 设置固定大小
+        pro::Text { "你好世界" },               // 设置文字
+        pro::Clickable { [] { qDebug() << "Hello World"; } },
+    };
+    button.show();
+
+    // 将主题应用到注册过的组件中
+    theme_manager.apply_theme();
+
+    return application->exec();
+}
+```
 
 ## 待做事项
 

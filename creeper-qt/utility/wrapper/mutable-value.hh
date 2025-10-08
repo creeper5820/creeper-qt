@@ -1,5 +1,5 @@
 #pragma once
-#include "creeper-qt/utility/wrapper/property.hh"
+#include "creeper-qt/utility/wrapper/widget.hh"
 #include <qobject.h>
 #include <unordered_map>
 
@@ -75,11 +75,10 @@ struct MutableForward final : public P {
         requires std::constructible_from<P, T>
         : MutableForward { m } { }
 
-    template <typename W, typename C>
-    auto attach_callback_to_mutable(Declarative<W, C>& widget) noexcept {
+    auto attach_callback_to_mutable(auto& widget) noexcept {
         struct Functor : MutableValue<T>::Functor {
-            Declarative<W, C>& w;
-            Functor(Declarative<W, C>& w) noexcept
+            decltype(widget) w;
+            Functor(decltype(w) w) noexcept
                 : w { w } { }
             ~Functor() noexcept = default;
             auto update(const T& value) -> void override {
@@ -101,5 +100,54 @@ struct MutableForward final : public P {
         attach_callback_to_mutable(widget);
     }
 };
+
+template <typename T, typename F>
+struct MutableTransform : widget::pro::Token {
+    F apply_function;
+    MutableValue<T>& mutable_value;
+
+    explicit MutableTransform(F f, MutableValue<T>& t) noexcept
+        : mutable_value { t }
+        , apply_function { std::move(f) } { }
+
+    template <template <typename> class Smart>
+    explicit MutableTransform(F f, const Smart<MutableValue<T>>& m) noexcept
+        : MutableTransform { std::move(f), *m } { }
+
+    auto attach_callback_to_mutable(auto& widget) noexcept {
+        struct Functor : MutableValue<T>::Functor {
+            decltype(widget) w;
+            F apply_function;
+            Functor(decltype(widget) w, F f) noexcept
+                : w { w }
+                , apply_function { std::move(f) } { }
+            ~Functor() noexcept = default;
+            auto update(const T& value) -> void override {
+                apply_function(w, value);
+                w.update();
+            }
+        };
+        auto functor = std::make_unique<Functor>(widget, std::move(apply_function));
+
+        mutable_value.callbacks[&widget] = std::move(functor);
+
+        auto alive = std::weak_ptr { mutable_value.alive };
+        QObject::connect(&widget, &QObject::destroyed, [this, alive](auto* key) {
+            if (alive.lock()) mutable_value.callbacks.erase(key);
+        });
+    }
+    auto apply(auto& widget) noexcept -> void {
+        apply_function(widget, mutable_value.get());
+        attach_callback_to_mutable(widget);
+    }
+};
+
+using MutableQString = MutableValue<QString>;
+using MutableDouble  = MutableValue<double>;
+using MutableFloat   = MutableValue<float>;
+using MutableUInt8   = MutableValue<uint8_t>;
+using MutableUInt16  = MutableValue<uint16_t>;
+using MutableInt8    = MutableValue<int8_t>;
+using MutableInt16   = MutableValue<int16_t>;
 
 }

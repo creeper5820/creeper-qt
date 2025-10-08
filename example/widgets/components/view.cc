@@ -4,7 +4,6 @@
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/utility/material-icon.hh>
 #include <creeper-qt/utility/wrapper/mutable-value.hh>
-#include <creeper-qt/utility/wrapper/mutable.hh>
 #include <creeper-qt/widget/buttons/icon-button.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/cards/outlined-card.hh>
@@ -173,14 +172,14 @@ static constexpr auto slider_measurements = Slider::Measurements::S();
 auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
 
     const auto texts = std::array {
-        std::make_shared<Mutable<text::pro::Text>>("0.500"),
-        std::make_shared<Mutable<text::pro::Text>>("0.500"),
-        std::make_shared<Mutable<text::pro::Text>>("0.500"),
+        std::make_shared<MutableValue<QString>>("0.500"),
+        std::make_shared<MutableValue<QString>>("0.500"),
+        std::make_shared<MutableValue<QString>>("0.500"),
     };
     const auto progresses = std::array {
-        std::make_shared<Mutable<slider::pro::Progress>>(0.5),
-        std::make_shared<Mutable<slider::pro::Progress>>(0.5),
-        std::make_shared<Mutable<slider::pro::Progress>>(0.5),
+        std::make_shared<MutableValue<double>>(0.5),
+        std::make_shared<MutableValue<double>>(0.5),
+        std::make_shared<MutableValue<double>>(0.5),
     };
 
     const auto SwitchRow = [&] {
@@ -196,8 +195,8 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
         };
     };
 
-    const auto SliderComponent = [&](std::shared_ptr<Mutable<text::pro::Text>> s,
-                                     std::shared_ptr<Mutable<slider::pro::Progress>> progress) {
+    const auto SliderComponent = [&](std::shared_ptr<MutableValue<QString>> s,
+                                     std::shared_ptr<MutableValue<double>> p) {
         return new Row {
             lnpro::Alignment { Qt::AlignLeft },
             lnpro::Item<FilledCard> {
@@ -212,7 +211,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                         text::pro::ThemeManager { state.manager },
                         text::pro::Alignment { Qt::AlignCenter },
                         text::pro::FixedWidth { 100 },
-                        *s,
+                        MutableForward { text::pro::Text {}, s },
                     },
                 },
             },
@@ -221,7 +220,10 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                 slider::pro::Measurements { slider_measurements },
                 slider::pro::FixedHeight { slider_measurements.minimum_height() },
                 slider::pro::FixedWidth { 300 },
-                *progress,
+                MutableForward {
+                    slider::pro::Progress { 0. },
+                    p,
+                },
                 slider::pro::OnValueChange {
                     [=](double progress) { *s = QString::number(progress, 'f', 3); },
                 },
