@@ -7,6 +7,8 @@
 #include "creeper-qt/utility/painter/helper.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 
+#include <qevent.h>
+
 namespace creeper::filled_button::internal {
 
 constexpr auto kWaterSpeed = double { 5.0 };
