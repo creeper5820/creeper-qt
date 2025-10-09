@@ -1,5 +1,4 @@
 #include "animatable.hh"
-#include <qdebug.h>
 using namespace creeper;
 
 #include <qtimer.h>

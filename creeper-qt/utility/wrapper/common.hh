@@ -3,11 +3,11 @@
 #include "property.hh"
 
 #include <qbitmap.h>
-#include <qdebug.h>
 #include <qicon.h>
 #include <qwidget.h>
 
 namespace creeper::common {
+
 template <typename Instance>
 struct Token {
     void apply(auto& self) const {

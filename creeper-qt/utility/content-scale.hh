@@ -1,5 +1,4 @@
 #pragma once
-#include <qdebug.h>
 #include <qpixmap.h>
 
 namespace creeper {
