@@ -18,7 +18,7 @@ public:
     bool enable_water_ripple = true;
     double water_ripple_step = 5.;
 
-    double radius     = 0;
+    double radius     = -1;
     QColor text_color = Qt::black;
     QColor background = Qt::white;
 

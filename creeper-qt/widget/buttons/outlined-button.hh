@@ -35,7 +35,7 @@ public:
 namespace creeper {
 
 namespace outlined_button::pro {
-    using namespace filled_button;
+    using namespace filled_button::pro;
 }
 
 using OutlinedButton =

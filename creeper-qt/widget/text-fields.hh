@@ -114,6 +114,17 @@ namespace text_field::pro {
         void apply(auto& self) const { self.set_leading_icon(code, font); }
     };
 
+    template <typename F>
+    using OnTextChanged =
+        common::pro::SignalInjection<F, Token, &internal::BasicTextField::textChanged>;
+
+    template <typename F>
+    using OnEditingFinished =
+        common::pro::SignalInjection<F, Token, &internal::BasicTextField::editingFinished>;
+
+    template <typename F>
+    using OnChanged = OnTextChanged<F>;
+
     template <class TextField>
     concept trait = std::derived_from<TextField, Token>;
 

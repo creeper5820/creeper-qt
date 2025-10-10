@@ -42,6 +42,9 @@ using AdjustSize = ActionProp<Token, [](auto& self) { self.adjustSize(); }>;
 using Alignment =
     SetterProp<Token, Qt::Alignment, [](auto& self, const auto& v) { self.setAlignment(v); }>;
 
+using TextInteractionFlags = SetterProp<Token, Qt::TextInteractionFlags,
+    [](auto& self, const auto& v) { self.setTextInteractionFlags(v); }>;
+
 template <class T>
 concept trait = std::derived_from<T, Token>;
 

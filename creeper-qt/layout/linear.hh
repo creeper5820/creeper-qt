@@ -98,10 +98,18 @@ using Col = BoxLayout<QVBoxLayout>;
 namespace row = linear;
 namespace col = linear;
 
+using HBoxLayout = Row;
+using VBoxLayout = Col;
+
+namespace h_box_layout = linear;
+namespace v_box_layout = linear;
+
 namespace internal {
     inline auto use_the_namespace_alias_to_eliminate_warnings() {
         std::ignore = row::pro::Token {};
         std::ignore = col::pro::Token {};
+        std::ignore = h_box_layout::pro::Token {};
+        std::ignore = v_box_layout::pro::Token {};
     }
 }
 

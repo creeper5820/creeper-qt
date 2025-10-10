@@ -121,93 +121,97 @@ public:
     }
 
     auto paint_filled(QPaintEvent*) -> void {
-        const auto rect  = self.rect();
-        const auto color = get_color_tokens();
+        const auto widget_rect = self.rect();
+        const auto color       = get_color_tokens();
 
         constexpr auto container_radius = 5;
 
         update_component_status(FieldType::FILLED);
 
         auto painter = QPainter { &self };
+
+        const auto container_rect = QRect { widget_rect.left(),
+            widget_rect.top() + (widget_rect.height() - measurements.container_height) / 2,
+            widget_rect.width(), measurements.container_height };
+
         // Container
         {
             util::PainterHelper { painter }
                 .set_render_hint(QPainter::Antialiasing)
-                .rounded_rectangle(color.container, Qt::transparent, 0, rect, container_radius,
-                    container_radius, 0, 0);
+                .rounded_rectangle(color.container, Qt::transparent, 0, container_rect,
+                    container_radius, container_radius, 0, 0);
         }
+
         // Active Indicator
         {
-            const auto p0 = rect.bottomLeft();
-            const auto p1 = rect.bottomRight();
+            const auto p0 = container_rect.bottomLeft();
+            const auto p1 = container_rect.bottomRight();
             painter.setBrush(Qt::NoBrush);
             painter.setPen(QPen { color.active_indicator, filled_line_width() });
             painter.drawLine(p0, p1);
         }
-        // Leading icon
 
+        // Leading icon
         if (!leading_icon.isNull()) {
             //
         } else if (!leading_icon_code.isEmpty()) {
-
-            const auto rect = QRectF {
-                1.0 * measurements.row_padding_with_icons,
-                0.5 * (measurements.container_height - measurements.icon_rect_size),
+            const auto icon_rect = QRectF {
+                1.0 * container_rect.left() + measurements.row_padding_with_icons,
+                1.0 * container_rect.top()
+                    + (measurements.container_height - measurements.icon_rect_size) / 2.0,
                 1.0 * measurements.icon_rect_size,
                 1.0 * measurements.icon_rect_size,
             };
 
             painter.save();
-
             painter.setBrush(Qt::NoBrush);
             painter.setPen(QPen { color.leading_icon });
             painter.setFont(leading_icon_font);
-            painter.drawText(rect, leading_icon_code, { Qt::AlignCenter });
-
+            painter.drawText(icon_rect, leading_icon_code, { Qt::AlignCenter });
             painter.restore();
         }
+
         // Label Text
         if (!label_text.isEmpty()) {
-
             const auto position = self.text().isEmpty() ? *label_position : 1.;
             const auto margins  = self.textMargins();
 
-            const auto center_label_padding =
-                0.5 * (measurements.container_height - measurements.icon_rect_size);
+            const auto center_label_y = container_rect.top()
+                + (measurements.container_height - measurements.label_rect_size) / 2.0;
+
             const auto rect_center = QRectF {
-                QPointF(margins.left(), center_label_padding),
-                QPointF(self.width() - margins.right(), self.height() - center_label_padding),
+                QPointF(margins.left(), center_label_y),
+                QPointF(container_rect.right() - margins.right(),
+                    center_label_y + measurements.label_rect_size),
             };
+
             const auto rect_top = QRectF {
-                QPointF(margins.left(), measurements.col_padding),
-                QPointF(self.width() - margins.right(), margins.top()),
+                QPointF(margins.left(), container_rect.top() + measurements.col_padding),
+                QPointF(container_rect.right() - margins.right(),
+                    container_rect.top() + measurements.col_padding + measurements.label_rect_size),
             };
 
-            const auto rect = animate::interpolate(rect_center, rect_top, position);
-
-            const auto scale = 1. - position * 0.25;
-
+            const auto rect   = animate::interpolate(rect_center, rect_top, position);
+            const auto scale  = 1. - position * 0.25;
             const auto anchor = QPointF { rect.left(), rect.center().y() };
 
             painter.save();
-
             painter.translate(anchor);
             painter.scale(scale, scale);
             painter.translate(-anchor);
-
             painter.setBrush(Qt::NoBrush);
             painter.setPen(QPen { color.label_text });
             painter.setFont(standard_text_font);
             painter.setRenderHint(QPainter::Antialiasing);
             painter.drawText(rect, label_text, { Qt::AlignVCenter | Qt::AlignLeading });
-
             painter.restore();
         }
+
         // Hovered State Layer
         if (is_hovered) {
             util::PainterHelper { painter }
                 .set_render_hint(QPainter::Antialiasing)
-                .rounded_rectangle(color_specs.state_layer, Qt::transparent, 0, rect,
+                .rounded_rectangle(color_specs.state_layer, Qt::transparent, 0, container_rect,
                     container_radius, container_radius, 0, 0);
         }
     }

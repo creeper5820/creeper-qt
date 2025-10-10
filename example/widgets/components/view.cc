@@ -1,4 +1,5 @@
 #include "example/widgets/component.hh"
+#include "example/widgets/components/asset-center.hh"
 
 #include <creeper-qt/layout/flow.hh>
 #include <creeper-qt/layout/linear.hh>
@@ -277,6 +278,9 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                         lnpro::Item { SwitchRow() },
                     },
                 },
+            },
+            lnpro::Item<AssetCenter> {
+                state.manager,
             },
             lnpro::Item<Flow> {
                 flow::pro::RowSpacing { 10 },

@@ -91,7 +91,7 @@ auto main(int argc, char** argv) -> int {
 
                 const auto filename =
                     QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)
-                    + window.tr("/MainWindow-Screenshot-%1.png").arg(stamp);
+                    + window.tr("/main-window-screenshot-%1.png").arg(stamp);
 
                 if (pixmap.save(filename)) {
                     qDebug() << "截图已保存至:" << filename;
@@ -100,7 +100,7 @@ auto main(int argc, char** argv) -> int {
                 }
             });
         },
-        mwpro::BaseSize { 1080, 720 },
+        mwpro::MinimumSize { 1080, 720 },
         mwpro::Central<FilledCard> {
             capro::ThemeManager { manager },
             capro::Radius { 0 },
