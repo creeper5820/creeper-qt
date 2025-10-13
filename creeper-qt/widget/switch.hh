@@ -1,6 +1,6 @@
 #pragma once
 
-#include "creeper-qt/utility/qt_wrapper/enter_event.hh"
+#include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"

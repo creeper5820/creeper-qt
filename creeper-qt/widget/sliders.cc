@@ -24,14 +24,14 @@ auto Slider::get_progress() const noexcept -> double {
 
 auto Slider::mousePressEvent(QMouseEvent* event) -> void {
     pimpl->mouse_press_event(event);
-    Widget::mousePressEvent(event);
+    QWidget::mousePressEvent(event);
 }
 auto Slider::mouseReleaseEvent(QMouseEvent* event) -> void {
     pimpl->mouse_release_event(event);
-    Widget::mouseReleaseEvent(event);
+    QWidget::mouseReleaseEvent(event);
 }
 auto Slider::mouseMoveEvent(QMouseEvent* event) -> void {
     pimpl->mouse_move_event(event);
-    Widget::mouseMoveEvent(event);
+    QWidget::mouseMoveEvent(event);
 }
 auto Slider::paintEvent(QPaintEvent* event) -> void { pimpl->paint_event(event); }

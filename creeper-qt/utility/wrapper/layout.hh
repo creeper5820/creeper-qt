@@ -1,5 +1,5 @@
 #pragma once
-#include "creeper-qt/utility/qt_wrapper/margin_setter.hh"
+#include "creeper-qt/utility/qt_wrapper/margin-setter.hh"
 #include "creeper-qt/utility/trait/widget.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 

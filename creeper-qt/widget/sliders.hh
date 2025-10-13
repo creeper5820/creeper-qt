@@ -3,11 +3,11 @@
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/widget/widget.hh"
+#include "creeper-qt/utility/wrapper/widget.hh"
 
 namespace creeper::slider::internal {
 
-class Slider : public Widget {
+class Slider : public QWidget {
     Q_OBJECT
     CREEPER_PIMPL_DEFINITION(Slider)
 
@@ -95,6 +95,8 @@ public:
     auto set_progress(double) noexcept -> void;
     auto get_progress() const noexcept -> double;
 
+    /// @bug Signals can not be exported on Windows
+    /// TODO: Fix it
 signals:
     auto signal_value_change(double) -> void;
     auto signal_value_change_finished(double) -> void;
