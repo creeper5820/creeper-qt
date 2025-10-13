@@ -8,9 +8,9 @@
 #include "component.hh"
 
 #include <qdatetime.h>
+#include <qdebug.h>
 #include <qshortcut.h>
 #include <qstandardpaths.h>
-#include <qdebug.h>
 
 #include <creeper-qt/core/application.hh>
 #include <creeper-qt/layout/linear.hh>
@@ -137,10 +137,11 @@ auto main(int argc, char** argv) -> int {
     };
 
     manager.apply_theme();
-    manager.append_begin_callback([=](const auto&) {
-        // 未 Apply 前，Mask 会呈现灰色
-        auto const point = mask_window->mapFromGlobal(QCursor::pos());
-        mask_window->initiate_animation(point);
-    });
+    manager.append_begin_callback( //
+        [mask_window](const ThemeManager&) {
+            // 未 Apply 前，Mask 会呈现灰色
+            auto const point = mask_window->mapFromGlobal(QCursor::pos());
+            mask_window->initiate_animation(point);
+        });
     return app::exec();
 }

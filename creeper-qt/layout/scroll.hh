@@ -13,8 +13,8 @@ namespace creeper::scroll::internal {
 class ScrollArea : public QScrollArea {
 public:
     explicit ScrollArea() noexcept {
-        viewport()->setStyleSheet("background:transparent;");
-        setStyleSheet("QScrollArea{background:transparent;}");
+        viewport()->setStyleSheet("background:transparent;border:none;");
+        setStyleSheet("QScrollArea{background:transparent;border:none;}");
 
         setWidgetResizable(true);
     }
