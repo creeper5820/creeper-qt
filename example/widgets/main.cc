@@ -10,6 +10,7 @@
 #include <qdatetime.h>
 #include <qshortcut.h>
 #include <qstandardpaths.h>
+#include <qdebug.h>
 
 #include <creeper-qt/core/application.hh>
 #include <creeper-qt/layout/linear.hh>

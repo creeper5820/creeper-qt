@@ -7,6 +7,8 @@
 #include <creeper-qt/utility/theme/theme.hh>
 #include <creeper-qt/widget/buttons/text-button.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
+
+#include <qdebug.h>
 #include <ranges>
 
 using namespace creeper;

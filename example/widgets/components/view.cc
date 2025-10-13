@@ -15,6 +15,7 @@
 #include <creeper-qt/widget/text-fields.hh>
 #include <creeper-qt/widget/text.hh>
 
+#include <qfontdatabase.h>
 #include <random>
 
 using namespace creeper;
@@ -30,6 +31,20 @@ auto operator*(std::invocable<std::size_t> auto&& f, std::size_t n) {
 auto operator*(std::size_t n, std::invocable<std::size_t> auto&& f) {
     std::ranges::for_each(std::views::iota(std::size_t { 0 }, n), std::forward<decltype(f)>(f));
 }
+}
+
+static auto print_material_fonts() noexcept {
+    const auto& database = QFontDatabase();
+    const auto& families = database.families();
+    for (const auto& family : families) {
+        if (family.contains("Material", Qt::CaseInsensitive)) {
+            qDebug() << "Found Material Font:" << family;
+            auto styles = database.styles(family);
+            for (const auto& style : styles) {
+                qDebug() << " - Style:" << style;
+            }
+        }
+    }
 }
 
 static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noexcept {
@@ -83,7 +98,8 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
             ibpro::FixedSize { 40, 40 },
             ibpro::Color { IconButton::Color::TONAL },
             ibpro::Font { material::kRoundSmallFont },
-            ibpro::FontIcon { material::icon::kFolder },
+            ibpro::FontIcon { "font_download" },
+            ibpro::Clickable { &print_material_fonts },
         },
     };
     return new Widget {
