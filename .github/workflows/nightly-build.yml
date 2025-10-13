@@ -29,7 +29,7 @@ jobs:
           cpack
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: creeper-qt-linux-package
           path: build/creeper-qt-*.sh
@@ -55,7 +55,7 @@ jobs:
           cpack -G ZIP
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: creeper-qt-windows-package
           path: build/creeper-qt-*.zip
