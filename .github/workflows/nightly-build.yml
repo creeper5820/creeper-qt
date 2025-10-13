@@ -1,0 +1,61 @@
+name: Nightly Build
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    name: Build on Linux
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y qt6-base-dev libeigen3-dev cmake
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local
+
+      - name: Build
+        run: cmake --build build -j --target install
+
+      - name: Package
+        run: |
+          cd build
+          cpack
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: creeper-qt-linux-package
+          path: build/creeper-qt-*.sh
+
+  build-windows:
+    runs-on: windows-latest
+    name: Build on Windows
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Qt via Chocolatey
+        run: choco install qt6-default
+
+      - name: Configure
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/creeper-qt
+
+      - name: Build
+        run: cmake --build build --target install
+
+      - name: Package
+        run: |
+          cd build
+          cpack -G ZIP
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: creeper-qt-windows-package
+          path: build/creeper-qt-*.zip
