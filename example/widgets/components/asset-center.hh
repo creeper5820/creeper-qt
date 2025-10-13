@@ -25,8 +25,8 @@ struct NetworkContext final {
     std::atomic<bool> downloading = false;
 
     explicit NetworkContext() noexcept {
-        using namespace std::chrono_literals;
-        accessor.setTransferTimeout(5s);
+        // Qt5 Not Accept std::chrono literals for this function
+        accessor.setTransferTimeout(5'000);
     }
 
     auto set_proxy(std::string const& host = "127.0.0.1", uint16_t port = 7890,
@@ -34,7 +34,7 @@ struct NetworkContext final {
 
         auto proxy = QNetworkProxy {};
         proxy.setType(type);
-        proxy.setHostName(QString::fromUtf8(host));
+        proxy.setHostName(QString::fromStdString(host));
         proxy.setPort(port);
         accessor.setProxy(proxy);
 
@@ -61,7 +61,7 @@ struct NetworkContext final {
             if (target.open(QIODevice::WriteOnly)) {
                 target.write(res->readAll());
                 target.close();
-                qDebug() << "[Network]] Save file to:" << QString::fromUtf8(location);
+                qDebug() << "[Network]] Save file to:" << QString::fromStdString(location);
             }
             res->deleteLater();
             downloading.store(false, std::memory_order::relaxed);
