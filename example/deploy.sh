@@ -42,9 +42,7 @@ Icon=widgets
 Type=Application
 Categories=Utility;
 EOF
-# ImageMagick 7 用 magick，6 用 convert
-magick convert -size 256x256 xc:blue "$APPDIR/usr/share/icons/hicolor/256x256/apps/widgets.png" 2>/dev/null ||
-    convert -size 256x256 xc:blue "$APPDIR/usr/share/icons/hicolor/256x256/apps/widgets.png" || true
+touch $APPDIR/usr/share/icons/hicolor/256x256/apps/widgets.png
 
 # AppRun
 cat >"$APPDIR/AppRun" <<'EOF'

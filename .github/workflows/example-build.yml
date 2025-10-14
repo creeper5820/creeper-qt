@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y debhelper dpkg-dev
+          sudo apt install -y debhelper dpkg-dev imagemagick
           sudo apt install -y qt6-base-dev libeigen3-dev
           sudo apt install -y libssl-dev  libssl3
           sudo apt install -y g++-14 gcc-14 cmake ninja-build
