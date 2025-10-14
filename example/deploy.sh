@@ -58,9 +58,16 @@ EOF
 chmod +x "$APPDIR/AppRun"
 
 # ---- 3. deploy ----
-echo "📦 官方 deploy 中 ..."
+echo "📦 软件 deploy 中 ..."
 export PATH="/usr/lib/qt6/bin:$PATH"
-export QTDIR=/usr/lib/qt6
+if [[ -d /usr/lib/x86_64-linux-gnu/qt6/plugins/platforms ]]; then
+    export QTDIR=/usr/lib/x86_64-linux-gnu/qt6
+elif [[ -d /usr/lib/qt6/plugins/platforms ]]; then
+    export QTDIR=/usr/lib/qt6
+else
+    echo "❌ 未找到 Qt6 platforms 插件" >&2
+    exit 1
+fi
 $TOOL deploy "$APPDIR/usr/share/applications/widgets.desktop"
 
 # To fix tls plugin unupport of tool
