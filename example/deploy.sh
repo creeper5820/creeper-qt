@@ -71,14 +71,14 @@ fi
 $TOOL deploy "$APPDIR/usr/share/applications/widgets.desktop"
 
 # To fix tls plugin unupport of tool
-QT6_TLS="/usr/lib/qt6/plugins/tls"
+QT6_TLS="${QTDIR}/plugins/tls"
 if [[ -d "$QT6_TLS" ]]; then
     mkdir -p AppDir/usr/lib/qt6/plugins
     cp -Lr "$QT6_TLS" AppDir/usr/lib/qt6/plugins
 fi
 
 # 把插件依赖的 libssl.so.3 / libcrypto.so.3 也抓进来
-for so in "$QT6_TLS"/libqopensslbackend.so; do
+for so in "$QT6_TLS/libqopensslbackend.so"; do
     ldd "$so" | grep -oE '/[^ ]*(libssl|libcrypto)\.so\.[0-9]' |
         while read -r lib; do cp -L "$lib" AppDir/usr/lib/; done
 done
