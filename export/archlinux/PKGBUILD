@@ -1,0 +1,27 @@
+repname=creeper-qt
+pkgname=${repname}-git
+pkgver=0c918d8
+pkgrel=1
+pkgdesc="A lightweight Qt UI integration library that simplifies UI development."
+arch=('x86_64')
+url="https://github.com/creeper5820/${repname}"
+license=('MIT')
+depends=('qt6-base' 'eigen')
+makedepends=('git' 'cmake')
+source=()
+
+prepare() {
+    cd "$srcdir"
+    git clone --depth=1 https://github.com/creeper5820/${repname}.git
+}
+pkgver() {
+    cd "$srcdir/${repname}"
+    git rev-parse --short HEAD
+}
+build() {
+    cmake -B build -S "$srcdir/${repname}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+    cmake --build build
+}
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+}

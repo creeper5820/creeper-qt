@@ -12,50 +12,53 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Prepare release folder
+        run: mkdir -p ${{ github.workspace }}/release/
+
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y qt6-base-dev libeigen3-dev cmake
+          sudo apt install -y qt6-base-dev libeigen3-dev cmake g++-14
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave /usr/bin/g++ g++ /usr/bin/g++-14
+          sudo update-alternatives --config gcc
 
       - name: Configure
         run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local
 
       - name: Build
-        run: cmake --build build -j --target install
+        run: cmake --build build -j
 
-      - name: Package
+      - name: Package with CPack
         run: |
           cd build
-          cpack
+          cpack -G DEB
+          cp *.deb ../release/
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - name: Build Arch Linux package with makepkg in Docker
+        uses: docker://archlinux/archlinux:latest
         with:
-          name: creeper-qt-linux-package
-          path: build/creeper-qt-*.sh
+          args: |
+            /bin/bash -c "
+              set -e
+              pacman -Sy --noconfirm sudo git fakeroot debugedit gcc cmake make qt6-base eigen
+              useradd -m builder && echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+              chown -R builder:builder /github/workspace/export/archlinux/
+              su builder -c '
+                cd /github/workspace/export/archlinux/
+                makepkg -sfc --noconfirm
+              '
+              cp /github/workspace/export/archlinux/*.pkg.tar.zst /github/workspace/release/ 
+            "
 
-  build-windows:
-    runs-on: windows-latest
-    name: Build on Windows
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Install Qt via Chocolatey
-        run: choco install qt6-default
-
-      - name: Configure
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/creeper-qt
-
-      - name: Build
-        run: cmake --build build --target install
-
-      - name: Package
-        run: |
-          cd build
-          cpack -G ZIP
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload to GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          name: creeper-qt-windows-package
-          path: build/creeper-qt-*.zip
+          tag_name: nightly-${{ github.run_id }}
+          name: "Nightly Build ${{ github.run_id }}"
+          prerelease: true
+          files: release/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
+  # TODO: 
+  # build-windows
