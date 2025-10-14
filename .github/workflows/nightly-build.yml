@@ -2,63 +2,63 @@ name: Nightly Build
 
 on:
   schedule:
-    - cron: '0 0 * * *'
+  - cron: '0 0 * * *'
   workflow_dispatch:
+
 
 jobs:
   build-linux:
     runs-on: ubuntu-latest
     name: Build on Linux
     steps:
-      - uses: actions/checkout@v3
+    - uses: actions/checkout@v3
 
-      - name: Prepare release folder
-        run: mkdir -p ${{ github.workspace }}/release/
+    - name: Prepare release folder
+      run: mkdir -p ${{ github.workspace }}/release/
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y qt6-base-dev libeigen3-dev cmake g++-14
-          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave /usr/bin/g++ g++ /usr/bin/g++-14
-          sudo update-alternatives --config gcc
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y qt6-base-dev libeigen3-dev cmake g++-14
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave /usr/bin/g++ g++ /usr/bin/g++-14
+        sudo update-alternatives --config gcc
 
-      - name: Configure
-        run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local
+    - name: Configure
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local
 
-      - name: Build
-        run: cmake --build build -j
+    - name: Build
+      run: cmake --build build -j
 
-      - name: Package with CPack
-        run: |
-          cd build
-          cpack -G DEB
-          cp *.deb ../release/
+    - name: Package with CPack
+      run: |
+        cd build
+        cpack -G DEB
+        cp *.deb ../release/creeper-qt-x86_64.deb
 
-      - name: Build Arch Linux package with makepkg in Docker
-        uses: docker://archlinux/archlinux:latest
-        with:
-          args: |
-            /bin/bash -c "
-              set -e
-              pacman -Sy --noconfirm sudo git fakeroot debugedit gcc cmake make qt6-base eigen
-              useradd -m builder && echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
-              chown -R builder:builder /github/workspace/export/archlinux/
-              su builder -c '
-                cd /github/workspace/export/archlinux/
-                makepkg -sfc --noconfirm
-              '
-              cp /github/workspace/export/archlinux/*.pkg.tar.zst /github/workspace/release/ 
-            "
+    - name: Build Arch Linux package with makepkg in Docker
+      uses: docker://archlinux/archlinux:latest
+      with:
+        args: |
+          /bin/bash -c "
+            set -e
+            pacman -Sy --noconfirm sudo git fakeroot debugedit gcc cmake make qt6-base eigen
+            useradd -m builder && echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+            chown -R builder:builder /github/workspace/export/archlinux/
+            su builder -c '
+              cd /github/workspace/export/archlinux/
+              makepkg -sfc --noconfirm
+            '
+            cp /github/workspace/export/archlinux/*.pkg.tar.zst /github/workspace/release/ 
+          "
 
-      - name: Upload to GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: nightly-${{ github.run_id }}
-          name: "Nightly Build ${{ github.run_id }}"
-          prerelease: true
-          files: release/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
-
+    - name: Upload to GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: nightly-${{ github.run_id }}
+        name: "Nightly Build ${{ github.run_id }}"
+        prerelease: true
+        files: release/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
   # TODO: 
   # build-windows

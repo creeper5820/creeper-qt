@@ -38,7 +38,7 @@
 
 - `C++23` 及以上
 - `cmake`
-- `eigen`
+- `eigen` (库实现依赖，二次开发不依赖)
 - `qt-5 / qt-6`
 
 ```zsh
@@ -58,6 +58,16 @@ sudo pacman -S eigen qt5-base
 # on ubuntu
 sudo apt install libeigen3-dev qtbase5-dev
 ```
+### 方式零 安装预构建安装包
+
+前往 [发布界面](https://github.com/creeper5820/creeper-qt/releases) 下载对应的安装包，进行下载：
+
+```sh
+# For apt
+sudo apt install creeper-qt-*.deb
+# For pacman
+sudo pacman -U creeper-qt-*.pkg.tar.zst
+```
 
 ### 方式一 直接使用源文件
 
@@ -65,7 +75,7 @@ sudo apt install libeigen3-dev qtbase5-dev
 
 ```bash
 cd path/to/your/project/lib/dir/
-git clone https://github.com/creeper5820/creeper-qt
+git clone https://github.com/creeper5820/creeper-qt --depth=1
 ```
 
 Edit your `CMakeLists.txt`:
@@ -91,7 +101,7 @@ target_link_libraries(
 
 ```bash
 # 下载这个项目
-git clone https://github.com/creeper5820/creeper-qt
+git clone https://github.com/creeper5820/creeper-qt --depth=1
 
 # 进入项目根目录
 cd creeper-qt
@@ -139,6 +149,8 @@ pacman -Ss eigen3
 到这里就可以编译这个库了, 如果还是会有一些依赖问题, 可以Google一下如何在MSYS2中安装Qt6
 
 ```sh
+git clone https://github.com/creeper5820/creeper-qt --depth=1
+
 ## 依然是在MSYS2环境中
 ## 进入项目根目录
 mkdir build
