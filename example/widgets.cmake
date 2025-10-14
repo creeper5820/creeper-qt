@@ -11,6 +11,7 @@ if(BUILD_EXAMPLE)
     target_link_libraries(
         ${APP_NAME} PRIVATE
         ${QT_VERSION}::Widgets
+        ${QT_VERSION}::Network
         ${PROJECT_NAME}
     )
 endif()

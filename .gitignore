@@ -5,5 +5,11 @@
 
 build/
 output/
+AppDir/
 
 .clangd
+
+*.tar.gz
+*.deb
+*.pkg
+*.zip

@@ -38,4 +38,4 @@ target_link_libraries(
 
 include(cmake/install.cmake)
 include(cmake/package.cmake)
-include(example/widgets/widgets.cmake)
+include(example/widgets.cmake)

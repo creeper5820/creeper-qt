@@ -1,0 +1,41 @@
+name: 📦 Pack AppImage
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '6.5.*'
+          modules: ''
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y g++-14 gcc-14 cmake ninja-build
+          sudo update-alternatives --install \
+            /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave \
+            /usr/bin/g++ g++ /usr/bin/g++-14
+          sudo apt install -y qt6-base-dev libeigen3-dev
+          sudo apt install -y libssl-dev  libssl3
+          sudo apt install -y debhelper dpkg-dev
+
+      - name: Build & Pack
+        run: ./example/deploy.sh
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: AppImage-${{ github.run_number }}
+          path: |
+            build/widgets-x86_64.AppImage
+            build/widgets-linux-x86_64.tar.gz
