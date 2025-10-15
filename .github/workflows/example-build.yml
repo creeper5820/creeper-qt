@@ -32,7 +32,7 @@ jobs:
       - name: Publish Example Build
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: example-$(date +%Y%m%d-%H%M%S)
+          tag_name: example-${{ github.run_id }}
           name: "📦 Example App — Latest Build"
           body: |
             自动生成的 **示例程序** 完整包（AppImage + tar.gz）。  
