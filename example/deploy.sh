@@ -44,17 +44,6 @@ Categories=Utility;
 EOF
 touch $APPDIR/usr/share/icons/hicolor/256x256/apps/widgets.png
 
-# AppRun
-cat >"$APPDIR/AppRun" <<'EOF'
-#!/bin/sh
-SELF=$(readlink -f "$0")
-APPDIR=${SELF%/*}
-export LD_LIBRARY_PATH="$APPDIR/usr/lib:$LD_LIBRARY_PATH"
-export QT_PLUGIN_PATH="$APPDIR/usr/plugins:$QT_PLUGIN_PATH"
-exec "$APPDIR/usr/bin/widgets" "$@"
-EOF
-chmod +x "$APPDIR/AppRun"
-
 # ---- 3. deploy ----
 echo "📦 软件 deploy 中 ..."
 export PATH="/usr/lib/qt6/bin:$PATH"
@@ -71,15 +60,29 @@ $TOOL deploy "$APPDIR/usr/share/applications/widgets.desktop"
 # To fix tls plugin unupport of tool
 QT6_TLS="${QTDIR}/plugins/tls"
 if [[ -d "$QT6_TLS" ]]; then
-    mkdir -p AppDir/usr/lib/qt6/plugins
-    cp -Lr "$QT6_TLS" AppDir/usr/lib/qt6/plugins
+    mkdir -p AppDir/${QTDIR}/plugins
+    cp -Lr "$QT6_TLS" AppDir/${QTDIR}/plugins
 fi
 
 # 把插件依赖的 libssl.so.3 / libcrypto.so.3 也抓进来
 for so in "$QT6_TLS/libqopensslbackend.so"; do
     ldd "$so" | grep -oE '/[^ ]*(libssl|libcrypto)\.so\.[0-9]' |
-        while read -r lib; do cp -L "$lib" AppDir/usr/lib/; done
+        while read -r lib; do cp -L "$lib" AppDir/${QTDIR}; done
 done
+
+# AppRun
+cat >"$APPDIR/AppRun" <<'EOF'
+#!/bin/sh
+SELF=$(readlink -f "$0")
+APPDIR="${SELF%/*}"
+
+export QT_PLUGIN_PATH="$APPDIR/usr/lib/x86_64-linux-gnu/qt6/plugins:$QT_PLUGIN_PATH"
+export QT_PLUGIN_PATH="$APPDIR/usr/lib/qt6/plugins:$QT_PLUGIN_PATH"
+export LD_LIBRARY_PATH="$APPDIR/usr/lib:$LD_LIBRARY_PATH"
+
+exec "$APPDIR/usr/bin/widgets" "$@"
+EOF
+chmod +x "$APPDIR/AppRun"
 
 # ---- 4. 打包 ----
 echo "🔧 生成 AppImage ..."
