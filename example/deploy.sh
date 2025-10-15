@@ -58,16 +58,16 @@ fi
 $TOOL deploy "$APPDIR/usr/share/applications/widgets.desktop"
 
 # To fix tls plugin unupport of tool
-QT6_TLS="${QTDIR}/plugins/tls"
-if [[ -d "$QT6_TLS" ]]; then
+TLSDIR="${QTDIR}/plugins/tls"
+if [[ -d "$TLSDIR" ]]; then
     mkdir -p AppDir/${QTDIR}/plugins
-    cp -Lr "$QT6_TLS" AppDir/${QTDIR}/plugins
+    cp -Lr "$TLSDIR" AppDir/${QTDIR}/plugins
 fi
 
-# 把插件依赖的 libssl.so.3 / libcrypto.so.3 也抓进来
-for so in "$QT6_TLS/libqopensslbackend.so"; do
+# 添加插件依赖的 libssl.so.3 / libcrypto.so.3
+for so in "$TLSDIR/libqopensslbackend.so"; do
     ldd "$so" | grep -oE '/[^ ]*(libssl|libcrypto)\.so\.[0-9]' |
-        while read -r lib; do cp -L "$lib" AppDir/${QTDIR}; done
+        while read -r lib; do cp -L "$lib" AppDir/usr/lib; done
 done
 
 # AppRun
@@ -78,7 +78,10 @@ APPDIR="${SELF%/*}"
 
 export QT_PLUGIN_PATH="$APPDIR/usr/lib/x86_64-linux-gnu/qt6/plugins:$QT_PLUGIN_PATH"
 export QT_PLUGIN_PATH="$APPDIR/usr/lib/qt6/plugins:$QT_PLUGIN_PATH"
+
+export LD_LIBRARY_PATH="$APPDIR/usr/lib64:$LD_LIBRARY_PATH"
 export LD_LIBRARY_PATH="$APPDIR/usr/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="$APPDIR/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
 
 exec "$APPDIR/usr/bin/widgets" "$@"
 EOF

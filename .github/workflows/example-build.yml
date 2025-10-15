@@ -29,10 +29,17 @@ jobs:
           cmake --build build -j
           ./example/deploy.sh
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+      - name: Publish Example Build
+        uses: softprops/action-gh-release@v2
         with:
-          name: AppImage-${{ github.run_number }}
-          path: |
+          tag_name: example-$(date +%Y%m%d-%H%M%S)
+          name: "📦 Example App — Latest Build"
+          body: |
+            自动生成的 **示例程序** 完整包（AppImage + tar.gz）。  
+            每次推送 main 分支即更新，方便快速体验功能。  
+          files: |
             build/widgets-x86_64.AppImage
             build/widgets-linux-x86_64.tar.gz
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
