@@ -1,4 +1,4 @@
-name: Nightly Build
+name: 📦 Nightly Build Library
 
 on:
   schedule:
@@ -10,8 +10,13 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     name: Build on Linux
+
+    outputs:
+      artifact-name: linux-artifacts
+
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
 
     - name: Prepare release folder
       run: mkdir -p ${{ github.workspace }}/release/
@@ -23,17 +28,16 @@ jobs:
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave /usr/bin/g++ g++ /usr/bin/g++-14
         sudo update-alternatives --config gcc
 
-    - name: Configure
-      run: cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local
-
-    - name: Build
-      run: cmake --build build -j
+    - name: Configure and build
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=Release
+        cmake --build build -j
 
     - name: Package with CPack
       run: |
         cd build
         cpack -G DEB
-        cp *.deb ../release/creeper-qt-x86_64.deb
+        cp *.deb ../release/creeper-qt-linux-x86_64.deb
 
     - name: Build Arch Linux package with makepkg in Docker
       uses: docker://archlinux/archlinux:latest
@@ -48,17 +52,56 @@ jobs:
               cd /github/workspace/export/archlinux/
               makepkg -sfc --noconfirm
             '
-            cp /github/workspace/export/archlinux/*.pkg.tar.zst /github/workspace/release/ 
+            cp /github/workspace/export/archlinux/*.pkg.tar.zst /github/workspace/release/creeper-qt-linux-x86_64.pkg.tar.zst
           "
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-artifacts
+        path: release/*
+
+  publish-release:
+    name: Publish Release
+    needs: build-linux
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Download Linux Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: linux-artifacts
+        path: release/
 
     - name: Upload to GitHub Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: nightly-${{ github.run_id }}
-        name: "Nightly Build ${{ github.run_id }}"
-        prerelease: true
+        tag_name: nightly-library
+        name: "🛠️ creeper-qt — Nightly Build"
+        body: |
+          🛠️ 自动构建的 **creeper-qt** 库包，适用于 Linux 系统。
+
+          每日自动更新，便于测试和集成最新功能。包含两种格式：
+
+          **📦 Debian (.deb) 安装包**
+          - 文件名：`creeper-qt-x86_64.deb`
+          - 适用于 Debian/Ubuntu 系列发行版
+          - 安装方式：`sudo apt install creeper-qt-*.deb`
+
+          **📦 Arch Linux (.pkg.tar.zst) 包**
+          - 文件名：`creeper-qt-x86_64.pkg.tar.zst`
+          - 适用于 Arch Linux 系列发行版
+          - 安装方式：`sudo pacman -U creeper-qt-*.pkg.tar.zst`
+
+          **📦 Windows (...) 包**
+          - TODO (未来将支持 Windows 构建)
+
+          ⚠️ 本构建为预发布版本，仅供测试使用。如需稳定版本，请参考正式发布页。
         files: release/*
+        prerelease: true
+        update_release_body: true
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
-  # TODO: 
-  # build-windows

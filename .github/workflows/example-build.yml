@@ -1,41 +1,42 @@
-name: 📦 Release Widgets Example
+name: 📦 Nightly Build Example
 
 on:
-  push:
-    branches: [ main ]
+  schedule:
+  - cron: '0 0 * * *'
   workflow_dispatch:
+
 
 jobs:
   pack-linux:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y debhelper dpkg-dev imagemagick
-          sudo apt install -y qt6-base-dev libeigen3-dev
-          sudo apt install -y libssl-dev libssl3
-          sudo apt install -y g++-14 gcc-14 cmake ninja-build
-          sudo update-alternatives --install \
-            /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave \
-            /usr/bin/g++ g++ /usr/bin/g++-14
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y debhelper dpkg-dev imagemagick
+        sudo apt install -y qt6-base-dev libeigen3-dev
+        sudo apt install -y libssl-dev libssl3
+        sudo apt install -y g++-14 gcc-14 cmake ninja-build
+        sudo update-alternatives --install \
+          /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave \
+          /usr/bin/g++ g++ /usr/bin/g++-14
 
-      - name: Build & Pack
-        run: |
-          cmake -B build -DBUILD_EXAMPLE=ON
-          cmake --build build -j
-          chmod +x ./example/deploy-linux.sh && ./example/deploy-linux.sh
+    - name: Build & Pack
+      run: |
+        cmake -B build -DBUILD_EXAMPLE=ON
+        cmake --build build -j
+        chmod +x ./example/deploy-linux.sh && ./example/deploy-linux.sh
 
-      - name: Upload Linux Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-artifacts
-          path: |
-            build/widgets-linux-x86_64.AppImage
-            build/widgets-linux-x86_64.tar.gz
+    - name: Upload Linux Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-artifacts
+        path: |
+          build/widgets-linux-x86_64.AppImage
+          build/widgets-linux-x86_64.tar.gz
 
   pack-windows:
     runs-on: windows-latest
@@ -43,80 +44,73 @@ jobs:
       run:
         shell: msys2 {0}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Install MSYS2 and Qt6
-        uses: msys2/setup-msys2@v2
-        with:
-          update: true
-          install: >-
-            base-devel
-            mingw-w64-x86_64-toolchain
-            mingw-w64-x86_64-cmake
-            mingw-w64-x86_64-ninja
-            mingw-w64-x86_64-qt6
-            mingw-w64-x86_64-eigen3
+    - name: Install MSYS2 and Qt6
+      uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        install: >-
+          base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-qt6 mingw-w64-x86_64-eigen3
 
-      - name: Configure & Build
-        run: |
-          cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLE=ON
-          cmake --build build -j
-          chmod +x ./example/deploy-windows.sh && ./example/deploy-windows.sh
+    - name: Configure & Build
+      run: |
+        cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLE=ON
+        cmake --build build -j
+        chmod +x ./example/deploy-windows.sh && ./example/deploy-windows.sh
 
-      - name: Zip AppDir
-        shell: pwsh
-        run: |
-          Compress-Archive -Path build/AppDir/* -DestinationPath build/widgets-windows-x86_64.zip
+    - name: Zip AppDir
+      shell: pwsh
+      run: |
+        Compress-Archive -Path build/AppDir/* -DestinationPath build/widgets-windows-x86_64.zip
 
-      - name: Upload Windows Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-artifacts
-          path: build/widgets-windows-x86_64.zip
+    - name: Upload Windows Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-artifacts
+        path: build/widgets-windows-x86_64.zip
 
   publish-release:
-    needs: [pack-linux, pack-windows]
+    needs: [ pack-linux, pack-windows ]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Download Linux Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: linux-artifacts
-          path: build
+    - name: Download Linux Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: linux-artifacts
+        path: build
 
-      - name: Download Windows Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: windows-artifacts
-          path: build
+    - name: Download Windows Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: windows-artifacts
+        path: build
 
-      - name: Generate Release Tag
-        id: tag
-        run: echo "tag=example-${{ github.run_id }}" >> $GITHUB_OUTPUT
+    - name: Publish Nightly Build Example
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: nightly-example
+        name: "🚀 Example App — Nightly Build"
+        body: |
+          自动生成的 **示例程序** 完整包（Linux + Windows）。
+          每次推送 main 分支即更新，方便快速体验功能。
 
-      - name: Publish Unified Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.tag.outputs.tag }}
-          name: "📦 Example App — Latest Build"
-          body: |
-            自动生成的 **示例程序** 完整包（Linux + Windows）。
-            每次推送 main 分支即更新，方便快速体验功能。
+          **Linux**  
+          - 可直接运行 `widgets-linux-x86_64.AppImage`
+          - 或解压 `widgets-linux-x86_64.tar.gz` 后执行 `AppRun`
 
-            **Linux**  
-            - 可直接运行 `widgets-linux-x86_64.AppImage`
-            - 或解压 `widgets-linux-x86_64.tar.gz` 后执行 `AppRun`
-
-            **Windows**  
-            - 解压 `widgets-windows-x86_64.zip` 后运行 `widgets.exe`
-          files: |
-            build/widgets-linux-x86_64.AppImage
-            build/widgets-linux-x86_64.tar.gz
-            build/widgets-windows-x86_64.zip
-          fail_on_unmatched_files: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+          **Windows**  
+          - 解压 `widgets-windows-x86_64.zip` 后运行 `widgets.exe`
+        files: |
+          build/widgets-linux-x86_64.AppImage
+          build/widgets-linux-x86_64.tar.gz
+          build/widgets-windows-x86_64.zip
+        fail_on_unmatched_files: true
+        prerelease: true
+        update_release_body: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.TOKEN }}
