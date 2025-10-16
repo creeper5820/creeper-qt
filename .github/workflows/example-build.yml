@@ -46,31 +46,47 @@ jobs:
 
   pack-windows:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Qt & MSYS2
-        run: |
-          choco install qt6-default --confirm
-          choco install msys2 --confirm
+      - name: Install MSYS2 and Qt6
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: >-
+            base-devel
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-qt6
+            mingw-w64-x86_64-eigen3
 
-      - name: Build & Deploy
-        shell: bash
+      - name: Configure & Build
         run: |
-          cmake -B build -G "MinGW Makefiles" -DBUILD_EXAMPLE=ON
-          cmake --build build -j
-          ./example/deploy-windows.sh
+          cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLE=ON
+          cmake --build build
+
+      - name: Deploy Windows App
+        run: ./example/deploy-windows.sh
 
       - name: Zip AppDir
+        shell: pwsh
         run: |
-          powershell Compress-Archive -Path build/AppDir/* -DestinationPath build/widgets-windows-x86_64.zip
+          Compress-Archive -Path build/AppDir/* -DestinationPath build/widgets-windows-x86_64.zip
 
       - name: Publish Example Build
         uses: softprops/action-gh-release@v2
         with:
           tag_name: example-${{ github.run_id }}
           name: "📦 Example App — Windows Build"
+          body: |
+            自动生成的 **Windows 示例程序** 完整包（AppDir）。  
+            每次推送 main 分支即更新，方便快速体验功能。  
           files: |
             build/widgets-windows-x86_64.zip
           fail_on_unmatched_files: true
