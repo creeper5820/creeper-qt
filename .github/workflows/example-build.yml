@@ -27,7 +27,7 @@ jobs:
         run: |
           cmake -B build -DBUILD_EXAMPLE=ON
           cmake --build build -j
-          chmod + x ./example/deploy-linux.sh && ./example/deploy-linux.sh
+          chmod +x ./example/deploy-linux.sh && ./example/deploy-linux.sh
 
       - name: Publish Example Build
         uses: softprops/action-gh-release@v2
