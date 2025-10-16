@@ -3,6 +3,7 @@
 .vs/
 .idea/
 
+cmake-build-*/
 build/
 output/
 AppDir/
