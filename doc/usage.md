@@ -27,7 +27,7 @@ sudo apt install libeigen3-dev qtbase5-dev
 
 ## 方式零 安装预构建安装包
 
-前往 [发布界面](https://github.com/creeper5820/creeper-qt/releases) 下载对应的安装包，进行下载，默认提供 Qt6 的版本，如果需要 Qt5 的版本，可以修改 CMakeLists 中的 `QT_VERSION`，然后手动编译安装：
+前往 [发布界面](https://github.com/creeper5820/creeper-qt/releases/tag/nightly-library) 下载对应的安装包，进行下载，默认提供 Qt6 的版本，如果需要 Qt5 的版本，可以修改 CMakeLists 中的 `QT_VERSION`，然后手动编译安装：
 
 ```sh
 # For apt
