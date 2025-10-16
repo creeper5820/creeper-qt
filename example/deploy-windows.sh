@@ -21,7 +21,7 @@ cd -
 
 # Step 3: Copy remaining DLLs from ldd output, excluding unwanted ones
 echo "📦 Copying additional DLLs from ldd..."
-EXCLUDE_DLLS=("uxtheme.dll" "mmpiclient.dll" "dwmapi.dll" "version.dll" "winmm.dll")
+EXCLUDE_DLLS=("UxTheme.dll" "mmpiclient.dll" "dwmapi.dll" "version.dll" "winmm.dll")
 
 ldd "build/$BIN" | awk '/=>/ {print $3}' | while read -r dll_path; do
     dll_name=$(basename "$dll_path")
