@@ -83,8 +83,8 @@ jobs:
           tag_name: example-${{ github.run_id }}
           name: "📦 Example App — Windows Build"
           body: |
-            自动生成的 **Windows 示例程序** 完整包（AppDir）。  
-            每次推送 main 分支即更新，方便快速体验功能。  
+            自动生成的 **示例程序** 完整包（AppDir）。
+            每次推送 main 分支即更新，方便快速体验功能。
           files: |
             build/widgets-windows-x86_64.zip
           fail_on_unmatched_files: true
