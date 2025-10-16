@@ -90,9 +90,9 @@ chmod +x "$APPDIR/AppRun"
 # ---- 4. 打包 ----
 echo "🔧 生成 AppImage ..."
 VERSION=example $TOOL "$APPDIR"
-mv Widget*.AppImage widgets-x86_64.AppImage
+mv Widget*.AppImage widgets-linux-x86_64.AppImage
 
 # ---- 5. 导出 ----
 tar -czf widgets-linux-x86_64.tar.gz -C "$APPDIR" .
 echo "✅ 輸出於 $BUILD_DIR："
-ls -lh widgets-x86_64.AppImage widgets-linux-x86_64.tar.gz
+ls -lh widgets-linux-x86_64.AppImage widgets-linux-x86_64.tar.gz

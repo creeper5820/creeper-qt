@@ -38,7 +38,7 @@ jobs:
             自动生成的 **示例程序** 完整包（AppImage + tar.gz）。  
             每次推送 main 分支即更新，方便快速体验功能。  
           files: |
-            build/widgets-x86_64.AppImage
+            build/widgets-linux-x86_64.AppImage
             build/widgets-linux-x86_64.tar.gz
           fail_on_unmatched_files: true
         env:
