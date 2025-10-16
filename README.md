@@ -107,7 +107,7 @@ git clone https://github.com/creeper5820/creeper-qt --depth=1
 cd creeper-qt
 
 # build
-cmake -B build
+cmake -B build -DBUILD_EXAMPLE=ON
 cmake --build build
 
 # 启动例程
@@ -160,7 +160,7 @@ mkdir build
 ## CMAKE_INSTALL_PREFIX 参数指定了安装目录, 
 ## 默认的下载目录一般会是 C:/Program Files (x86)/
 ## 会提示没有权限
-cmake -G "MinGW Makefiles" -B build -DCMAKE_INSTALL_PREFIX="C:/xxx/xxx/"
+cmake -G "MinGW Makefiles" -B build -DBUILD_EXAMPLE=ON -DCMAKE_INSTALL_PREFIX="C:/xxx/xxx/"
 
 ## 编译之
 ## 或者在build目录下使用 mingw32-make -j

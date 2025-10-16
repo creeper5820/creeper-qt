@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  pack:
+  pack-linux:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -27,7 +27,7 @@ jobs:
         run: |
           cmake -B build -DBUILD_EXAMPLE=ON
           cmake --build build -j
-          ./example/deploy.sh
+          ./example/deploy-linux.sh
 
       - name: Publish Example Build
         uses: softprops/action-gh-release@v2
@@ -40,6 +40,39 @@ jobs:
           files: |
             build/widgets-linux-x86_64.AppImage
             build/widgets-linux-x86_64.tar.gz
+          fail_on_unmatched_files: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN }}
+
+  pack-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Qt & MSYS2
+        run: |
+          choco install qt6-default --confirm
+          choco install msys2 --confirm
+
+      - name: Build & Deploy
+        shell: bash
+        run: |
+          cmake -B build -G "MinGW Makefiles" -DBUILD_EXAMPLE=ON
+          cmake --build build -j
+          ./example/deploy-windows.sh
+
+      - name: Zip AppDir
+        run: |
+          powershell Compress-Archive -Path build/AppDir/* -DestinationPath build/widgets-windows-x86_64.zip
+
+      - name: Publish Example Build
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: example-${{ github.run_id }}
+          name: "📦 Example App — Windows Build"
+          files: |
+            build/widgets-windows-x86_64.zip
           fail_on_unmatched_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
