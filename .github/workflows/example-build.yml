@@ -27,7 +27,7 @@ jobs:
         run: |
           cmake -B build -DBUILD_EXAMPLE=ON
           cmake --build build -j
-          ./example/deploy-linux.sh
+          chmod + x ./example/deploy-linux.sh && ./example/deploy-linux.sh
 
       - name: Publish Example Build
         uses: softprops/action-gh-release@v2
@@ -69,10 +69,8 @@ jobs:
       - name: Configure & Build
         run: |
           cmake -B build -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLE=ON
-          cmake --build build
-
-      - name: Deploy Windows App
-        run: ./example/deploy-windows.sh
+          cmake --build build -j
+          chmod +x ./example/deploy-windows.sh && ./example/deploy-windows.sh
 
       - name: Zip AppDir
         shell: pwsh
