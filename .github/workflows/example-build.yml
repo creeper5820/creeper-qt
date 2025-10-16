@@ -104,15 +104,15 @@ jobs:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: "📦 Example App — Latest Build"
           body: |
-            自动生成的 **示例程序** 完整包（Linux + Windows）。  
-            每次推送 main 分支即更新，方便快速体验功能。  
+            自动生成的 **示例程序** 完整包（Linux + Windows）。
+            每次推送 main 分支即更新，方便快速体验功能。
 
             **Linux**  
-            - 可直接运行 `widgets-linux-x86_64.AppImage`  
-            - 或解压 `widgets-linux-x86_64.tar.gz` 后执行 `AppRun`  
+            - 可直接运行 `widgets-linux-x86_64.AppImage`
+            - 或解压 `widgets-linux-x86_64.tar.gz` 后执行 `AppRun`
 
             **Windows**  
-            - 解压 `widgets-windows-x86_64.zip` 后运行 `widget.exe`  
+            - 解压 `widgets-windows-x86_64.zip` 后运行 `widgets.exe`
           files: |
             build/widgets-linux-x86_64.AppImage
             build/widgets-linux-x86_64.tar.gz
