@@ -32,6 +32,19 @@
     <img src="https://creeper5820.com/creeper-qt/filled-text-field.gif" width=50%>
 </div>
 
+
+## 📦 示例程序（example）使用说明
+
+本仓库自动构建并发布了跨平台的 **示例程序**，方便快速体验项目功能。
+
+🔗 最新版本下载地址：  
+👉 [GitHub Releases 页面](https://github.com/creeper5820/creeper-qt/releases)
+
+| 操作系统 | 安装与运行方式 |
+|----------|----------------|
+| **Linux** | - 下载 `AppImage` 后赋予执行权限并运行<br>- 或解压 `.tar.gz` 后执行其中的 `AppRun` 文件 |
+| **Windows** | - 解压 `zip` 后进入文件夹，双击运行 `widget.exe` 即可使用 |
+
 ## 安装指南
 
 ### 项目依赖
