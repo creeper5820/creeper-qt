@@ -52,7 +52,7 @@ jobs:
               cd /github/workspace/export/archlinux/
               makepkg -sfc --noconfirm
             '
-            cp /github/workspace/export/archlinux/*.pkg.tar.zst /github/workspace/release/creeper-qt-linux-x86_64.pkg.tar.zst
+            cp /github/workspace/export/archlinux/*.pkg.tar.zst /github/workspace/release/
           "
 
     - name: Upload Artifacts
