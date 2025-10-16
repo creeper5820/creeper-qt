@@ -12,6 +12,14 @@ namespace material {
         constexpr auto _3 = int { 24 };
         constexpr auto _4 = int { 32 };
     }
+    namespace regular {
+        constexpr auto font      = "Material Icons";
+        inline const auto font_0 = QFont { font, size::_0 };
+        inline const auto font_1 = QFont { font, size::_1 };
+        inline const auto font_2 = QFont { font, size::_2 };
+        inline const auto font_3 = QFont { font, size::_3 };
+        inline const auto font_4 = QFont { font, size::_4 };
+    }
     namespace sharp {
         constexpr auto font      = "Material Icons Sharp";
         inline const auto font_0 = QFont { font, size::_0 };
@@ -119,6 +127,9 @@ namespace material {
         constexpr auto kCloudUpload   = "cloud_upload";
         constexpr auto kFileCopy      = "file_copy";
         constexpr auto kDescription   = "description";
+
+        // ComboBox
+        constexpr auto kArrowDropDown = "arrow_drop_down";
     }
 }
 }
