@@ -8,7 +8,6 @@ output/
 AppDir/
 out/
 
-.clangd
 CMakeSettings.json
 
 *.tar.gz

@@ -4,7 +4,7 @@
 
 <h1>CREEPER-QT</h1>
 
-[组件文档](./doc/widgets.md) | [视频演示](https://www.bilibili.com/video/BV1JbxjzZEJ5)
+[使用指南](./doc/usage.md) | [组件文档](./doc/widgets.md) | [视频演示](https://www.bilibili.com/video/BV1JbxjzZEJ5)
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=9ccbfb) ![GitHub Repo stars](https://img.shields.io/github/stars/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=b9c8da) ![GitHub repo size](https://img.shields.io/github/repo-size/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=d3bfe6)
 
@@ -13,6 +13,18 @@
 欢迎 PR 和 ISSUE！
 
 </div>
+
+## 📦 示例程序（example）使用说明
+
+本仓库自动构建并发布了跨平台的 **示例程序**，方便快速体验项目功能。
+
+🔗 最新版本下载地址：  
+👉 [GitHub Releases 页面](https://github.com/creeper5820/creeper-qt/releases)
+
+| 操作系统 | 安装与运行方式 |
+|----------|----------------|
+| **Linux** | - 下载 `AppImage` 后赋予执行权限并运行<br>- 或解压 `.tar.gz` 后执行其中的 `AppRun` 文件 |
+| **Windows** | - 解压 `zip` 后进入文件夹，双击运行 `widgets.exe` 即可使用 |
 
 ## 效果展示
 
@@ -32,169 +44,11 @@
     <img src="https://creeper5820.com/creeper-qt/filled-text-field.gif" width=50%>
 </div>
 
-
-## 📦 示例程序（example）使用说明
-
-本仓库自动构建并发布了跨平台的 **示例程序**，方便快速体验项目功能。
-
-🔗 最新版本下载地址：  
-👉 [GitHub Releases 页面](https://github.com/creeper5820/creeper-qt/releases)
-
-| 操作系统 | 安装与运行方式 |
-|----------|----------------|
-| **Linux** | - 下载 `AppImage` 后赋予执行权限并运行<br>- 或解压 `.tar.gz` 后执行其中的 `AppRun` 文件 |
-| **Windows** | - 解压 `zip` 后进入文件夹，双击运行 `widget.exe` 即可使用 |
-
-## 安装指南
-
-### 项目依赖
-
-- `C++23` 及以上
-- `cmake`
-- `eigen` (库实现依赖，二次开发不依赖)
-- `qt-5 / qt-6`
-
-```zsh
-# For Qt6
-# on arch linux
-sudo pacman -S eigen qt6-base
-
-# on ubuntu
-# ubuntu 默认 gcc 版本比较低，建议使用 ppa 下载较新的版本
-# 或者直接下载二进制文件放进环境中
-sudo apt install libeigen3-dev qt6-base-dev
-
-# For Qt5
-# on arch linux
-sudo pacman -S eigen qt5-base
-
-# on ubuntu
-sudo apt install libeigen3-dev qtbase5-dev
-```
-### 方式零 安装预构建安装包
-
-前往 [发布界面](https://github.com/creeper5820/creeper-qt/releases) 下载对应的安装包，进行下载：
-
-```sh
-# For apt
-sudo apt install creeper-qt-*.deb
-# For pacman
-sudo pacman -U creeper-qt-*.pkg.tar.zst
-```
-
-### 方式一 直接使用源文件
-
-把项目拉下来吧
-
-```bash
-cd path/to/your/project/lib/dir/
-git clone https://github.com/creeper5820/creeper-qt --depth=1
-```
-
-Edit your `CMakeLists.txt`:
-
-```cmake
-set(CMAKE_AUTOMOC ON)
-
-include_directories(
-    ${库的根路径}
-)
-add_executable(
-    ${EXAMPLE_NAME}
-    ${这个库所有的 .cc 文件}
-    ${这个库所有的 .hh 文件}
-)
-target_link_libraries(
-    ${EXAMPLE_NAME}
-    Qt6::Widgets
-)
-```
-
-### 方式二 Linux 平台编译安装
-
-```bash
-# 下载这个项目
-git clone https://github.com/creeper5820/creeper-qt --depth=1
-
-# 进入项目根目录
-cd creeper-qt
-
-# build
-cmake -B build -DBUILD_EXAMPLE=ON
-cmake --build build
-
-# 启动例程
-./build/widgets
-
-# 下载到全局环境中，理论上是 /usr/local 里面
-sudo cmake --build build -j --target install
-```
-
-### 方式三 Windows 平台编译安装
-
-我推荐使用MSYS2环境使用这个库: [MYSY2-INSTALLATION](https://www.msys2.org/docs/installer/)
-
-<img src="https://creeper5820.com/creeper-qt/windows-neofetch.png" title="" alt="win" data-align="center">
-
-看呐, 我没有使用Linux (
-
-不得不说, 在Windows使用`zsh`和`pacman`包管理是一件令人惬意的事情
-
-切入正题, 进入MSYS2终端
-
-```sh
-## 先刷新一下软件包数据
-pacman -Sy
-
-## 安装编译使用的工具链
-pacman -S mingw-w64-x86_64-toolchain
-
-## 安装 Qt6
-pacman -S mingw64/mingw-w64-x86_64-qt6
-
-## 安装依赖
-pacman -S mingw-w64-x86_64-eigen3
-
-## 如果依赖找不到可以搜索一下对应版本的包, 找到 mingw 的版本就行
-pacman -Ss eigen3
-```
-
-到这里就可以编译这个库了, 如果还是会有一些依赖问题, 可以Google一下如何在MSYS2中安装Qt6
-
-```sh
-git clone https://github.com/creeper5820/creeper-qt --depth=1
-
-## 依然是在MSYS2环境中
-## 进入项目根目录
-mkdir build
-
-## 在根目录进行项目配置
-## 使用"MinGW Makefiles"或者“Ninja”
-## CMAKE_INSTALL_PREFIX 参数指定了安装目录, 
-## 默认的下载目录一般会是 C:/Program Files (x86)/
-## 会提示没有权限
-cmake -G "MinGW Makefiles" -B build -DBUILD_EXAMPLE=ON -DCMAKE_INSTALL_PREFIX="C:/xxx/xxx/"
-
-## 编译之
-## 或者在build目录下使用 mingw32-make -j
-cmake --build build -j
-
-## 安装库, 注意调用的是mingw的make
-## 直接使用make可能会出现错误
-cd build && mingw32-make install
-
-## 可以查看所有文件的安装位置
-cat install_manifest.txt
-
-## 启动实例程序
-./widgets.exe
-```
-
-需要注意的是, 如果在本机而不是 MSYS2 中打开编译好的可执行文件, 会报找不到 Qt 的 dll, 因为在 MSYS2 下载的 Qt 没有暴露在 Windows 环境中
-
 ## 调用示例
 
-使用 Cmake 导入
+安装指南：[`usage.md`](./doc/usage.md)
+
+使用 Cmake 导入：
 
 ```cmake
 cmake_minimum_required(VERSION 3.22)
@@ -209,16 +63,17 @@ find_package(creeper-qt REQUIRED)
 # 环境中能搜寻到头文件
 # 如果只是二次开发的话，就不需要该库了
 # Eigen 只在实现时用到了
-find_package(Eigen3 REQUIRED)
+# find_package(Eigen3 REQUIRED)
 
 # 在 Windows 下, 安装目录如果没有暴露在环境变量, 
 # 需要手动指定一下, 项目才能找到头文件
-# dll 文件在我这能找到, 没有在其他电脑上测过, 可能需要注意一下
+# dll 如果找不到，也需要手动指定一下 LIB 目录
 # include_directories(D:/Software/msys2/usr/include/)
 
+# 项目只用到了 MOC，下面功能有需要再开
+# set(CMAKE_AUTORCC ON)
+# set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
 
 add_executable(${PROJECT_NAME}
     main.cc
@@ -234,26 +89,56 @@ target_link_libraries(${PROJECT_NAME}
 ```cpp
 #include < ... >
 
-int main(int argc, char* argv[]) {
+auto main(int argc, char* argv[]) -> int {
     using namespace creeper;
 
     // Qt 运行时初始化
     auto application = new QApplication { argc, argv };
 
     // 创建主题管理器，可以传入主题包
-    auto theme_manager = ThemeManager { kBlueMikuThemePack };
+    auto manager = ThemeManager { kBlueMikuThemePack };
 
-    namespace pro = filled_button::pro;
-    auto button   = FilledButton {
-        pro::ThemeManager { theme_manager },    // 与主题管理器绑定
-        pro::FixedSize { 100, 50 },             // 设置固定大小
-        pro::Text { "你好世界" },               // 设置文字
-        pro::Clickable { [] { qDebug() << "Hello World"; } },
+    // 和正常 Qt 一致的使用方式也是 OK 的，这里用声明式的方法示例
+    creeper::ShowWindow<MainWindow> {
+        mwpro::MinimumSize { 1080, 720 },
+        mwpro::Central<FilledCard> {
+            capro::ThemeManager { manager },
+            capro::Radius { 0 },
+            capro::Level { CardLevel::HIGHEST },
+
+            capro::Layout<Row> {
+                lnpro::Margin { 0 },
+                lnpro::Spacing { 0 },
+
+                lnpro::Item {
+                    // 某些自定义组件
+                    NavComponent(nav_component_state),
+                },
+                lnpro::Item<Col> {
+                    lnpro::ContentsMargin { { 15, 15, 5, 15 } },
+                    lnpro::Item { ListComponent(list_component_state) },
+                },
+                lnpro::Item<Col> {
+                    { 255 },
+                    lnpro::ContentsMargin { { 5, 15, 15, 15 } },
+                    lnpro::Item<ScrollArea> {
+                        scroll::pro::ThemeManager { manager },
+                        scroll::pro::HorizontalScrollBarPolicy {
+                            Qt::ScrollBarAlwaysOff,
+                        },
+                        scroll::pro::Item {
+                            ViewComponent(view_component_state),
+                        },
+                    },
+                },
+            },
+            // More Widgets
+            // ......
+        },
     };
-    button.show();
 
     // 将主题应用到注册过的组件中
-    theme_manager.apply_theme();
+    manager.apply_theme();
 
     return application->exec();
 }
