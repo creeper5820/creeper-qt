@@ -1,4 +1,4 @@
-name: 📦 Pack AppImage
+name: 📦 Release Widgets Example
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
           sudo apt update
           sudo apt install -y debhelper dpkg-dev imagemagick
           sudo apt install -y qt6-base-dev libeigen3-dev
-          sudo apt install -y libssl-dev  libssl3
+          sudo apt install -y libssl-dev libssl3
           sudo apt install -y g++-14 gcc-14 cmake ninja-build
           sudo update-alternatives --install \
             /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave \
@@ -29,27 +29,19 @@ jobs:
           cmake --build build -j
           chmod +x ./example/deploy-linux.sh && ./example/deploy-linux.sh
 
-      - name: Publish Example Build
-        uses: softprops/action-gh-release@v2
+      - name: Upload Linux Artifacts
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: example-${{ github.run_id }}
-          name: "📦 Example App — Latest Build"
-          body: |
-            自动生成的 **示例程序** 完整包（AppImage + tar.gz）。  
-            每次推送 main 分支即更新，方便快速体验功能。  
-          files: |
+          name: linux-artifacts
+          path: |
             build/widgets-linux-x86_64.AppImage
             build/widgets-linux-x86_64.tar.gz
-          fail_on_unmatched_files: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.TOKEN }}
 
   pack-windows:
     runs-on: windows-latest
     defaults:
       run:
         shell: msys2 {0}
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -77,15 +69,53 @@ jobs:
         run: |
           Compress-Archive -Path build/AppDir/* -DestinationPath build/widgets-windows-x86_64.zip
 
-      - name: Publish Example Build
+      - name: Upload Windows Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-artifacts
+          path: build/widgets-windows-x86_64.zip
+
+  publish-release:
+    needs: [pack-linux, pack-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Linux Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-artifacts
+          path: build
+
+      - name: Download Windows Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-artifacts
+          path: build
+
+      - name: Generate Release Tag
+        id: tag
+        run: echo "tag=example-${{ github.run_id }}" >> $GITHUB_OUTPUT
+
+      - name: Publish Unified Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: example-${{ github.run_id }}
-          name: "📦 Example App — Windows Build"
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: "📦 Example App — Latest Build"
           body: |
-            自动生成的 **示例程序** 完整包（AppDir）。
-            每次推送 main 分支即更新，方便快速体验功能。
+            自动生成的 **示例程序** 完整包（Linux + Windows）。  
+            每次推送 main 分支即更新，方便快速体验功能。  
+
+            **Linux**  
+            - 可直接运行 `widgets-linux-x86_64.AppImage`  
+            - 或解压 `widgets-linux-x86_64.tar.gz` 后执行 `AppRun`  
+
+            **Windows**  
+            - 解压 `widgets-windows-x86_64.zip` 后运行 `widget.exe`  
           files: |
+            build/widgets-linux-x86_64.AppImage
+            build/widgets-linux-x86_64.tar.gz
             build/widgets-windows-x86_64.zip
           fail_on_unmatched_files: true
         env:
