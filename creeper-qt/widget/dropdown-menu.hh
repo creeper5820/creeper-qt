@@ -4,24 +4,20 @@
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/material-icon.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
-#include <concepts>
-#include <qcolor.h>
+
 #include <qcombobox.h>
-#include <qcoreevent.h>
-#include <qevent.h>
-#include <qmargins.h>
-#include <qsize.h>
 
 namespace creeper {
-class FilledSelect;
 
-namespace select_widget::internal {
-    class BasicSelect : public QComboBox {
-        CREEPER_PIMPL_DEFINITION(BasicSelect);
-        friend FilledSelect;
+class FilledDropdownMenu;
+
+namespace dropdown_menu::internal {
+
+    class DropdownMenu : public QComboBox {
+        CREEPER_PIMPL_DEFINITION(DropdownMenu);
+        friend FilledDropdownMenu;
 
     public:
         struct ColorSpace {
@@ -56,25 +52,23 @@ namespace select_widget::internal {
         struct Measurements {
             int container_height = 56;
 
-            int icon_rect_size = 24;
+            int icon_rect_size  = 24;
             int input_rect_size = 24;
             int label_rect_size = 24;
 
             int standard_font_height = 18;
 
-            int col_padding = 8;
-            int row_padding_widthout_icons = 16;
-            int row_padding_with_icons = 12;
+            int col_padding                      = 8;
+            int row_padding_widthout_icons       = 16;
+            int row_padding_with_icons           = 12;
             int row_padding_populated_label_text = 4;
 
             int padding_icons_text = 16;
-            
+
             int supporting_text_and_character_counter_top_padding = 4;
             int supporting_text_and_character_counter_row_padding = 16;
-        
-            auto icon_size() const -> QSize {
-                return QSize {icon_rect_size, icon_rect_size};
-            };
+
+            auto icon_size() const -> QSize { return QSize { icon_rect_size, icon_rect_size }; };
         };
         auto set_color_scheme(const ColorScheme&) -> void;
 
@@ -89,15 +83,15 @@ namespace select_widget::internal {
         auto set_measurements(const Measurements&) noexcept -> void;
 
     protected:
-        void resizeEvent(QResizeEvent *event) override;
+        void resizeEvent(QResizeEvent* event) override;
 
-        void enterEvent(qt::EnterEvent *event) override;
-        void leaveEvent(QEvent *event) override;
+        void enterEvent(qt::EnterEvent* event) override;
+        void leaveEvent(QEvent* event) override;
 
         void focusInEvent(QFocusEvent*) override;
-        void focusOutEvent(QFocusEvent *event) override;
+        void focusOutEvent(QFocusEvent* event) override;
 
-        void changeEvent(QEvent *event) override;
+        void changeEvent(QEvent* event) override;
 
         void showPopup() override;
         void hidePopup() override;
@@ -110,48 +104,53 @@ namespace select_widget::internal {
         QMargins textMargins() const;
 
     private:
-        QMargins margins{13, 24, 13, 0};
+        QMargins margins { 13, 24, 13, 0 };
     };
 }
 
-namespace select_widget::pro {
-    using Token = common::Token<internal::BasicSelect>;
-    using LabelText = common::pro::String<Token, 
+namespace dropdown_menu::pro {
+
+    using Token = common::Token<internal::DropdownMenu>;
+
+    using LabelText = common::pro::String<Token,
         [](auto& self, const auto& string) { self.set_label_text(string); }>;
+
     struct LeadingIcon : Token {
         QString code;
         QString font;
-        explicit LeadingIcon(const QString& code = material::icon::kArrowDropDown, 
-            const QString& font = material::round::font)
-            : code { code }, font { font } {}
-        void apply(auto& self) const {
-            self.set_leading_icon(code, font);
-        }
+        explicit LeadingIcon(const QString& code, const QString& font)
+            : code { code }
+            , font { font } { }
+        void apply(auto& self) const { self.set_leading_icon(code, font); }
     };
 
-    template<class Select>
-    concept trait = std::derived_from<Select, Token>;
+    template <typename F>
+    using IndexChanged =
+        common::pro::SignalInjection<F, Token, &internal::DropdownMenu::currentIndexChanged>;
 
-    template <class Callback>
-    using IndexChanged = common::pro::IndexChanged<Callback, Token>;
-
-    using Items = common::pro::Vector<Token, QString,
+    using Items = DerivedProp<Token, QVector<QString>, //
         [](auto& self, const auto& vec) {
             self.clear();
             self.addItems(vec);
             self.setCurrentIndex(-1);
         }>;
 
-    template <class Callback>
-    using IndexChanged = common::pro::IndexChanged<Callback, Token>;
-        CREEPER_DEFINE_CHECKER(trait);
-        using namespace widget::pro;
-        using namespace theme::pro;
+    template <class Select>
+    concept trait = std::derived_from<Select, Token>;
+
+    CREEPER_DEFINE_CHECKER(trait);
+    using namespace widget::pro;
+    using namespace theme::pro;
 }
-struct FilledSelect 
-    : public Declarative<select_widget::internal::BasicSelect,
-    CheckerOr<select_widget::pro::checker, widget::pro::checker, theme::pro::checker>> {
-        using Declarative::Declarative;
-        void paintEvent(QPaintEvent *event) override;
-};  
+
+struct FilledDropdownMenu
+    : public Declarative<dropdown_menu::internal::DropdownMenu,
+          CheckerOr<dropdown_menu::pro::checker, widget::pro::checker, theme::pro::checker>> {
+    using Declarative::Declarative;
+    void paintEvent(QPaintEvent* event) override;
+};
+namespace filled_dropdown_menu::pro {
+    using namespace dropdown_menu::pro;
+}
+
 }

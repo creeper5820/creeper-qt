@@ -1,36 +1,44 @@
+/// TODO:
+/// 显然的，原生 QComboBox 的下拉列表样式并不符合 Material Design
+/// 规范，未来必须切换成自定义的组件，相关参考：
+/// - https://m3.material.io/components/menus/guidelines
+/// - https://api.flutter.dev/flutter/material/DropdownMenu-class.html
+
 #pragma once
+#include "dropdown-menu.hh"
+
 #include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/animation/state/pid.hh"
 #include "creeper-qt/utility/animation/transition.hh"
-#include "creeper-qt/utility/painter/common.hh"
+#include "creeper-qt/utility/material-icon.hh"
 #include "creeper-qt/utility/painter/helper.hh"
-#include "creeper-qt/utility/qt_wrapper/enter-event.hh"
-#include "select.hh"
-#include <qfontmetrics.h>
+
 #include <qabstractitemview.h>
+#include <qfontmetrics.h>
 
-using namespace creeper::select_widget::internal;
+using namespace creeper::dropdown_menu::internal;
 
-struct BasicSelect::Impl {
+struct DropdownMenu::Impl {
 public:
-    explicit Impl(BasicSelect& self) noexcept
-        :self {self}, animatable_label(self) {
+    explicit Impl(DropdownMenu& self) noexcept
+        : animatable(self)
+        , self { self } {
         {
-            auto state = std::make_shared<PidState<double>>();
-            state->config.kp        = 20.0;
-            state->config.ki        = 00.0;
-            state->config.kd        = 00.0;
-            state->config.epsilon   = 1e-2;
-            label_position = make_transition(animatable_label, std::move(state));
+            auto state            = std::make_shared<PidState<double>>();
+            state->config.kp      = 20.0;
+            state->config.ki      = 00.0;
+            state->config.kd      = 00.0;
+            state->config.epsilon = 1e-2;
+            label_position        = make_transition(animatable, std::move(state));
         }
 
-        set_measurements(Measurements{});
+        set_measurements(Measurements {});
     }
 
     auto set_color_scheme(const ColorScheme& scheme) -> void {
         color_space.enabled.container        = scheme.surface_container_highest;
         color_space.enabled.label_text       = scheme.on_surface_variant;
-        color_space.enabled.selected_text    = scheme.on_surface_variant;
+        color_space.enabled.selected_text    = scheme.on_surface;
         color_space.enabled.leading_icon     = scheme.on_surface_variant;
         color_space.enabled.active_indicator = scheme.on_surface_variant;
         color_space.enabled.supporting_text  = scheme.on_surface_variant;
@@ -43,7 +51,7 @@ public:
         color_space.disabled.label_text = scheme.on_surface;
         color_space.disabled.label_text.setAlphaF(0.38);
         color_space.disabled.selected_text = scheme.on_surface;
-        color_space.disabled.selected_text.setAlphaF(0.04);
+        color_space.disabled.selected_text.setAlphaF(0.38);
         color_space.disabled.leading_icon = scheme.on_surface;
         color_space.disabled.leading_icon.setAlphaF(0.38);
         color_space.disabled.supporting_text = scheme.on_surface;
@@ -57,7 +65,7 @@ public:
 
         color_space.focused.container        = scheme.surface_container_highest;
         color_space.focused.label_text       = scheme.primary;
-        color_space.focused.selected_text = scheme.on_surface_variant;
+        color_space.focused.selected_text    = scheme.on_surface;
         color_space.focused.leading_icon     = scheme.on_surface_variant;
         color_space.focused.input_text       = scheme.on_surface;
         color_space.focused.supporting_text  = scheme.on_surface_variant;
@@ -76,32 +84,22 @@ public:
 
         color_space.state_layer = scheme.on_surface;
         color_space.state_layer.setAlphaF(0.08);
-        color_space.selection_container = scheme.primary;
-        color_space.selection_container.setAlphaF(0.38);
 
         const auto& color = get_color_tokens();
-        sync_basic_text_style(
-            color.input_text,
-            scheme.surface_container_highest,
-            color.input_text,
-            color_space.selection_container,
-            color_space.selection_container
-        );
+        sync_basic_text_style(color.input_text, scheme.surface_container_highest, color.input_text,
+            color_space.state_layer);
     }
 
     auto load_theme_manager(ThemeManager& manager) {
-        manager.append_handler(&self, [this](const ThemeManager& manager) {
-            set_color_scheme(manager.color_scheme());
-        });
+        manager.append_handler(&self,
+            [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
     }
 
-    auto set_label_text(const QString& text) {
-        label_text = text;
-    }
+    auto set_label_text(const QString& text) { label_text = text; }
 
     auto set_leading_icon(const QString& code, const QString& font) {
-        leading_icon_code = code;
-        leading_icon_font = font;
+        leading_icon_code          = code;
+        leading_icon_font          = font;
         is_update_component_status = false;
     }
 
@@ -112,105 +110,136 @@ public:
     }
 
     auto paint_filled(QPaintEvent*) -> void {
-        const auto rect = self.rect();
-        const auto color = get_color_tokens();
-
+        const auto widget_rect = self.rect();
+        const auto color       = get_color_tokens();
 
         constexpr auto container_radius = 5;
         update_component_status();
 
-        auto painter = QPainter{&self};
+        auto painter = QPainter { &self };
+
+        // Draw container with fixed measurements height and vertically centered
+        const auto container_rect = QRect { widget_rect.left(),
+            widget_rect.top() + (widget_rect.height() - measurements.container_height) / 2,
+            widget_rect.width(), measurements.container_height };
 
         {
-            util::PainterHelper{painter}
+            util::PainterHelper { painter }
                 .set_render_hint(QPainter::Antialiasing)
-                .rounded_rectangle(color.container, Qt::transparent, 0,
-                    rect, container_radius, container_radius, 0, 0);
+                .rounded_rectangle(color.container, Qt::transparent, 0, container_rect,
+                    container_radius, container_radius, 0, 0);
         }
 
+        // Active indicator at container bottom
         {
-            const auto p0 = rect.bottomLeft();
-            const auto p1 = rect.bottomRight();
+            const auto p0 = container_rect.bottomLeft();
+            const auto p1 = container_rect.bottomRight();
             painter.setBrush(Qt::NoBrush);
-            painter.setPen(QPen{color.active_indicator, filled_line_width()});
+            painter.setPen({ color.active_indicator, filled_line_width() });
             painter.drawLine(p0, p1);
         }
 
+        // Icon positioned relative to container_rect
         const auto rect_icon = QRectF {
-            1.0 * (self.width() - self.textMargins().right() - measurements.icon_rect_size),
-            0.5 * (self.height() - measurements.icon_rect_size),
-            1.0 * measurements.icon_rect_size,
-            1.0 * measurements.icon_rect_size,
+            container_rect.right() - self.textMargins().right() - measurements.icon_rect_size * 1.,
+            container_rect.top() + (container_rect.height() - measurements.icon_rect_size) * 0.5,
+            1. * measurements.icon_rect_size,
+            1. * measurements.icon_rect_size,
         };
+        const auto icon_center = rect_icon.center();
+        const bool is_active   = (self.view() && self.view()->isVisible());
 
         painter.save();
-
         painter.setBrush(Qt::NoBrush);
-        painter.setPen(QPen {color.leading_icon});
+        painter.setPen(QPen { color.leading_icon });
         painter.setFont(leading_icon_font);
-
-        const auto icon_center = rect_icon.center();
         painter.translate(icon_center);
-        const bool is_active = (self.view() && self.view()->isVisible());
         painter.rotate(is_active ? 180.0 : 0.0);
         painter.translate(-icon_center);
-        painter.drawText(rect_icon, leading_icon_code, {Qt::AlignCenter});
-
+        painter.drawText(rect_icon, leading_icon_code, { Qt::AlignCenter });
         painter.restore();
 
         if (!label_text.isEmpty()) {
             const auto margins = self.textMargins();
 
-            const auto center_label_padding = 0.5 * (measurements.container_height);
+            const auto center_label_y = container_rect.top()
+                + (measurements.container_height - measurements.label_rect_size) / 2.0;
+
             const auto rect_center = QRectF {
-                QPointF {static_cast<double>(margins.left()), center_label_padding},
-                QPointF (self.width() - margins.right(), self.height() - center_label_padding),
-            };
-            const auto rect_top = QRectF {
-                QPointF (margins.left(), measurements.col_padding),
-                QPointF (self.width() - margins.right(), margins.top()),
+                QPointF { static_cast<double>(margins.left()), center_label_y },
+                QPointF(container_rect.right() - margins.right(),
+                    center_label_y + measurements.label_rect_size),
             };
 
-            const auto position = self.currentText().isEmpty() ? *label_position : 1.;
-            const auto label_rect = animate::interpolate(rect_center, rect_top, position);
-            const auto scale = 1. - position * 0.25;
+            const auto rect_top = QRectF {
+                QPointF(margins.left(), container_rect.top() + measurements.col_padding),
+                QPointF(container_rect.right() - margins.right(),
+                    container_rect.top() + measurements.col_padding + measurements.label_rect_size),
+            };
+
+            const auto position     = self.currentText().isEmpty() ? *label_position : 1.;
+            const auto label_rect   = animate::interpolate(rect_center, rect_top, position);
+            const auto scale        = 1. - position * 0.25;
+            const auto label_anchor = QPointF { label_rect.left(), label_rect.center().y() };
 
             painter.save();
-            const auto label_anchor = QPointF {label_rect.left(), label_rect.center().y()};
             painter.translate(label_anchor);
             painter.scale(scale, scale);
             painter.translate(-label_anchor);
             painter.setBrush(Qt::NoBrush);
-            painter.setPen(QPen {color.label_text});
+            painter.setPen(QPen { color.label_text });
             painter.setFont(standard_text_font);
             painter.setRenderHint(QPainter::Antialiasing);
-            painter.drawText(label_rect, label_text, {Qt::AlignVCenter | Qt::AlignLeading});
+            painter.drawText(label_rect, label_text, { Qt::AlignVCenter | Qt::AlignLeading });
             painter.restore();
-
 
             if (self.currentIndex() != -1) {
                 painter.save();
+                // Place selected text in the input area (below the floating label)
+                const auto input_top =
+                    container_rect.top() + measurements.col_padding + measurements.label_rect_size;
+                const auto input_bottom = container_rect.bottom() - measurements.col_padding;
                 const auto rect_center_selected = QRectF {
-                    QPointF {static_cast<double>(margins.left()), center_label_padding},
-                    QPointF (self.width() - margins.right(), self.height() - 0.5 * center_label_padding),
+                    QPointF { static_cast<double>(margins.left()), static_cast<double>(input_top) },
+                    QPointF(container_rect.right() - margins.right(),
+                        static_cast<double>(input_bottom)),
                 };
+
+                // Draw selected text with input text color
                 painter.setBrush(Qt::NoBrush);
-                painter.setPen(QPen {color.selected_text});
+                painter.setPen(QPen { color.selected_text });
                 painter.setFont(standard_text_font);
                 painter.setRenderHint(QPainter::Antialiasing);
-                painter.drawText(rect_center_selected, self.currentText(), Qt::AlignVCenter | Qt::AlignLeading);
+                painter.drawText(
+                    rect_center_selected, self.currentText(), Qt::AlignVCenter | Qt::AlignLeading);
+
                 painter.restore();
             }
-        }
-        else if (!label_text.isEmpty() && self.currentIndex() != -1) {
-            const auto selected_text = self.currentText();
-            const auto position = self.currentText().isEmpty() ? *label_position : 1.;
+        } else if (label_text.isEmpty() && self.currentIndex() != -1) {
+            const auto margins   = self.textMargins();
+            const auto input_top = container_rect.top()
+                + (container_rect.height() - measurements.input_rect_size) / 2.0;
+            const auto input_bottom  = input_top + measurements.input_rect_size;
+            const auto rect_selected = QRectF {
+                QPointF(margins.left(), input_top),
+                QPointF(container_rect.right() - margins.right(), input_bottom),
+            };
+
+            // Draw selected text
+            painter.save();
+            painter.setBrush(Qt::NoBrush);
+            painter.setPen(QPen { color.selected_text });
+            painter.setFont(standard_text_font);
+            painter.setRenderHint(QPainter::Antialiasing);
+            painter.drawText(
+                rect_selected, self.currentText(), Qt::AlignVCenter | Qt::AlignLeading);
+            painter.restore();
         }
 
         if (is_hovered) {
-            util::PainterHelper{painter}
+            util::PainterHelper { painter }
                 .set_render_hint(QPainter::Antialiasing)
-                .rounded_rectangle(color_space.state_layer, Qt::transparent, 0, rect,
+                .rounded_rectangle(color_space.state_layer, Qt::transparent, 0, container_rect,
                     container_radius, container_radius, 0, 0);
         }
     }
@@ -273,18 +302,16 @@ private:
     auto update_label_position() -> void {
         if ((is_focused || is_active) && self.currentIndex() != -1) {
             label_position->transition_to(1.0);
-        }
-        else if (is_focused || is_active) {
+        } else if (is_focused || is_active) {
             label_position->transition_to(1.0);
-        }
-        else {
+        } else {
             label_position->transition_to(0.0);
         }
     }
 
     auto sync_basic_text_style(const QColor& text, const QColor& background,
-        const QColor& selection_text, const QColor& selection_background,
-        const QColor& hover) -> void {
+        const QColor& selection_text, const QColor& selection_background) -> void {
+
         constexpr auto to_rgba = [](const QColor& color) {
             return QStringLiteral("rgba(%1, %2, %3, %4)")
                 .arg(color.red())
@@ -294,33 +321,28 @@ private:
         };
 
         constexpr auto kQComboBoxStyle = R"(
+            QComboBox {
+                border: none;
+                border-radius: 5px;
+                selection-border: none;
+                selection-color: %3;
+                selection-background-color: %4;
+            }
             QComboBox QAbstractItemView {
                 border: none;
-                background-color: %1;
-                outline: none;
-            }
-            QComboBox QAbstractItemView::item {
-                padding: 3px 5px;
-                color: %2;
-            }
-            QComboBox QAbstractItemView::item:selected {
-                background-color: %3;
-                color: %4;
-            }
-            QComboBox QAbstractItemView::item:hover {
-                background-color: %5;
-                color: %6;
+                border-radius: 3px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                color: %1;
+                background-color: %2;
             }
         )";
 
-        const auto qss = QString {kQComboBoxStyle};
-        self.setStyleSheet(qss.arg(to_rgba(background))
-            .arg(to_rgba(text))
-            .arg(to_rgba(selection_background))
-            .arg(to_rgba(selection_text))
-            .arg(to_rgba(hover))
-            .arg(to_rgba(text))
-        );
+        self.setStyleSheet(QString { kQComboBoxStyle }
+                .arg(to_rgba(text))
+                .arg(to_rgba(background))
+                .arg(to_rgba(selection_text))
+                .arg(to_rgba(selection_background)));
     }
 
     auto get_color_tokens() const -> ColorSpace::Tokens const& {
@@ -331,14 +353,11 @@ private:
                           : color_space.enabled;
     }
 
-    auto filled_line_width() const -> double {
-        constexpr auto normal_width = 1;
-        constexpr auto active_width = 3;
-        return (is_focused && !is_disable) ? active_width : normal_width;
-    }
+    auto filled_line_width() const -> double { return 1.5; }
 
-    constexpr auto measure_text(const QFont& font, const QString& text, const QTextOption& options) {
-        const auto fm = QFontMetricsF(font);
+    static constexpr auto measure_text(
+        const QFont& font, const QString& text, const QTextOption& options) {
+        const auto fm   = QFontMetricsF(font);
         const auto size = fm.size(Qt::TextSingleLine, text);
         return size.width();
     }
@@ -346,22 +365,24 @@ private:
 private:
     Measurements measurements;
     ColorSpace color_space;
-    bool is_disable;
-    bool is_hovered;
-    bool is_focused;
-    bool is_error;
-    bool is_update_component_status;
-    bool is_active;
+
+    bool is_disable = false;
+    bool is_hovered = false;
+    bool is_focused = false;
+    bool is_error   = false;
+    bool is_active  = false;
+
+    bool is_update_component_status = false;
 
     QString label_text;
     QIcon leading_icon;
     QString leading_icon_code = material::icon::kArrowDropDown;
-    QFont leading_icon_font = material::round::font_1;
+    QFont leading_icon_font   = material::round::font_1;
 
     QFont standard_text_font;
 
-    Animatable animatable_label;
+    Animatable animatable;
     std::unique_ptr<TransitionValue<PidState<double>>> label_position;
-    std::unique_ptr<TransitionValue<PidState<double>>> label_size;
-    BasicSelect& self;
+
+    DropdownMenu& self;
 };
