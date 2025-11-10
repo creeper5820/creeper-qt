@@ -11,6 +11,8 @@ struct NavComponentState {
     std::function<void(int, const std::string_view&)> switch_callback;
 
     std::vector<std::tuple<std::string_view, std::string_view>> buttons_context;
+
+    std::function<void(int)> stack_callback;
 };
 auto NavComponent(NavComponentState&) noexcept -> raw_pointer<QWidget>;
 
@@ -23,3 +25,5 @@ struct ViewComponentState {
     creeper::ThemeManager& manager;
 };
 auto ViewComponent(ViewComponentState&) noexcept -> raw_pointer<QWidget>;
+
+auto ViewComponent1(ViewComponentState&) noexcept -> raw_pointer<QWidget>;

@@ -26,6 +26,11 @@ concept linear_trait = requires(T t) {
 };
 
 template <class T>
+concept stacked_trait = requires(T t) {
+
+}
+
+template <class T>
 concept area_trait = requires(T t) {
     { t.setWidget(std::declval<QWidget*>()) };
     { t.setLayout(std::declval<QLayout*>()) };

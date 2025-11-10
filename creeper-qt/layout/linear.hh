@@ -6,6 +6,7 @@
 #include "creeper-qt/utility/wrapper/property.hh"
 
 #include <qboxlayout.h>
+#include <qstackedlayout.h>
 
 namespace creeper::linear::pro {
 
@@ -97,6 +98,7 @@ using Col = BoxLayout<QVBoxLayout>;
 
 namespace row = linear;
 namespace col = linear;
+namespace stack = linear;
 
 using HBoxLayout = Row;
 using VBoxLayout = Col;

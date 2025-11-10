@@ -141,9 +141,6 @@ namespace select_widget::pro {
             self.addItems(vec);
             self.setCurrentIndex(-1);
         }>;
-
-    template <class Callback>
-    using IndexChanged = common::pro::IndexChanged<Callback, Token>;
         CREEPER_DEFINE_CHECKER(trait);
         using namespace widget::pro;
         using namespace theme::pro;

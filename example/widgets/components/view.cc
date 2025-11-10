@@ -5,6 +5,7 @@
 
 #include <creeper-qt/layout/flow.hh>
 #include <creeper-qt/layout/linear.hh>
+#include <creeper-qt/layout/stacked.hh>
 #include <creeper-qt/utility/material-icon.hh>
 #include <creeper-qt/utility/wrapper/mutable-value.hh>
 #include <creeper-qt/widget/buttons/icon-button.hh>
@@ -23,6 +24,7 @@
 using namespace creeper;
 namespace capro = card::pro;
 namespace lnpro = linear::pro;
+namespace stpro = stacked::pro;
 namespace impro = image::pro;
 namespace ibpro = icon_button::pro;
 
@@ -270,6 +272,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
     return new FilledCard {
         capro::ThemeManager { state.manager },
         capro::SizePolicy { QSizePolicy::Expanding },
+
         capro::Layout<Col> {
             lnpro::Alignment { Qt::AlignTop },
             lnpro::Margin { 10 },
@@ -322,6 +325,133 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                 flow::pro::Apply { [&](Flow& self) {
                     using namespace repeat_literals;
                     1'000 * [&](auto i) { self.addWidget(ItemComponent(state.manager, i)); };
+                } },
+            },
+        },
+    };
+}
+
+
+auto ViewComponent1(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
+
+    const auto texts = std::array {
+        std::make_shared<MutableValue<QString>>("0.500"),
+        std::make_shared<MutableValue<QString>>("0.500"),
+        std::make_shared<MutableValue<QString>>("0.500"),
+    };
+    const auto progresses = std::array {
+        std::make_shared<MutableValue<double>>(0.5),
+        std::make_shared<MutableValue<double>>(0.5),
+        std::make_shared<MutableValue<double>>(0.5),
+    };
+
+    const auto SwitchRow = [&] {
+        return new Row {
+            row::pro::Item<Switch> {
+                _switch::pro::ThemeManager { state.manager },
+                _switch::pro::FixedSize { 70, 40 },
+            },
+            row::pro::Item<FilledCard> {
+                card::pro::ThemeManager { state.manager },
+                card::pro::FixedHeight { 40 },
+            },
+        };
+    };
+
+    const auto SliderComponent = [&](std::shared_ptr<MutableValue<QString>> s,
+                                     std::shared_ptr<MutableValue<double>> p) {
+        return new Row {
+            lnpro::Alignment { Qt::AlignLeft },
+            lnpro::Item<FilledCard> {
+                filled_card::pro::ThemeManager { state.manager },
+                filled_card::pro::FixedSize { 100, slider_measurements.track_height },
+                filled_card::pro::Radius { static_cast<double>(slider_measurements.track_shape) },
+                filled_card::pro::LevelLowest,
+                filled_card::pro::Layout<Row> {
+                    lnpro::Spacing { 0 },
+                    lnpro::Margin { 0 },
+                    lnpro::Item<Text> {
+                        text::pro::ThemeManager { state.manager },
+                        text::pro::Alignment { Qt::AlignCenter },
+                        text::pro::FixedWidth { 100 },
+                        MutableForward { text::pro::Text {}, s },
+                    },
+                },
+            },
+            lnpro::Item<Slider> {
+                slider::pro::ThemeManager { state.manager },
+                slider::pro::Measurements { slider_measurements },
+                slider::pro::FixedHeight { slider_measurements.minimum_height() },
+                slider::pro::FixedWidth { 300 },
+                MutableForward {
+                    slider::pro::Progress { 0. },
+                    p,
+                },
+                slider::pro::OnValueChange {
+                    [=](double progress) { *s = QString::number(progress, 'f', 3); },
+                },
+                slider::pro::OnValueChangeFinished {
+                    [](double num) { qDebug() << "[view] Slider changed:" << num; } },
+            },
+        };
+    };
+
+    return new FilledCard {
+        capro::ThemeManager { state.manager },
+        capro::SizePolicy { QSizePolicy::Expanding },
+
+        capro::Layout<Col> {
+            lnpro::Alignment { Qt::AlignTop },
+            lnpro::Margin { 10 },
+            lnpro::Spacing { 10 },
+
+            lnpro::Item {
+                SearchComponent(state.manager,
+                    [texts, progresses] {
+                        constexpr auto random_unit = []() {
+                            static std::random_device rd;
+                            static std::mt19937 gen(rd());
+                            static std::uniform_real_distribution<double> dist(0.0, 1.0);
+                            return dist(gen);
+                        };
+                        for (auto&& [string, number] : std::views::zip(texts, progresses)) {
+                            auto v  = random_unit();
+                            *number = v;
+                            *string = QString::number(v, 'f', 3);
+                        }
+                    }),
+            },
+            lnpro::Item { BannerComponent(state.manager) },
+            lnpro::Item<Row> {
+                lnpro::Margin { 20 },
+                lnpro::Spacing { 15 },
+                lnpro::Item<Col> {
+                    lnpro::Item { SliderComponent(texts.at(0), progresses.at(0)) },
+                    lnpro::Item { SliderComponent(texts.at(1), progresses.at(1)) },
+                    lnpro::Item { SliderComponent(texts.at(2), progresses.at(2)) },
+                },
+                lnpro::Item<OutlinedCard> {
+                    { 255 },
+                    card::pro::ThemeManager { state.manager },
+                    card::pro::LevelLowest,
+                    card::pro::FixedHeight { slider_measurements.minimum_height() * 3 + 40 },
+                    card::pro::Layout<Col> {
+                        lnpro::Item { SwitchRow() },
+                        lnpro::Item { SwitchRow() },
+                        lnpro::Item { SwitchRow() },
+                    },
+                },
+            },
+            lnpro::Item<AssetCenter> {
+                state.manager,
+            },
+            lnpro::Item<Flow> {
+                flow::pro::RowSpacing { 10 },
+                flow::pro::ColSpacing { 10 },
+                flow::pro::RowLimit { 6 },
+                flow::pro::Apply { [&](Flow& self) {
+                    using namespace repeat_literals;
+                    800 * [&](auto i) { self.addWidget(ItemComponent(state.manager, i)); };
                 } },
             },
         },

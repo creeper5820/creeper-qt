@@ -90,6 +90,9 @@ namespace pro {
     template <class Token>
     using Checked = SetterProp<Token, bool, [](auto& self, bool v) { self.set_checked(v); }>;
 
+    template <class Token>
+    using Index = SetterProp<Token, int, [](auto& self, int v) {self.setCurrentIndex(v);}>;
+
     // 通用向量属性
     template <class Token, typename T, auto setter>
     struct Vector : public QVector<T>, Token {
@@ -159,7 +162,7 @@ namespace pro {
         }
     };
 
-    // 通用索引改变事件
+    // 通用索引改变事件1
     template <typename Callback, class Token>
     struct IndexChanged : Token {
         Callback callback;
@@ -170,6 +173,23 @@ namespace pro {
         {
             using widget_t = std::remove_cvref_t<decltype(self)>;
             QObject::connect(&self, &widget_t::currentIndexChanged, [function = callback, &self] {
+                if constexpr (std::invocable<Callback, decltype(self)>) function(self);
+                if constexpr (std::invocable<Callback>) function();
+            });
+        }
+    };
+
+    // 通过索引改变事件2
+    template <typename Callback, class Token>
+    struct CurrentChanged : Token {
+        Callback callback;
+        explicit CurrentChanged(Callback callback) noexcept
+            : callback{ std::move(callback) } {}
+        auto apply(auto& self) const noexcept -> void
+            requires std::invocable<Callback, decltype(self)> || std::invocable<Callback>
+        {
+            using widget_t = std::remove_cvref_t<decltype(self)>;
+            QObject::connect(&self, &widget_t::currentChanged, [function = callback, &self] {
                 if constexpr (std::invocable<Callback, decltype(self)>) function(self);
                 if constexpr (std::invocable<Callback>) function();
             });
