@@ -89,12 +89,12 @@ jobs:
           每日自动更新，便于测试和集成最新功能。包含两种格式：
 
           **📦 Debian (.deb) 安装包**
-          - 文件名：`creeper-qt-x86_64.deb`
+          - 文件名：`creeper-qt-linux-x86_64.deb`
           - 适用于 Debian/Ubuntu 系列发行版
           - 安装方式：`sudo apt install creeper-qt-*.deb`
 
           **📦 Arch Linux (.pkg.tar.zst) 包**
-          - 文件名：`creeper-qt-x86_64.pkg.tar.zst`
+          - 文件名：`creeper-qt-linux-x86_64.pkg.tar.zst`
           - 适用于 Arch Linux 系列发行版
           - 安装方式：`sudo pacman -U creeper-qt-*.pkg.tar.zst`
 
