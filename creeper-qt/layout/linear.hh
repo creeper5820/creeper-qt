@@ -96,9 +96,8 @@ using BoxLayout = Declarative<T, CheckerOr<linear::pro::checker, layout::pro::ch
 using Row = BoxLayout<QHBoxLayout>;
 using Col = BoxLayout<QVBoxLayout>;
 
-namespace row = linear;
-namespace col = linear;
-namespace stack = linear;
+namespace row   = linear;
+namespace col   = linear;
 
 using HBoxLayout = Row;
 using VBoxLayout = Col;

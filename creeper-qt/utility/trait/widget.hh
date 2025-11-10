@@ -1,6 +1,7 @@
 #pragma once
 #include <concepts>
 #include <qwidget.h>
+#include <utility>
 
 namespace creeper {
 
@@ -27,8 +28,9 @@ concept linear_trait = requires(T t) {
 
 template <class T>
 concept stacked_trait = requires(T t) {
-
-}
+    {t.addWidget(std::declval<QWidget*>())};
+    {t.insertWidget(int {}, std::declval<QWidget*>())};
+};
 
 template <class T>
 concept area_trait = requires(T t) {

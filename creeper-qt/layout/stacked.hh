@@ -1,12 +1,14 @@
 #pragma once
+#include "creeper-qt/utility/trait/widget.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/layout.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
 
+#include <concepts>
 #include <qstackedlayout.h>
 
 namespace creeper::stacked::internal {
-class Stacked : public QStackedLayout {};
+class Stacked : public QStackedLayout { };
 }
 
 namespace creeper::stacked::pro {
@@ -28,7 +30,18 @@ template <item_trait T>
 struct Item : Token {
     T* item_pointer = nullptr;
 
-    void apply()
+    explicit Item(T* pointer) noexcept
+        : item_pointer { pointer } { }
+
+    explicit Item(auto&&... args) noexcept
+        requires std::constructible_from<T, decltype(args)...>
+        : item_pointer { new T { std::forward<decltype(args)>(args)... } } { }
+
+    void apply(stacked_trait auto& layout) const {
+        if constexpr (widget_trait<T>) {
+            layout.addWidget(item_pointer);
+        }
+    }
 };
 }
 
