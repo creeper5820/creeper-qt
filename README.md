@@ -1,54 +1,126 @@
-<div align=center>
+<div align="center">
 
-<div align=center><img src="https://creeper5820.com/creeper-qt/creeper-qt.jpg" width=400></div>
+<img src="https://creeper5820.com/creeper-qt/creeper-qt.jpg" width="300" alt="CREEPER-QT Logo">
 
-<h1>CREEPER-QT</h1>
+# CREEPER-QT
 
-[使用指南](./doc/usage.md) | [组件文档](./doc/widgets.md) | [视频演示](https://www.bilibili.com/video/BV1JbxjzZEJ5)
+### 基于 Qt 的现代化 UI 包装库
 
-![GitHub last commit](https://img.shields.io/github/last-commit/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=9ccbfb) ![GitHub Repo stars](https://img.shields.io/github/stars/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=b9c8da) ![GitHub repo size](https://img.shields.io/github/repo-size/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=d3bfe6)
+[![GitHub last commit](https://img.shields.io/github/last-commit/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=9ccbfb)](https://github.com/creeper5820/creeper-qt)
+[![GitHub Repo stars](https://img.shields.io/github/stars/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=b9c8da)](https://github.com/creeper5820/creeper-qt/stargazers)
+[![GitHub repo size](https://img.shields.io/github/repo-size/creeper5820/creeper-qt?style=for-the-badge&labelColor=101418&color=d3bfe6)](https://github.com/creeper5820/creeper-qt)
 
-`creeper-qt` 是基于 `Qt` 开发的 UI 集成库，轻量简洁，组件外观大体遵循 `Google Material Design3`，同时改造了老式的命令式调用，使组件构造和配置可以在同一时间完成，添加了主题管理，支持切换明亮和黑暗主题和各种配色，动效部分基于 PID 控制器和弹簧模型等迭代算法，带来更流畅的动画体验和打断效果
-
-欢迎 PR 和 ISSUE！
+<p>
+  <a href="./doc/usage.md">使用指南</a> •
+  <a href="./doc/widgets.md">组件文档</a> •
+  <a href="https://www.bilibili.com/video/BV1JbxjzZEJ5">视频演示</a>
+</p>
 
 </div>
 
-## 📦 示例程序（example）使用说明
+---
 
-本仓库自动构建并发布了跨平台的 **示例程序**，方便快速体验项目功能。
+## ✨ 项目简介
 
-🔗 最新版本下载地址：  
-👉 [GitHub Releases 页面](https://github.com/creeper5820/creeper-qt/releases/tag/nightly-example)
+`creeper-qt` 是基于 `Qt` 开发的 **轻量级 UI 集成库**，具有以下特点：
 
-| 操作系统    | 安装与运行方式                                                                          |
-| ----------- | --------------------------------------------------------------------------------------- |
-| **Linux**   | - 下载 `AppImage` 后赋予执行权限并运行<br>- 或解压 `.tar.gz` 后执行其中的 `AppRun` 文件 |
-| **Windows** | - 解压 `zip` 后进入文件夹，双击运行 `widgets.exe` 即可使用                              |
+- **现代化设计** - 组件外观遵循 `Google Material Design3` 规范
+- **声明式接口** - 改造传统命令式调用，组件构造和配置一步完成
+- **主题系统** - 内置主题管理，支持明亮/黑暗模式及多种配色方案
+- **流畅动画** - 基于 PID 控制器和弹簧模型的迭代算法，实现丝滑动效和无缝打断
+- **开箱即用** - 提供跨平台示例程序，快速上手体验
 
-## 效果展示
+> **欢迎贡献！** 期待您的 PR 和 ISSUE
+>
+> QQ交流群：885246539
 
-<img src="https://creeper5820.com/creeper-qt/blue-style-widgets.png" title="" alt="buttons" data-align="center">
+---
+## 📦 快速体验
 
-<img src="https://creeper5820.com/creeper-qt/example-login.png" title="" alt="example-login" data-align="center">
+### 下载示例程序
 
-<img src="https://creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-30.png" title="" alt="example-widgets" data-align="center">
+这里有一份自动构建的跨平台示例程序，无需编译即可体验完整功能。
 
-<img src="https://creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-38.png" title="" alt="example-widgets" data-align="center">
+- **[📥 下载最新版本 (GitHub Releases)](https://github.com/creeper5820/creeper-qt/releases/tag/nightly-example)**
 
-<div align=center>
-    <img src="https://creeper5820.com/creeper-qt/switch-working.gif" width=50%>
+### 平台支持
+
+<table>
+  <thead>
+    <tr>
+      <th width="150">操作系统</th>
+      <th>安装与运行方式</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center"><strong>🐧 Linux</strong></td>
+      <td>
+        • 下载 <code>AppImage</code> 文件，赋予执行权限后直接运行<br>
+        • 或下载 <code>.tar.gz</code> 压缩包，解压后执行 <code>AppRun</code> 文件
+      </td>
+    </tr>
+    <tr>
+      <td align="center"><strong>🪟 Windows</strong></td>
+      <td>
+        • 下载 <code>.zip</code> 压缩包并解压<br>
+        • 进入文件夹，双击运行 <code>widgets.exe</code>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+---
+
+---
+
+## 🎨 效果展示
+
+<div align="center">
+
+### 应用界面
+
+<table>
+  <tr>
+    <td width="50%">
+      <img src="https://creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-30.png" alt="主窗口明亮主题">
+    </td>
+    <td width="50%">
+      <img src="https://creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-38.png" alt="主窗口黑暗主题">
+    </td>
+  </tr>
+</table>
+
+### 组件样式
+
+<img src="https://creeper5820.com/creeper-qt/blue-style-widgets.png" width="800" alt="组件样式展示">
+
+### 动画效果
+
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <strong>开关组件动画</strong><br><br>
+      <img src="https://creeper5820.com/creeper-qt/switch-working.gif" width="400" alt="开关动画">
+    </td>
+    <td width="50%" align="center">
+      <strong>文本框动画</strong><br><br>
+      <img src="https://creeper5820.com/creeper-qt/filled-text-field.gif" width="400" alt="文本框动画">
+    </td>
+  </tr>
+</table>
+
 </div>
 
-<div align=center>
-    <img src="https://creeper5820.com/creeper-qt/filled-text-field.gif" width=50%>
-</div>
+---
 
-## 调用示例
+## 🚀 快速开始
 
-安装指南：[`usage.md`](./doc/usage.md)
+### 安装配置
 
-使用 Cmake 导入：
+详细安装指南请参考：**[使用指南](./doc/usage.md)**
+
+### CMake 集成
 
 ```cmake
 cmake_minimum_required(VERSION 3.22)
@@ -75,16 +147,18 @@ find_package(creeper-qt REQUIRED)
 # set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 
-add_executable(${PROJECT_NAME}
+add_executable(
+    ${PROJECT_NAME}
     main.cc
 )
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(
+    ${PROJECT_NAME}
     creeper-qt::creeper-qt
     Qt6::Widgets
 )
 ```
 
-然后在项目中使用：
+### 代码示例
 
 ```cpp
 #include < ... >
@@ -144,19 +218,47 @@ auto main(int argc, char* argv[]) -> int {
 }
 ```
 
-## 待做事项
+---
 
-- [ ] 等接口稳定后 release 一个版本然后开始迭代版本号
-  - 接口设计目前基本稳定，多数修改不会影响下游
-- [ ] 全组件表格展示
-- [ ] 增加更多的组件
-  - 至 `2025.09.18`，组件数量还是不太够，需要继续添加
-- [ ] 按钮的禁止效果
-- [ ] 增加视图容器，原生的不可用
+## 📋 开发路线图
+
+- [ ] **版本发布**
+  - 等接口稳定后 release 一个正式版本，开始迭代版本号
+  - 接口设计目前基本稳定，多数修改不会影响下游项目
+
+- [ ] **组件完善**
+  - 全组件表格展示
+  - 增加更多组件（至 2025.09.18，组件数量仍需扩充）
+  - 按钮的禁用效果优化
+
+- [ ] **布局容器**
+  - 增加视图容器（原生容器不可用）
   - 目前已实现无动画的 Flow 布局
-- [ ] 提供一个日历模组组件
-- [ ] 提供一个设置中心例子
 
-## Star History
+- [ ] **高级组件**
+  - 提供日历模组组件
+  - 提供设置中心示例
+
+---
+
+## 📊 项目统计
+
+<div align="center">
 
 [![Star History Chart](https://api.star-history.com/svg?repos=creeper5820/creeper-qt&type=Date)](https://www.star-history.com/#creeper5820/creeper-qt&Date)
+
+</div>
+
+---
+
+## 📄 许可证
+
+本项目采用 MIT 开源许可证，详见 [LICENSE](./LICENSE) 文件。
+
+## 🤝 贡献
+
+欢迎提交 Pull Request 和 Issue！
+
+- 💬 **提出问题**: [GitHub Issues](https://github.com/creeper5820/creeper-qt/issues)
+- 🔀 **贡献代码**: [GitHub Pull Requests](https://github.com/creeper5820/creeper-qt/pulls)
+- 📖 **阅读文档**: [使用指南](./doc/usage.md) | [组件文档](./doc/widgets.md)

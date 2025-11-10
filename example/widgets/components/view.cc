@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 #include "creeper-qt/widget/select.hh"
+=======
+#include "creeper-qt/utility/wrapper/widget.hh"
+>>>>>>> upstream/main
 #include "example/widgets/component.hh"
 #include "example/widgets/components/asset-center.hh"
+
+#include <qfontdatabase.h>
+#include <random>
 
 #include <creeper-qt/layout/flow.hh>
 #include <creeper-qt/layout/linear.hh>
@@ -10,15 +17,13 @@
 #include <creeper-qt/widget/buttons/icon-button.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/cards/outlined-card.hh>
+#include <creeper-qt/widget/dropdown-menu.hh>
 #include <creeper-qt/widget/image.hh>
 #include <creeper-qt/widget/shape/wave-circle.hh>
 #include <creeper-qt/widget/sliders.hh>
 #include <creeper-qt/widget/switch.hh>
 #include <creeper-qt/widget/text-fields.hh>
 #include <creeper-qt/widget/text.hh>
-
-#include <qfontdatabase.h>
-#include <random>
 
 using namespace creeper;
 namespace capro = card::pro;
@@ -55,19 +60,31 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
     slogen_context->set_silent("BanG Dream! It’s MyGO!!!!!");
 
     auto select_context = std::make_shared<MutableValue<QStringList>>();
+<<<<<<< HEAD
     select_context->set_silent(QStringList{"item1", "item2", "item3"});
+=======
+    select_context->set_silent(QStringList { "1st", "2ed", "3rd" });
+>>>>>>> upstream/main
 
     const auto row = new Row {
         lnpro::Item<OutlinedTextField> {
             text_field::pro::ThemeManager { manager },
+<<<<<<< HEAD
             text_field::pro::SizePolicy {QSizePolicy::Fixed, QSizePolicy::Preferred},
             text_field::pro::LeadingIcon { material::icon::kSearch, material::round::font },
+=======
+            text_field::pro::LeadingIcon {
+                material::icon::kSearch,
+                material::round::font,
+            },
+>>>>>>> upstream/main
             MutableForward {
                 text_field::pro::LabelText {},
                 slogen_context,
             },
         },
         lnpro::SpacingItem { 10 },
+<<<<<<< HEAD
         lnpro::Item<FilledSelect> {
             select_widget::pro::ThemeManager { manager },
             select_widget::pro::LabelText { "Item" },
@@ -77,6 +94,19 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                 select_widget::pro::Items {},
                 select_context,
             }
+=======
+        lnpro::Item<FilledDropdownMenu> {
+            dropdown_menu::pro::ThemeManager { manager },
+            dropdown_menu::pro::LabelText { "Item" },
+            dropdown_menu::pro::FixedWidth { 100 },
+            dropdown_menu::pro::IndexChanged {
+                [&](int index) { qDebug() << index; },
+            },
+            MutableForward {
+                dropdown_menu::pro::Items {},
+                select_context,
+            },
+>>>>>>> upstream/main
         },
         lnpro::SpacingItem { 20 },
         lnpro::Item<IconButton> {
