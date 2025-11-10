@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-#include "creeper-qt/widget/select.hh"
-=======
 #include "creeper-qt/utility/wrapper/widget.hh"
->>>>>>> upstream/main
 #include "example/widgets/component.hh"
 #include "example/widgets/components/asset-center.hh"
 
@@ -60,41 +56,20 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
     slogen_context->set_silent("BanG Dream! It’s MyGO!!!!!");
 
     auto select_context = std::make_shared<MutableValue<QStringList>>();
-<<<<<<< HEAD
-    select_context->set_silent(QStringList{"item1", "item2", "item3"});
-=======
     select_context->set_silent(QStringList { "1st", "2ed", "3rd" });
->>>>>>> upstream/main
-
     const auto row = new Row {
         lnpro::Item<OutlinedTextField> {
             text_field::pro::ThemeManager { manager },
-<<<<<<< HEAD
-            text_field::pro::SizePolicy {QSizePolicy::Fixed, QSizePolicy::Preferred},
-            text_field::pro::LeadingIcon { material::icon::kSearch, material::round::font },
-=======
             text_field::pro::LeadingIcon {
                 material::icon::kSearch,
                 material::round::font,
             },
->>>>>>> upstream/main
             MutableForward {
                 text_field::pro::LabelText {},
                 slogen_context,
             },
         },
         lnpro::SpacingItem { 10 },
-<<<<<<< HEAD
-        lnpro::Item<FilledSelect> {
-            select_widget::pro::ThemeManager { manager },
-            select_widget::pro::LabelText { "Item" },
-            select_widget::pro::SizePolicy {QSizePolicy::Fixed, QSizePolicy::Preferred},
-            select_widget::pro::IndexChanged { [&](auto& self){qDebug() << self.currentIndex(); }},
-            MutableForward {
-                select_widget::pro::Items {},
-                select_context,
-            }
-=======
         lnpro::Item<FilledDropdownMenu> {
             dropdown_menu::pro::ThemeManager { manager },
             dropdown_menu::pro::LabelText { "Item" },
@@ -106,7 +81,6 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                 dropdown_menu::pro::Items {},
                 select_context,
             },
->>>>>>> upstream/main
         },
         lnpro::SpacingItem { 20 },
         lnpro::Item<IconButton> {
