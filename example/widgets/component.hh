@@ -26,4 +26,7 @@ struct ViewComponentState {
 };
 auto ViewComponent(ViewComponentState&) noexcept -> raw_pointer<QWidget>;
 
-auto ViewComponent1(ViewComponentState&) noexcept -> raw_pointer<QWidget>;
+struct ViewPageComponentState {
+    creeper::ThemeManager& manager;
+};
+auto ViewPageComponent(ViewPageComponentState&) noexcept -> raw_pointer<QWidget>;

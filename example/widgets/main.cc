@@ -6,10 +6,14 @@
 /// 使用其他 Nerd Font 也是可以的
 
 #include "component.hh"
+#include "creeper-qt/utility/wrapper/layout.hh"
 #include "creeper-qt/utility/wrapper/mutable-value.hh"
+#include "creeper-qt/utility/wrapper/widget.hh"
+#include "creeper-qt/widget/widget.hh"
 
 #include <qdatetime.h>
 #include <qdebug.h>
+#include <qnamespace.h>
 #include <qshortcut.h>
 #include <qstandardpaths.h>
 
@@ -32,6 +36,7 @@ using namespace creeper;
 namespace lnpro = linear::pro;
 namespace mwpro = main_window::pro;
 namespace capro = card::pro;
+namespace stpro = stacked::pro;
 
 auto main(int argc, char** argv) -> int {
     app::init {
@@ -79,8 +84,9 @@ auto main(int argc, char** argv) -> int {
             *stack_index = index;
         },
     };
-    auto list_component_state = ListComponentState { .manager = manager };
-    auto view_component_state = ViewComponentState { .manager = manager };
+    auto list_component_state      = ListComponentState { .manager = manager };
+    auto view_component_state      = ViewComponentState { .manager = manager };
+    auto view_page_component_state = ViewPageComponentState { .manager = manager };
 
     auto mask_window = (MixerMask*) {};
 
@@ -121,8 +127,7 @@ auto main(int argc, char** argv) -> int {
             capro::Radius { 0 },
             capro::Level { CardLevel::HIGHEST },
 
-            capro::Layout<Row> {
-                lnpro::Margin { 0 }, lnpro::Spacing { 0 },
+            capro::Layout<Row> { lnpro::Margin { 0 }, lnpro::Spacing { 0 },
 
                 lnpro::Item {
                     NavComponent(nav_component_state),
@@ -134,27 +139,38 @@ auto main(int argc, char** argv) -> int {
                 lnpro::Item<Stacked> {
                     { 1 },
                     MutableForward {
-                        stacked::pro::Index { 0 },
+                        stpro::Index { 0 },
                         stack_index,
                     },
-                    stacked::pro::Apply {
-                        [&](Stacked& self) noexcept {
-                            self.addWidget(new Widget { capro::Layout<Col> {
-                                lnpro::ContentsMargin { { 5, 15, 15, 15 } },
-                                lnpro::Item<ScrollArea> { scroll::pro::ThemeManager { manager },
-                                    scroll::pro::HorizontalScrollBarPolicy {
-                                        Qt::ScrollBarAlwaysOff,
-                                    },
-                                    scroll::pro::Item {
-                                        ViewComponent(view_component_state),
-                                    } },
-                            } });
-                            self.addWidget(new Widget { capro::Layout<Col> {} });
+                    stpro::Item<Widget> {
+                        capro::Layout<Col> {
+                            lnpro::ContentsMargin { { 5, 15, 15, 15 } },
+                            lnpro::Item<ScrollArea> {
+                                scroll::pro::ThemeManager { manager },
+                                scroll::pro::HorizontalScrollBarPolicy {
+                                    Qt::ScrollBarAlwaysOff,
+                                },
+                                scroll::pro::Item {
+                                    ViewComponent(view_component_state),
+                                },
+                            },
                         },
                     },
-                },
-                // },
-            },
+                    stpro::Item<Widget> {
+                        capro::Layout<Col> {
+                            lnpro::ContentsMargin { { 5, 15, 15, 15 } },
+                            lnpro::Item<ScrollArea> {
+                                scroll::pro::ThemeManager { manager },
+                                scroll::pro::HorizontalScrollBarPolicy {
+                                    Qt::ScrollBarAlwaysOff,
+                                },
+                                scroll::pro::Item {
+                                    ViewPageComponent(view_page_component_state),
+                                },
+                            },
+                        },
+                    },
+                } },
         },
         mixer::pro::SetMixerMask { mask_window },
     };
