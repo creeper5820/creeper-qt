@@ -31,8 +31,10 @@ add_library(
     ${PROJECT_SOURCE}
 )
 target_link_libraries(
-    ${PROJECT_NAME} PUBLIC
+    ${PROJECT_NAME}
+    PUBLIC
     ${QT_VERSION}::Widgets
+    PRIVATE
     ${QT_VERSION}::Network
 )
 

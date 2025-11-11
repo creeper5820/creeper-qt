@@ -3,12 +3,10 @@
 
 namespace creeper::painter {
 
-// 核心容器结构体，现在继承自 Impl，使其满足 drawable_trait (假设 Impl 继承了所需的属性)
 template <class Impl, drawable_trait... Ts>
 struct Container : public Impl {
     std::tuple<std::decay_t<Ts>...> drawable;
 
-    // 唯一构造函数：接受 Impl 实例和可变参数包
     constexpr explicit Container(const Impl& impl, Ts&&... drawable)
         : Impl { impl }
         , drawable { std::make_tuple(std::forward<Ts>(drawable)...) } { }
@@ -47,7 +45,7 @@ struct MakeLayoutFunction {
 };
 
 // ----------------------------------------------------------------------
-// SurfaceImpl (仅平移)
+// SurfaceImpl
 // ----------------------------------------------------------------------
 
 struct SurfaceImpl : public MakeLayoutFunction, ContainerProps {
@@ -162,13 +160,12 @@ struct BoxImpl : public MakeLayoutFunction, ContainerProps {
 // ----------------------------------------------------------------------
 
 struct RowImpl : public MakeLayoutFunction, ContainerProps {
-    // 主轴对齐 (Horizontal)
     const qt::align main_align;
 
     constexpr explicit RowImpl(
         const qt::size& size,
-        const qt::align& main_align = Qt::AlignLeft,   // 主轴对齐：AlignLeft/AlignRight/AlignHCenter
-        const qt::align& cross_align = Qt::AlignVCenter, // 非主轴对齐：AlignTop/AlignBottom/AlignVCenter
+        const qt::align& main_align = Qt::AlignLeft,
+        const qt::align& cross_align = Qt::AlignVCenter,
         const qt::point& origin = {})
         : ContainerProps {
               .size   = size,
@@ -207,7 +204,7 @@ struct RowImpl : public MakeLayoutFunction, ContainerProps {
     }
 
     auto make(drawable_trait auto& drawable) {
-        const auto container_cross_align = align; // 非主轴对齐 (垂直)
+        const auto container_cross_align = align;
         const auto container_size        = size;
         const auto container_origin      = origin;
 
@@ -235,17 +232,16 @@ struct RowImpl : public MakeLayoutFunction, ContainerProps {
 // ----------------------------------------------------------------------
 
 struct ColImpl : public MakeLayoutFunction, ContainerProps {
-    // 主轴对齐 (Vertical)
     const qt::align main_align;
 
     constexpr explicit ColImpl(
         const qt::size& size,
-        const qt::align& main_align = Qt::AlignTop,     // 主轴对齐：AlignTop/AlignBottom/AlignVCenter
-        const qt::align& cross_align = Qt::AlignHCenter, // 非主轴对齐：AlignLeft/AlignRight/AlignHCenter
+        const qt::align& main_align = Qt::AlignTop,
+        const qt::align& cross_align = Qt::AlignHCenter,
         const qt::point& origin = {})
         : ContainerProps {
               .size   = size,
-              .align  = cross_align, // ContainerProps::align 存储非主轴对齐
+              .align  = cross_align,
               .origin = origin,
           }
         , main_align(main_align) // 存储主轴对齐

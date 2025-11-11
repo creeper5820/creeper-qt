@@ -2,6 +2,7 @@
 .vscode/
 .vs/
 .idea/
+.claude/
 
 cmake-build-*/
 build/

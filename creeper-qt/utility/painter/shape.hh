@@ -1,5 +1,6 @@
 #pragma once
 #include "creeper-qt/utility/painter/common.hh"
+#include <qicon.h>
 #include <qpainterpath.h>
 
 namespace creeper::painter::internal {
@@ -160,11 +161,52 @@ struct Text : CommonProps {
     }
 };
 
+struct Icon : CommonProps {
+    using IconSource = qt::icon;
+    using FontSource = std::tuple<qt::string, qt::string>;
+    using MutiSource = std::variant<FontSource, IconSource>;
+
+    MutiSource source;
+    qt::color color = Qt::black;
+
+    auto operator()(qt::painter& painter) const noexcept {
+        if (size.isEmpty()) return;
+
+        painter.save();
+
+        const auto rect = qt::rect { origin, size };
+        std::visit(
+            [&](auto& value) {
+                using T = std::decay_t<decltype(value)>;
+
+                if constexpr (std::is_same_v<T, FontSource>) {
+                    const auto& [font_family, code] = value;
+
+                    auto font = qt::font { font_family };
+                    font.setPointSizeF(std::min(size.height(), size.width()));
+
+                    auto option = qt::text_option {};
+                    option.setAlignment(Qt::AlignCenter);
+
+                    painter.setFont(font);
+                    painter.setPen(color);
+                    painter.setBrush(Qt::NoBrush);
+                    painter.drawText(rect, code, option);
+                } else if constexpr (std::is_same_v<T, IconSource>) {
+                    const auto& icon_source = value;
+                    icon_source.paint(&painter, rect.toRect());
+                }
+            },
+            source);
+
+        painter.restore();
+    }
+};
+
 }
 namespace creeper::painter {
 
 /// Export Rounded Rectangle
-
 using RadiusTL = SetterProp<common::pro::Token, double,
     [](auto& self, auto radius) { self.radius_tl = radius; }>;
 using RadiusTR = SetterProp<common::pro::Token, double,
@@ -189,12 +231,27 @@ using Scale = SetterProp<common::pro::Token, qt::real,
 using TextOption = DerivedProp<common::pro::Token, qt::text_option,
     [](auto& self, const auto& option) { self.text_option = option; }>;
 
+/// Export Icon
+struct Icon : common::pro::Token {
+    using T = internal::Icon;
+    T::MutiSource source;
+
+    constexpr explicit Icon(const qt::string& font, const qt::string& code) noexcept
+        : source { T::FontSource { font, code } } { }
+
+    constexpr explicit Icon(const qt::icon& icon) noexcept
+        : source { T::IconSource { icon } } { }
+
+    auto apply(auto& self) const noexcept { self.source = source; }
+};
+
 namespace Paint {
     using EraseRectangle = Declarative<internal::EraseRectangle, CheckerOr<common::pro::checker>>;
     using Rectangle      = Declarative<internal::Rectangle, CheckerOr<common::pro::checker>>;
     using RoundedRectangle =
         Declarative<internal::RoundedRectangle, CheckerOr<common::pro::checker>>;
     using Text = Declarative<internal::Text, CheckerOr<common::pro::checker>>;
+    using Icon = Declarative<internal::Icon, CheckerOr<common::pro::checker>>;
 }
 
 }

@@ -324,7 +324,6 @@ private:
             QComboBox {
                 border: none;
                 border-radius: 5px;
-                selection-border: none;
                 selection-color: %3;
                 selection-background-color: %4;
             }

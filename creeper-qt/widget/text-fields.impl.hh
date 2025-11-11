@@ -312,12 +312,10 @@ public:
                     },
                     Paint::Box {
                         BoxImpl { leading_box_size, Qt::AlignCenter,
-                            { static_cast<qreal>(measurements.row_padding_with_icons), 0 } },
-                        Paint::Text {
-                            TextOption { Qt::AlignCenter },
+                            { 1. * measurements.row_padding_with_icons, 0 } },
+                        Paint::Icon {
+                            Icon { leading_font_name, leading_icon_code },
                             Size { leading_box_size },
-                            Font { leading_icon_font },
-                            Text { leading_icon_code },
                             Color { color_tokens.leading_icon },
                         },
                     },
@@ -463,8 +461,9 @@ private:
     QString trailing_code;
     QString trailing_font;
 
-    QFont leading_icon_font;
-    QFont standard_text_font;
+    // State Cache
+    QFont leading_icon_font  = {};
+    QFont standard_text_font = {};
 
     Animatable animatable;
     std::unique_ptr<TransitionValue<PidState<double>>> label_position;

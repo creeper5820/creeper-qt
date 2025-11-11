@@ -14,6 +14,7 @@ using align       = Qt::Alignment;
 using string      = QString;
 using font        = QFont;
 using text_option = QTextOption;
+using icon        = QIcon;
 }
 
 namespace creeper::painter {
