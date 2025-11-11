@@ -1,10 +1,8 @@
-#include "creeper-qt/utility/wrapper/widget.hh"
 #include "example/widgets/component.hh"
 #include "example/widgets/components/asset-center.hh"
 
-#include <qfontdatabase.h>
-#include <random>
-
+#include <algorithm>
+#include <concepts>
 #include <creeper-qt/layout/flow.hh>
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/layout/stacked.hh>
@@ -13,13 +11,17 @@
 #include <creeper-qt/widget/buttons/icon-button.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/cards/outlined-card.hh>
-#include <creeper-qt/widget/dropdown-menu.hh>
 #include <creeper-qt/widget/image.hh>
 #include <creeper-qt/widget/shape/wave-circle.hh>
 #include <creeper-qt/widget/sliders.hh>
 #include <creeper-qt/widget/switch.hh>
 #include <creeper-qt/widget/text-fields.hh>
 #include <creeper-qt/widget/text.hh>
+
+#include <cstddef>
+#include <qfontdatabase.h>
+#include <ranges>
+#include <utility>
 
 using namespace creeper;
 namespace capro = card::pro;
@@ -32,7 +34,7 @@ auto operator*(std::invocable<std::size_t> auto&& f, std::size_t n) {
     std::ranges::for_each(std::views::iota(std::size_t { 0 }, n), std::forward<decltype(f)>(f));
 }
 auto operator*(std::size_t n, std::invocable<std::size_t> auto&& f) {
-    std::ranges::for_each(std::views::iota(std::size_t { 0 }, n), std::forward<decltype(f)>(f));
+    std::ranges::for_each(std::views::iota(std::size_t(0), n), std::forward<decltype(f)>(f));
 }
 }
 
@@ -50,83 +52,6 @@ static auto print_material_fonts() noexcept {
     }
 }
 
-static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noexcept {
-
-    auto slogen_context = std::make_shared<MutableValue<QString>>();
-    slogen_context->set_silent("BanG Dream! It’s MyGO!!!!!");
-
-    auto select_context = std::make_shared<MutableValue<QStringList>>();
-    select_context->set_silent(QStringList { "1st", "2ed", "3rd" });
-    const auto row = new Row {
-        lnpro::Item<OutlinedTextField> {
-            text_field::pro::ThemeManager { manager },
-            text_field::pro::LeadingIcon {
-                material::icon::kSearch,
-                material::round::font,
-            },
-            MutableForward {
-                text_field::pro::LabelText {},
-                slogen_context,
-            },
-        },
-        lnpro::SpacingItem { 10 },
-        lnpro::Item<FilledDropdownMenu> {
-            dropdown_menu::pro::ThemeManager { manager },
-            dropdown_menu::pro::LabelText { "Item" },
-            dropdown_menu::pro::FixedWidth { 100 },
-            dropdown_menu::pro::IndexChanged {
-                [&](int index) { qDebug() << index; },
-            },
-            MutableForward {
-                dropdown_menu::pro::Items {},
-                select_context,
-            },
-        },
-        lnpro::SpacingItem { 20 },
-        lnpro::Item<IconButton> {
-            ibpro::ThemeManager { manager },
-            ibpro::FixedSize { 40, 40 },
-            ibpro::Color { IconButton::Color::TONAL },
-            ibpro::Font { material::kRoundSmallFont },
-            ibpro::FontIcon { "change_circle" },
-            ibpro::Clickable { refresh_callback },
-        },
-        lnpro::Item<IconButton> {
-            ibpro::ThemeManager { manager },
-            ibpro::FixedSize { 40, 40 },
-            ibpro::Color { IconButton::Color::TONAL },
-            ibpro::Font { material::kRoundSmallFont },
-            ibpro::FontIcon { material::icon::kFavorite },
-            ibpro::Clickable { [slogen_context] {
-                constexpr auto random_slogen = [] {
-                    constexpr auto slogens = std::array {
-                        "为什么要演奏《春日影》！",
-                        "我从来不觉得玩乐队开心过。",
-                        "我好想…成为人啊！",
-                        "那你愿意……跟我组一辈子的乐队吗？",
-                        "过去软弱的我…已经死了。",
-                    };
-                    static std::random_device rd;
-                    static std::mt19937 gen(rd());
-                    std::uniform_int_distribution<> dist(0, slogens.size() - 1);
-                    return QString::fromUtf8(slogens[dist(gen)]);
-                };
-                *slogen_context = random_slogen();
-            } },
-        },
-        lnpro::Item<IconButton> {
-            ibpro::ThemeManager { manager },
-            ibpro::FixedSize { 40, 40 },
-            ibpro::Color { IconButton::Color::TONAL },
-            ibpro::Font { material::kRoundSmallFont },
-            ibpro::FontIcon { "font_download" },
-            ibpro::Clickable { &print_material_fonts },
-        },
-    };
-    return new Widget {
-        widget::pro::Layout { row },
-    };
-}
 static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
 
     return new Widget {
@@ -207,17 +132,17 @@ static auto BannerComponent(ThemeManager& manager) noexcept {
 
 static constexpr auto slider_measurements = Slider::Measurements::S();
 
-auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
+auto ViewPageComponent(ViewPageComponentState& state) noexcept -> raw_pointer<QWidget> {
 
     const auto texts = std::array {
-        std::make_shared<MutableValue<QString>>("0.500"),
-        std::make_shared<MutableValue<QString>>("0.500"),
-        std::make_shared<MutableValue<QString>>("0.500"),
+        std::make_shared<MutableValue<QString>>("0.200"),
+        std::make_shared<MutableValue<QString>>("0.200"),
+        std::make_shared<MutableValue<QString>>("0.200"),
     };
     const auto progresses = std::array {
-        std::make_shared<MutableValue<double>>(0.5),
-        std::make_shared<MutableValue<double>>(0.5),
-        std::make_shared<MutableValue<double>>(0.5),
+        std::make_shared<MutableValue<double>>(0.2),
+        std::make_shared<MutableValue<double>>(0.2),
+        std::make_shared<MutableValue<double>>(0.2),
     };
 
     const auto SwitchRow = [&] {
@@ -280,22 +205,6 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
             lnpro::Margin { 10 },
             lnpro::Spacing { 10 },
 
-            lnpro::Item {
-                SearchComponent(state.manager,
-                    [texts, progresses] {
-                        constexpr auto random_unit = []() {
-                            static std::random_device rd;
-                            static std::mt19937 gen(rd());
-                            static std::uniform_real_distribution<double> dist(0.0, 1.0);
-                            return dist(gen);
-                        };
-                        for (auto&& [string, number] : std::views::zip(texts, progresses)) {
-                            auto v  = random_unit();
-                            *number = v;
-                            *string = QString::number(v, 'f', 3);
-                        }
-                    }),
-            },
             lnpro::Item { BannerComponent(state.manager) },
             lnpro::Item<Row> {
                 lnpro::Margin { 20 },

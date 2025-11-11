@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_BUILD_TYPE "Release")
 
+set(BUILD_EXAMPLE true)
 set(CMAKE_AUTOMOC ON)
 
 add_compile_options(-Os -O3)
