@@ -6,9 +6,14 @@
 /// 使用其他 Nerd Font 也是可以的
 
 #include "component.hh"
+#include "creeper-qt/utility/wrapper/layout.hh"
+#include "creeper-qt/utility/wrapper/mutable-value.hh"
+#include "creeper-qt/utility/wrapper/widget.hh"
+#include "creeper-qt/widget/widget.hh"
 
 #include <qdatetime.h>
 #include <qdebug.h>
+#include <qnamespace.h>
 #include <qshortcut.h>
 #include <qstandardpaths.h>
 
@@ -16,11 +21,13 @@
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/layout/mixer.hh>
 #include <creeper-qt/layout/scroll.hh>
+#include <creeper-qt/layout/stacked.hh>
 #include <creeper-qt/utility/material-icon.hh>
 #include <creeper-qt/utility/theme/preset/blue-miku.hh>
 #include <creeper-qt/utility/theme/preset/gloden-harvest.hh>
 #include <creeper-qt/utility/theme/preset/green.hh>
 #include <creeper-qt/utility/theme/theme.hh>
+#include <creeper-qt/utility/wrapper/mutable-value.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/main-window.hh>
 
@@ -29,6 +36,7 @@ using namespace creeper;
 namespace lnpro = linear::pro;
 namespace mwpro = main_window::pro;
 namespace capro = card::pro;
+namespace stpro = stacked::pro;
 
 auto main(int argc, char** argv) -> int {
     app::init {
@@ -37,12 +45,20 @@ auto main(int argc, char** argv) -> int {
         app::pro::Complete { argc, argv },
     };
 
+    auto stack_index = std::make_shared<MutableValue<int>>();
+    stack_index->set_silent(0);
+
     auto manager = ThemeManager { kBlueMikuThemePack };
 
     auto nav_component_state = NavComponentState {
         .manager = manager,
         .switch_callback = [&](int index, const auto& name) {
             qDebug() << "[nav] Switch to <" << name.data() << ">";
+
+            if (index == 0)
+                *stack_index = 0;
+            else if (index == 1)
+                *stack_index = 1;
 
             constexpr auto packs = std::array{
                 kBlueMikuThemePack,
@@ -64,9 +80,13 @@ auto main(int argc, char** argv) -> int {
             {"3", material::icon::kExtension},
             {"4", material::icon::kLogout},
         },
+        .stack_callback = [&](int index) {
+            *stack_index = index;
+        },
     };
-    auto list_component_state = ListComponentState { .manager = manager };
-    auto view_component_state = ViewComponentState { .manager = manager };
+    auto list_component_state      = ListComponentState { .manager = manager };
+    auto view_component_state      = ViewComponentState { .manager = manager };
+    auto view_page_component_state = ViewPageComponentState { .manager = manager };
 
     auto mask_window = (MixerMask*) {};
 
@@ -107,9 +127,7 @@ auto main(int argc, char** argv) -> int {
             capro::Radius { 0 },
             capro::Level { CardLevel::HIGHEST },
 
-            capro::Layout<Row> {
-                lnpro::Margin { 0 },
-                lnpro::Spacing { 0 },
+            capro::Layout<Row> { lnpro::Margin { 0 }, lnpro::Spacing { 0 },
 
                 lnpro::Item {
                     NavComponent(nav_component_state),
@@ -118,20 +136,41 @@ auto main(int argc, char** argv) -> int {
                     lnpro::ContentsMargin { { 15, 15, 5, 15 } },
                     lnpro::Item { ListComponent(list_component_state) },
                 },
-                lnpro::Item<Col> {
-                    { 255 },
-                    lnpro::ContentsMargin { { 5, 15, 15, 15 } },
-                    lnpro::Item<ScrollArea> {
-                        scroll::pro::ThemeManager { manager },
-                        scroll::pro::HorizontalScrollBarPolicy {
-                            Qt::ScrollBarAlwaysOff,
-                        },
-                        scroll::pro::Item {
-                            ViewComponent(view_component_state),
+                lnpro::Item<Stacked> {
+                    { 1 },
+                    MutableForward {
+                        stpro::Index { 0 },
+                        stack_index,
+                    },
+                    stpro::Item<Widget> {
+                        capro::Layout<Col> {
+                            lnpro::ContentsMargin { { 5, 15, 15, 15 } },
+                            lnpro::Item<ScrollArea> {
+                                scroll::pro::ThemeManager { manager },
+                                scroll::pro::HorizontalScrollBarPolicy {
+                                    Qt::ScrollBarAlwaysOff,
+                                },
+                                scroll::pro::Item {
+                                    ViewComponent(view_component_state),
+                                },
+                            },
                         },
                     },
-                },
-            },
+                    stpro::Item<Widget> {
+                        capro::Layout<Col> {
+                            lnpro::ContentsMargin { { 5, 15, 15, 15 } },
+                            lnpro::Item<ScrollArea> {
+                                scroll::pro::ThemeManager { manager },
+                                scroll::pro::HorizontalScrollBarPolicy {
+                                    Qt::ScrollBarAlwaysOff,
+                                },
+                                scroll::pro::Item {
+                                    ViewPageComponent(view_page_component_state),
+                                },
+                            },
+                        },
+                    },
+                } },
         },
         mixer::pro::SetMixerMask { mask_window },
     };

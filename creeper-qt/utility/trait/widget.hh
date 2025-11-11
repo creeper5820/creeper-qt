@@ -1,6 +1,7 @@
 #pragma once
 #include <concepts>
 #include <qwidget.h>
+#include <utility>
 
 namespace creeper {
 
@@ -23,6 +24,12 @@ template <class T>
 concept linear_trait = requires(T t) {
     { t.addWidget(std::declval<QWidget*>(), int {}, Qt::AlignCenter) };
     { t.addLayout(std::declval<QLayout*>(), int {}) };
+};
+
+template <class T>
+concept stacked_trait = requires(T t) {
+    {t.addWidget(std::declval<QWidget*>())};
+    {t.insertWidget(int {}, std::declval<QWidget*>())};
 };
 
 template <class T>
