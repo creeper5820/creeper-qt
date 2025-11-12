@@ -19,7 +19,7 @@ pkgver() {
     git rev-parse --short HEAD
 }
 build() {
-    cmake -B build -S "$srcdir/${repname}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local/
+    cmake -B build -S "$srcdir/${repname}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
     cmake --build build
 }
 package() {

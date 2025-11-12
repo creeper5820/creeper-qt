@@ -90,8 +90,8 @@ auto main(int argc, char** argv) -> int {
 
     auto mask_window = (MixerMask*) {};
 
-    /// @note 有时候 Windows 总是给我来点惊喜，
-    ///       ShowWindow 这么常见命名的函数都放在全局作用域
+    /// @NOTE: 有时候 Windows 总是给我来点惊喜，
+    ///        ShowWindow 这么常见命名的函数都放在全局作用域
     creeper::ShowWindow<MainWindow> {
         [&](MainWindow& window) noexcept {
             // Q 键退出
