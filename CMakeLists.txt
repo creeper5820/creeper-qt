@@ -9,7 +9,7 @@ set(CMAKE_BUILD_TYPE "Release")
 set(BUILD_EXAMPLE true)
 set(CMAKE_AUTOMOC ON)
 
-add_compile_options(-Os -O3)
+add_compile_options(-Os -O2)
 
 set(QT_VERSION Qt6)
 find_package(${QT_VERSION} REQUIRED COMPONENTS Widgets Network)

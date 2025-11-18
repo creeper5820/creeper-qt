@@ -335,6 +335,8 @@ cat install_manifest.txt
 
 - [📖 使用指南](usage.md) - 本文档
 - [🧩 组件文档](widgets.md) - 组件的 API 文档
+- [📐 布局文档](layout.md) - 布局系统的 API 文档
+- [🎨 主题文档](theme.md) - 主题系统的 API 文档
 - [🎬 视频演示](https://www.bilibili.com/video/BV1JbxjzZEJ5) - 部分组件展示
 - [💬 问题反馈](https://github.com/creeper5820/creeper-qt/issues) - GitHub Issues
 

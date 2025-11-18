@@ -19,8 +19,11 @@ pkgver() {
     git rev-parse --short HEAD
 }
 build() {
-    cmake -B build -S "$srcdir/${repname}" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
-    cmake --build build
+    cmake -B build -S "$srcdir/${repname}" \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -Wno-dev
+    cmake --build build -j
 }
 package() {
     DESTDIR="$pkgdir" cmake --install build

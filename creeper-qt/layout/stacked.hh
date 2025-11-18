@@ -15,8 +15,8 @@ namespace creeper::stacked::pro {
 
 using Token = common::Token<internal::Stacked>;
 
-template <class Callback>
-using IndexChanged = common::pro::CurrentChanged<Callback, Token>;
+template <typename F>
+using IndexChanged = common::pro::SignalInjection<F, Token, &internal::Stacked::currentChanged>;
 
 using Index = common::pro::Index<Token>;
 
