@@ -45,7 +45,48 @@
       - [使用示例](#使用示例-1)
     - [FilledTextField 文本框](#filledtextfield-文本框)
       - [继承属性](#继承属性-5)
-      - [基本使用](#基本使用)
+      - [专有属性](#专有属性-1)
+      - [使用示例](#使用示例-2)
+    - [OutlinedTextField 文本框](#outlinedtextfield-文本框)
+      - [继承属性](#继承属性-6)
+      - [使用示例](#使用示例-3)
+    - [Slider 滑块](#slider-滑块)
+      - [继承属性](#继承属性-7)
+      - [专有属性](#专有属性-2)
+      - [使用示例](#使用示例-4)
+    - [FilledDropdownMenu 下拉菜单](#filleddropdownmenu-下拉菜单)
+      - [继承属性](#继承属性-8)
+      - [专有属性](#专有属性-3)
+      - [使用示例](#使用示例-5)
+    - [FilledSelect 选择器](#filledselect-选择器)
+      - [继承属性](#继承属性-9)
+      - [专有属性](#专有属性-4)
+      - [使用示例](#使用示例-6)
+    - [Image 图片](#image-图片)
+      - [继承属性](#继承属性-10)
+      - [专有属性](#专有属性-5)
+      - [使用示例](#使用示例-7)
+    - [Text 文本](#text-文本)
+      - [继承属性](#继承属性-11)
+      - [专有属性](#专有属性-6)
+      - [使用示例](#使用示例-8)
+    - [Card 卡片组件](#card-卡片组件)
+      - [继承属性](#继承属性-12)
+      - [专有属性](#专有属性-7)
+      - [使用示例](#使用示例-9)
+    - [IconButton 图标按钮](#iconbutton-图标按钮)
+      - [继承属性](#继承属性-13)
+      - [专有属性](#专有属性-8)
+      - [预设尺寸常量](#预设尺寸常量)
+      - [使用示例](#使用示例-10)
+    - [MainWindow 主窗口](#mainwindow-主窗口)
+      - [继承属性](#继承属性-14)
+      - [专有属性](#专有属性-9)
+      - [使用示例](#使用示例-11)
+    - [WaveCircle 波浪圆形](#wavecircle-波浪圆形)
+      - [继承属性](#继承属性-15)
+      - [专有属性](#专有属性-10)
+      - [使用示例](#使用示例-12)
   - [📚 相关文档](#-相关文档)
   - [❓ 常见问题](#-常见问题)
 
@@ -415,92 +456,16 @@ auto text_button = TextButton { properties };
 
 #### 专有属性
 
-<table>
-  <thead>
-    <tr>
-      <th width="280">属性名</th>
-      <th width="180">类型</th>
-      <th>说明</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>TrackColorUnchecked</code></td>
-      <td><code>QColor</code></td>
-      <td>轨道颜色 - 未选中</td>
-    </tr>
-    <tr>
-      <td><code>TrackColorChecked</code></td>
-      <td><code>QColor</code></td>
-      <td>轨道颜色 - 已选中</td>
-    </tr>
-    <tr>
-      <td><code>TrackColorUncheckedDisabled</code></td>
-      <td><code>QColor</code></td>
-      <td>轨道颜色 - 未选中禁用</td>
-    </tr>
-    <tr>
-      <td><code>TrackColorCheckedDisabled</code></td>
-      <td><code>QColor</code></td>
-      <td>轨道颜色 - 已选中禁用</td>
-    </tr>
-    <tr>
-      <td><code>HandleColorUnchecked</code></td>
-      <td><code>QColor</code></td>
-      <td>手柄颜色 - 未选中</td>
-    </tr>
-    <tr>
-      <td><code>HandleColorChecked</code></td>
-      <td><code>QColor</code></td>
-      <td>手柄颜色 - 已选中</td>
-    </tr>
-    <tr>
-      <td><code>HandleColorUncheckedDisabled</code></td>
-      <td><code>QColor</code></td>
-      <td>手柄颜色 - 未选中禁用</td>
-    </tr>
-    <tr>
-      <td><code>HandleColorCheckedDisabled</code></td>
-      <td><code>QColor</code></td>
-      <td>手柄颜色 - 已选中禁用</td>
-    </tr>
-    <tr>
-      <td><code>OutlineColorUnchecked</code></td>
-      <td><code>QColor</code></td>
-      <td>轮廓颜色 - 未选中</td>
-    </tr>
-    <tr>
-      <td><code>OutlineColorChecked</code></td>
-      <td><code>QColor</code></td>
-      <td>轮廓颜色 - 已选中</td>
-    </tr>
-    <tr>
-      <td><code>OutlineColorUncheckedDisabled</code></td>
-      <td><code>QColor</code></td>
-      <td>轮廓颜色 - 未选中禁用</td>
-    </tr>
-    <tr>
-      <td><code>OutlineColorCheckedDisabled</code></td>
-      <td><code>QColor</code></td>
-      <td>轮廓颜色 - 已选中禁用</td>
-    </tr>
-    <tr>
-      <td><code>HoverColorUnchecked</code></td>
-      <td><code>QColor</code></td>
-      <td>悬停颜色 - 未选中</td>
-    </tr>
-    <tr>
-      <td><code>HoverColorChecked</code></td>
-      <td><code>QColor</code></td>
-      <td>悬停颜色 - 已选中</td>
-    </tr>
-    <tr>
-      <td><code>Clickable</code></td>
-      <td><code>[](auto& self){}</code></td>
-      <td>点击回调函数</td>
-    </tr>
-  </tbody>
-</table>
+> 📖 **完整属性列表**: 查看 [源代码](../creeper-qt/widget/switch.hh#L60-L106) 获取所有可用属性
+
+主要属性包括：
+
+- `Clickable` - 点击回调函数
+- `Checked` / `Disabled` - 状态控制
+- `TrackColor*` - 轨道颜色系列（Checked/Unchecked/Disabled 状态）
+- `HandleColor*` - 手柄颜色系列（Checked/Unchecked/Disabled 状态）
+- `OutlineColor*` - 轮廓颜色系列（Checked/Unchecked/Disabled 状态）
+- `HoverColor*` - 悬停颜色系列（Checked/Unchecked 状态）
 
 #### 使用示例
 
@@ -524,25 +489,882 @@ auto switch_widget = new Switch {
 
 <img src="https://creeper5820.com/creeper-qt/filled-text-field.gif" width="500" alt="FilledTextField 组件动画">
 
-**命名空间**: `creeper::filled_text_field::pro`
+**命名空间**: `creeper::text_field::pro`
 
 </div>
-
-> 🚧 **文档完善中** - 详细 API 文档即将补充
 
 #### 继承属性
 
 - ✅ `creeper::util::theme::pro`
 - ✅ `creeper::widget::pro`
 
-#### 基本使用
+#### 专有属性
+
+<table>
+  <thead>
+    <tr>
+      <th width="200">属性名</th>
+      <th width="200">类型</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>LabelText</code></td>
+      <td><code>QString</code></td>
+      <td>标签文本（浮动标签）</td>
+    </tr>
+    <tr>
+      <td><code>LeadingIcon</code></td>
+      <td><code>QString, QString</code></td>
+      <td>前置图标（图标代码，字体名称）</td>
+    </tr>
+    <tr>
+      <td><code>ClearButton</code></td>
+      <td><code>bool</code></td>
+      <td>是否显示清除按钮</td>
+    </tr>
+    <tr>
+      <td><code>OnTextChanged</code></td>
+      <td><code>[](const QString&){}</code></td>
+      <td>文本改变时的回调函数</td>
+    </tr>
+    <tr>
+      <td><code>OnEditingFinished</code></td>
+      <td><code>[]{}</code></td>
+      <td>编辑完成时的回调函数</td>
+    </tr>
+    <tr>
+      <td><code>OnChanged</code></td>
+      <td><code>[](const QString&){}</code></td>
+      <td>文本改变时的回调函数（OnTextChanged 的别名）</td>
+    </tr>
+  </tbody>
+</table>
+
+#### 使用示例
 
 ```cpp
 using namespace creeper;
 
+// 基本使用
 auto text_field = new FilledTextField {
-    widget::pro::FixedSize { 250, 56 },
-    // 更多属性配置...
+    text_field::pro::ThemeManager { manager },
+    text_field::pro::LabelText { "用户名" },
+    text_field::pro::FixedSize { 250, 56 },
+    text_field::pro::OnTextChanged { [](const QString& text) {
+        qDebug() << "输入内容:" << text;
+    }}
+};
+
+// 带前置图标
+auto search_field = new FilledTextField {
+    text_field::pro::ThemeManager { manager },
+    text_field::pro::LeadingIcon {
+        material::icon::kSearch,
+        material::round::font
+    },
+    text_field::pro::LabelText { "搜索" },
+    text_field::pro::ClearButton { true }
+};
+
+// 与 MutableValue 绑定
+auto text_value = std::make_shared<MutableValue<QString>>();
+text_value->set_silent("初始值");
+
+auto bound_field = new FilledTextField {
+    text_field::pro::ThemeManager { manager },
+    text_field::pro::LabelText { "输入框" },
+    MutableForward {
+        text_field::pro::LabelText {},
+        text_value
+    }
+};
+```
+
+---
+
+### OutlinedTextField 文本框
+
+<div align="center">
+
+**命名空间**: `creeper::text_field::pro`
+
+> 💡 与 `FilledTextField` 相同的 API，仅外观样式不同（带边框）
+
+</div>
+
+#### 继承属性
+
+- ✅ `creeper::util::theme::pro`
+- ✅ `creeper::widget::pro`
+
+#### 使用示例
+
+```cpp
+using namespace creeper;
+
+auto outlined_field = new OutlinedTextField {
+    text_field::pro::ThemeManager { manager },
+    text_field::pro::LabelText { "密码" },
+    text_field::pro::LeadingIcon {
+        "lock",
+        material::round::font
+    }
+};
+```
+
+---
+
+### Slider 滑块
+
+<div align="center">
+
+**命名空间**: `creeper::slider::pro`
+
+</div>
+
+#### 继承属性
+
+- ✅ `creeper::util::theme::pro`
+- ✅ `creeper::widget::pro`
+
+#### 专有属性
+
+<table>
+  <thead>
+    <tr>
+      <th width="200">属性名</th>
+      <th width="200">类型</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Progress</code></td>
+      <td><code>double</code></td>
+      <td>进度值（0.0 - 1.0）</td>
+    </tr>
+    <tr>
+      <td><code>Measurements</code></td>
+      <td><code>Measurements</code></td>
+      <td>尺寸配置（支持 Xs, S, M, L, SL 预设）</td>
+    </tr>
+    <tr>
+      <td><code>OnValueChange</code></td>
+      <td><code>[](double){}</code></td>
+      <td>值改变时的回调函数</td>
+    </tr>
+    <tr>
+      <td><code>OnValueChangeFinished</code></td>
+      <td><code>[](double){}</code></td>
+      <td>值改变完成时的回调函数</td>
+    </tr>
+  </tbody>
+</table>
+
+#### 使用示例
+
+```cpp
+using namespace creeper;
+
+// 基本使用
+auto slider = new Slider {
+    slider::pro::ThemeManager { manager },
+    slider::pro::Measurements { Slider::Measurements::M() },
+    slider::pro::FixedHeight { 52 },
+    slider::pro::FixedWidth { 300 },
+    slider::pro::Progress { 0.5 },
+    slider::pro::OnValueChange { [](double progress) {
+        qDebug() << "进度:" << progress;
+    }}
+};
+
+// 与 MutableValue 绑定
+auto progress_value = std::make_shared<MutableValue<double>>();
+progress_value->set_silent(0.2);
+
+auto bound_slider = new Slider {
+    slider::pro::ThemeManager { manager },
+    slider::pro::Measurements { Slider::Measurements::S() },
+    MutableForward {
+        slider::pro::Progress { 0. },
+        progress_value
+    },
+    slider::pro::OnValueChange {
+        [=](double progress) {
+            *progress_value = progress;
+        }
+    }
+};
+```
+
+---
+
+### FilledDropdownMenu 下拉菜单
+
+<div align="center">
+
+**命名空间**: `creeper::dropdown_menu::pro`
+
+</div>
+
+#### 继承属性
+
+- ✅ `creeper::util::theme::pro`
+- ✅ `creeper::widget::pro`
+
+#### 专有属性
+
+<table>
+  <thead>
+    <tr>
+      <th width="200">属性名</th>
+      <th width="200">类型</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>LabelText</code></td>
+      <td><code>QString</code></td>
+      <td>标签文本</td>
+    </tr>
+    <tr>
+      <td><code>LeadingIcon</code></td>
+      <td><code>QString, QString</code></td>
+      <td>前置图标（图标代码，字体名称）</td>
+    </tr>
+    <tr>
+      <td><code>Items</code></td>
+      <td><code>QVector&lt;QString&gt;</code></td>
+      <td>选项列表</td>
+    </tr>
+    <tr>
+      <td><code>IndexChanged</code></td>
+      <td><code>[](int){}</code></td>
+      <td>选中项改变时的回调函数</td>
+    </tr>
+  </tbody>
+</table>
+
+#### 使用示例
+
+```cpp
+using namespace creeper;
+
+// 基本使用
+auto dropdown = new FilledDropdownMenu {
+    dropdown_menu::pro::ThemeManager { manager },
+    dropdown_menu::pro::LabelText { "选择项" },
+    dropdown_menu::pro::Items { QStringList { "选项1", "选项2", "选项3" } },
+    dropdown_menu::pro::IndexChanged { [](int index) {
+        qDebug() << "选中索引:" << index;
+    }}
+};
+
+// 与 MutableValue 绑定
+auto items_value = std::make_shared<MutableValue<QStringList>>();
+items_value->set_silent(QStringList { "1st", "2nd", "3rd" });
+
+auto bound_dropdown = new FilledDropdownMenu {
+    dropdown_menu::pro::ThemeManager { manager },
+    dropdown_menu::pro::LabelText { "Item" },
+    MutableForward {
+        dropdown_menu::pro::Items {},
+        items_value
+    }
+};
+```
+
+---
+
+### FilledSelect 选择器
+
+<div align="center">
+
+**命名空间**: `creeper::select_widget::pro`
+
+> 💡 与 `FilledDropdownMenu` 功能类似，但外观和交互略有不同
+
+</div>
+
+#### 继承属性
+
+- ✅ `creeper::util::theme::pro`
+- ✅ `creeper::widget::pro`
+
+#### 专有属性
+
+<table>
+  <thead>
+    <tr>
+      <th width="200">属性名</th>
+      <th width="200">类型</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>LabelText</code></td>
+      <td><code>QString</code></td>
+      <td>标签文本</td>
+    </tr>
+    <tr>
+      <td><code>LeadingIcon</code></td>
+      <td><code>QString, QString</code></td>
+      <td>前置图标（默认使用下拉箭头图标）</td>
+    </tr>
+    <tr>
+      <td><code>Items</code></td>
+      <td><code>QVector&lt;QString&gt;</code></td>
+      <td>选项列表</td>
+    </tr>
+    <tr>
+      <td><code>IndexChanged</code></td>
+      <td><code>[](int){}</code></td>
+      <td>选中项改变时的回调函数</td>
+    </tr>
+  </tbody>
+</table>
+
+#### 使用示例
+
+```cpp
+using namespace creeper;
+
+auto select = new FilledSelect {
+    select_widget::pro::ThemeManager { manager },
+    select_widget::pro::LabelText { "选择" },
+    select_widget::pro::Items { QStringList { "选项A", "选项B", "选项C" } }
+};
+```
+
+---
+
+### Image 图片
+
+<div align="center">
+
+**命名空间**: `creeper::image::pro`
+
+</div>
+
+#### 继承属性
+
+- ✅ `creeper::widget::pro`
+
+#### 专有属性
+
+<table>
+  <thead>
+    <tr>
+      <th width="200">属性名</th>
+      <th width="200">类型</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>PainterResource</code></td>
+      <td><code>std::shared_ptr&lt;PainterResource&gt;</code></td>
+      <td>图片资源（支持 QPixmap, QImage 等）</td>
+    </tr>
+    <tr>
+      <td><code>Pixmap</code></td>
+      <td><code>QPixmap</code></td>
+      <td>设置图片（PainterResource 的别名）</td>
+    </tr>
+    <tr>
+      <td><code>ContentScale</code></td>
+      <td><code>ContentScale</code></td>
+      <td>内容缩放模式</td>
+    </tr>
+    <tr>
+      <td><code>Opacity</code></td>
+      <td><code>double</code></td>
+      <td>透明度（0.0 - 1.0）</td>
+    </tr>
+    <tr>
+      <td><code>Radius</code></td>
+      <td><code>double</code></td>
+      <td>圆角半径</td>
+    </tr>
+    <tr>
+      <td><code>BorderWidth</code></td>
+      <td><code>double</code></td>
+      <td>边框宽度</td>
+    </tr>
+    <tr>
+      <td><code>BorderColor</code></td>
+      <td><code>QColor</code></td>
+      <td>边框颜色</td>
+    </tr>
+  </tbody>
+</table>
+
+#### 使用示例
+
+```cpp
+using namespace creeper;
+
+// 基本使用
+auto image = new Image {
+    image::pro::Pixmap { QPixmap("path/to/image.png") },
+    image::pro::FixedSize { 200, 200 },
+    image::pro::Radius { 10 },
+    image::pro::BorderWidth { 2 },
+    image::pro::BorderColor { QColor("#000000") }
+};
+
+// 使用 ContentScale
+auto scaled_image = new Image {
+    image::pro::Pixmap { QPixmap("path/to/image.png") },
+    image::pro::ContentScale { ContentScale::Fit },
+    image::pro::FixedSize { 300, 300 }
+};
+```
+
+---
+
+### Text 文本
+
+<div align="center">
+
+**命名空间**: `creeper::text::pro`
+
+</div>
+
+#### 继承属性
+
+- ✅ `creeper::util::theme::pro`
+- ✅ `creeper::widget::pro`
+
+#### 专有属性
+
+<table>
+  <thead>
+    <tr>
+      <th width="200">属性名</th>
+      <th width="200">类型</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Text</code></td>
+      <td><code>QString</code></td>
+      <td>文本内容</td>
+    </tr>
+    <tr>
+      <td><code>Color</code></td>
+      <td><code>QColor</code></td>
+      <td>文本颜色</td>
+    </tr>
+    <tr>
+      <td><code>Alignment</code></td>
+      <td><code>Qt::Alignment</code></td>
+      <td>文本对齐方式</td>
+    </tr>
+    <tr>
+      <td><code>WordWrap</code></td>
+      <td><code>bool</code></td>
+      <td>是否自动换行</td>
+    </tr>
+    <tr>
+      <td><code>TextInteractionFlags</code></td>
+      <td><code>Qt::TextInteractionFlags</code></td>
+      <td>文本交互标志（如可选择、可编辑等）</td>
+    </tr>
+    <tr>
+      <td><code>AdjustSize</code></td>
+      <td>-</td>
+      <td>自动调整大小以适应内容</td>
+    </tr>
+  </tbody>
+</table>
+
+#### 使用示例
+
+```cpp
+using namespace creeper;
+
+// 基本使用
+auto text = new Text {
+    text::pro::ThemeManager { manager },
+    text::pro::Text { "Hello World" },
+    text::pro::Alignment { Qt::AlignCenter }
+};
+
+// 可选择的文本
+auto selectable_text = new Text {
+    text::pro::ThemeManager { manager },
+    text::pro::Text { "可选择的文本内容" },
+    text::pro::WordWrap { true },
+    text::pro::TextInteractionFlags {
+        Qt::TextInteractionFlag::TextSelectableByMouse
+    }
+};
+
+// 与 MutableValue 绑定
+auto text_value = std::make_shared<MutableValue<QString>>();
+text_value->set_silent("初始文本");
+
+auto bound_text = new Text {
+    text::pro::ThemeManager { manager },
+    MutableForward {
+        text::pro::Text {},
+        text_value
+    }
+};
+```
+
+---
+
+### Card 卡片组件
+
+<div align="center">
+
+**命名空间**: `creeper::card::pro`
+
+</div>
+
+卡片组件提供多种样式：`FilledCard`、`OutlinedCard`、`ElevatedCard`、`BasicCard`。
+
+#### 继承属性
+
+- ✅ `creeper::util::theme::pro`
+- ✅ `creeper::widget::pro`
+- ✅ `creeper::rounded_rect::pro`
+
+#### 专有属性
+
+<table>
+  <thead>
+    <tr>
+      <th width="200">属性名</th>
+      <th width="200">类型</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Level</code></td>
+      <td><code>CardLevel</code></td>
+      <td>卡片层级（DEFAULT, HIGH, HIGHEST, LOW, LOWEST）</td>
+    </tr>
+    <tr>
+      <td><code>LevelDefault</code></td>
+      <td>-</td>
+      <td>默认层级（常量）</td>
+    </tr>
+    <tr>
+      <td><code>LevelHigh</code></td>
+      <td>-</td>
+      <td>高层级（常量）</td>
+    </tr>
+    <tr>
+      <td><code>LevelHighest</code></td>
+      <td>-</td>
+      <td>最高层级（常量）</td>
+    </tr>
+    <tr>
+      <td><code>LevelLow</code></td>
+      <td>-</td>
+      <td>低层级（常量）</td>
+    </tr>
+    <tr>
+      <td><code>LevelLowest</code></td>
+      <td>-</td>
+      <td>最低层级（常量）</td>
+    </tr>
+  </tbody>
+</table>
+
+#### 使用示例
+
+```cpp
+using namespace creeper;
+namespace capro = card::pro;
+
+// FilledCard - 填充卡片
+auto filled_card = new FilledCard {
+    capro::ThemeManager { manager },
+    capro::Level { CardLevel::HIGHEST },
+    capro::Radius { 12 },
+    capro::FixedSize { 200, 150 },
+    capro::Layout<Col> {
+        // 卡片内容
+    }
+};
+
+// OutlinedCard - 轮廓卡片
+auto outlined_card = new OutlinedCard {
+    capro::ThemeManager { manager },
+    capro::LevelLowest,
+    capro::Radius { 8 },
+    capro::Layout<Row> {
+        // 卡片内容
+    }
+};
+
+// ElevatedCard - 提升卡片（带阴影）
+auto elevated_card = new ElevatedCard {
+    capro::ThemeManager { manager },
+    capro::LevelHigh,
+    capro::Layout<Col> {
+        // 卡片内容
+    }
+};
+```
+
+---
+
+### IconButton 图标按钮
+
+<div align="center">
+
+**命名空间**: `creeper::icon_button::pro`
+
+</div>
+
+#### 继承属性
+
+- ✅ `creeper::util::theme::pro`
+- ✅ `creeper::widget::pro`
+
+#### 专有属性
+
+<table>
+  <thead>
+    <tr>
+      <th width="200">属性名</th>
+      <th width="200">类型</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Icon</code></td>
+      <td><code>QIcon</code></td>
+      <td>图标（QIcon 对象）</td>
+    </tr>
+    <tr>
+      <td><code>FontIcon</code></td>
+      <td><code>QString</code></td>
+      <td>字体图标（Material Icons 代码）</td>
+    </tr>
+    <tr>
+      <td><code>Color</code></td>
+      <td><code>Color</code></td>
+      <td>颜色样式（FILLED, TONAL, OUTLINED, STANDARD）</td>
+    </tr>
+    <tr>
+      <td><code>Shape</code></td>
+      <td><code>Shape</code></td>
+      <td>形状（ROUND, SQUARE）</td>
+    </tr>
+    <tr>
+      <td><code>Types</code></td>
+      <td><code>Types</code></td>
+      <td>类型（DEFAULT, TOGGLE_SELECTED, TOGGLE_UNSELECTED）</td>
+    </tr>
+    <tr>
+      <td><code>Width</code></td>
+      <td><code>Width</code></td>
+      <td>宽度（DEFAULT, NARROW, WIDE）</td>
+    </tr>
+    <tr>
+      <td><code>Clickable</code></td>
+      <td><code>[]{}</code></td>
+      <td>点击回调函数</td>
+    </tr>
+  </tbody>
+</table>
+
+#### 预设尺寸常量
+
+- `kExtraSmallContainerSize` - 32x32
+- `kSmallContainerSize` - 40x40
+- `kMediumContainerSize` - 56x56
+- `kLargeContainerSize` - 96x96
+- `kExtraLargeContainerSize` - 136x136
+
+#### 使用示例
+
+```cpp
+using namespace creeper;
+namespace ibpro = icon_button::pro;
+
+// 基本使用
+auto icon_button = new IconButton {
+    ibpro::ThemeManager { manager },
+    ibpro::FixedSize { 40, 40 },
+    ibpro::Color { IconButton::Color::TONAL },
+    ibpro::FontIcon { "search" },
+    ibpro::Clickable { [] {
+        qDebug() << "图标按钮被点击";
+    }}
+};
+
+// 使用 Material Icons
+auto material_button = new IconButton {
+    ibpro::ThemeManager { manager },
+    ibpro::FixedSize { 40, 40 },
+    ibpro::Color { IconButton::Color::TONAL },
+    ibpro::Font { material::kRoundSmallFont },
+    ibpro::FontIcon { "change_circle" }
+};
+
+// 切换按钮
+auto toggle_button = new IconButton {
+    ibpro::ThemeManager { manager },
+    ibpro::Types { IconButton::Types::TOGGLE_UNSELECTED },
+    ibpro::FontIcon { "favorite" }
+};
+```
+
+---
+
+### MainWindow 主窗口
+
+<div align="center">
+
+**命名空间**: `creeper::main_window::pro`
+
+</div>
+
+#### 继承属性
+
+- ✅ `creeper::widget::pro`
+
+#### 专有属性
+
+<table>
+  <thead>
+    <tr>
+      <th width="200">属性名</th>
+      <th width="200">类型</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>Central</code></td>
+      <td><code>Widget*</code></td>
+      <td>设置中心组件</td>
+    </tr>
+  </tbody>
+</table>
+
+#### 使用示例
+
+```cpp
+using namespace creeper;
+namespace mwpro = main_window::pro;
+
+// 基本使用
+auto main_window = new MainWindow {
+    mwpro::MinimumSize { 1080, 720 },
+    mwpro::Central<FilledCard> {
+        card::pro::ThemeManager { manager },
+        card::pro::Layout<Col> {
+            // 窗口内容
+        }
+    }
+};
+main_window->show();
+
+// 使用 ShowWindow 语法糖（推荐）
+creeper::ShowWindow<MainWindow> {
+    mwpro::MinimumSize { 1080, 720 },
+    mwpro::Central<FilledCard> {
+        card::pro::ThemeManager { manager },
+        card::pro::Layout<Col> {
+            // 窗口内容
+        }
+    }
+};
+```
+
+---
+
+### WaveCircle 波浪圆形
+
+<div align="center">
+
+**命名空间**: `creeper::wave_circle::pro`
+
+</div>
+
+#### 继承属性
+
+- ✅ `creeper::widget::pro`
+
+#### 专有属性
+
+<table>
+  <thead>
+    <tr>
+      <th width="200">属性名</th>
+      <th width="200">类型</th>
+      <th>说明</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>FlangeNumber</code></td>
+      <td><code>uint8_t</code></td>
+      <td>波浪数量（凸起数量）</td>
+    </tr>
+    <tr>
+      <td><code>FlangeRadius</code></td>
+      <td><code>double</code></td>
+      <td>波浪半径</td>
+    </tr>
+    <tr>
+      <td><code>OverallRadius</code></td>
+      <td><code>double</code></td>
+      <td>整体半径</td>
+    </tr>
+    <tr>
+      <td><code>ProtrudingRatio</code></td>
+      <td><code>double</code></td>
+      <td>凸起比例（0.0 - 1.0）</td>
+    </tr>
+    <tr>
+      <td><code>Background</code></td>
+      <td><code>QColor</code></td>
+      <td>背景颜色</td>
+    </tr>
+    <tr>
+      <td><code>BorderWidth</code></td>
+      <td><code>double</code></td>
+      <td>边框宽度</td>
+    </tr>
+    <tr>
+      <td><code>BorderColor</code></td>
+      <td><code>QColor</code></td>
+      <td>边框颜色</td>
+    </tr>
+  </tbody>
+</table>
+
+#### 使用示例
+
+```cpp
+using namespace creeper;
+namespace wcpro = wave_circle::pro;
+
+auto wave_circle = new WaveCircle {
+    wcpro::FixedSize { 150, 200 },
+    wcpro::FlangeNumber { 8 },
+    wcpro::FlangeRadius { 20 },
+    wcpro::OverallRadius { 100 },
+    wcpro::ProtrudingRatio { 0.8 },
+    wcpro::Background { QColor("#2196F3") },
+    wcpro::BorderWidth { 2 },
+    wcpro::BorderColor { QColor("#FFFFFF") }
 };
 ```
 
@@ -555,6 +1377,9 @@ auto text_field = new FilledTextField {
 | 文档       | 链接                                                              |
 | ---------- | ----------------------------------------------------------------- |
 | 📖 使用指南 | [usage.md](./usage.md)                                            |
+| 📐 布局文档 | [layout.md](./layout.md)                                          |
+| 🎨 主题文档 | [theme.md](./theme.md)                                            |
+| 📚 API 参考 | [api.md](./api.md)                                                |
 | 🏠 项目主页 | [README.md](../README.md)                                         |
 | 🎬 视频演示 | [Bilibili](https://www.bilibili.com/video/BV1JbxjzZEJ5)           |
 | 💬 问题反馈 | [GitHub Issues](https://github.com/creeper5820/creeper-qt/issues) |

@@ -1,12 +1,7 @@
 #pragma once
 
 #include "property.hh"
-
-#include <qbitmap.h>
-#include <qcontainerfwd.h>
-#include <qicon.h>
 #include <qwidget.h>
-#include <vector>
 
 namespace creeper::common {
 
@@ -21,7 +16,7 @@ struct Token {
 
 namespace pro {
 
-    // 设置组建透明度
+    // 设置组件透明度
     template <class Token>
     using Opacity = SetterProp<Token, double, [](auto& self, double v) { self.set_opacity(v); }>;
 
@@ -91,22 +86,8 @@ namespace pro {
     using Checked = SetterProp<Token, bool, [](auto& self, bool v) { self.set_checked(v); }>;
 
     template <class Token>
-    using Index = SetterProp<Token, int, [](auto& self, int v) {self.setCurrentIndex(v);}>;
+    using Index = SetterProp<Token, int, [](auto& self, int v) { self.setCurrentIndex(v); }>;
 
-    // 通用向量属性
-    template <class Token, typename T, auto setter>
-    struct Vector : public QVector<T>, Token {
-        using QVector<T>::QVector;
-
-        explicit Vector(const QVector<T>& vec) noexcept
-            : QVector<T>(vec) { }
-        explicit Vector(const std::vector<T>& vec) noexcept
-            : QVector<T>(QVector<T>(vec.begin(), vec.end())) { }
-        void apply(auto& self) const 
-            requires requires {setter(self, *this);} {
-                setter(self, *this);
-            }
-    };
     // 通用文本属性
     template <class Token, auto setter>
     struct String : public QString, Token {
@@ -162,42 +143,7 @@ namespace pro {
         }
     };
 
-    // 通用索引改变事件1
-    template <typename Callback, class Token>
-    struct IndexChanged : Token {
-        Callback callback;
-        explicit IndexChanged(Callback callback) noexcept
-            : callback { std::move(callback) } { }
-        auto apply(auto& self) const noexcept -> void
-            requires std::invocable<Callback, decltype(self)> || std::invocable<Callback>
-        {
-            using widget_t = std::remove_cvref_t<decltype(self)>;
-            QObject::connect(&self, &widget_t::currentIndexChanged, [function = callback, &self] {
-                if constexpr (std::invocable<Callback, decltype(self)>) function(self);
-                if constexpr (std::invocable<Callback>) function();
-            });
-        }
-    };
-
-    // 通过索引改变事件2
-    template <typename Callback, class Token>
-    struct CurrentChanged : Token {
-        Callback callback;
-        explicit CurrentChanged(Callback callback) noexcept
-            : callback{ std::move(callback) } {}
-        auto apply(auto& self) const noexcept -> void
-            requires std::invocable<Callback, decltype(self)> || std::invocable<Callback>
-        {
-            using widget_t = std::remove_cvref_t<decltype(self)>;
-            QObject::connect(&self, &widget_t::currentChanged, [function = callback, &self] {
-                if constexpr (std::invocable<Callback, decltype(self)>) function(self);
-                if constexpr (std::invocable<Callback>) function();
-            });
-        }
-    };
-
     // 自定义信号回调注册
-
     namespace internal {
         template <typename T>
         struct FunctionArgs;

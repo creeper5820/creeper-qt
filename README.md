@@ -13,6 +13,9 @@
 <p>
   <a href="./doc/usage.md">使用指南</a> •
   <a href="./doc/widgets.md">组件文档</a> •
+  <a href="./doc/layout.md">布局文档</a> •
+  <a href="./doc/theme.md">主题文档</a> •
+  <a href="./doc/api.md">API 参考</a> •
   <a href="https://www.bilibili.com/video/BV1JbxjzZEJ5">视频演示</a>
 </p>
 
