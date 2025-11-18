@@ -139,7 +139,7 @@ auto main(int argc, char** argv) -> int {
                 lnpro::Item<Stacked> {
                     { 1 },
                     MutableForward {
-                        stpro::Index { 0 },
+                        stpro::CurrentIndex { 0 },
                         stack_index,
                     },
                     stpro::Item<Widget> {
