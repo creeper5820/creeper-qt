@@ -85,9 +85,6 @@ namespace pro {
     template <class Token>
     using Checked = SetterProp<Token, bool, [](auto& self, bool v) { self.set_checked(v); }>;
 
-    template <class Token>
-    using Index = SetterProp<Token, int, [](auto& self, int v) { self.setCurrentIndex(v); }>;
-
     // 通用文本属性
     template <class Token, auto setter>
     struct String : public QString, Token {

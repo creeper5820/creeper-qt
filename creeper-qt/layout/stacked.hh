@@ -15,16 +15,15 @@ namespace creeper::stacked::pro {
 
 using Token = common::Token<internal::Stacked>;
 
+/// @note: currentChanged(int index)
 template <typename F>
 using IndexChanged = common::pro::SignalInjection<F, Token, &internal::Stacked::currentChanged>;
 
-using Index = common::pro::Index<Token>;
+using CurrentIndex =
+    SetterProp<Token, int, [](auto& self, auto index) { self.setCurrentIndex(index); }>;
 
 template <typename T>
 concept trait = std::derived_from<T, Token> || layout::pro::trait<T>;
-
-CREEPER_DEFINE_CHECKER(trait);
-using namespace layout::pro;
 
 template <item_trait T>
 struct Item : Token {
@@ -43,6 +42,9 @@ struct Item : Token {
         }
     }
 };
+
+CREEPER_DEFINE_CHECKER(trait);
+using namespace layout::pro;
 }
 
 namespace creeper {

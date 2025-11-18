@@ -124,6 +124,7 @@ namespace dropdown_menu::pro {
         void apply(auto& self) const { self.set_leading_icon(code, font); }
     };
 
+    /// @note: currentIndexChanged(int index)
     template <typename F>
     using IndexChanged =
         common::pro::SignalInjection<F, Token, &internal::DropdownMenu::currentIndexChanged>;
