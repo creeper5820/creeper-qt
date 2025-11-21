@@ -71,11 +71,12 @@ struct Item : Token {
         : item_pointer { new T { std::forward<decltype(args)>(args)... } }
         , method(method) { }
 
-    explicit Item(auto&&... args) noexcept
-        requires std::constructible_from<T, decltype(args)...>
-        : item_pointer { new T { std::forward<decltype(args)>(args)... } } { }
+    template <typename... Args>
+        requires std::constructible_from<T, Args...>
+    explicit Item(Args&&... args) noexcept
+        : item_pointer { new T { std::forward<Args>(args)... } } { }
 
-    void apply(linear_trait auto& layout) const {
+    auto apply(linear_trait auto& layout) const {
         if constexpr (widget_trait<T>) layout.addWidget(item_pointer, method.stretch, method.align);
         if constexpr (layout_trait<T>) layout.addLayout(item_pointer, method.stretch);
     }
@@ -96,8 +97,8 @@ using BoxLayout = Declarative<T, CheckerOr<linear::pro::checker, layout::pro::ch
 using Row = BoxLayout<QHBoxLayout>;
 using Col = BoxLayout<QVBoxLayout>;
 
-namespace row   = linear;
-namespace col   = linear;
+namespace row = linear;
+namespace col = linear;
 
 using HBoxLayout = Row;
 using VBoxLayout = Col;

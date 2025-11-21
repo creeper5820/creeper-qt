@@ -9,10 +9,12 @@
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/layout/stacked.hh>
 #include <creeper-qt/utility/material-icon.hh>
+#include <creeper-qt/utility/math/lattice.hh>
 #include <creeper-qt/utility/wrapper/mutable-value.hh>
 #include <creeper-qt/widget/buttons/icon-button.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/cards/outlined-card.hh>
+#include <creeper-qt/widget/custom/widget.hh>
 #include <creeper-qt/widget/dropdown-menu.hh>
 #include <creeper-qt/widget/image.hh>
 #include <creeper-qt/widget/shape/wave-circle.hh>
@@ -319,6 +321,26 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
             },
             lnpro::Item<AssetCenter> {
                 state.manager,
+            },
+            lnpro::Item<CustomWidget> {
+                custom::pro::FixedHeight { 300 },
+                custom::pro::OnPaint<std::reference_wrapper<ThemeManager>> {
+                    std::ref(state.manager),
+                    [](auto& widget, ThemeManager& state) {
+                        auto solution = LatticeSolution {
+                            .spacing = 15,
+                        };
+                        solution.set_size(widget.size());
+
+                        auto painter = QPainter { &widget };
+                        painter.setBrush(state.color_scheme().surface_container_highest);
+                        painter.setPen(Qt::NoPen);
+                        painter.setRenderHint(QPainter::Antialiasing);
+                        for (auto [px, py] : solution.solve()) {
+                            painter.drawEllipse(px, py, 4, 4);
+                        }
+                    },
+                },
             },
             lnpro::Item<Flow> {
                 flow::pro::RowSpacing { 10 },
