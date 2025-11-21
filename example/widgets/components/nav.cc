@@ -25,7 +25,7 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
         im::ContentScale { ContentScale::CROP },
         im::BorderWidth { 3 },
         im::PainterResource {
-            "http://i0.hdslb.com/bfs/article/e4e412299e6c038035241b1dc625cb62c8b5513a.jpg",
+            "https://creeper5820.com/creeper-qt/ohtoai.png",
             [] { qDebug() << "[main] Image loading completed"; },
         },
     };

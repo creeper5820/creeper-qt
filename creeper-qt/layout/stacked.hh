@@ -50,4 +50,9 @@ using namespace layout::pro;
 namespace creeper {
 using Stacked = Declarative<stacked::internal::Stacked, stacked::pro::checker>;
 using NavHost = Stacked;
+
+namespace nav_host::pro {
+    using namespace stacked::pro;
+}
+
 }
