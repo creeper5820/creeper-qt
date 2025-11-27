@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://creeper5820.com/creeper-qt/creeper-qt.jpg" width="300" alt="CREEPER-QT Logo">
+<img src="https://r2.creeper5820.com/creeper-qt/creeper-qt.jpg" width="300" alt="CREEPER-QT Logo">
 
 # CREEPER-QT
 
@@ -86,17 +86,17 @@
 <table>
   <tr>
     <td width="50%">
-      <img src="https://creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-30.png" alt="主窗口明亮主题">
+      <img src="https://r2.creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-30.png" alt="主窗口明亮主题">
     </td>
     <td width="50%">
-      <img src="https://creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-38.png" alt="主窗口黑暗主题">
+      <img src="https://r2.creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-38.png" alt="主窗口黑暗主题">
     </td>
   </tr>
 </table>
 
 ### 组件样式
 
-<img src="https://creeper5820.com/creeper-qt/blue-style-widgets.png" width="800" alt="组件样式展示">
+<img src="https://r2.creeper5820.com/creeper-qt/blue-style-widgets.png" width="800" alt="组件样式展示">
 
 ### 动画效果
 
@@ -104,11 +104,11 @@
   <tr>
     <td width="50%" align="center">
       <strong>开关组件动画</strong><br><br>
-      <img src="https://creeper5820.com/creeper-qt/switch-working.gif" width="400" alt="开关动画">
+      <img src="https://r2.creeper5820.com/creeper-qt/switch-working.gif" width="400" alt="开关动画">
     </td>
     <td width="50%" align="center">
       <strong>文本框动画</strong><br><br>
-      <img src="https://creeper5820.com/creeper-qt/filled-text-field.gif" width="400" alt="文本框动画">
+      <img src="https://r2.creeper5820.com/creeper-qt/filled-text-field.gif" width="400" alt="文本框动画">
     </td>
   </tr>
 </table>

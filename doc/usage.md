@@ -230,7 +230,7 @@ cmake --build build --target install
 > 💡 **推荐使用 MSYS2 环境** - [MSYS2 安装指南](https://www.msys2.org/docs/installer/)
 
 <div align="center">
-  <img src="https://creeper5820.com/creeper-qt/windows-neofetch.png" width="600" alt="Windows MSYS2 环境">
+  <img src="https://r2.creeper5820.com/creeper-qt/windows-neofetch.png" width="600" alt="Windows MSYS2 环境">
   <p><i>在 Windows 上使用 zsh 和 pacman 是一件令人惬意的事情 😊</i></p>
 </div>
 

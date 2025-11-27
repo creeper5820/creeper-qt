@@ -129,7 +129,7 @@ const auto widget = new Widget {
 
 <div align="center">
 
-<img src="https://creeper5820.com/creeper-qt/blue-style-widgets.png" width="800" alt="按钮样式展示">
+<img src="https://r2.creeper5820.com/creeper-qt/blue-style-widgets.png" width="800" alt="按钮样式展示">
 
 ### 内置主题
 
@@ -350,7 +350,7 @@ auto text_button = TextButton { properties };
 
 <div align="center">
 
-<img src="https://creeper5820.com/creeper-qt/switch-working.gif" width="500" alt="Switch 组件动画">
+<img src="https://r2.creeper5820.com/creeper-qt/switch-working.gif" width="500" alt="Switch 组件动画">
 
 **命名空间**: `creeper::_switch::pro`
 
@@ -405,7 +405,7 @@ auto switch_widget = new Switch {
 
 <div align="center">
 
-<img src="https://creeper5820.com/creeper-qt/filled-text-field.gif" width="500" alt="FilledTextField 组件动画">
+<img src="https://r2.creeper5820.com/creeper-qt/filled-text-field.gif" width="500" alt="FilledTextField 组件动画">
 
 **命名空间**: `creeper::text_field::pro`
 
