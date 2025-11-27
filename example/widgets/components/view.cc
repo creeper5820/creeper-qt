@@ -1,9 +1,5 @@
-#include "creeper-qt/utility/wrapper/widget.hh"
 #include "example/widgets/component.hh"
 #include "example/widgets/components/asset-center.hh"
-
-#include <qfontdatabase.h>
-#include <random>
 
 #include <creeper-qt/layout/flow.hh>
 #include <creeper-qt/layout/linear.hh>
@@ -22,6 +18,9 @@
 #include <creeper-qt/widget/switch.hh>
 #include <creeper-qt/widget/text-fields.hh>
 #include <creeper-qt/widget/text.hh>
+
+#include <qfontdatabase.h>
+#include <random>
 
 using namespace creeper;
 namespace capro = card::pro;
