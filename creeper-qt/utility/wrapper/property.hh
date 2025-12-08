@@ -146,16 +146,17 @@ public:
         : W {} {
         (apply(std::forward<decltype(props)>(props)), ...);
     }
-    auto apply(auto&& tuple) noexcept -> void
+    auto apply(this auto& self, auto&& tuple) noexcept -> void
         requires tuple_trait<decltype(tuple)>
     {
-        std::apply([this](auto&&... args) { (apply(std::forward<decltype(args)>(args)), ...); },
+        std::apply(
+            [&self](auto&&... args) { (self.apply(std::forward<decltype(args)>(args)), ...); },
             std::forward<decltype(tuple)>(tuple));
     }
-    auto apply(auto&& prop) noexcept -> void
+    auto apply(this auto& self, auto&& prop) noexcept -> void
         requires props_trait<decltype(prop)>
     {
-        std::forward<decltype(prop)>(prop).apply(*this);
+        std::forward<decltype(prop)>(prop).apply(self);
     }
 };
 

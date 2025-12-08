@@ -137,6 +137,14 @@ struct MutableTransform : widget::pro::Token {
         });
     }
     auto apply(auto& widget) noexcept -> void {
+        constexpr auto invocable = requires { //
+            apply_function(widget, mutable_value.get());
+        };
+        static_assert(invocable,
+            "\nFunction can not be invoked with given widget_type& and const value_type&."
+            "\n  the correct signature should be: "
+            "\n  [](widget_type& widget, const value_type& v){ ... }");
+
         apply_function(widget, mutable_value.get());
         attach_callback_to_mutable(widget);
     }
@@ -149,5 +157,4 @@ using MutableUInt8   = MutableValue<uint8_t>;
 using MutableUInt16  = MutableValue<uint16_t>;
 using MutableInt8    = MutableValue<int8_t>;
 using MutableInt16   = MutableValue<int16_t>;
-
 }

@@ -8,10 +8,11 @@
 #include <qlineedit.h>
 
 namespace creeper {
-class FilledTextField;
-class OutlinedTextField;
-
 namespace text_field::internal {
+
+    class FilledTextField;
+    class OutlinedTextField;
+
     class BasicTextField : public QLineEdit {
         CREEPER_PIMPL_DEFINITION(BasicTextField);
 
@@ -95,6 +96,16 @@ namespace text_field::internal {
         void focusInEvent(QFocusEvent*) override;
         void focusOutEvent(QFocusEvent*) override;
     };
+
+    class FilledTextField : public BasicTextField {
+    protected:
+        void paintEvent(QPaintEvent*) override;
+    };
+    class OutlinedTextField : public BasicTextField {
+    protected:
+        void paintEvent(QPaintEvent*) override;
+    };
+
 }
 namespace text_field::pro {
     using Token = common::Token<internal::BasicTextField>;
@@ -133,18 +144,10 @@ namespace text_field::pro {
     using namespace theme::pro;
 }
 
-struct FilledTextField
-    : public Declarative<text_field::internal::BasicTextField,
-          CheckerOr<text_field::pro::checker, widget::pro::checker, theme::pro::checker>> {
-    using Declarative::Declarative;
-    void paintEvent(QPaintEvent*) override;
-};
+using FilledTextField = Declarative<text_field::internal::FilledTextField,
+    CheckerOr<text_field::pro::checker, widget::pro::checker, theme::pro::checker>>;
 
-struct OutlinedTextField
-    : public Declarative<text_field::internal::BasicTextField,
-          CheckerOr<text_field::pro::checker, widget::pro::checker, theme::pro::checker>> {
-    using Declarative::Declarative;
-    void paintEvent(QPaintEvent*) override;
-};
+using OutlinedTextField = Declarative<text_field::internal::OutlinedTextField,
+    CheckerOr<text_field::pro::checker, widget::pro::checker, theme::pro::checker>>;
 
 }

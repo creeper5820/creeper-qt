@@ -95,6 +95,7 @@ struct IconButton::Impl {
                 water_ripple.clicked(center_point, max_distance);
             }
 
+            // Toggle if not be default type
             toggle_status();
             update_animation_status(self);
         });

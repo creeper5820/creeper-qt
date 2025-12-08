@@ -98,7 +98,8 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
                 navigation_icons_config,
                 ic::ColorFilled,
                 ic::FontIcon { material::icon::kDarkMode },
-                ic::Clickable { [&] {
+                ic::Clickable { [&](IconButton& self) {
+                    std::ignore = self.selected();
                     state.manager.toggle_color_mode();
                     state.manager.apply_theme();
                 } },

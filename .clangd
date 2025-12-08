@@ -1,4 +1,4 @@
 CompileFlags:
   Add:
   Remove:
-    -mno-direct-extern-access
+    - -mno-direct-extern-access
