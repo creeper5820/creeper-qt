@@ -60,8 +60,6 @@ auto BasicTextField::focusOutEvent(QFocusEvent* event) -> void {
     QLineEdit::focusOutEvent(event);
 }
 
-using namespace creeper;
-
 auto FilledTextField::paintEvent(QPaintEvent* event) -> void {
     pimpl->paint_filled(event);
     QLineEdit::paintEvent(event);
