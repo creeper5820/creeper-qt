@@ -21,23 +21,23 @@ jobs:
     - name: Prepare release folder
       run: mkdir -p ${{ github.workspace }}/release/
 
-    - name: Build Arch Linux package with makepkg in Docker
-      uses: docker://archlinux/archlinux:latest
-      with:
-        args: |
-          /bin/bash -c "
-            set -e
-            pacman -Sy --noconfirm sudo git fakeroot debugedit gcc cmake make qt6-base eigen
-            useradd -m builder && echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
-            chown -R builder:builder /github/workspace/export/archlinux/
-            su builder -c '
-              cd /github/workspace/export/archlinux/
-              makepkg -sfc --noconfirm
-            '
-            cd /github/workspace/export/archlinux/
-            rm creeper-qt-git-debug-*.pkg.tar.zst || true
-            mv creeper-qt-git-*.pkg.tar.zst /github/workspace/release/creeper-qt-linux-x86_64.pkg.tar.zst
-          "
+#    - name: Build Arch Linux package with makepkg in Docker
+#      uses: docker://archlinux/archlinux:latest
+#      with:
+#        args: |
+#          /bin/bash -c "
+#            set -e
+#            pacman -Sy --noconfirm sudo git fakeroot debugedit gcc cmake make qt6-base eigen
+#            useradd -m builder && echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+#            chown -R builder:builder /github/workspace/export/archlinux/
+#            su builder -c '
+#              cd /github/workspace/export/archlinux/
+#              makepkg -sfc --noconfirm
+#            '
+#            cd /github/workspace/export/archlinux/
+#            rm creeper-qt-git-debug-*.pkg.tar.zst || true
+#            mv creeper-qt-git-*.pkg.tar.zst /github/workspace/release/creeper-qt-linux-x86_64.pkg.tar.zst
+#          "
 
     - name: Install dependencies
       run: |
