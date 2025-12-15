@@ -1,3 +1,5 @@
+/// 一次尝试，但这种写法不会为开发带来多少便捷性，特别是一些局部上下文的存储
+/// 'display-board.hh' 这种写法可能更合适
 #pragma once
 
 #include <creeper-qt/utility/theme/theme.hh>
@@ -10,9 +12,9 @@ struct NavComponentState {
     creeper::ThemeManager& manager;
     std::function<void(int, const std::string_view&)> switch_callback;
 
-    std::vector<std::tuple<std::string_view, std::string_view>> buttons_context;
+    std::function<void()> next_tab = [] { qDebug() << "Unimplemented function"; };
 
-    std::function<void(int)> stack_callback;
+    std::vector<std::tuple<std::string_view, std::string_view>> buttons_context;
 };
 auto NavComponent(NavComponentState&) noexcept -> raw_pointer<QWidget>;
 
@@ -25,8 +27,3 @@ struct ViewComponentState {
     creeper::ThemeManager& manager;
 };
 auto ViewComponent(ViewComponentState&) noexcept -> raw_pointer<QWidget>;
-
-struct ViewPageComponentState {
-    creeper::ThemeManager& manager;
-};
-auto ViewPageComponent(ViewPageComponentState&) noexcept -> raw_pointer<QWidget>;

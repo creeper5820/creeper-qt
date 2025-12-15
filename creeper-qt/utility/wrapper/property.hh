@@ -35,6 +35,10 @@ template <class Token, typename T, auto interface>
 struct SetterProp : Token {
     T value;
 
+    constexpr SetterProp() noexcept
+        requires std::default_initializable<T>
+    = default;
+
     constexpr explicit SetterProp(T value) noexcept
         : value { std::move(value) } { }
 
