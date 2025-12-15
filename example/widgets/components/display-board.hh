@@ -5,7 +5,7 @@
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/widget.hh>
 
-namespace details::desplay_board {
+namespace details::display_board {
 
 using namespace creeper;
 namespace wip = widget::pro;
@@ -43,13 +43,13 @@ struct DisplayBoard : public FilledCard {
     }
 
     explicit DisplayBoard(creeper::ThemeManager& manager)
-        : manager { manager }
-        , FilledCard {
+        : FilledCard {
             fcp::ThemeManager { manager },
             fcp::Layout { Component() },
-        } { }
+        }
+        , manager{manager} { }
 };
 
 }
 
-using DisplayBoard = details::desplay_board::DisplayBoard;
+using DisplayBoard = details::display_board::DisplayBoard;

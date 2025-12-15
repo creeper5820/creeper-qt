@@ -9,15 +9,15 @@ template <typename MessageT>
 class MiniBus {
 public:
     template <class T>
-    auto append_receiver(T& receiver) noexcept {
+    static auto append_receiver(T& receiver) noexcept {
 
         static_assert(
             requires { receiver.receive(std::declval<MessageT>()); },
-            "Receiver should has function: receive(MessageT)");
+            "Receiver should has function: receive(const MessageT&)");
 
         static_assert(std::derived_from<T, QObject>, "Receiver should be derived from QObject");
 
-        constexpr auto notify_function = [](QObject* receiver, MessageT msg) {
+        constexpr auto notify_function = [](QObject* receiver, const MessageT& msg) {
             static_cast<T*>(receiver)->receive(msg);
         };
         actions.emplace_back(Action {
@@ -25,25 +25,24 @@ public:
             .notify   = notify_function,
         });
 
-        QObject::connect(&receiver, &QObject::destroyed, [this, key = &receiver] {
+        QObject::connect(&receiver, &QObject::destroyed, [key = &receiver] {
             std::erase_if(actions, [=](const Action& action) { return action.receiver == key; });
         });
     }
 
-    auto receiver_count() const noexcept { return actions.size(); }
+    static auto receiver_count() noexcept { return actions.size(); }
 
-    auto broadcast(MessageT msg) noexcept {
-        std::ranges::for_each(actions, [msg = std::move(msg)](const Action& action) {
-            action.notify(action.receiver, std::move(msg));
-        });
+    static auto broadcast(const MessageT& msg) noexcept {
+        std::ranges::for_each(
+            actions, [&](const Action& action) { action.notify(action.receiver, msg); });
     }
 
 private:
     struct Action {
         QObject* receiver;
-        auto (*notify)(QObject*, MessageT) -> void;
+        auto (*notify)(QObject*, const MessageT&) -> void;
     };
-    std::vector<Action> actions;
+    static inline std::vector<Action> actions {};
 };
 
 template <typename MessageT>
