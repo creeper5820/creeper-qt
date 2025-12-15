@@ -6,10 +6,7 @@
 /// 使用其他 Nerd Font 也是可以的
 
 #include "component.hh"
-#include "creeper-qt/utility/wrapper/layout.hh"
-#include "creeper-qt/utility/wrapper/mutable-value.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
-#include "creeper-qt/widget/widget.hh"
+#include "components/display-board.hh"
 
 #include <qdatetime.h>
 #include <qdebug.h>
@@ -27,9 +24,12 @@
 #include <creeper-qt/utility/theme/preset/gloden-harvest.hh>
 #include <creeper-qt/utility/theme/preset/green.hh>
 #include <creeper-qt/utility/theme/theme.hh>
+#include <creeper-qt/utility/wrapper/layout.hh>
 #include <creeper-qt/utility/wrapper/mutable-value.hh>
+#include <creeper-qt/utility/wrapper/widget.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/main-window.hh>
+#include <creeper-qt/widget/widget.hh>
 
 using namespace creeper;
 
@@ -45,8 +45,16 @@ auto main(int argc, char** argv) -> int {
         app::pro::Complete { argc, argv },
     };
 
-    auto stack_index = std::make_shared<MutableValue<int>>();
+    auto final_index = std::uint8_t { 1 };
+    auto stack_index = std::make_shared<MutableUInt8>();
     stack_index->set_silent(0);
+
+    auto next_tab = [=] {
+        auto is_final = *stack_index == final_index;
+        *stack_index  = is_final ? 0 : *stack_index + 1;
+
+        qDebug() << "[nav] Current index: " << *stack_index;
+    };
 
     auto manager = ThemeManager { kBlueMikuThemePack };
 
@@ -54,11 +62,6 @@ auto main(int argc, char** argv) -> int {
         .manager = manager,
         .switch_callback = [&](int index, const auto& name) {
             qDebug() << "[nav] Switch to <" << name.data() << ">";
-
-            if (index == 0)
-                *stack_index = 0;
-            else if (index == 1)
-                *stack_index = 1;
 
             constexpr auto packs = std::array{
                 kBlueMikuThemePack,
@@ -73,6 +76,7 @@ auto main(int argc, char** argv) -> int {
             }
             manager.apply_theme();
         },
+        .next_tab = next_tab,
         .buttons_context = {
             {"0", material::icon::kHome},
             {"1", material::icon::kStar},
@@ -80,13 +84,9 @@ auto main(int argc, char** argv) -> int {
             {"3", material::icon::kExtension},
             {"4", material::icon::kLogout},
         },
-        .stack_callback = [&](int index) {
-            *stack_index = index;
-        },
     };
-    auto list_component_state      = ListComponentState { .manager = manager };
-    auto view_component_state      = ViewComponentState { .manager = manager };
-    auto view_page_component_state = ViewPageComponentState { .manager = manager };
+    auto list_component_state = ListComponentState { .manager = manager };
+    auto view_component_state = ViewComponentState { .manager = manager };
 
     auto mask_window = (MixerMask*) {};
 
@@ -127,7 +127,9 @@ auto main(int argc, char** argv) -> int {
             capro::Radius { 0 },
             capro::Level { CardLevel::HIGHEST },
 
-            capro::Layout<Row> { lnpro::Margin { 0 }, lnpro::Spacing { 0 },
+            capro::Layout<Row> {
+                lnpro::Margin { 0 },
+                lnpro::Spacing { 0 },
 
                 lnpro::Item {
                     NavComponent(nav_component_state),
@@ -139,7 +141,7 @@ auto main(int argc, char** argv) -> int {
                 lnpro::Item<Stacked> {
                     { 1 },
                     MutableForward {
-                        stpro::CurrentIndex { 0 },
+                        stpro::CurrentIndex {},
                         stack_index,
                     },
                     stpro::Item<Widget> {
@@ -156,21 +158,9 @@ auto main(int argc, char** argv) -> int {
                             },
                         },
                     },
-                    stpro::Item<Widget> {
-                        capro::Layout<Col> {
-                            lnpro::ContentsMargin { { 5, 15, 15, 15 } },
-                            lnpro::Item<ScrollArea> {
-                                scroll::pro::ThemeManager { manager },
-                                scroll::pro::HorizontalScrollBarPolicy {
-                                    Qt::ScrollBarAlwaysOff,
-                                },
-                                scroll::pro::Item {
-                                    ViewPageComponent(view_page_component_state),
-                                },
-                            },
-                        },
-                    },
-                } },
+                    stpro::Item<DisplayBoard> { manager },
+                },
+            },
         },
         mixer::pro::SetMixerMask { mask_window },
     };

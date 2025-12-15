@@ -25,7 +25,7 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
         im::ContentScale { ContentScale::CROP },
         im::BorderWidth { 3 },
         im::PainterResource {
-            "https://creeper5820.com/creeper-qt/ohtoai.png",
+            "https://r2.creeper5820.com/creeper-qt/ohtoai.png",
             [] { qDebug() << "[main] Image loading completed"; },
         },
     };
@@ -86,6 +86,13 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
             },
             ln::SpacingItem { 40 },
             ln::Stretch { 255 },
+            ln::Item<IconButton> {
+                { 0, Qt::AlignHCenter },
+                navigation_icons_config,
+                ic::TypesDefault,
+                ic::FontIcon { "tab" },
+                ic::Clickable { state.next_tab },
+            },
             ln::Item<IconButton> {
                 { 0, Qt::AlignHCenter },
                 navigation_icons_config,

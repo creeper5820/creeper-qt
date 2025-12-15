@@ -110,6 +110,5 @@ jobs:
           build/widgets-linux-x86_64.tar.gz
           build/widgets-windows-x86_64.zip
         fail_on_unmatched_files: true
-        update_release_body: true
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}
