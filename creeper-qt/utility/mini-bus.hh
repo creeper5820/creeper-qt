@@ -9,10 +9,10 @@ template <typename MessageT>
 class MiniBus {
 public:
     template <class T>
-    static auto append_receiver(T& receiver) noexcept {
+    static auto append_receiver(T* receiver) noexcept {
 
         static_assert(
-            requires { receiver.receive(std::declval<MessageT>()); },
+            requires { receiver->receive(std::declval<MessageT>()); },
             "Receiver should has function: receive(const MessageT&)");
 
         static_assert(std::derived_from<T, QObject>, "Receiver should be derived from QObject");
@@ -21,11 +21,11 @@ public:
             static_cast<T*>(receiver)->receive(msg);
         };
         actions.emplace_back(Action {
-            .receiver = &receiver,
+            .receiver = receiver,
             .notify   = notify_function,
         });
 
-        QObject::connect(&receiver, &QObject::destroyed, [key = &receiver] {
+        QObject::connect(receiver, &QObject::destroyed, [key = receiver] {
             std::erase_if(actions, [=](const Action& action) { return action.receiver == key; });
         });
     }
