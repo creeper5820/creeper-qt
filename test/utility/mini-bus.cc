@@ -1,3 +1,4 @@
+#include <creeper-qt/core/application.hh>
 #include <creeper-qt/utility/mini-bus.hh>
 #include <print>
 
@@ -13,8 +14,12 @@ struct ReceiverMock : QObject {
     }
 };
 
-auto main() -> int {
+auto main(int argc, char* argv[]) -> int {
     using namespace creeper;
+
+    app::init {
+        app::pro::Complete { argc, argv },
+    };
 
     auto mock0 = ReceiverMock { "0" };
     mini_bus<int>.append_receiver(&mock0);
@@ -33,5 +38,5 @@ auto main() -> int {
     std::println("[Broadcast] 2");
     mini_bus<int>.broadcast(2);
 
-    return 0;
+    app::quit();
 }
