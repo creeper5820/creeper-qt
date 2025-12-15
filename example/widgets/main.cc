@@ -6,10 +6,6 @@
 /// 使用其他 Nerd Font 也是可以的
 
 #include "component.hh"
-#include "creeper-qt/utility/wrapper/layout.hh"
-#include "creeper-qt/utility/wrapper/mutable-value.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
-#include "creeper-qt/widget/widget.hh"
 
 #include <qdatetime.h>
 #include <qdebug.h>
@@ -27,9 +23,12 @@
 #include <creeper-qt/utility/theme/preset/gloden-harvest.hh>
 #include <creeper-qt/utility/theme/preset/green.hh>
 #include <creeper-qt/utility/theme/theme.hh>
+#include <creeper-qt/utility/wrapper/layout.hh>
 #include <creeper-qt/utility/wrapper/mutable-value.hh>
+#include <creeper-qt/utility/wrapper/widget.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/main-window.hh>
+#include <creeper-qt/widget/widget.hh>
 
 using namespace creeper;
 
@@ -45,7 +44,7 @@ auto main(int argc, char** argv) -> int {
         app::pro::Complete { argc, argv },
     };
 
-    auto stack_index = std::make_shared<MutableValue<int>>();
+    auto stack_index = std::make_shared<MutableInt8>();
     stack_index->set_silent(0);
 
     auto manager = ThemeManager { kBlueMikuThemePack };
