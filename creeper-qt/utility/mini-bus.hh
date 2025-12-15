@@ -1,15 +1,21 @@
 #pragma once
 #include "creeper-qt/utility/wrapper/common.hh"
-
 #include <qwidget.h>
 
 namespace creeper {
 
-template <typename MessageT>
+// @brief:
+// 非常迷你的消息推送实现，仅用于单线程（UI线程）
+// 一个典型的场景是当前页面的消息通知
+// 核心目的是在简单场景避免 context 的层层传递
+//
+// @note:
+// Token 用于在特定时刻特化出相同消息的不同总线，来适应 Corner Case
+template <typename MessageT, typename Token = void>
 class MiniBus {
 public:
     template <class T>
-    static auto append_receiver(T* receiver) noexcept {
+    static auto append_receiver(T* receiver) {
 
         static_assert(
             requires { receiver->receive(std::declval<MessageT>()); },
@@ -30,11 +36,13 @@ public:
         });
     }
 
-    static auto receiver_count() noexcept { return actions.size(); }
+    static auto receiver_count() { return actions.size(); }
 
-    static auto broadcast(const MessageT& msg) noexcept {
-        std::ranges::for_each(
-            actions, [&](const Action& action) { action.notify(action.receiver, msg); });
+    static auto broadcast(const MessageT& msg) {
+        std::ranges::for_each(actions, [&](const Action& action) {
+            QMetaObject::invokeMethod(
+                action.receiver, [&] { action.notify(action.receiver, msg); }, Qt::AutoConnection);
+        });
     }
 
 private:
