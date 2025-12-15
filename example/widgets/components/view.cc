@@ -38,6 +38,9 @@ auto operator*(std::size_t n, std::invocable<std::size_t> auto&& f) {
 }
 
 static auto print_material_fonts() noexcept {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    // 为了兼容 Qt5，所以保持这种写法
     const auto& database = QFontDatabase();
     const auto& families = database.families();
     for (const auto& family : families) {
@@ -49,6 +52,7 @@ static auto print_material_fonts() noexcept {
             }
         }
     }
+#pragma GCC diagnostic pop
 }
 
 static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noexcept {
@@ -75,9 +79,6 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
             dropdown_menu::pro::ThemeManager { manager },
             dropdown_menu::pro::LabelText { "Item" },
             dropdown_menu::pro::FixedWidth { 100 },
-            dropdown_menu::pro::IndexChanged {
-                [&](int index) { qDebug() << index; },
-            },
             MutableForward {
                 dropdown_menu::pro::Items {},
                 select_context,
