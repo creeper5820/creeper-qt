@@ -158,7 +158,12 @@ auto main(int argc, char** argv) -> int {
                             },
                         },
                     },
-                    stpro::Item<DisplayBoard> { manager },
+                    stpro::Item<Widget> {
+                        capro::Layout<Col> {
+                            lnpro::ContentsMargin { { 5, 15, 15, 15 } },
+                            lnpro::Item<DisplayBoard> { manager },
+                        },
+                    },
                 },
             },
         },
