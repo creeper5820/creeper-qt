@@ -1,6 +1,5 @@
 #include "proxy.hh"
-
-#include <httplib.h>
+#include "httplib.hh" // IWYU pragma: keep
 
 #include <cstdlib>
 #include <print>
