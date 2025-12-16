@@ -29,6 +29,8 @@ struct AssetCenter::Impl {
 
     MutableQString status {};
 
+    ~Impl() { context.request_stop(); }
+
     auto update_ui(double ratio, std::string _status) {
         QMetaObject::invokeMethod(qApp, [this, ratio, _status = std::move(_status)] {
             status = QString::fromStdString(
