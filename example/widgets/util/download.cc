@@ -22,6 +22,15 @@ auto GetUrlTask::execute() -> void {
     auto client = httplib::Client { base_url };
     configure_client(client);
 
+    auto start_time = std::chrono::steady_clock::now();
+    client.set_logger([=](const httplib::Request& req, const httplib::Response& res) {
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::steady_clock::now() - start_time)
+                            .count();
+        std::cout << "[cpp-httplib] " << req.method << " " << req.path << " -> " << res.status
+                  << " (" << res.body.size() << " bytes, " << duration << "ms)" << std::endl;
+    });
+
     auto result = client.Get(path, [this](std::size_t now, std::size_t total) {
         if (progress_callback) progress_callback(now, total);
         return true;
