@@ -1,7 +1,7 @@
 if(BUILD_EXAMPLE)
     set(APP_NAME widgets)
 
-    # WorkAround For cpp-httplib
+    # WorkAround For cpp-httplib on Ubuntu
     find_package(zstd CONFIG REQUIRED)
     if (NOT TARGET zstd::libzstd)
         add_library(zstd::libzstd INTERFACE IMPORTED)
@@ -34,6 +34,10 @@ if(BUILD_EXAMPLE)
         ${APP_NAME}
         ${APP_SOURCE}
     )
+    # WorkAround For std::println in Windows MinGW
+    if (MINGW AND CMAKE_CXX_COMPILER_ID STREQUAL GNU)
+        target_link_libraries(${APP_NAME} stdc++exp)
+    endif()
     target_link_libraries(
         ${APP_NAME} PRIVATE
         stdexec
