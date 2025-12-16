@@ -1,6 +1,5 @@
 #pragma once
-#include "creeper-qt/utility/wrapper/common.hh"
-#include <qwidget.h>
+#include <qobject.h>
 
 namespace creeper {
 
@@ -40,8 +39,10 @@ public:
 
     static auto broadcast(const MessageT& msg) {
         std::ranges::for_each(actions, [&](const Action& action) {
+            // 单线程异步，防止 deleteLater 这种 corner case 导致的生命周期问题
             QMetaObject::invokeMethod(
-                action.receiver, [&] { action.notify(action.receiver, msg); }, Qt::AutoConnection);
+                action.receiver, [&] { action.notify(action.receiver, msg); },
+                Qt::QueuedConnection);
         });
     }
 
@@ -53,24 +54,12 @@ private:
     static inline std::vector<Action> actions {};
 };
 
-template <typename MessageT>
-inline auto mini_bus = MiniBus<MessageT> {};
-
 }
 namespace creeper::bus::pro {
 
-using Token = common::Token<MiniBus<void>>;
-
-template <typename MessageT>
+template <typename MessageT, class Token>
 struct Subscribe : Token {
-    static auto apply(auto& self) noexcept {
-        // ...
-        mini_bus<MessageT>.append_receiver(&self);
-    }
+    static auto apply(auto& self) { MiniBus<MessageT>::append_receiver(&self); }
 };
-
-template <class T>
-concept trait = std::derived_from<T, Token>;
-CREEPER_DEFINE_CHECKER(trait)
 
 }
