@@ -2,7 +2,14 @@
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/layout/stacked.hh>
 #include <creeper-qt/utility/theme/theme.hh>
+#include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/widget.hh>
+
+namespace details::display_board {
+
+using namespace creeper;
+namespace wip = widget::pro;
+namespace fcp = filled_card::pro;
 
 struct DisplayWidget {
     QWidget* widget;
@@ -13,22 +20,19 @@ struct DisplayWidget {
 /// @function:
 /// - 展示各种组件
 /// - 抓取完整展示的图片
-struct DisplayBoard : public creeper::Widget {
+struct DisplayBoard : public FilledCard {
 
-    creeper::ThemeManager& manager;
+    ThemeManager& manager;
 
-    creeper::NavHost nav_host {
-        creeper::nav_host::pro::CurrentIndex { 0 },
-        creeper::nav_host::pro::Margin { 10 },
-        creeper::nav_host::pro::Spacing { 10 },
+    NavHost nav_host {
+        nav_host::pro::CurrentIndex { 0 },
+        nav_host::pro::Margin { 10 },
+        nav_host::pro::Spacing { 10 },
     };
     std::unordered_map<const QWidget*, DisplayWidget> widget_map;
 
     auto Component() noexcept {
-        using namespace creeper;
-        namespace wip = widget::pro;
-
-        return wip::Layout<Col> {
+        return new Col {
             // ...
         };
     }
@@ -39,6 +43,13 @@ struct DisplayBoard : public creeper::Widget {
     }
 
     explicit DisplayBoard(creeper::ThemeManager& manager)
-        : manager { manager }
-        , creeper::Widget { Component() } { }
+        : FilledCard {
+            fcp::ThemeManager { manager },
+            fcp::Layout { Component() },
+        }
+        , manager{manager} { }
 };
+
+}
+
+using DisplayBoard = details::display_board::DisplayBoard;
