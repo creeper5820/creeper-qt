@@ -34,12 +34,9 @@ if(BUILD_EXAMPLE)
         ${APP_NAME}
         ${APP_SOURCE}
     )
-    # WorkAround For std::println in Windows MinGW
-    if (MINGW AND CMAKE_CXX_COMPILER_ID STREQUAL GNU)
-        target_link_libraries(${APP_NAME} stdc++exp)
-    endif()
     target_link_libraries(
         ${APP_NAME} PRIVATE
+        stdc++exp # WorkAround For std::println in Windows MinGW
         stdexec
         httplib
         ${QT_VERSION}::Widgets
