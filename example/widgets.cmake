@@ -1,6 +1,14 @@
 if(BUILD_EXAMPLE)
     set(APP_NAME widgets)
 
+    # WorkAround For cpp-httplib
+    find_package(zstd CONFIG REQUIRED)
+    if (NOT TARGET zstd::libzstd)
+        add_library(zstd::libzstd INTERFACE IMPORTED)
+        set_property(TARGET zstd::libzstd PROPERTY
+    INTERFACE_LINK_LIBRARIES zstd)
+    endif()
+
     include(FetchContent)
     FetchContent_Declare(
         stdexec
