@@ -2,3 +2,4 @@ CompileFlags:
   Add:
   Remove:
     - -mno-direct-extern-access
+    - -fconcepts-diagnostics-depth=10
