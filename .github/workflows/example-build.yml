@@ -17,8 +17,8 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y git debhelper dpkg-dev imagemagick
-        sudo apt install -y qt6-base-dev libeigen3-dev libzstd-dev
-        sudo apt install -y libssl-dev libssl3
+        sudo apt install -y qt6-base-dev libeigen3-dev
+        sudo apt install -y libssl-dev libssl3 libzstd-dev zstd libzstd1
         sudo apt install -y g++-14 gcc-14 cmake ninja-build
         sudo update-alternatives --install \
           /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave \
