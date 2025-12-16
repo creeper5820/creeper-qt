@@ -22,21 +22,21 @@ auto main(int argc, char* argv[]) -> int {
     };
 
     auto mock0 = ReceiverMock { "0" };
-    mini_bus<int>.append_receiver(&mock0);
+    MiniBus<int>::append_receiver(&mock0);
 
     std::println("[Broadcast] 0");
-    mini_bus<int>.broadcast(0);
+    MiniBus<int>::broadcast(0);
 
     {
         auto mock1 = ReceiverMock { "1" };
-        mini_bus<int>.append_receiver(&mock1);
+        MiniBus<int>::append_receiver(&mock1);
 
         std::println("[Broadcast] 1");
-        mini_bus<int>.broadcast(1);
+        MiniBus<int>::broadcast(1);
     }
 
     std::println("[Broadcast] 2");
-    mini_bus<int>.broadcast(2);
+    MiniBus<int>::broadcast(2);
 
     app::quit();
 }
