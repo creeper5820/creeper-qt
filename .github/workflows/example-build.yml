@@ -16,9 +16,9 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt update
-        sudo apt install -y debhelper dpkg-dev imagemagick
+        sudo apt install -y git debhelper dpkg-dev imagemagick
         sudo apt install -y qt6-base-dev libeigen3-dev
-        sudo apt install -y libssl-dev libssl3
+        sudo apt install -y libssl-dev libssl3 libzstd-dev zstd libzstd1
         sudo apt install -y g++-14 gcc-14 cmake ninja-build
         sudo update-alternatives --install \
           /usr/bin/gcc gcc /usr/bin/gcc-14 100 --slave \
@@ -52,7 +52,7 @@ jobs:
       with:
         update: true
         install: >-
-          base-devel mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-qt6 mingw-w64-x86_64-eigen3
+          base-devel git mingw-w64-x86_64-toolchain mingw-w64-x86_64-cmake mingw-w64-x86_64-ninja mingw-w64-x86_64-qt6 mingw-w64-x86_64-eigen3
 
     - name: Configure & Build
       run: |

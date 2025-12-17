@@ -33,17 +33,18 @@ using Token = common::Token<internal::Text>;
 
 using Text = common::pro::Text<Token>;
 
-using Color = SetterProp<Token, QColor, [](auto& self, const auto& v) { self.set_color(v); }>;
-
-using WordWrap = SetterProp<Token, bool, [](auto& self, const auto& v) { self.setWordWrap(v); }>;
-
-using AdjustSize = ActionProp<Token, [](auto& self) { self.adjustSize(); }>;
-
+using Color    = SetterProp<Token, QColor, [](auto& self, const auto& v) { self.set_color(v); }>;
+using WordWrap = SetterProp<Token, bool, [](auto& self, auto v) { self.setWordWrap(v); }>;
+using TextFormat =
+    SetterProp<Token, Qt::TextFormat, [](auto& self, auto v) { self.setTextFormat(v); }>;
 using Alignment =
     SetterProp<Token, Qt::Alignment, [](auto& self, const auto& v) { self.setAlignment(v); }>;
-
 using TextInteractionFlags = SetterProp<Token, Qt::TextInteractionFlags,
     [](auto& self, const auto& v) { self.setTextInteractionFlags(v); }>;
+using OpenExternalLinks =
+    SetterProp<Token, bool, [](auto& self, auto v) { self.setOpenExternalLinks(v); }>;
+
+using AdjustSize = ActionProp<Token, [](auto& self) { self.adjustSize(); }>;
 
 template <class T>
 concept trait = std::derived_from<T, Token>;
