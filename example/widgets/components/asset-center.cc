@@ -74,21 +74,28 @@ struct AssetCenter::Impl {
         auto run_scheduler = context.get_scheduler();
 
         auto task = stdexec::schedule(gui_scheduler)
-            | stdexec::then([this] { update_ui(0.0, "下载开始"); })
-            | stdexec::then([this] { downloading.store(true, std::memory_order::relaxed); })
-            | stdexec::then([this] { return select_location(); })
+
+            | stdexec::then([this] {
+                  downloading.store(true, std::memory_order::relaxed);
+                  update_ui(0.0, "下载开始");
+                  return select_location();
+              })
+
             | stdexec::continues_on(run_scheduler) //
-            | stdexec::then([this](auto where) { download_asset(where); })
-            | stdexec::then([this] { update_ui(100.0, "字体下载完成"); })
-            | stdexec::continues_on(gui_scheduler) //
+            | stdexec::then([this](auto where) {
+                  download_asset(where);
+                  update_ui(100.0, "字体下载完成");
+              })
+
             | stdexec::upon_error([this](std::exception_ptr e) {
                   try {
                       std::rethrow_exception(e);
                   } catch (const std::runtime_error& e) {
                       update_ui(0., e.what());
                       std::println("Unexpected: {}", e.what());
-                  }
+                  } catch (...) { }
               })
+            | stdexec::continues_on(gui_scheduler)
             | stdexec::then([this] { downloading.store(false, std::memory_order::relaxed); });
         stdexec::start_detached(task);
     }
