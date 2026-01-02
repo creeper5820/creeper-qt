@@ -2,7 +2,8 @@
 #include "filled-button.hh"
 
 namespace creeper::filled_tonal_button::internal {
-class FilledTonalButton : public FilledButton {
+
+class FilledTonalButton : public filled_button::internal::FilledButton {
 public:
     void set_color_scheme(const ColorScheme& color_scheme) {
         set_background(color_scheme.secondary_container);
@@ -27,15 +28,15 @@ public:
             [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
     }
 };
-}
 
+}
 namespace creeper {
 
 namespace filled_tonal_button::pro {
     using namespace filled_button::pro;
 }
 
-using FilledTonalButton =
-    Declarative<filled_tonal_button::internal::FilledTonalButton, FilledButton::Checker>;
+using FilledTonalButton = Declarative<filled_button::internal::FilledButton,
+    CheckerOr<button::pro::checker, widget::pro::checker, theme::pro::checker>>;
 
 }
