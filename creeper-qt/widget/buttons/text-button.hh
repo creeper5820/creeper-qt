@@ -2,7 +2,7 @@
 #include "filled-button.hh"
 
 namespace creeper::text_button::internal {
-class TextButton : public FilledButton {
+class TextButton : public filled_button::internal::FilledButton {
 public:
     void set_color_scheme(const ColorScheme& color_scheme) {
         set_background(Qt::transparent);
@@ -37,5 +37,6 @@ namespace text_button::pro {
     using namespace filled_button::pro;
 }
 
-using TextButton = Declarative<text_button::internal::TextButton, FilledButton::Checker>;
+using TextButton = Declarative<text_button::internal::TextButton,
+    CheckerOr<button::pro::checker, widget::pro::checker, theme::pro::checker>>;
 }
