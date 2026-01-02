@@ -82,7 +82,8 @@ struct AssetCenter : creeper::Widget {
 
     // MaterialIcons Regular
     static constexpr auto font_url {
-        "https://github.com/google/material-design-icons/raw/master/font/MaterialIconsRound-Regular.otf",
+        "https://github.com/google/material-design-icons/raw/master/font/"
+        "MaterialIconsRound-Regular.otf",
     };
 
     std::string download_location = "";
