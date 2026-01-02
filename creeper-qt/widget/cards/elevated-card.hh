@@ -3,7 +3,7 @@
 
 namespace creeper {
 namespace elevated_card::internal {
-    class ElevatedCard : public BasicCard {
+    class ElevatedCard : public card::internal::Card {
     public:
         explicit ElevatedCard() {
             using namespace card::internal;
@@ -35,5 +35,7 @@ namespace elevated_card::internal {
 namespace elevated_card::pro {
     using namespace card::pro;
 }
-using ElevatedCard = Declarative<elevated_card::internal::ElevatedCard, BasicCard::Checker>;
+using ElevatedCard = Declarative<elevated_card::internal::ElevatedCard,
+    CheckerOr<card::pro::checker, rounded_rect::pro::checker, theme::pro::checker,
+        widget::pro::checker>>;
 }

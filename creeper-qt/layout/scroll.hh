@@ -133,3 +133,14 @@ using ScrollArea = Declarative<scroll::internal::ScrollArea,
     CheckerOr<scroll::pro::checker, widget::pro::checker, theme::pro::checker>>;
 
 }
+
+namespace creeper::scrollable::details {
+
+class Scrollable : public QWidget {
+    CREEPER_PIMPL_DEFINITION(Scrollable)
+
+protected:
+    auto paintEvent(QPaintEvent*) -> void override;
+};
+
+}

@@ -39,11 +39,21 @@ struct TransitionValue {
 public:
     using T = State::ValueT;
 
+    template <typename... Args>
+    static auto make_state(Args&&... args) noexcept {
+        return std::make_shared<State>(std::forward<Args>(args)...);
+    }
+
     explicit TransitionValue(Animatable& animatable, std::shared_ptr<State> state) noexcept
         : animatable { animatable }
         , state { std::move(state) } { }
 
-    auto get_state() const noexcept -> const State& { return *state; }
+    explicit TransitionValue(Animatable& animatable) noexcept
+        requires std::default_initializable<State>
+        : animatable { animatable }
+        , state { std::make_shared<State>() } { }
+
+    auto get_state() const noexcept -> State& { return *state; }
 
     auto get_value() const noexcept { return state->get_value(); }
 
