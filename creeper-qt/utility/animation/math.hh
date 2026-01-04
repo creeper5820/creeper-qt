@@ -81,22 +81,22 @@ constexpr auto interpolate(const QRectF& start, const QRectF& end, double positi
 namespace creeper {
 
 template <typename T>
-constexpr auto operator<<(Eigen::Vector4<T>& dst, const QColor& src) -> Eigen::Vector4<T>& {
+inline auto operator<<(Eigen::Vector4<T>& dst, const QColor& src) -> Eigen::Vector4<T>& {
     return dst = Eigen::Vector4<T>(src.red(), src.green(), src.blue(), src.alpha());
 }
 template <typename T>
-constexpr auto operator<<(QColor& dst, const Eigen::Vector4<T>& src) -> QColor& {
+inline auto operator<<(QColor& dst, const Eigen::Vector4<T>& src) -> QColor& {
     return dst = QColor(src[0], src[1], src[2], src[3]);
 }
 
-constexpr auto from_color(const QColor& color) -> Eigen::Vector4d {
+inline auto from_color(const QColor& color) -> Eigen::Vector4d {
     return Eigen::Vector4d(color.red(), color.green(), color.blue(), color.alpha());
 }
-constexpr auto from_vector4(const Eigen::Vector4d& vector) -> QColor {
+inline auto from_vector4(const Eigen::Vector4d& vector) -> QColor {
     return QColor(vector[0], vector[1], vector[2], vector[3]);
 }
 
-constexpr auto extract_rect(const QRectF& rect, double w_weight, double h_weight) -> QRectF {
+inline auto extract_rect(const QRectF& rect, double w_weight, double h_weight) -> QRectF {
     double rw, rh;
     if (rect.width() * h_weight > rect.height() * w_weight) {
         rh = rect.height();
