@@ -2,7 +2,8 @@
 #include "filled-button.hh"
 
 namespace creeper::outlined_button::internal {
-class OutlinedButton : public FilledButton {
+
+class OutlinedButton : public filled_button::internal::FilledButton {
 public:
     void set_color_scheme(const ColorScheme& color_scheme) {
         set_background(Qt::transparent);
@@ -31,6 +32,7 @@ public:
             [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
     }
 };
+
 }
 namespace creeper {
 
@@ -38,6 +40,6 @@ namespace outlined_button::pro {
     using namespace filled_button::pro;
 }
 
-using OutlinedButton =
-    Declarative<outlined_button::internal::OutlinedButton, FilledButton::Checker>;
+using OutlinedButton = Declarative<outlined_button::internal::OutlinedButton,
+    CheckerOr<button::pro::checker, widget::pro::checker, theme::pro::checker>>;
 }
