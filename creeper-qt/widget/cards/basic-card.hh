@@ -40,19 +40,19 @@ public:
 
     void set_color_scheme(const ColorScheme& scheme) {
         switch (level) {
-        case card::internal::Card::Level::LOWEST:
+        case Level::LOWEST:
             set_background(scheme.surface_container_lowest);
             break;
-        case card::internal::Card::Level::LOW:
+        case Level::LOW:
             set_background(scheme.surface_container_low);
             break;
-        case card::internal::Card::Level::DEFAULT:
+        case Level::DEFAULT:
             set_background(scheme.surface_container);
             break;
-        case card::internal::Card::Level::HIGH:
+        case Level::HIGH:
             set_background(scheme.surface_container_high);
             break;
-        case card::internal::Card::Level::HIGHEST:
+        case Level::HIGHEST:
             set_background(scheme.surface_container_highest);
             break;
         }
@@ -64,6 +64,7 @@ public:
             [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
     }
 };
+
 }
 namespace creeper::card::pro {
 
