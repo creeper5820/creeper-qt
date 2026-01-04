@@ -31,7 +31,8 @@ class ThemeManager {
 public:
     explicit ThemeManager(const ThemePack& pack, ColorMode mode = ColorMode::LIGHT);
 
-    void apply_theme() const;
+    void apply_theme();
+    bool applied() const;
 
     using Handler = std::function<void(const ThemeManager&)>;
 

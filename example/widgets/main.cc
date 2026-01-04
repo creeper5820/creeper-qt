@@ -88,8 +88,6 @@ auto main(int argc, char** argv) -> int {
     auto list_component_state = ListComponentState { .manager = manager };
     auto view_component_state = ViewComponentState { .manager = manager };
 
-    auto mask_window = (MixerMask*) {};
-
     /// @NOTE: 有时候 Windows 总是给我来点惊喜，
     ///        ShowWindow 这么常见命名的函数都放在全局作用域
     creeper::ShowWindow<MainWindow> {
@@ -167,15 +165,10 @@ auto main(int argc, char** argv) -> int {
                 },
             },
         },
-        mixer::pro::SetMixerMask { mask_window },
+        mwpro::CreateMixerMask { manager },
     };
 
     manager.apply_theme();
-    manager.append_begin_callback( //
-        [mask_window](const ThemeManager&) {
-            // 未 Apply 前，Mask 会呈现灰色
-            auto const point = mask_window->mapFromGlobal(QCursor::pos());
-            mask_window->initiate_animation(point);
-        });
+
     return app::exec();
 }
