@@ -29,6 +29,7 @@
 #include <creeper-qt/utility/wrapper/widget.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/main-window.hh>
+#include <creeper-qt/widget/snackbar.hh>
 #include <creeper-qt/widget/widget.hh>
 
 using namespace creeper;
@@ -165,6 +166,7 @@ auto main(int argc, char** argv) -> int {
                 },
             },
         },
+        mwpro::CreateSnackbar { manager },
         mwpro::CreateMixerMask { manager },
     };
 

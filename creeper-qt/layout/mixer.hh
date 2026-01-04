@@ -1,35 +1,31 @@
 #pragma once
-
-#include <qpainter.h>
-#include <qpainterpath.h>
-#include <qpointer.h>
-
 #include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/animation/state/pid.hh"
 #include "creeper-qt/utility/animation/transition.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 
+#include <qpainter.h>
+#include <qpainterpath.h>
+#include <qpointer.h>
+
 namespace creeper::mixer::internal {
 
 class MixerMask : public QWidget {
 public:
     explicit MixerMask(auto* widget) noexcept
-        : QWidget { widget }
-        , animatable { *this } {
+        : QWidget { widget } {
 
         QWidget::setAttribute(Qt::WA_TransparentForMouseEvents);
 
         mask_frame.fill(Qt::transparent);
         {
-            auto state = std::make_shared<PidState<double>>();
+            auto& state = mask_radius.get_state();
 
-            state->config.kp      = 05.0;
-            state->config.ki      = 00.0;
-            state->config.kd      = 00.0;
-            state->config.epsilon = 1e-3;
-
-            mask_radius = make_transition(animatable, std::move(state));
+            state.config.kp      = 05.0;
+            state.config.ki      = 00.0;
+            state.config.kd      = 00.0;
+            state.config.epsilon = 1e-3;
         }
     }
 
@@ -39,8 +35,8 @@ public:
         auto* widget = parentWidget();
         if (widget == nullptr) return;
 
-        mask_radius->snap_to(0.);
-        mask_radius->transition_to(1.);
+        mask_radius.snap_to(0.);
+        mask_radius.transition_to(1.);
 
         mask_point = point;
         mask_frame = widget->grab();
@@ -63,7 +59,7 @@ protected:
 
         auto painter = QPainter { this };
 
-        auto const radius = double { *mask_radius * x };
+        auto const radius = double { mask_radius * x };
         auto const round  = [&] {
             auto path = QPainterPath {};
             path.addRect(QWidget::rect());
@@ -78,7 +74,7 @@ protected:
 
         painter.drawPixmap(QWidget::rect(), mask_frame);
 
-        if (std::abs(*mask_radius - 1.) < 1e-2) {
+        if (std::abs(mask_radius - 1.) < 1e-2) {
             update_animation = false;
         }
     }
@@ -89,8 +85,8 @@ private:
 
     bool update_animation = false;
 
-    Animatable animatable;
-    std::unique_ptr<TransitionValue<PidState<double>>> mask_radius;
+    Animatable animatable { *this };
+    TransitionValue<PidState<double>> mask_radius { animatable };
 };
 
 }
@@ -101,7 +97,7 @@ using MixerMask = mixer::internal::MixerMask;
 }
 namespace creeper::widget::pro {
 
-struct BindAndNewMixerMask : widget::pro::Token {
+struct BindAndNewMixerMask : Token {
     mixer::internal::MixerMask*& mask;
 
     // @param mask 空指针，未构造，作为返回值
@@ -113,7 +109,7 @@ struct BindAndNewMixerMask : widget::pro::Token {
     }
 };
 
-struct CreateMixerMask : widget::pro::Token {
+struct CreateMixerMask : Token {
     ThemeManager& manager;
 
     explicit CreateMixerMask(ThemeManager& manager)
