@@ -15,6 +15,14 @@ struct Snackbar::Impl {
         explicit Action(Animatable& animatable)
             : state { animatable } { }
     };
+
+    auto parent() const { return self.parentWidget(); }
+
+    auto assembly() noexcept {
+        if (parent() == nullptr) return;
+
+        const auto& geometry = parent()->geometry();
+    }
 };
 
 Snackbar::Snackbar()
