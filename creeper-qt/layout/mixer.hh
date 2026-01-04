@@ -2,10 +2,12 @@
 
 #include <qpainter.h>
 #include <qpainterpath.h>
+#include <qpointer.h>
 
 #include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/animation/state/pid.hh"
 #include "creeper-qt/utility/animation/transition.hh"
+#include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 
 namespace creeper::mixer::internal {
@@ -92,21 +94,41 @@ private:
 };
 
 }
-namespace creeper::mixer::pro {
-
-struct SetMixerMask : widget::pro::Token {
-    internal::MixerMask*& mask;
-    explicit SetMixerMask(auto*& mask)
-        : mask { mask } { }
-    auto apply(auto& self) noexcept {
-        //
-        mask = new internal::MixerMask { &self };
-    }
-};
-
-}
 namespace creeper {
 
 using MixerMask = mixer::internal::MixerMask;
+
+}
+namespace creeper::widget::pro {
+
+struct BindAndNewMixerMask : widget::pro::Token {
+    mixer::internal::MixerMask*& mask;
+
+    // @param mask 空指针，未构造，作为返回值
+    explicit BindAndNewMixerMask(auto*& mask)
+        : mask { mask } { }
+    auto apply(auto& self) noexcept {
+        //
+        mask = new MixerMask { &self };
+    }
+};
+
+struct CreateMixerMask : widget::pro::Token {
+    ThemeManager& manager;
+
+    explicit CreateMixerMask(ThemeManager& manager)
+        : manager { manager } { }
+
+    auto apply(auto& self) noexcept {
+        // 所有权移交 Parent
+        auto mask = QPointer<MixerMask> { new MixerMask { &self } };
+        manager.append_begin_callback([=](const ThemeManager& manager) {
+            if (!mask.isNull() && manager.applied()) {
+                auto point = mask->mapFromGlobal(QCursor::pos());
+                mask->initiate_animation(point);
+            }
+        });
+    }
+};
 
 }

@@ -6,12 +6,14 @@ using namespace creeper::snackbar::details;
 
 struct Snackbar::Impl {
     Snackbar& self;
+    Animatable animatable { self };
 
     struct Action {
         Message message;
         TransitionValue<PidState<double>> state;
 
-        explicit Action() { }
+        explicit Action(Animatable& animatable)
+            : state { animatable } { }
     };
 };
 

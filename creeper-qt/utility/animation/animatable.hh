@@ -1,6 +1,5 @@
 #pragma once
 
-#include "creeper-qt/utility/wrapper/pimpl.hh"
 #include <qwidget.h>
 
 namespace creeper {
@@ -13,7 +12,14 @@ struct ITransitionTask {
 };
 
 class Animatable {
-    CREEPER_PIMPL_DEFINITION(Animatable)
+public:
+    ~Animatable();
+    Animatable(const Animatable&)            = delete;
+    Animatable& operator=(const Animatable&) = delete;
+
+private:
+    struct Impl;
+    std::unique_ptr<Impl> pimpl;
 
 public:
     explicit Animatable(QWidget& widget) noexcept;
