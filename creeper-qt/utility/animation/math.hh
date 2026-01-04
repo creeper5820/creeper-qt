@@ -6,6 +6,8 @@
 
 namespace creeper::animate {
 
+/// ZERO
+
 template <typename T>
 constexpr auto zero() noexcept {
     if constexpr (std::is_arithmetic_v<T>) {
@@ -16,6 +18,8 @@ constexpr auto zero() noexcept {
         static_assert(sizeof(T) == 0, "zero() not implemented for this type");
     }
 }
+
+/// MAGNITUDE
 
 template <typename T>
 constexpr auto magnitude(const T& error) noexcept {
@@ -28,6 +32,8 @@ constexpr auto magnitude(const T& error) noexcept {
     }
 }
 
+/// NORMALIZE
+
 template <typename T>
 constexpr auto normalize(const T& error) noexcept {
     if constexpr (std::is_arithmetic_v<T>) {
@@ -38,6 +44,8 @@ constexpr auto normalize(const T& error) noexcept {
         static_assert(sizeof(T) == 0, "magnitude() not implemented for this type");
     }
 }
+
+/// INTERPOLATE
 
 template <typename T>
 constexpr auto interpolate(const T& start, const T& end, double t) noexcept -> T {
@@ -68,9 +76,18 @@ constexpr auto interpolate(const QRectF& start, const QRectF& end, double positi
     auto _4  = start.height() + (end.height() - start.height()) * position;
     return { _1, _2, _3, _4 };
 }
-}
 
+}
 namespace creeper {
+
+template <typename T>
+constexpr auto operator<<(Eigen::Vector4<T>& dst, const QColor& src) -> Eigen::Vector4<T>& {
+    return dst = Eigen::Vector4<T>(src.red(), src.green(), src.blue(), src.alpha());
+}
+template <typename T>
+constexpr auto operator<<(QColor& dst, const Eigen::Vector4<T>& src) -> QColor& {
+    return dst = QColor(src[0], src[1], src[2], src[3]);
+}
 
 constexpr auto from_color(const QColor& color) -> Eigen::Vector4d {
     return Eigen::Vector4d(color.red(), color.green(), color.blue(), color.alpha());

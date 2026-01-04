@@ -1,4 +1,3 @@
-#pragma once
 #include "scroll.hh"
 #include "creeper-qt/utility/animation/state/pid.hh"
 #include "creeper-qt/utility/animation/transition.hh"
