@@ -139,6 +139,25 @@ target_link_libraries(
 
 ---
 
+### 方式三: CMake FetchContent
+
+无需手动克隆或安装，CMake 自动拉取源码并编译。
+
+```cmake
+include(FetchContent)
+FetchContent_Declare(
+    creeper-qt
+    GIT_REPOSITORY https://github.com/creeper5820/creeper-qt.git
+    GIT_TAG main
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(creeper-qt)
+
+target_link_libraries(your_target PRIVATE creeper-qt::creeper-qt)
+```
+
+---
+
 ## 🖥️ 平台特定说明
 
 ### Linux 平台
