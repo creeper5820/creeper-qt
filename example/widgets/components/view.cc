@@ -38,21 +38,16 @@ auto operator*(std::size_t n, std::invocable<std::size_t> auto&& f) {
 }
 
 static auto print_material_fonts() noexcept {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    // 为了兼容 Qt5，所以保持这种写法
-    const auto& database = QFontDatabase();
-    const auto& families = database.families();
+    const auto& families = QFontDatabase::families();
     for (const auto& family : families) {
         if (family.contains("Material", Qt::CaseInsensitive)) {
             qDebug() << "Found Material Font:" << family;
-            auto styles = database.styles(family);
+            auto styles = QFontDatabase::styles(family);
             for (const auto& style : styles) {
                 qDebug() << " - Style:" << style;
             }
         }
     }
-#pragma GCC diagnostic pop
 }
 
 static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noexcept {
