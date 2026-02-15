@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
+find_package(Qt6 REQUIRED COMPONENTS Widgets Network)
+
 if(NOT TARGET creeper-qt::widgets)
     include(FetchContent)
     FetchContent_Declare(
