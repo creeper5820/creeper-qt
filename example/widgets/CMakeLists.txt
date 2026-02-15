@@ -19,12 +19,14 @@ if(NOT TARGET creeper-qt::widgets)
 endif()
 
 file(
-    GLOB_RECURSE APP_SOURCE
+    GLOB_RECURSE APP_COMPONENT_SOURCE
     CONFIGURE_DEPENDS
     "${CMAKE_CURRENT_SOURCE_DIR}/components/*.cc"
+)
+add_executable(${PROJECT_NAME}
+    ${APP_COMPONENT_SOURCE}
     "${CMAKE_CURRENT_SOURCE_DIR}/main.cc"
 )
-add_executable(${PROJECT_NAME} ${APP_SOURCE})
 target_include_directories(
     ${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
