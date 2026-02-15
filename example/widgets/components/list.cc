@@ -1,4 +1,4 @@
-#include "example/widgets/component.hh"
+#include "component.hh"
 
 #include <creeper-qt/core/application.hh>
 #include <creeper-qt/layout/group.hh>
