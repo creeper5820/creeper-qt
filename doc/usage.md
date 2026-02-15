@@ -181,6 +181,7 @@ cmake --build build --target install
 
 ```cmake
 # 将自定义安装路径添加到 CMAKE_PREFIX_PATH
+# 如果是默认安装路径，比如 /usr/local/，则不需要设置下面的变量
 list(APPEND CMAKE_PREFIX_PATH "/your/custom/path")
 
 find_package(creeper-qt REQUIRED)
