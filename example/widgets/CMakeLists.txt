@@ -20,7 +20,9 @@ endif()
 
 file(
     GLOB_RECURSE APP_SOURCE
-    CONFIGURE_DEPENDS "components/*.cc" "main.cc"
+    CONFIGURE_DEPENDS
+    "${CMAKE_CURRENT_SOURCE_DIR}/components/*.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/main.cc"
 )
 add_executable(${PROJECT_NAME} ${APP_SOURCE})
 target_include_directories(
