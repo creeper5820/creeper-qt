@@ -14,28 +14,41 @@ set(QT_VERSION Qt6)
 find_package(${QT_VERSION} REQUIRED COMPONENTS Widgets Network)
 find_package(Eigen3 REQUIRED)
 
-# 库文件收集
+# Widgets
 file(
-    GLOB_RECURSE PROJECT_SOURCE
+    GLOB_RECURSE WIDGETS_SOURCE
     CONFIGURE_DEPENDS
-        # Project source
-        "src/creeper-qt/*.cc"
+        # Source
+        "src/creeper-qt/core/*.cc"
+        "src/creeper-qt/layout/*.cc"
+        "src/creeper-qt/utility/*.cc"
+        "src/creeper-qt/widget/*.cc"
         # Custom signals
         "src/creeper-qt/widget/sliders.hh"
 )
-add_library(${PROJECT_NAME} ${PROJECT_SOURCE})
-target_include_directories(${PROJECT_NAME}
-    PUBLIC
+add_library(${PROJECT_NAME}-widgets ${WIDGETS_SOURCE})
+set_target_properties(${PROJECT_NAME}-widgets PROPERTIES EXPORT_NAME widgets)
+target_include_directories(
+    ${PROJECT_NAME}-widgets PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )
 target_link_libraries(
-    ${PROJECT_NAME}
+    ${PROJECT_NAME}-widgets
     PUBLIC
-    ${QT_VERSION}::Widgets
+        ${QT_VERSION}::Widgets
     PRIVATE
-    ${QT_VERSION}::Network
+        ${QT_VERSION}::Network
 )
+add_library(${PROJECT_NAME}::widgets ALIAS ${PROJECT_NAME}-widgets)
+
+# All Modules
+add_library(${PROJECT_NAME} INTERFACE)
+target_link_libraries(
+    ${PROJECT_NAME} INTERFACE
+    ${PROJECT_NAME}-widgets
+)
+add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     include(cmake/install.cmake)

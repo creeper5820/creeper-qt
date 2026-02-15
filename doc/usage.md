@@ -153,7 +153,11 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(creeper-qt)
 
-target_link_libraries(your_target PRIVATE creeper-qt::creeper-qt)
+# 链接单个模块
+target_link_libraries(your_target PRIVATE creeper-qt::widgets)
+
+# 或链接全部模块
+target_link_libraries(your_target PRIVATE creeper-qt)
 ```
 
 ---
@@ -204,7 +208,12 @@ cmake --build build --target install
 list(APPEND CMAKE_PREFIX_PATH "/your/custom/path")
 
 find_package(creeper-qt REQUIRED)
-target_link_libraries(your_target PRIVATE creeper-qt::creeper-qt)
+
+# 链接单个模块
+target_link_libraries(your_target PRIVATE creeper-qt::widgets)
+
+# 或链接全部模块
+target_link_libraries(your_target PRIVATE creeper-qt)
 ```
 
 ---
