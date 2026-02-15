@@ -75,9 +75,32 @@ pacman -Ss eigen3
 
 ---
 
-## 📦 安装方式
+## 📦 使用方式
 
-### 方式零: 安装预构建安装包 (推荐)
+### 方式一: CMake FetchContent (推荐)
+
+无需手动克隆或安装，CMake 自动拉取源码并编译。
+
+```cmake
+include(FetchContent)
+FetchContent_Declare(
+    creeper-qt
+    GIT_REPOSITORY https://github.com/creeper5820/creeper-qt.git
+    GIT_TAG main
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(creeper-qt)
+
+# 链接单个模块
+target_link_libraries(your_target PRIVATE creeper-qt::widgets)
+
+# 或链接全部模块
+target_link_libraries(your_target PRIVATE creeper-qt)
+```
+
+---
+
+### 方式二: 安装预构建安装包
 
 <div align="center">
 
@@ -93,9 +116,141 @@ pacman -Ss eigen3
 | **Pacman (Arch Linux)** | `sudo pacman -U creeper-qt-*.pkg.tar.zst` |
 | **Windows** | 开发中... |
 
+#### 在项目中使用
+
+```cmake
+find_package(creeper-qt REQUIRED)
+
+# 链接单个模块
+target_link_libraries(your_target PRIVATE creeper-qt::widgets)
+
+# 或链接全部模块
+target_link_libraries(your_target PRIVATE creeper-qt)
+```
+
 ---
 
-### 方式一: 手动静态链接
+### 方式三: 手动编译安装
+
+推荐需要全局使用该库或自定义安装路径的开发者使用此方式。
+
+<details>
+<summary><b>🐧 Linux</b></summary>
+
+```bash
+# 1. 克隆项目
+git clone https://github.com/creeper5820/creeper-qt --depth=1
+
+# 2. 进入项目根目录
+cd creeper-qt
+
+# 3. 配置构建（启用示例程序）
+cmake -B build -DBUILD_EXAMPLE=ON
+
+# 4. 编译项目
+cmake --build build -j$(nproc)
+
+# 5. 运行示例程序
+./build/widgets
+
+# 6. 安装到系统（可选）
+# 默认安装到 /usr/local
+sudo cmake --build build --target install
+```
+
+自定义安装路径：
+
+```bash
+cmake -B build \
+  -DBUILD_EXAMPLE=ON \
+  -DCMAKE_INSTALL_PREFIX=/your/custom/path
+
+cmake --build build -j$(nproc)
+cmake --build build --target install
+```
+
+</details>
+
+<details>
+<summary><b>🪟 Windows (MSYS2)</b></summary>
+
+> 💡 **推荐使用 MSYS2 环境** - [MSYS2 安装指南](https://www.msys2.org/docs/installer/)
+
+![Windows MSYS2 环境](https://r2.creeper5820.com/creeper-qt/windows-neofetch.png)
+
+*在 Windows 上使用 zsh 和 pacman 是一件令人惬意的事情 😊*
+
+参考 [依赖安装](#依赖安装) 中的 Windows (MSYS2) 部分安装依赖后：
+
+```bash
+# 1. 克隆项目
+git clone https://github.com/creeper5820/creeper-qt --depth=1
+
+# 2. 进入项目根目录
+cd creeper-qt
+
+# 3. 配置构建
+# 注意：指定安装路径，避免权限问题
+# 默认路径 C:/Program Files (x86)/ 需要管理员权限
+cmake -G "MinGW Makefiles" \
+  -B build \
+  -DBUILD_EXAMPLE=ON \
+  -DCMAKE_INSTALL_PREFIX="C:/your/install/path"
+
+# 或使用 Ninja
+cmake -G "Ninja" \
+  -B build \
+  -DBUILD_EXAMPLE=ON \
+  -DCMAKE_INSTALL_PREFIX="C:/your/install/path"
+
+# 4. 编译项目
+cmake --build build -j
+
+# 5. 安装库
+cmake --build build --target install
+
+# 6. 运行示例程序
+./build/widgets.exe
+```
+
+> **DLL 依赖问题**
+>
+> 如果在 Windows 资源管理器中直接运行可执行文件，可能会提示找不到 Qt 的 DLL 文件。
+> 这是因为通过 MSYS2 安装的 Qt 库没有暴露到 Windows 系统环境中。
+> 建议在 MSYS2 终端中运行，或将 MSYS2 的 `lib` 和 `bin` 添加到系统 PATH。
+
+</details>
+
+#### 在项目中使用
+
+```cmake
+# 将自定义安装路径添加到 CMAKE_PREFIX_PATH
+# 如果是默认安装路径，比如 /usr/local/，则不需要设置下面的变量
+list(APPEND CMAKE_PREFIX_PATH "/your/custom/path")
+
+find_package(creeper-qt REQUIRED)
+
+# 链接单个模块
+target_link_libraries(your_target PRIVATE creeper-qt::widgets)
+
+# 或链接全部模块
+target_link_libraries(your_target PRIVATE creeper-qt)
+```
+
+#### 独立构建示例程序
+
+示例程序也可以作为独立项目构建，通过 FetchContent 自动拉取 creeper-qt：
+
+```bash
+cd example/widgets
+cmake -B build
+cmake --build build -j$(nproc)
+./build/widgets
+```
+
+---
+
+### 方式四: 手动静态链接
 
 适合需要将库集成到项目中，不希望系统全局安装的情况。
 
@@ -130,163 +285,6 @@ target_link_libraries(
     Qt6::Widgets
 )
 ```
-
----
-
-### 方式二: 手动编译安装
-
-推荐需要全局使用该库的开发者使用此方式。
-
----
-
-### 方式三: CMake FetchContent
-
-无需手动克隆或安装，CMake 自动拉取源码并编译。
-
-```cmake
-include(FetchContent)
-FetchContent_Declare(
-    creeper-qt
-    GIT_REPOSITORY https://github.com/creeper5820/creeper-qt.git
-    GIT_TAG main
-    GIT_SHALLOW TRUE
-)
-FetchContent_MakeAvailable(creeper-qt)
-
-# 链接单个模块
-target_link_libraries(your_target PRIVATE creeper-qt::widgets)
-
-# 或链接全部模块
-target_link_libraries(your_target PRIVATE creeper-qt)
-```
-
----
-
-## 🖥️ 平台特定说明
-
-### Linux 平台
-
-#### 编译步骤
-
-```bash
-# 1. 克隆项目
-git clone https://github.com/creeper5820/creeper-qt --depth=1
-
-# 2. 进入项目根目录
-cd creeper-qt
-
-# 3. 配置构建（启用示例程序）
-cmake -B build -DBUILD_EXAMPLE=ON
-
-# 4. 编译项目
-cmake --build build -j$(nproc)
-
-# 5. 运行示例程序
-./build/widgets
-
-# 6. 安装到系统（可选）
-# 默认安装到 /usr/local
-sudo cmake --build build --target install
-```
-
-#### 自定义安装路径
-
-```bash
-cmake -B build \
-  -DBUILD_EXAMPLE=ON \
-  -DCMAKE_INSTALL_PREFIX=/your/custom/path
-
-cmake --build build -j$(nproc)
-cmake --build build --target install
-```
-
-#### 在其他项目中使用
-
-```cmake
-# 将自定义安装路径添加到 CMAKE_PREFIX_PATH
-# 如果是默认安装路径，比如 /usr/local/，则不需要设置下面的变量
-list(APPEND CMAKE_PREFIX_PATH "/your/custom/path")
-
-find_package(creeper-qt REQUIRED)
-
-# 链接单个模块
-target_link_libraries(your_target PRIVATE creeper-qt::widgets)
-
-# 或链接全部模块
-target_link_libraries(your_target PRIVATE creeper-qt)
-```
-
----
-
-### Windows 平台
-
-> 💡 **推荐使用 MSYS2 环境** - [MSYS2 安装指南](https://www.msys2.org/docs/installer/)
-
-![Windows MSYS2 环境](https://r2.creeper5820.com/creeper-qt/windows-neofetch.png)
-
-*在 Windows 上使用 zsh 和 pacman 是一件令人惬意的事情 😊*
-
-#### 安装 MSYS2 依赖
-
-参考 [依赖安装](#依赖安装) 中的 Windows (MSYS2) 部分。
-
-#### 编译步骤
-
-```bash
-# 1. 克隆项目
-git clone https://github.com/creeper5820/creeper-qt --depth=1
-
-# 2. 进入项目根目录
-cd creeper-qt
-
-# 3. 配置构建
-# 注意：指定安装路径，避免权限问题
-# 默认路径 C:/Program Files (x86)/ 需要管理员权限
-cmake -G "MinGW Makefiles" \
-  -B build \
-  -DBUILD_EXAMPLE=ON \
-  -DCMAKE_INSTALL_PREFIX="C:/your/install/path"
-
-# 或使用 Ninja
-cmake -G "Ninja" \
-  -B build \
-  -DBUILD_EXAMPLE=ON \
-  -DCMAKE_INSTALL_PREFIX="C:/your/install/path"
-
-# 4. 编译项目
-cmake --build build -j
-
-# 或者在 build 目录下直接使用 mingw32-make
-cd build && mingw32-make -j
-
-# 5. 安装库
-cd build && mingw32-make install
-
-# 6. 查看安装文件列表
-cat install_manifest.txt
-
-# 7. 运行示例程序
-./widgets.exe
-```
-
-#### ⚠️ 重要提示
-
-> **DLL 依赖问题**
->
-> 如果在 Windows 资源管理器中直接运行可执行文件，可能会提示找不到 Qt 的 DLL 文件。
-> 这是因为通过 MSYS2 安装的 Qt 库没有暴露到 Windows 系统环境中。
-
-**解决方案:**
-
-1. **在 MSYS2 终端中运行** (推荐)
-
-   ```bash
-   ./widgets.exe
-   ```
-
-2. **添加 MSYS2 目录到系统 PATH**
-   - 将 MSYS2 的 `lib` 和 `bin` 添加到系统环境变量 PATH 中
-   - 重启终端或系统后生效
 
 ---
 
