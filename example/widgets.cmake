@@ -8,6 +8,10 @@ if(BUILD_EXAMPLE)
         ${APP_NAME}
         ${APP_SOURCE}
     )
+    target_include_directories(
+        ${APP_NAME} PRIVATE
+        "example/widgets/"
+    )
     target_link_libraries(
         ${APP_NAME} PRIVATE
         ${QT_VERSION}::Widgets

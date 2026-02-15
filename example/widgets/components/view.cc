@@ -1,5 +1,5 @@
-#include "example/widgets/component.hh"
-#include "example/widgets/components/asset-center.hh"
+#include "component.hh"
+#include "components/asset-center.hh"
 
 #include <creeper-qt/layout/flow.hh>
 #include <creeper-qt/layout/linear.hh>
