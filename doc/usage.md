@@ -12,31 +12,12 @@
 
 ## 🔧 项目依赖
 
-<table>
-  <tr>
-    <th width="200">依赖项</th>
-    <th>版本要求</th>
-    <th>说明</th>
-  </tr>
-  <tr>
-    <td><strong>C++ 标准</strong></td>
-    <td><code>C++23</code> 及以上</td>
-    <td>需要 <code>GCC 14+</code> 或同等编译器</td>
-  </tr>
-  <tr>
-    <td><strong>CMake</strong></td>
-    <td>最新稳定版</td>
-    <td>构建系统</td>
-  </tr>
-  <tr>
-    <td><strong>Eigen</strong></td>
-    <td>3.x</td>
-    <td>库实现依赖（二次开发不依赖）</td>
-  </tr>
-  <tr>
-    <td><strong>Qt6</strong></td>
-  </tr>
-</table>
+| 依赖项 | 版本要求 | 说明 |
+| --- | --- | --- |
+| **C++ 标准** | `C++23` 及以上 | 需要 `GCC 14+` 或同等编译器 |
+| **CMake** | 最新稳定版 | 构建系统 |
+| **Eigen** | 3.x | 库实现依赖（二次开发不依赖） |
+| **Qt6** | | |
 
 ### 依赖安装
 
@@ -63,7 +44,7 @@ sudo apt install libeigen3-dev qt6-base-dev
 >
 > ```bash
 > # ubuntu24 及以上不需要手动添加源
-> sudo add-apt-repository ppa:ubuntu-toolchain-r/test 
+> sudo add-apt-repository ppa:ubuntu-toolchain-r/test
 > sudo apt update
 > sudo apt install gcc-14 g++-14
 > ```
@@ -106,24 +87,11 @@ pacman -Ss eigen3
 
 #### 平台安装命令
 
-<table>
-  <tr>
-    <th width="200">包管理器</th>
-    <th>安装命令</th>
-  </tr>
-  <tr>
-    <td><strong>APT (Debian/Ubuntu)</strong></td>
-    <td><code>sudo apt install ./creeper-qt-*.deb</code></td>
-  </tr>
-  <tr>
-    <td><strong>Pacman (Arch Linux)</strong></td>
-    <td><code>sudo pacman -U creeper-qt-*.pkg.tar.zst</code></td>
-  </tr>
-  <tr>
-    <td><strong>Windows</strong></td>
-    <td>开发中...</td>
-  </tr>
-</table>
+| 包管理器 | 安装命令 |
+| --- | --- |
+| **APT (Debian/Ubuntu)** | `sudo apt install ./creeper-qt-*.deb` |
+| **Pacman (Arch Linux)** | `sudo pacman -U creeper-qt-*.pkg.tar.zst` |
+| **Windows** | 开发中... |
 
 ---
 
@@ -225,10 +193,9 @@ target_link_libraries(your_target PRIVATE creeper-qt::creeper-qt)
 
 > 💡 **推荐使用 MSYS2 环境** - [MSYS2 安装指南](https://www.msys2.org/docs/installer/)
 
-<div align="center">
-  <img src="https://r2.creeper5820.com/creeper-qt/windows-neofetch.png" width="600" alt="Windows MSYS2 环境">
-  <p><i>在 Windows 上使用 zsh 和 pacman 是一件令人惬意的事情 😊</i></p>
-</div>
+![Windows MSYS2 环境](https://r2.creeper5820.com/creeper-qt/windows-neofetch.png)
+
+*在 Windows 上使用 zsh 和 pacman 是一件令人惬意的事情 😊*
 
 #### 安装 MSYS2 依赖
 
@@ -275,16 +242,10 @@ cat install_manifest.txt
 
 #### ⚠️ 重要提示
 
-<table>
-  <tr>
-    <td width="60">⚠️</td>
-    <td>
-      <strong>DLL 依赖问题</strong><br>
-      如果在 Windows 资源管理器中直接运行可执行文件，可能会提示找不到 Qt 的 DLL 文件。<br>
-      这是因为通过 MSYS2 安装的 Qt 库没有暴露到 Windows 系统环境中。
-    </td>
-  </tr>
-</table>
+> **DLL 依赖问题**
+>
+> 如果在 Windows 资源管理器中直接运行可执行文件，可能会提示找不到 Qt 的 DLL 文件。
+> 这是因为通过 MSYS2 安装的 Qt 库没有暴露到 Windows 系统环境中。
 
 **解决方案:**
 
