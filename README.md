@@ -48,32 +48,10 @@
 
 ### 平台支持
 
-<table>
-  <thead>
-    <tr>
-      <th width="150">操作系统</th>
-      <th>安装与运行方式</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td align="center"><strong>🐧 Linux</strong></td>
-      <td>
-        • 下载 <code>AppImage</code> 文件，赋予执行权限后直接运行<br>
-        • 或下载 <code>.tar.gz</code> 压缩包，解压后执行 <code>AppRun</code> 文件
-      </td>
-    </tr>
-    <tr>
-      <td align="center"><strong>🪟 Windows</strong></td>
-      <td>
-        • 下载 <code>.zip</code> 压缩包并解压<br>
-        • 进入文件夹，双击运行 <code>widgets.exe</code>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
----
+| 操作系统 | 安装与运行方式 |
+| --- | --- |
+| **🐧 Linux** | 下载 `AppImage` 文件，赋予执行权限后直接运行；或下载 `.tar.gz` 压缩包，解压后执行 `AppRun` 文件 |
+| **🪟 Windows** | 下载 `.zip` 压缩包并解压，进入文件夹，双击运行 `widgets.exe` |
 
 ---
 
@@ -83,16 +61,9 @@
 
 ### 应用界面
 
-<table>
-  <tr>
-    <td width="50%">
-      <img src="https://r2.creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-30.png" alt="主窗口明亮主题">
-    </td>
-    <td width="50%">
-      <img src="https://r2.creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-38.png" alt="主窗口黑暗主题">
-    </td>
-  </tr>
-</table>
+| | |
+| --- | --- |
+| ![主窗口明亮主题](https://r2.creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-30.png) | ![主窗口黑暗主题](https://r2.creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-38.png) |
 
 ### 组件样式
 
@@ -100,18 +71,9 @@
 
 ### 动画效果
 
-<table>
-  <tr>
-    <td width="50%" align="center">
-      <strong>开关组件动画</strong><br><br>
-      <img src="https://r2.creeper5820.com/creeper-qt/switch-working.gif" width="400" alt="开关动画">
-    </td>
-    <td width="50%" align="center">
-      <strong>文本框动画</strong><br><br>
-      <img src="https://r2.creeper5820.com/creeper-qt/filled-text-field.gif" width="400" alt="文本框动画">
-    </td>
-  </tr>
-</table>
+| 开关组件动画 | 文本框动画 |
+| --- | --- |
+| ![开关动画](https://r2.creeper5820.com/creeper-qt/switch-working.gif) | ![文本框动画](https://r2.creeper5820.com/creeper-qt/filled-text-field.gif) |
 
 </div>
 
@@ -126,29 +88,28 @@
 ### CMake 集成
 
 ```cmake
-cmake_minimum_required(VERSION 3.22)
-
+cmake_minimum_required(VERSION 3.28)
 project(hello-world)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
 
 # Qt 是项目依赖的库，记得导入
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
-find_package(creeper-qt REQUIRED)
 
-# Eigen 是 Header only 的，不用 find 也可以，只要保证
-# 环境中能搜寻到头文件
-# 如果只是二次开发的话，就不需要该库了
-# Eigen 只在实现时用到了
-# find_package(Eigen3 REQUIRED)
-
-# 在 Windows 下, 安装目录如果没有暴露在环境变量, 
-# 需要手动指定一下, 项目才能找到头文件
-# dll 如果找不到，也需要手动指定一下 LIB 目录
-# include_directories(D:/Software/msys2/usr/include/)
-
-# 项目只用到了 MOC，下面功能有需要再开
-# set(CMAKE_AUTORCC ON)
-# set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
+# 引入依赖
+include(FetchContent)
+FetchContent_Declare(
+    creeper-qt
+    GIT_REPOSITORY https://github.com/creeper5820/creeper-qt.git
+    GIT_TAG main
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(creeper-qt)
 
 add_executable(
     ${PROJECT_NAME}
@@ -156,8 +117,8 @@ add_executable(
 )
 target_link_libraries(
     ${PROJECT_NAME}
-    creeper-qt::widgets
     Qt6::Widgets
+    creeper-qt::widgets
 )
 ```
 
@@ -223,7 +184,7 @@ auto main(int argc, char* argv[]) -> int {
 
 ---
 
-## 📋 开发路线图
+## 📋 TODO
 
 - [ ] **版本发布**
   - 等接口稳定后 release 一个正式版本，开始迭代版本号
