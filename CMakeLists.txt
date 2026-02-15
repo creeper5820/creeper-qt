@@ -4,7 +4,6 @@ project(creeper-qt VERSION 2.0.0 LANGUAGES CXX)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_BUILD_TYPE "Release")
 
 set(BUILD_EXAMPLE true)
 set(CMAKE_AUTOMOC ON)
@@ -38,9 +37,8 @@ target_link_libraries(
     ${QT_VERSION}::Network
 )
 
-include(cmake/install.cmake)
-include(cmake/package.cmake)
-
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    include(cmake/install.cmake)
+    include(cmake/package.cmake)
     include(example/widgets.cmake)
 endif()
