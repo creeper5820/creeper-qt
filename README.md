@@ -156,7 +156,7 @@ add_executable(
 )
 target_link_libraries(
     ${PROJECT_NAME}
-    creeper-qt::creeper-qt
+    creeper-qt::widgets
     Qt6::Widgets
 )
 ```
