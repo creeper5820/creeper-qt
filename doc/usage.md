@@ -34,9 +34,7 @@
     <td>库实现依赖（二次开发不依赖）</td>
   </tr>
   <tr>
-    <td><strong>Qt</strong></td>
-    <td>Qt5 或 Qt6</td>
-    <td>推荐使用 Qt6</td>
+    <td><strong>Qt6</strong></td>
   </tr>
 </table>
 
@@ -46,11 +44,7 @@
 <summary><b>🐧 Arch Linux</b></summary>
 
 ```bash
-# For Qt6 (推荐)
 sudo pacman -S eigen qt6-base
-
-# For Qt5
-sudo pacman -S eigen qt5-base
 ```
 
 </details>
@@ -62,11 +56,7 @@ sudo pacman -S eigen qt5-base
 # 注意：Ubuntu 默认 GCC 版本较低
 # 建议使用 PPA 下载较新版本，或直接下载二进制文件
 
-# For Qt6 (推荐)
 sudo apt install libeigen3-dev qt6-base-dev
-
-# For Qt5
-sudo apt install libeigen3-dev qtbase5-dev
 ```
 
 > 💡 **提示**: 如果系统 GCC 版本过低，可以通过以下方式安装新版本：
@@ -112,11 +102,7 @@ pacman -Ss eigen3
 
 **[📥 前往下载页面](https://github.com/creeper5820/creeper-qt/releases/tag/nightly-library)**
 
-默认提供 **Qt6** 版本
-
 </div>
-
-> 💡 **自定义 Qt 版本**: 如需 Qt5 版本，请修改 `CMakeLists.txt` 中的 `QT_VERSION` 参数，然后手动编译安装
 
 #### 平台安装命令
 
@@ -173,7 +159,7 @@ add_executable(
 # 链接 Qt 库
 target_link_libraries(
     ${EXAMPLE_NAME}
-    Qt6::Widgets  # 或 Qt5::Widgets
+    Qt6::Widgets
 )
 ```
 
@@ -221,6 +207,16 @@ cmake -B build \
 
 cmake --build build -j$(nproc)
 cmake --build build --target install
+```
+
+#### 在其他项目中使用
+
+```cmake
+# 将自定义安装路径添加到 CMAKE_PREFIX_PATH
+list(APPEND CMAKE_PREFIX_PATH "/your/custom/path")
+
+find_package(creeper-qt REQUIRED)
+target_link_libraries(your_target PRIVATE creeper-qt::creeper-qt)
 ```
 
 ---
@@ -328,24 +324,6 @@ A: CREEPER-QT 使用了 C++23 的一些新特性以提供更好的 API 设计和
 <summary><b>Q: 可以使用 Clang 编译吗？</b></summary>
 
 A: 可以，但需要确保 Clang 版本支持 C++23 标准（Clang 16+）。
-
-</details>
-
-<details>
-<summary><b>Q: Qt5 和 Qt6 有什么区别？</b></summary>
-
-A: CREEPER-QT 同时支持 Qt5 和 Qt6，但推荐使用 Qt6 以获得更好的性能和更多的功能支持。
-
-</details>
-
-<details>
-<summary><b>Q: 如何切换 Qt5/Qt6 版本？</b></summary>
-
-A: 修改项目根目录 `CMakeLists.txt` 中的 `QT_VERSION` 变量，然后重新编译即可。
-
-```cmake
-set(QT_VERSION Qt6)  # 或改为 Qt5
-```
 
 </details>
 

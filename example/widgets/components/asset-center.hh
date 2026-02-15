@@ -25,7 +25,6 @@ struct NetworkContext final {
     std::atomic<bool> downloading = false;
 
     explicit NetworkContext() noexcept {
-        // Qt5 Not Accept std::chrono literals for this function
         accessor.setTransferTimeout(5'000);
     }
 
