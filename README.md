@@ -156,7 +156,7 @@ add_executable(
 )
 target_link_libraries(
     ${PROJECT_NAME}
-    creeper-qt::creeper-qt
+    creeper-qt::widgets
     Qt6::Widgets
 )
 ```
@@ -241,6 +241,10 @@ auto main(int argc, char* argv[]) -> int {
 - [ ] **高级组件**
   - 提供日历模组组件
   - 提供设置中心示例
+
+- [ ] 构建系统
+    - 适配 module 导出
+    - 提供开发脚手架
 
 ---
 

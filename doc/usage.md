@@ -12,33 +12,12 @@
 
 ## 🔧 项目依赖
 
-<table>
-  <tr>
-    <th width="200">依赖项</th>
-    <th>版本要求</th>
-    <th>说明</th>
-  </tr>
-  <tr>
-    <td><strong>C++ 标准</strong></td>
-    <td><code>C++23</code> 及以上</td>
-    <td>需要 <code>GCC 14+</code> 或同等编译器</td>
-  </tr>
-  <tr>
-    <td><strong>CMake</strong></td>
-    <td>最新稳定版</td>
-    <td>构建系统</td>
-  </tr>
-  <tr>
-    <td><strong>Eigen</strong></td>
-    <td>3.x</td>
-    <td>库实现依赖（二次开发不依赖）</td>
-  </tr>
-  <tr>
-    <td><strong>Qt</strong></td>
-    <td>Qt5 或 Qt6</td>
-    <td>推荐使用 Qt6</td>
-  </tr>
-</table>
+| 依赖项 | 版本要求 | 说明 |
+| --- | --- | --- |
+| **C++ 标准** | `C++23` 及以上 | 需要 `GCC 14+` 或同等编译器 |
+| **CMake** | 最新稳定版 | 构建系统 |
+| **Eigen** | 3.x | 库实现依赖（二次开发不依赖） |
+| **Qt6** | | |
 
 ### 依赖安装
 
@@ -46,11 +25,7 @@
 <summary><b>🐧 Arch Linux</b></summary>
 
 ```bash
-# For Qt6 (推荐)
 sudo pacman -S eigen qt6-base
-
-# For Qt5
-sudo pacman -S eigen qt5-base
 ```
 
 </details>
@@ -62,18 +37,14 @@ sudo pacman -S eigen qt5-base
 # 注意：Ubuntu 默认 GCC 版本较低
 # 建议使用 PPA 下载较新版本，或直接下载二进制文件
 
-# For Qt6 (推荐)
 sudo apt install libeigen3-dev qt6-base-dev
-
-# For Qt5
-sudo apt install libeigen3-dev qtbase5-dev
 ```
 
 > 💡 **提示**: 如果系统 GCC 版本过低，可以通过以下方式安装新版本：
 >
 > ```bash
 > # ubuntu24 及以上不需要手动添加源
-> sudo add-apt-repository ppa:ubuntu-toolchain-r/test 
+> sudo add-apt-repository ppa:ubuntu-toolchain-r/test
 > sudo apt update
 > sudo apt install gcc-14 g++-14
 > ```
@@ -112,32 +83,15 @@ pacman -Ss eigen3
 
 **[📥 前往下载页面](https://github.com/creeper5820/creeper-qt/releases/tag/nightly-library)**
 
-默认提供 **Qt6** 版本
-
 </div>
-
-> 💡 **自定义 Qt 版本**: 如需 Qt5 版本，请修改 `CMakeLists.txt` 中的 `QT_VERSION` 参数，然后手动编译安装
 
 #### 平台安装命令
 
-<table>
-  <tr>
-    <th width="200">包管理器</th>
-    <th>安装命令</th>
-  </tr>
-  <tr>
-    <td><strong>APT (Debian/Ubuntu)</strong></td>
-    <td><code>sudo apt install ./creeper-qt-*.deb</code></td>
-  </tr>
-  <tr>
-    <td><strong>Pacman (Arch Linux)</strong></td>
-    <td><code>sudo pacman -U creeper-qt-*.pkg.tar.zst</code></td>
-  </tr>
-  <tr>
-    <td><strong>Windows</strong></td>
-    <td>开发中...</td>
-  </tr>
-</table>
+| 包管理器 | 安装命令 |
+| --- | --- |
+| **APT (Debian/Ubuntu)** | `sudo apt install ./creeper-qt-*.deb` |
+| **Pacman (Arch Linux)** | `sudo pacman -U creeper-qt-*.pkg.tar.zst` |
+| **Windows** | 开发中... |
 
 ---
 
@@ -173,7 +127,7 @@ add_executable(
 # 链接 Qt 库
 target_link_libraries(
     ${EXAMPLE_NAME}
-    Qt6::Widgets  # 或 Qt5::Widgets
+    Qt6::Widgets
 )
 ```
 
@@ -182,6 +136,29 @@ target_link_libraries(
 ### 方式二: 手动编译安装
 
 推荐需要全局使用该库的开发者使用此方式。
+
+---
+
+### 方式三: CMake FetchContent
+
+无需手动克隆或安装，CMake 自动拉取源码并编译。
+
+```cmake
+include(FetchContent)
+FetchContent_Declare(
+    creeper-qt
+    GIT_REPOSITORY https://github.com/creeper5820/creeper-qt.git
+    GIT_TAG main
+    GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(creeper-qt)
+
+# 链接单个模块
+target_link_libraries(your_target PRIVATE creeper-qt::widgets)
+
+# 或链接全部模块
+target_link_libraries(your_target PRIVATE creeper-qt)
+```
 
 ---
 
@@ -223,16 +200,31 @@ cmake --build build -j$(nproc)
 cmake --build build --target install
 ```
 
+#### 在其他项目中使用
+
+```cmake
+# 将自定义安装路径添加到 CMAKE_PREFIX_PATH
+# 如果是默认安装路径，比如 /usr/local/，则不需要设置下面的变量
+list(APPEND CMAKE_PREFIX_PATH "/your/custom/path")
+
+find_package(creeper-qt REQUIRED)
+
+# 链接单个模块
+target_link_libraries(your_target PRIVATE creeper-qt::widgets)
+
+# 或链接全部模块
+target_link_libraries(your_target PRIVATE creeper-qt)
+```
+
 ---
 
 ### Windows 平台
 
 > 💡 **推荐使用 MSYS2 环境** - [MSYS2 安装指南](https://www.msys2.org/docs/installer/)
 
-<div align="center">
-  <img src="https://r2.creeper5820.com/creeper-qt/windows-neofetch.png" width="600" alt="Windows MSYS2 环境">
-  <p><i>在 Windows 上使用 zsh 和 pacman 是一件令人惬意的事情 😊</i></p>
-</div>
+![Windows MSYS2 环境](https://r2.creeper5820.com/creeper-qt/windows-neofetch.png)
+
+*在 Windows 上使用 zsh 和 pacman 是一件令人惬意的事情 😊*
 
 #### 安装 MSYS2 依赖
 
@@ -279,16 +271,10 @@ cat install_manifest.txt
 
 #### ⚠️ 重要提示
 
-<table>
-  <tr>
-    <td width="60">⚠️</td>
-    <td>
-      <strong>DLL 依赖问题</strong><br>
-      如果在 Windows 资源管理器中直接运行可执行文件，可能会提示找不到 Qt 的 DLL 文件。<br>
-      这是因为通过 MSYS2 安装的 Qt 库没有暴露到 Windows 系统环境中。
-    </td>
-  </tr>
-</table>
+> **DLL 依赖问题**
+>
+> 如果在 Windows 资源管理器中直接运行可执行文件，可能会提示找不到 Qt 的 DLL 文件。
+> 这是因为通过 MSYS2 安装的 Qt 库没有暴露到 Windows 系统环境中。
 
 **解决方案:**
 
@@ -328,24 +314,6 @@ A: CREEPER-QT 使用了 C++23 的一些新特性以提供更好的 API 设计和
 <summary><b>Q: 可以使用 Clang 编译吗？</b></summary>
 
 A: 可以，但需要确保 Clang 版本支持 C++23 标准（Clang 16+）。
-
-</details>
-
-<details>
-<summary><b>Q: Qt5 和 Qt6 有什么区别？</b></summary>
-
-A: CREEPER-QT 同时支持 Qt5 和 Qt6，但推荐使用 Qt6 以获得更好的性能和更多的功能支持。
-
-</details>
-
-<details>
-<summary><b>Q: 如何切换 Qt5/Qt6 版本？</b></summary>
-
-A: 修改项目根目录 `CMakeLists.txt` 中的 `QT_VERSION` 变量，然后重新编译即可。
-
-```cmake
-set(QT_VERSION Qt6)  # 或改为 Qt5
-```
 
 </details>
 
