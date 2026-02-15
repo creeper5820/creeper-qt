@@ -56,10 +56,4 @@ inline auto quit() { return ::QApplication::quit(); }
 
 inline auto focus_widget() { return ::QApplication::focusWidget(); }
 inline auto focus_object() { return ::QApplication::focusObject(); }
-
-#if QT_DEPRECATED_SINCE(6, 0)
-#define AA_EnableHighDpiScaling AA_AttributeCount
-#define AA_UseHighDpiPixmaps AA_AttributeCount
-#endif
-
 }
