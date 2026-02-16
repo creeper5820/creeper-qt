@@ -9,7 +9,7 @@ mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
 # ---- 0. 找二进制（只在 build/ 下找） ----
-BIN=${1:-widgets}
+BIN=${1:-example/widgets/widgets}
 [[ -x $BIN ]] || {
     echo "❌ $BUILD_DIR/$BIN 不存在"
     exit 1
