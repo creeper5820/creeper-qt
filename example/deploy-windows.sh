@@ -1,12 +1,14 @@
 #!/bin/bash
 
 # Define paths
-BIN="widgets.exe"
-DLL="libcreeper-qt.dll"
+BIN="example/widgets/widgets.exe"
+DLL="libcreeper-qt-widgets.dll"
 TARGET_DIR="./build/AppDir"
 
 # Create target directory if it doesn't exist
 mkdir -p "$TARGET_DIR"
+
+BIN_NAME=$(basename "$BIN")
 
 # Step 1: Copy main executable and custom DLL
 echo "🚚 Copying main binary and custom DLL..."
@@ -16,7 +18,7 @@ cp -u "build/$DLL" "$TARGET_DIR/"
 # Step 2: Run windeployqt6 to collect Qt DLLs
 echo "🔧 Running windeployqt6..."
 cd "$TARGET_DIR"
-windeployqt6 "$BIN" --release --no-translations --no-system-d3d-compiler --no-opengl-sw
+windeployqt6 "$BIN_NAME" --release --no-translations --no-system-d3d-compiler --no-opengl-sw
 cd -
 
 # Step 3: Copy remaining DLLs from ldd output, excluding unwanted ones
