@@ -62,13 +62,13 @@ TLSDIR="${QTDIR}/plugins/tls"
 if [[ -d "$TLSDIR" ]]; then
     mkdir -p AppDir/${QTDIR}/plugins
     cp -Lr "$TLSDIR" AppDir/${QTDIR}/plugins
-fi
 
-# 添加插件依赖的 libssl.so.3 / libcrypto.so.3
-for so in "$TLSDIR/libqopensslbackend.so"; do
-    ldd "$so" | grep -oE '/[^ ]*(libssl|libcrypto)\.so\.[0-9]' |
-        while read -r lib; do cp -L "$lib" AppDir/usr/lib; done
-done
+    # 添加插件依赖的 libssl.so.3 / libcrypto.so.3
+    for so in "$TLSDIR/libqopensslbackend.so"; do
+        ldd "$so" | grep -oE '/[^ ]*(libssl|libcrypto)\.so\.[0-9]' |
+            while read -r lib; do cp -L "$lib" AppDir/usr/lib; done
+    done
+fi
 
 # AppRun
 cat >"$APPDIR/AppRun" <<'EOF'
