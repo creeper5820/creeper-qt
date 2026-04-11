@@ -13,13 +13,13 @@ struct LatticeSolution {
 
     /// @note: order is w, h
     auto set_size(const auto& size) {
-        auto [_w, _h]  = size;
-        std::tie(w, h) = std::tie(_w, _h);
+        w = size.width();
+        h = size.height();
     }
     /// @note: order is x, y
     auto set_pos(const auto& point) {
-        auto [_x, _y]  = point;
-        std::tie(x, y) = std::tie(_x, _y);
+        x = point.x();
+        y = point.y();
     }
 
     auto solve() const noexcept -> std::generator<std::tuple<double, double>> {

@@ -3,6 +3,7 @@
 #pragma once
 
 #include <creeper-qt/utility/theme/theme.hh>
+#include <qdebug.h>
 #include <qwidget.h>
 
 template <typename T>

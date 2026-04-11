@@ -38,11 +38,12 @@ auto operator*(std::size_t n, std::invocable<std::size_t> auto&& f) {
 }
 
 static auto print_material_fonts() noexcept {
-    const auto& families = QFontDatabase::families();
+    QFontDatabase db;
+    const auto& families = db.families();
     for (const auto& family : families) {
         if (family.contains("Material", Qt::CaseInsensitive)) {
             qDebug() << "Found Material Font:" << family;
-            auto styles = QFontDatabase::styles(family);
+            auto styles = db.styles(family);
             for (const auto& style : styles) {
                 qDebug() << " - Style:" << style;
             }
@@ -55,8 +56,8 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
     auto slogen_context = std::make_shared<MutableValue<QString>>();
     slogen_context->set_silent("BanG Dream! It’s MyGO!!!!!");
 
-    auto select_context = std::make_shared<MutableValue<QStringList>>();
-    select_context->set_silent(QStringList { "1st", "2ed", "3rd" });
+    auto select_context = std::make_shared<MutableValue<QVector<QString>>>();
+    select_context->set_silent(QVector<QString> { "1st", "2ed", "3rd" });
     const auto row = new Row {
         lnpro::Item<OutlinedTextField> {
             text_field::pro::ThemeManager { manager },

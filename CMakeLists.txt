@@ -10,7 +10,7 @@ set(CMAKE_AUTOMOC ON)
 
 add_compile_options(-Os -O2)
 
-set(QT_VERSION Qt6)
+set(QT_VERSION Qt5)
 find_package(${QT_VERSION} REQUIRED COMPONENTS Widgets Network)
 find_package(Eigen3 REQUIRED)
 

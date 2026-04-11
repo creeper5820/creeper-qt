@@ -5,7 +5,11 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets Network)
+if(NOT DEFINED QT_VERSION)
+    set(QT_VERSION Qt5)
+endif()
+
+find_package(${QT_VERSION} REQUIRED COMPONENTS Widgets Network)
 
 if(NOT TARGET creeper-qt::widgets)
     include(FetchContent)
@@ -33,7 +37,7 @@ target_include_directories(
 )
 target_link_libraries(
     ${PROJECT_NAME} PRIVATE
-    Qt6::Widgets
-    Qt6::Network
+    ${QT_VERSION}::Widgets
+    ${QT_VERSION}::Network
     creeper-qt::widgets
 )

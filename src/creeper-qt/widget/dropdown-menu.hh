@@ -132,7 +132,7 @@ namespace dropdown_menu::pro {
     using Items = DerivedProp<Token, QVector<QString>, //
         [](auto& self, const auto& vec) {
             self.clear();
-            self.addItems(vec);
+            self.addItems(QStringList(vec.begin(), vec.end()));
             self.setCurrentIndex(-1);
         }>;
 
