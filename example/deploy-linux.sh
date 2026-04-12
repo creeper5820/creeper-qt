@@ -25,7 +25,7 @@ if [[ ! -x $TOOL ]]; then
     chmod +x $TOOL
 fi
 
-# ---- 2. 在 build/ 裡準備 AppDir ----
+# ---- 2. 在 build/ 里准备 AppDir ----
 APPDIR=AppDir
 rm -rf "$APPDIR"
 mkdir -p "$APPDIR/usr/bin"
@@ -94,5 +94,5 @@ mv Widget*.AppImage widgets-linux-x86_64.AppImage
 
 # ---- 5. 导出 ----
 tar -czf widgets-linux-x86_64.tar.gz -C "$APPDIR" .
-echo "✅ 輸出於 $BUILD_DIR："
+echo "✅ 输出于 $BUILD_DIR："
 ls -lh widgets-linux-x86_64.AppImage widgets-linux-x86_64.tar.gz
