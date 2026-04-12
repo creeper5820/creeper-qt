@@ -81,10 +81,7 @@ project(hello-world)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 库中没有用到 MOC，可以不开启
-# set(CMAKE_AUTORCC ON)
-# set(CMAKE_AUTOUIC ON)
-# set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOMOC ON)
 
 # Qt 是项目依赖的库，记得导入
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
