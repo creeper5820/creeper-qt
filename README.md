@@ -54,7 +54,7 @@
 
 <div align="center">
 
-| | |
+| 明亮 | 黑暗 |
 | --- | --- |
 | ![主窗口明亮主题](https://r2.creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-30.png) | ![主窗口黑暗主题](https://r2.creeper5820.com/creeper-qt/MainWindow-Screenshot-2025-09-29_21-15-38.png) |
 

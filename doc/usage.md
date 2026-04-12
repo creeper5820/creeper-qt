@@ -185,31 +185,6 @@ cmake --build build -j$(nproc)
 
 ---
 
-### 方式四：手动静态链接
-
-适合需要将库集成到项目中，不希望系统全局安装的情况。
-
-```bash
-cd path/to/your/project/lib/dir/
-git clone https://github.com/creeper5820/creeper-qt --depth=1
-```
-
-```cmake
-set(CMAKE_AUTOMOC ON)
-
-include_directories(${库的根路径})
-
-add_executable(
-    ${EXAMPLE_NAME}
-    ${这个库所有的 .cc 文件}
-    ${这个库所有的 .hh 文件}
-)
-
-target_link_libraries(${EXAMPLE_NAME} Qt6::Widgets)
-```
-
----
-
 ## 相关文档
 
 - [组件文档](widgets.md)

@@ -163,17 +163,17 @@ auto grid = new Grid {
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
 | `Item` | `Widget*` | 添加子项（仅支持 Widget） |
-| `Index` | `int` | 设置当前显示的页面索引 |
-| `IndexChanged` | `[](auto& self){}` | 索引改变时的回调函数 |
+| `CurrentIndex` | `int` | 设置当前显示的页面索引 |
+| `IndexChanged` | `[](int index){}` | 索引改变时的回调函数（连接 `currentChanged` 信号） |
 
 ```cpp
 using namespace creeper;
 namespace stpro = stacked::pro;
 
 auto stacked = new Stacked {
-    stpro::Index { 0 },
-    stpro::IndexChanged { [](auto& self) {
-        qDebug() << "当前页面索引:" << self.currentIndex();
+    stpro::CurrentIndex { 0 },
+    stpro::IndexChanged { [](int index) {
+        qDebug() << "当前页面索引:" << index;
     }},
     stpro::Item<Widget> {
         widget::pro::Layout<Col> {
@@ -263,18 +263,24 @@ auto flow2 = new Flow {
 
 ```cpp
 using namespace creeper;
-namespace lnpro = linear::pro;
 
 auto scroll_area = new ScrollArea {
     scroll::pro::ThemeManager { manager },
     scroll::pro::HorizontalScrollBarPolicy { Qt::ScrollBarAlwaysOff },
     scroll::pro::VerticalScrollBarPolicy { Qt::ScrollBarAsNeeded },
-    scroll::pro::Item<Col> {
-        lnpro::Item<FilledTextField> {
-            text_field::pro::ThemeManager { manager },
-            text_field::pro::LabelText { "内容" }
-        },
+    scroll::pro::Item {
+        SomeContentWidget,  // 传入已有的 widget 指针
     }
+};
+
+// 或者直接构造内容组件
+auto scroll_area2 = new ScrollArea {
+    scroll::pro::ThemeManager { manager },
+    scroll::pro::ScrollBarPolicy {
+        Qt::ScrollBarAlwaysOff,
+        Qt::ScrollBarAlwaysOff,
+    },
+    scroll::pro::Item { ButtonGroup },  // ButtonGroup 是已构造好的 widget*
 };
 ```
 
