@@ -5,7 +5,6 @@
 ///     如果使用 Arch Linux，则可以通过 AUR 安装：ttf-material-icons-git，
 ///     使用其他 Nerd Font 也是可以的
 
-
 #include "component.hh"
 #include "components/display-board.hh"
 

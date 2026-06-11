@@ -128,13 +128,6 @@ private:
     static constexpr auto impl_tuple_trait<std::tuple<Ts...>, checker_> =
         (impl_props_trait<Ts, checker_> && ...);
 
-public:
-    /* Export widget type */
-    using Widget = W;
-
-    /* Export checker type */
-    using Checker = checker;
-
     /* For check props */
     template <class T>
     static constexpr auto props_trait = impl_props_trait<std::remove_cvref_t<T>, checker>;
@@ -143,13 +136,56 @@ public:
     template <class T>
     static constexpr auto tuple_trait = impl_tuple_trait<std::remove_cvref_t<T>, checker>;
 
+    template <class... Args>
+    static constexpr auto mixed_trait = ((props_trait<Args> || tuple_trait<Args>) && ...);
+
+    // Error Message Helper
+
+    template <typename T>
+    static constexpr auto generate_prop_error_message() {
+        static_assert(props_trait<T>,
+            "<- 这里需要一个合法的声明式属性 | Expected a valid declarative prop ∑(￣□￣;)");
+    }
+    template <typename T>
+    static constexpr auto generate_error_message(T&&) {
+        generate_prop_error_message<T>();
+    }
+    template <typename... Ts>
+    static constexpr auto generate_error_message(std::tuple<Ts...>&) {
+        (generate_prop_error_message<Ts>(), ...);
+    }
+    template <typename... Ts>
+    static constexpr auto generate_error_message(const std::tuple<Ts...>&) {
+        (generate_prop_error_message<Ts>(), ...);
+    }
+    template <typename... Ts>
+    static constexpr auto generate_error_message(std::tuple<Ts...>&&) {
+        (generate_prop_error_message<Ts>(), ...);
+    }
+
 public:
+    /* Export widget type */
+    using Widget = W;
+
+    /* Export checker type */
+    using Checker = checker;
+
     // 铁血的，热血的，冷血的声明式构造接口
     explicit Declarative(auto&&... props) noexcept
-        requires((props_trait<decltype(props)> || tuple_trait<decltype(props)>) && ...)
-        : W {} {
+        requires mixed_trait<decltype(props)...>
+        : W { } {
         (apply(std::forward<decltype(props)>(props)), ...);
     }
+
+    /// @NOTE:
+    ///  为了更友好的提示，但这个错误的 Fallback 会让
+    ///  std::constructible_from 校验失效，避免依靠该
+    ///  约束进行重载决议和编译期分发
+    explicit Declarative(auto&&... props) noexcept {
+        // 生成一些拟人的错误提示
+        (generate_error_message(props), ...);
+    }
+
     auto apply(this auto& self, auto&& tuple) noexcept -> void
         requires tuple_trait<decltype(tuple)>
     {

@@ -20,9 +20,9 @@ using FixedHeight   = SetterProp<Token, int, [](auto& self, int v) { self.setFix
 using LayoutDirection = SetterProp<Token, Qt::LayoutDirection,
     [](auto& self, Qt::LayoutDirection v) { self.setLayoutDirection(v); }>;
 using BackgroundRole  = SetterProp<Token, QPalette::ColorRole,
-     [](auto& self, QPalette::ColorRole v) { self.setBackgroundRole(v); }>;
+    [](auto& self, QPalette::ColorRole v) { self.setBackgroundRole(v); }>;
 using ForegroundRole  = SetterProp<Token, QPalette::ColorRole,
-     [](auto& self, QPalette::ColorRole v) { self.setForegroundRole(v); }>;
+    [](auto& self, QPalette::ColorRole v) { self.setForegroundRole(v); }>;
 
 using ClearMask = SetterProp<Token, std::nullptr_t, [](auto& self, auto) { self.clearMask(); }>;
 using GraphicsEffect = SetterProp<Token, QGraphicsEffect*,
@@ -115,6 +115,11 @@ struct Layout : Token {
     explicit Layout(auto&&... args)
         requires std::constructible_from<T, decltype(args)...>
         : layout_ { new T { std::forward<decltype(args)>(args)... } } { }
+
+    explicit Layout(auto&&... args) noexcept {
+        // 实例化一次错误的构造，让错误爆出来
+        T { std::forward<decltype(args)>(args)... };
+    }
 
     void apply(QWidget& widget) const { widget.setLayout(layout_); }
 };
