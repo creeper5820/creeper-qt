@@ -16,3 +16,5 @@ CMakeSettings.json
 *.deb
 *.pkg
 *.zip
+
+src/creeper-qt/creeper-qt.hh

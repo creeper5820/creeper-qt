@@ -14,18 +14,9 @@ set(QT_VERSION Qt6)
 find_package(${QT_VERSION} REQUIRED COMPONENTS Widgets Network)
 find_package(Eigen3 REQUIRED)
 
+include(cmake/collect.cmake)
+
 # Widgets
-file(
-    GLOB_RECURSE WIDGETS_SOURCE
-    CONFIGURE_DEPENDS
-        # Source
-        "src/creeper-qt/core/*.cc"
-        "src/creeper-qt/layout/*.cc"
-        "src/creeper-qt/utility/*.cc"
-        "src/creeper-qt/widget/*.cc"
-        # Custom signals
-        "src/creeper-qt/widget/sliders.hh"
-)
 add_library(${PROJECT_NAME}-widgets ${WIDGETS_SOURCE})
 set_target_properties(${PROJECT_NAME}-widgets PROPERTIES EXPORT_NAME widgets)
 target_include_directories(
