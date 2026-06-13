@@ -64,8 +64,11 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                 material::icon::kSearch,
                 material::round::font,
             },
+            text_field::pro::Measurements {
+                OutlinedTextField::Measurements { },
+            },
             MutableForward {
-                text_field::pro::LabelText {},
+                text_field::pro::LabelText { },
                 slogen_context,
             },
         },
@@ -75,7 +78,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
             dropdown_menu::pro::LabelText { "Item" },
             dropdown_menu::pro::FixedWidth { 100 },
             MutableForward {
-                dropdown_menu::pro::Items {},
+                dropdown_menu::pro::Items { },
                 select_context,
             },
         },
@@ -246,7 +249,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                         text::pro::ThemeManager { state.manager },
                         text::pro::Alignment { Qt::AlignCenter },
                         text::pro::FixedWidth { 100 },
-                        MutableForward { text::pro::Text {}, s },
+                        MutableForward { text::pro::Text { }, s },
                     },
                 },
             },

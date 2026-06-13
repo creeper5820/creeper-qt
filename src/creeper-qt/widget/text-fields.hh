@@ -113,6 +113,9 @@ namespace text_field::pro {
     using ClearButton = SetterProp<Token, bool,
         [](auto& self, bool enable) { self.setClearButtonEnabled(enable); }>;
 
+    using Measurements = SetterProp<Token, internal::BasicTextField::Measurements,
+        [](auto& self, const auto& var) { self.set_measurements(var); }>;
+
     using LabelText = common::pro::String<Token,
         [](auto& self, const auto& string) { self.set_label_text(string); }>;
 
