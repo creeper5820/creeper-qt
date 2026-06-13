@@ -5,7 +5,6 @@
 #include "creeper-qt/utility/animation/transition.hh"
 #include "creeper-qt/utility/painter/common.hh"
 #include "creeper-qt/utility/painter/container.hh"
-#include "creeper-qt/utility/painter/helper.hh"
 #include "creeper-qt/utility/painter/shape.hh"
 
 #include <qpainter.h>
@@ -31,7 +30,7 @@ public:
         }
 
         self.setAlignment(Qt::AlignVCenter);
-        set_measurements(Measurements {});
+        set_measurements(Measurements { });
     }
 
     /// @note https://m3.material.io/components/text-fields/specs
@@ -121,98 +120,99 @@ public:
     }
 
     auto paint_filled(QPaintEvent*) -> void {
-        const auto widget_rect = self.rect();
-        const auto color       = get_color_tokens();
+        const auto& measurements = this->measurements;
+        const auto& color_tokens = get_color_tokens();
 
         constexpr auto container_radius = 5;
 
         update_component_status(FieldType::FILLED);
-
-        auto painter = QPainter { &self };
-
-        const auto container_rect = QRect { widget_rect.left(),
-            widget_rect.top() + (widget_rect.height() - measurements.container_height) / 2,
-            widget_rect.width(), measurements.container_height };
-
-        // Container
         {
-            util::PainterHelper { painter }
-                .set_render_hint(QPainter::Antialiasing)
-                .rounded_rectangle(color.container, Qt::transparent, 0, container_rect,
-                    container_radius, container_radius, 0, 0);
-        }
+            using namespace painter;
+            using namespace painter::common::pro;
+            auto painter = qt::painter { &self };
 
-        // Active Indicator
-        {
-            const auto p0 = container_rect.bottomLeft();
-            const auto p1 = container_rect.bottomRight();
-            painter.setBrush(Qt::NoBrush);
-            painter.setPen(QPen { color.active_indicator, filled_line_width() });
-            painter.drawLine(p0, p1);
-        }
+            /// Cache Calculate
+            const auto container_width  = self.width();
+            const auto container_height = measurements.container_height;
+            const auto container_size   = qt::size(container_width, container_height);
 
-        // Leading icon
-        if (!leading_icon.isNull()) {
-            //
-        } else if (!leading_icon_code.isEmpty()) {
-            const auto icon_rect = QRectF {
-                1.0 * container_rect.left() + measurements.row_padding_with_icons,
-                1.0 * container_rect.top()
-                    + (measurements.container_height - measurements.icon_rect_size) / 2.0,
-                1.0 * measurements.icon_rect_size,
-                1.0 * measurements.icon_rect_size,
-            };
+            const auto active_indicator_size = qt::size(container_width, filled_line_width());
+            const auto active_indicator_origin =
+                qt::point { 0, container_height - active_indicator_size.height() };
 
-            painter.save();
-            painter.setBrush(Qt::NoBrush);
-            painter.setPen(QPen { color.leading_icon });
-            painter.setFont(leading_icon_font);
-            painter.drawText(icon_rect, leading_icon_code, { Qt::AlignCenter });
-            painter.restore();
-        }
+            /// Leading Icon
+            const auto leading_box_size = use_leading_icon
+                ? qt::size(measurements.icon_rect_size, container_height)
+                : qt::size(0, 0);
 
-        // Label Text
-        if (!label_text.isEmpty()) {
-            const auto position = self.text().isEmpty() ? *label_position : 1.;
-            const auto margins  = self.textMargins();
+            /// Label Text
+            const auto position   = self.text().isEmpty() ? *label_position : 1.;
+            const auto text_scale = animate::interpolate(1., 0.75, position);
 
-            const auto center_label_y = container_rect.top()
-                + (measurements.container_height - measurements.label_rect_size) / 2.0;
+            auto text_option = qt::text_option { };
+            text_option.setWrapMode(QTextOption::NoWrap);
+            text_option.setAlignment(Qt::AlignLeading | Qt::AlignVCenter);
 
-            const auto rect_center = QRectF {
-                QPointF(margins.left(), center_label_y),
-                QPointF(container_rect.right() - margins.right(),
-                    center_label_y + measurements.label_rect_size),
-            };
+            const auto margins     = self.textMargins();
+            const auto label_width = container_width - margins.left() - margins.right();
 
-            const auto rect_top = QRectF {
-                QPointF(margins.left(), container_rect.top() + measurements.col_padding),
-                QPointF(container_rect.right() - margins.right(),
-                    container_rect.top() + measurements.col_padding + measurements.label_rect_size),
-            };
+            const auto center_label_y = (container_height - measurements.label_rect_size) / 2.0;
+            const auto top_label_y    = measurements.col_padding;
 
-            const auto rect   = animate::interpolate(rect_center, rect_top, position);
-            const auto scale  = 1. - position * 0.25;
-            const auto anchor = QPointF { rect.left(), rect.center().y() };
+            const auto label_begin_origin = qt::point(margins.left(), center_label_y);
+            const auto label_final_origin = qt::point(margins.left(), top_label_y);
+            const auto label_begin_size   = qt::size(label_width, measurements.label_rect_size);
+            const auto label_final_size =
+                qt::size(text_scale * label_width, measurements.label_rect_size);
 
-            painter.save();
-            painter.translate(anchor);
-            painter.scale(scale, scale);
-            painter.translate(-anchor);
-            painter.setBrush(Qt::NoBrush);
-            painter.setPen(QPen { color.label_text });
-            painter.setFont(standard_text_font);
-            painter.setRenderHint(QPainter::Antialiasing);
-            painter.drawText(rect, label_text, { Qt::AlignVCenter | Qt::AlignLeading });
-            painter.restore();
-        }
+            const auto label_origin =
+                animate::interpolate(label_begin_origin, label_final_origin, position);
+            const auto label_size =
+                animate::interpolate(label_begin_size, label_final_size, position);
 
-        // Hovered State Layer
-        if (is_hovered) {
-            util::PainterHelper { painter }
-                .set_render_hint(QPainter::Antialiasing)
-                .rounded_rectangle(color_specs.state_layer, Qt::transparent, 0, container_rect,
-                    container_radius, container_radius, 0, 0);
+            Paint::Box {
+                BoxImpl { self.size(), Qt::AlignCenter },
+                Paint::Surface {
+                    SurfaceImpl { container_size },
+                    Paint::RoundedRectangle {
+                        Size { container_size },
+                        Fill { color_tokens.container },
+                        RadiusTL { container_radius },
+                        RadiusTR { container_radius },
+                    },
+                    Paint::Rectangle {
+                        Origin { active_indicator_origin },
+                        Size { active_indicator_size },
+                        Fill { color_tokens.active_indicator },
+                    },
+                    Paint::Box {
+                        BoxImpl { leading_box_size, Qt::AlignCenter,
+                            { 1. * measurements.row_padding_with_icons, 0 } },
+                        Paint::Icon {
+                            Icon { leading_font_name, leading_icon_code },
+                            Size { leading_box_size },
+                            Color { color_tokens.leading_icon },
+                        },
+                    },
+                    Paint::Box {
+                        BoxImpl { label_size, Qt::AlignLeft | Qt::AlignVCenter, label_origin },
+                        Paint::Text {
+                            TextOption { text_option },
+                            Font { standard_text_font },
+                            Size { label_size },
+                            Text { label_text },
+                            Color { color_tokens.label_text },
+                            Scale { text_scale },
+                        },
+                    },
+                    Paint::RoundedRectangle {
+                        Size { is_hovered ? container_size : qt::size(0, 0) },
+                        Fill { color_specs.state_layer },
+                        RadiusTL { container_radius },
+                        RadiusTR { container_radius },
+                    },
+                },
+            }(painter);
         }
     }
 
@@ -231,9 +231,9 @@ public:
             const auto container_height = measurements.container_height;
 
             const auto input_leading_padding  = use_leading_icon
-                 ? measurements.row_padding_with_icons + measurements.icon_rect_size
+                ? measurements.row_padding_with_icons + measurements.icon_rect_size
                     + measurements.padding_icons_text
-                 : measurements.row_padding_without_icons;
+                : measurements.row_padding_without_icons;
             const auto input_trailing_padding = use_trailing_icon
                 ? measurements.row_padding_with_icons + measurements.icon_rect_size
                     + measurements.padding_icons_text
@@ -254,14 +254,14 @@ public:
             const auto position   = self.text().isEmpty() ? *label_position : 1.;
             const auto text_scale = animate::interpolate(1., 0.75, position);
 
-            auto text_option = qt::text_option {};
+            auto text_option = qt::text_option { };
             text_option.setWrapMode(QTextOption::NoWrap);
             text_option.setAlignment(Qt::AlignLeading | Qt::AlignVCenter);
 
             const auto text_width = measure_text(standard_text_font, label_text, text_option);
 
-            auto label_origin = qt::point {};
-            auto label_size   = qt::size {};
+            auto label_origin = qt::point { };
+            auto label_size   = qt::size { };
             {
                 const auto begin_y = input_vertical_padding;
                 const auto final_y = -0.5 * measurements.standard_font_height;
@@ -462,8 +462,8 @@ private:
     QString trailing_font;
 
     // State Cache
-    QFont leading_icon_font  = {};
-    QFont standard_text_font = {};
+    QFont leading_icon_font  = { };
+    QFont standard_text_font = { };
 
     Animatable animatable;
     std::unique_ptr<TransitionValue<PidState<double>>> label_position;
