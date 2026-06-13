@@ -108,7 +108,7 @@ namespace text_field::internal {
 
 }
 namespace text_field::pro {
-    using Token = common::Token<internal::BasicTextField>;
+    using Token = creeper::Token<internal::BasicTextField>;
 
     using ClearButton = SetterProp<Token, bool,
         [](auto& self, bool enable) { self.setClearButtonEnabled(enable); }>;
@@ -136,18 +136,14 @@ namespace text_field::pro {
     template <typename F>
     using OnChanged = OnTextChanged<F>;
 
-    template <class TextField>
-    concept trait = std::derived_from<TextField, Token>;
-
-    CREEPER_DEFINE_CHECKER(trait);
     using namespace widget::pro;
     using namespace theme::pro;
 }
 
 using FilledTextField = Declarative<text_field::internal::FilledTextField,
-    CheckerOr<text_field::pro::checker, widget::pro::checker, theme::pro::checker>>;
+    TokenOr<text_field::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 using OutlinedTextField = Declarative<text_field::internal::OutlinedTextField,
-    CheckerOr<text_field::pro::checker, widget::pro::checker, theme::pro::checker>>;
+    TokenOr<text_field::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 }

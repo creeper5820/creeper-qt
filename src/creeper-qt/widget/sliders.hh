@@ -112,7 +112,7 @@ protected:
 }
 namespace creeper::slider::pro {
 
-using Token = common::Token<internal::Slider>;
+using Token = creeper::Token<internal::Slider>;
 
 template <typename F>
 using OnValueChange =
@@ -126,17 +126,12 @@ using Measurements = SetterProp<Token, internal::Slider::Measurements,
     [](auto& self, const auto& v) { self.set_measurements(v); }>;
 
 using Progress = SetterProp<Token, double, [](auto& self, auto v) { self.set_progress(v); }>;
-
-template <class T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait)
 using namespace widget::pro;
 using namespace theme::pro;
 }
 namespace creeper {
 
 using Slider = Declarative<slider::internal::Slider,
-    CheckerOr<slider::pro::checker, widget::pro::checker, theme::pro::checker>>;
+    TokenOr<slider::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 }

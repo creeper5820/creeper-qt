@@ -23,7 +23,7 @@ protected:
 
 }
 namespace creeper::main_window::pro {
-using Token = common::Token<QMainWindow>;
+using Token = creeper::Token<QMainWindow>;
 
 template <widget_trait T>
 struct Central : Token {
@@ -41,17 +41,12 @@ struct Central : Token {
         self.setCentralWidget(this->widget_pointer);
     }
 };
-
-template <class T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait);
 using namespace widget::pro;
 }
 namespace creeper {
 
 using MainWindow = Declarative<main_window::internal::MainWindow,
-    CheckerOr<main_window::pro::checker, widget::pro::checker>>;
+    TokenOr<main_window::pro::Token, widget::pro::Token>>;
 
 /// @brief 一点显示窗口的语法糖
 template <widget_trait T>

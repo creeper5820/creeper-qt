@@ -37,6 +37,6 @@ namespace filled_tonal_button::pro {
 }
 
 using FilledTonalButton = Declarative<filled_tonal_button::internal::FilledTonalButton,
-    CheckerOr<button::pro::checker, widget::pro::checker, theme::pro::checker>>;
+    TokenOr<button::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 }

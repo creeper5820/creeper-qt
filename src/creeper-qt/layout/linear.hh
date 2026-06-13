@@ -10,7 +10,7 @@
 
 namespace creeper::linear::pro {
 
-using Token = common::Token<QBoxLayout>;
+using Token = creeper::Token<QBoxLayout>;
 
 struct SpacingItem : Token {
     int size;
@@ -54,7 +54,7 @@ template <item_trait T>
 struct Item : Token {
     struct LayoutMethod {
         int stretch         = 0;
-        Qt::Alignment align = {};
+        Qt::Alignment align = { };
     } method;
 
     T* item_pointer = nullptr;
@@ -81,18 +81,13 @@ struct Item : Token {
         if constexpr (layout_trait<T>) layout.addLayout(item_pointer, method.stretch);
     }
 };
-
-template <typename T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait);
 using namespace layout::pro;
 }
 
 namespace creeper {
 
 template <class T>
-using BoxLayout = Declarative<T, CheckerOr<linear::pro::checker, layout::pro::checker>>;
+using BoxLayout = Declarative<T, TokenOr<linear::pro::Token, layout::pro::Token>>;
 
 using Row = BoxLayout<QHBoxLayout>;
 using Col = BoxLayout<QVBoxLayout>;
@@ -108,10 +103,10 @@ namespace v_box_layout = linear;
 
 namespace internal {
     inline auto use_the_namespace_alias_to_eliminate_warnings() {
-        std::ignore = row::pro::Token {};
-        std::ignore = col::pro::Token {};
-        std::ignore = h_box_layout::pro::Token {};
-        std::ignore = v_box_layout::pro::Token {};
+        std::ignore = row::pro::Token { };
+        std::ignore = col::pro::Token { };
+        std::ignore = h_box_layout::pro::Token { };
+        std::ignore = v_box_layout::pro::Token { };
     }
 }
 

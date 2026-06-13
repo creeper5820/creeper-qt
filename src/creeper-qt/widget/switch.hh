@@ -53,7 +53,7 @@ namespace _switch::internal {
 }
 namespace _switch::pro {
 
-    using Token = common::Token<internal::Switch>;
+    using Token = creeper::Token<internal::Switch>;
 
     /// @note 碎碎念，这么多颜色，真的会用得上么...
 
@@ -104,16 +104,11 @@ namespace _switch::pro {
 
     using Disabled = common::pro::Disabled<Token>;
     using Checked  = common::pro::Checked<Token>;
-
-    template <class Switch>
-    concept trait = std::derived_from<Switch, Token>;
-
-    CREEPER_DEFINE_CHECKER(trait);
-    using namespace theme::pro;
+using namespace theme::pro;
     using namespace widget::pro;
 }
 /// @note 使用时建议比例 w : h > 7 : 4 ，过冲动画会多占用一些宽度，倘若 w 过短，可能会出现 hover
 /// 层画面被截断的情况
 using Switch = Declarative<_switch::internal::Switch,
-    CheckerOr<_switch::pro::checker, widget::pro::checker, theme::pro::checker>>;
+    TokenOr<_switch::pro::Token, widget::pro::Token, theme::pro::Token>>;
 }

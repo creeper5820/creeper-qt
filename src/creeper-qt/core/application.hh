@@ -7,7 +7,7 @@
 
 namespace creeper::app::pro {
 
-using Token = common::Token<QApplication>;
+using Token = creeper::Token<QApplication>;
 
 struct Complete : Token {
 
@@ -40,16 +40,11 @@ struct Attribute : Token {
 
     void apply(auto&) const noexcept { ::QApplication::setAttribute(attribute, on); }
 };
-
-template <class T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait);
 }
 namespace creeper::app {
 
 struct Application { };
-using init = Declarative<Application, pro::checker>;
+using init = Declarative<Application, pro::Token>;
 
 inline auto exec() { return ::QApplication::exec(); }
 inline auto quit() { return ::QApplication::quit(); }

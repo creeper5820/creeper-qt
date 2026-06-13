@@ -28,7 +28,7 @@ struct CustomWidget : public QWidget {
 }
 namespace creeper::custom::pro {
 
-using Token = common::Token<details::CustomWidget>;
+using Token = creeper::Token<details::CustomWidget>;
 
 /// @note:
 /// - std::invocable<F, QPaintEvent&, State&>
@@ -82,14 +82,9 @@ struct OnPaint : Token {
 
     auto apply(auto& widget) { widget.set_on_paint(std::move(on_paint)); }
 };
-
-template <class T>
-concept trait = std::derived_from<T, Token>;
-CREEPER_DEFINE_CHECKER(trait);
-
 using namespace widget::pro;
 }
 namespace creeper {
 using CustomWidget = Declarative<custom::details::CustomWidget,
-    CheckerOr<custom::pro::checker, widget::pro::checker>>;
+    TokenOr<custom::pro::Token, widget::pro::Token>>;
 }

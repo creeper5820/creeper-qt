@@ -8,7 +8,6 @@
 namespace details::display_board {
 
 using namespace creeper;
-namespace wip = widget::pro;
 namespace fcp = filled_card::pro;
 
 struct DisplayWidget {
@@ -47,7 +46,7 @@ struct DisplayBoard : public FilledCard {
             fcp::ThemeManager { manager },
             fcp::Layout { Component() },
         }
-        , manager{manager} { }
+        , manager { manager } { }
 };
 
 }

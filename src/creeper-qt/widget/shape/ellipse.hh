@@ -21,22 +21,17 @@ namespace ellipse::internal {
 }
 
 namespace ellipse::pro {
-    using Token = common::Token<internal::Ellipse>;
+    using Token = creeper::Token<internal::Ellipse>;
 
     // 通用属性
     using Background = common::pro::Background<Token>;
 
     using BorderWidth = common::pro::BorderWidth<Token>;
     using BorderColor = common::pro::BorderColor<Token>;
-
-    template <typename T>
-    concept trait = std::derived_from<T, Token>;
-
-    CREEPER_DEFINE_CHECKER(trait)
-    using namespace widget::pro;
+using namespace widget::pro;
 }
 
 using Ellipse =
-    Declarative<ellipse::internal::Ellipse, CheckerOr<ellipse::pro::checker, widget::pro::checker>>;
+    Declarative<ellipse::internal::Ellipse, TokenOr<ellipse::pro::Token, widget::pro::Token>>;
 
 }

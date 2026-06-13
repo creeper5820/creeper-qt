@@ -67,7 +67,7 @@ private:
 
 }
 namespace creeper::rounded_rect::pro {
-using Token = common::Token<internal::RoundedRect>;
+using Token = creeper::Token<internal::RoundedRect>;
 
 // 通用属性
 using Radius = common::pro::Radius<Token>;
@@ -86,16 +86,11 @@ using Background = common::pro::Background<Token>;
 
 using BorderWidth = common::pro::BorderWidth<Token>;
 using BorderColor = common::pro::BorderColor<Token>;
-
-template <typename T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait)
 using namespace widget::pro;
 }
 namespace creeper {
 
 using RoundedRect = Declarative<rounded_rect::internal::RoundedRect,
-    CheckerOr<rounded_rect::pro::checker, widget::pro::checker>>;
+    TokenOr<rounded_rect::pro::Token, widget::pro::Token>>;
 
 }

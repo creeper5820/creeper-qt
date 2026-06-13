@@ -68,7 +68,7 @@ public:
 }
 namespace creeper::card::pro {
 
-using Token = common::Token<internal::Card>;
+using Token = creeper::Token<internal::Card>;
 
 using Level =
     SetterProp<Token, internal::Card::Level, [](auto& self, const auto& v) { self.set_level(v); }>;
@@ -78,12 +78,6 @@ constexpr auto LevelHigh    = Level { internal::Card::Level::HIGH };
 constexpr auto LevelHighest = Level { internal::Card::Level::HIGHEST };
 constexpr auto LevelLow     = Level { internal::Card::Level::LOW };
 constexpr auto LevelLowest  = Level { internal::Card::Level::LOWEST };
-
-template <class Card>
-concept trait = std::derived_from<Card, Token>;
-
-CREEPER_DEFINE_CHECKER(trait);
-
 using namespace rounded_rect::pro;
 using namespace theme::pro;
 }
@@ -92,7 +86,7 @@ namespace creeper {
 using CardLevel = card::internal::Card::Level;
 
 using BasicCard = Declarative<card::internal::Card,
-    CheckerOr<card::pro::checker, rounded_rect::pro::checker, theme::pro::checker,
-        widget::pro::checker>>;
+    TokenOr<card::pro::Token, rounded_rect::pro::Token, theme::pro::Token,
+        widget::pro::Token>>;
 
 }

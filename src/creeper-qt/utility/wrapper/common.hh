@@ -4,16 +4,6 @@
 #include <qwidget.h>
 
 namespace creeper::common {
-
-template <typename Instance>
-struct Token {
-    void apply(auto& self) const {
-        const auto self_name = typeid(self).name();
-        const auto prop_name = typeid(this).name();
-        // qDebug() << "Unimplemented" << prop_name << "is called by" << self_name;
-    }
-};
-
 namespace pro {
 
     // 设置组件透明度

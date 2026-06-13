@@ -13,7 +13,7 @@ class Stacked : public QStackedLayout { };
 
 namespace creeper::stacked::pro {
 
-using Token = common::Token<internal::Stacked>;
+using Token = creeper::Token<internal::Stacked>;
 
 /// @note: currentChanged(int index)
 template <typename F>
@@ -21,9 +21,6 @@ using IndexChanged = common::pro::SignalInjection<F, Token, &internal::Stacked::
 
 using CurrentIndex =
     SetterProp<Token, int, [](auto& self, auto index) { self.setCurrentIndex(index); }>;
-
-template <typename T>
-concept trait = std::derived_from<T, Token> || layout::pro::trait<T>;
 
 template <item_trait T>
 struct Item : Token {
@@ -43,12 +40,12 @@ struct Item : Token {
     }
 };
 
-CREEPER_DEFINE_CHECKER(trait);
 using namespace layout::pro;
 }
 
 namespace creeper {
-using Stacked = Declarative<stacked::internal::Stacked, stacked::pro::checker>;
+using Stacked = Declarative<stacked::internal::Stacked,
+    TokenOr<stacked::pro::Token, layout::pro::Token>>;
 using NavHost = Stacked;
 
 namespace nav_host::pro {

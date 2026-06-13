@@ -62,7 +62,8 @@ struct ShapeProps {
 }
 namespace creeper::painter::common::pro {
 
-struct Token { };
+struct TokenContext { };
+using Token = creeper::Token<TokenContext>;
 
 using Size   = DerivedProp<Token, qt::size, [](auto& self, auto const& v) { self.size = v; }>;
 using Origin = DerivedProp<Token, qt::point, [](auto& self, auto const& v) { self.origin = v; }>;
@@ -91,9 +92,4 @@ struct Outline : Token {
 using Fill = ContainerColor;
 
 /// Export
-
-template <class T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait);
 }

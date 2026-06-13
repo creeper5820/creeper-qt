@@ -14,12 +14,7 @@ public:
 }
 namespace creeper::circular_progress_indicator::pro {
 
-using Token = common::Token<internal::CircularProgressIndicator>;
-
-template <class T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait);
+using Token = creeper::Token<internal::CircularProgressIndicator>;
 using namespace widget::pro;
 }
 namespace creeper { }

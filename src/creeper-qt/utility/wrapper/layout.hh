@@ -6,7 +6,7 @@
 namespace creeper::layout::pro {
 
 struct Layout { };
-using Token = common::Token<Layout>;
+using Token = creeper::Token<Layout>;
 
 using ContentsMargin = SetterProp<Token, QMargins,
     [](auto& self, const auto& margins) { self.setContentsMargins(margins); }>;
@@ -45,9 +45,4 @@ struct Apply : Token {
         if constexpr (std::invocable<Lambda, decltype(self)>) lambda(self);
     }
 };
-
-template <class T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait);
 }

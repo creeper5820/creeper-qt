@@ -1,14 +1,15 @@
 #pragma once
 
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
 
 #include <qgraphicseffect.h>
+#include <qpalette.h>
 #include <qscreen.h>
+#include <qwidget.h>
 
 namespace creeper::widget::pro {
 
-using Token = common::Token<QWidget>;
+using Token = creeper::Token<QWidget>;
 
 using MinimumWidth  = SetterProp<Token, int, [](auto& self, int v) { self.setMinimumWidth(v); }>;
 using MaximumWidth  = SetterProp<Token, int, [](auto& self, int v) { self.setMaximumWidth(v); }>;
@@ -174,9 +175,4 @@ struct Apply : Token {
         if constexpr (std::invocable<Lambda, decltype(self)>) lambda(self);
     }
 };
-
-template <typename T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait);
 }

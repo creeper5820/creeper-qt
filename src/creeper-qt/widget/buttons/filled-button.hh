@@ -49,6 +49,6 @@ using namespace theme::pro;
 namespace creeper {
 
 using FilledButton = Declarative<filled_button::internal::FilledButton,
-    CheckerOr<button::pro::checker, widget::pro::checker, theme::pro::checker>>;
+    TokenOr<button::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 }

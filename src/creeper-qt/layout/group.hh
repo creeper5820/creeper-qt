@@ -58,7 +58,7 @@ struct Group : public T {
 
 namespace creeper::group::pro {
 
-using Token = common::Token<internal::Group<QLayout, QWidget>>;
+using Token = creeper::Token<internal::Group<QLayout, QWidget>>;
 
 /// @note
 /// 一种典型的用法，委托构造时，所传函数只能接受常量引用，
@@ -109,16 +109,11 @@ struct Foreach : Token {
         self.foreach_(std::move(function));
     }
 };
-
-template <class T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait)
 };
 namespace creeper {
 
 template <layout_trait T, widget_trait W>
 using Group =
-    Declarative<group::internal::Group<T, W>, CheckerOr<group::pro::checker, typename T::Checker>>;
+    Declarative<group::internal::Group<T, W>, TokenOr<group::pro::Token, typename T::Token>>;
 
 }

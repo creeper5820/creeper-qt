@@ -10,7 +10,7 @@ namespace grid::internal {
     class Grid : public QGridLayout { };
 }
 namespace grid::pro {
-    using Token = common::Token<QGridLayout>;
+    using Token = creeper::Token<QGridLayout>;
 
     struct RowSpacing : Token { };
 
@@ -72,12 +72,6 @@ namespace grid::pro {
         explicit Items() { }
         void apply(QGridLayout& self) const { }
     };
-
-    template <typename T>
-    concept trait = std::derived_from<T, Token>;
-
-    CREEPER_DEFINE_CHECKER(trait);
-
 }
-using Grid = Declarative<grid::internal::Grid, grid::pro::checker>;
+using Grid = Declarative<grid::internal::Grid, grid::pro::Token>;
 }

@@ -39,7 +39,7 @@ public:
 }
 namespace creeper::flow::pro {
 
-using Token = common::Token<internal::Flow>;
+using Token = creeper::Token<internal::Flow>;
 
 using RowSpacing = SetterProp<Token, int, [](auto& self, int v) { self.set_row_spacing(v); }>;
 
@@ -50,15 +50,10 @@ using RowLimit = SetterProp<Token, int, [](auto& self, int v) { self.set_row_lim
 using MainAxisSpacing   = RowSpacing;
 using CrossAxisSpacing  = ColSpacing;
 using MaxItemsInEachRow = RowLimit;
-
-template <class T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait);
 using namespace layout::pro;
 }
 namespace creeper {
 
-using Flow = Declarative<flow::internal::Flow, CheckerOr<flow::pro::checker, layout::pro::checker>>;
+using Flow = Declarative<flow::internal::Flow, TokenOr<flow::pro::Token, layout::pro::Token>>;
 
 }

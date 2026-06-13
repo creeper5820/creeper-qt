@@ -36,6 +36,6 @@ namespace elevated_card::pro {
     using namespace card::pro;
 }
 using ElevatedCard = Declarative<elevated_card::internal::ElevatedCard,
-    CheckerOr<card::pro::checker, rounded_rect::pro::checker, theme::pro::checker,
-        widget::pro::checker>>;
+    TokenOr<card::pro::Token, rounded_rect::pro::Token, theme::pro::Token,
+        widget::pro::Token>>;
 }

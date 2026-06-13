@@ -7,5 +7,5 @@ class Widget : public QWidget { };
 
 }
 namespace creeper {
-using Widget = Declarative<widget::internal::Widget, widget::pro::checker>;
+using Widget = Declarative<widget::internal::Widget, widget::pro::Token>;
 }

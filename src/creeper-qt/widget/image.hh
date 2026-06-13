@@ -31,7 +31,7 @@ namespace image::internal {
 }
 namespace image::pro {
 
-    using Token = common::Token<internal::Image>;
+    using Token = creeper::Token<internal::Image>;
 
     struct ContentScale : Token {
         using T = creeper::ContentScale;
@@ -70,13 +70,8 @@ namespace image::pro {
     using Radius      = common::pro::Radius<Token>;
     using BorderColor = common::pro::BorderColor<Token>;
     using BorderWidth = common::pro::BorderWidth<Token>;
-
-    template <class T>
-    concept trait = std::derived_from<T, Token>;
-
-    CREEPER_DEFINE_CHECKER(trait);
-    using namespace widget::pro;
+using namespace widget::pro;
 }
 using Image =
-    Declarative<image::internal::Image, CheckerOr<image::pro::checker, widget::pro::checker>>;
+    Declarative<image::internal::Image, TokenOr<image::pro::Token, widget::pro::Token>>;
 }

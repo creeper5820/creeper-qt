@@ -28,7 +28,7 @@ using namespace card::pro;
 namespace creeper {
 
 using OutlinedCard = Declarative<outlined_card::internal::OutlinedCard,
-    CheckerOr<card::pro::checker, rounded_rect::pro::checker, theme::pro::checker,
-        widget::pro::checker>>;
+    TokenOr<card::pro::Token, rounded_rect::pro::Token, theme::pro::Token,
+        widget::pro::Token>>;
 
 }

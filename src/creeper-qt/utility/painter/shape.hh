@@ -246,12 +246,12 @@ struct Icon : common::pro::Token {
 };
 
 namespace Paint {
-    using EraseRectangle = Declarative<internal::EraseRectangle, CheckerOr<common::pro::checker>>;
-    using Rectangle      = Declarative<internal::Rectangle, CheckerOr<common::pro::checker>>;
+    using EraseRectangle = Declarative<internal::EraseRectangle, common::pro::Token>;
+    using Rectangle      = Declarative<internal::Rectangle, common::pro::Token>;
     using RoundedRectangle =
-        Declarative<internal::RoundedRectangle, CheckerOr<common::pro::checker>>;
-    using Text = Declarative<internal::Text, CheckerOr<common::pro::checker>>;
-    using Icon = Declarative<internal::Icon, CheckerOr<common::pro::checker>>;
+        Declarative<internal::RoundedRectangle, common::pro::Token>;
+    using Text = Declarative<internal::Text, common::pro::Token>;
+    using Icon = Declarative<internal::Icon, common::pro::Token>;
 }
 
 }

@@ -110,7 +110,7 @@ namespace dropdown_menu::internal {
 
 namespace dropdown_menu::pro {
 
-    using Token = common::Token<internal::DropdownMenu>;
+    using Token = creeper::Token<internal::DropdownMenu>;
 
     using LabelText = common::pro::String<Token,
         [](auto& self, const auto& string) { self.set_label_text(string); }>;
@@ -135,18 +135,13 @@ namespace dropdown_menu::pro {
             self.addItems(vec);
             self.setCurrentIndex(-1);
         }>;
-
-    template <class Select>
-    concept trait = std::derived_from<Select, Token>;
-
-    CREEPER_DEFINE_CHECKER(trait);
-    using namespace widget::pro;
+using namespace widget::pro;
     using namespace theme::pro;
 }
 
 struct FilledDropdownMenu
     : public Declarative<dropdown_menu::internal::DropdownMenu,
-          CheckerOr<dropdown_menu::pro::checker, widget::pro::checker, theme::pro::checker>> {
+          TokenOr<dropdown_menu::pro::Token, widget::pro::Token, theme::pro::Token>> {
     using Declarative::Declarative;
     void paintEvent(QPaintEvent* event) override;
 };

@@ -96,7 +96,7 @@ private:
 }
 namespace creeper::wave_circle::pro {
 
-using Token = common::Token<internal::WaveCircle>;
+using Token = creeper::Token<internal::WaveCircle>;
 
 using Background  = common::pro::Background<Token>;
 using BorderWidth = common::pro::BorderWidth<Token>;
@@ -113,16 +113,11 @@ using OverallRadius =
 
 using ProtrudingRatio =
     SetterProp<Token, double, [](auto& self, const auto& v) { self.set_protruding_ratio(v); }>;
-
-template <class T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait);
 using namespace widget::pro;
 }
 namespace creeper {
 
 using WaveCircle = Declarative<wave_circle::internal::WaveCircle,
-    CheckerOr<wave_circle::pro::checker, widget::pro::checker>>;
+    TokenOr<wave_circle::pro::Token, widget::pro::Token>>;
 
 }

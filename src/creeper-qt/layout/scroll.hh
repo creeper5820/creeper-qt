@@ -58,7 +58,7 @@ public:
 }
 namespace creeper::scroll::pro {
 
-using Token = common::Token<internal::ScrollArea>;
+using Token = creeper::Token<internal::ScrollArea>;
 
 struct VerticalScrollBarPolicy : Token {
     Qt::ScrollBarPolicy policy;
@@ -119,18 +119,13 @@ struct Item : Token {
         }
     }
 };
-
-template <class T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait);
 using namespace widget::pro;
 using namespace theme::pro;
 }
 namespace creeper {
 
 using ScrollArea = Declarative<scroll::internal::ScrollArea,
-    CheckerOr<scroll::pro::checker, widget::pro::checker, theme::pro::checker>>;
+    TokenOr<scroll::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 }
 

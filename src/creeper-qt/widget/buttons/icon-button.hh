@@ -82,7 +82,7 @@ protected:
 };
 }
 namespace creeper::icon_button::pro {
-using Token = common::Token<internal::IconButton>;
+using Token = creeper::Token<internal::IconButton>;
 
 using Icon =
     creeper::DerivedProp<Token, QIcon, [](auto& self, const auto& v) { self.set_icon(v); }>;
@@ -116,18 +116,12 @@ constexpr auto WidthWide    = Width { internal::IconButton::Width::WIDE };
 
 template <typename Callback>
 using Clickable = common::pro::Clickable<Callback, Token>;
-
-template <class T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait);
-
 using namespace widget::pro;
 using namespace theme::pro;
 }
 namespace creeper {
 
 using IconButton = Declarative<icon_button::internal::IconButton,
-    CheckerOr<icon_button::pro::checker, widget::pro::checker, theme::pro::checker>>;
+    TokenOr<icon_button::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 }

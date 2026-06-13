@@ -76,7 +76,7 @@ public:
 }
 namespace creeper::theme::pro {
 
-using Token = common::Token<ThemeManager>;
+using Token = creeper::Token<ThemeManager>;
 
 struct ColorScheme : public theme::ColorScheme, Token {
     using theme::ColorScheme::ColorScheme;
@@ -95,12 +95,6 @@ struct ThemeManager : Token {
         self.load_theme_manager(manager);
     }
 };
-
-template <typename T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait);
-
 }
 namespace creeper {
 

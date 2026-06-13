@@ -6,10 +6,7 @@
 namespace creeper::button::pro {
 
 struct Button { };
-using Token = common::Token<Button>;
-
-template <class Button>
-concept trait = std::derived_from<Button, Token>;
+using Token = creeper::Token<Button>;
 
 using Text        = common::pro::Text<Token>;
 using TextColor   = common::pro::TextColor<Token>;
@@ -21,6 +18,4 @@ using WaterColor  = common::pro::WaterColor<Token>;
 
 template <typename Callback>
 using Clickable = common::pro::Clickable<Callback, Token>;
-
-CREEPER_DEFINE_CHECKER(trait)
 }

@@ -38,5 +38,5 @@ namespace text_button::pro {
 }
 
 using TextButton = Declarative<text_button::internal::TextButton,
-    CheckerOr<button::pro::checker, widget::pro::checker, theme::pro::checker>>;
+    TokenOr<button::pro::Token, widget::pro::Token, theme::pro::Token>>;
 }
