@@ -57,7 +57,7 @@ auto content = FilledCard {
 ## 错误诊断
 
 - 优先通过 LSP 报错定位问题，而非完整编译。模板实例化导致编译开销很大、报错数量多且难以阅读，LSP 的单文件诊断更精准友好。
-- `Declarative` checker 和 fallback `static_assert` 是用户体验的一部分，不要随意移除。
+- `Declarative` token 和 fallback `static_assert` 是用户体验的一部分，不要随意移除。
 - `props_trait<int &>` 这样的诊断是有价值的，因为它能指出确切的非法参数类型，包括嵌套在 tuple 内部的非法值。
 - 如果改进诊断，应保留尽早报告真实错误 prop 类型的能力，不要让模板展开退化成长篇构造函数错误。
 - 在可行时，优先区分这些情况：不是 prop、是另一个组件的合法 prop、prop 的 apply 目标不兼容。
@@ -107,32 +107,27 @@ protected:
 // 声明式属性的包装，优先复用已有的 Wrapper
 namespace creeper::xxx::pro {
 
-using Token = common::Token<internal::Xxx>;
+using Token = creeper::Token<internal::Xxx>;
 
 using LabelText = common::pro::String<Token,
     [](auto& self, const auto& value) { self.set_label_text(value); }>;
-
-template <class T>
-concept trait = std::derived_from<T, Token>;
-
-CREEPER_DEFINE_CHECKER(trait);
 
 // 在导出的命名空间中间中组合适用的属性
 using namespace widget::pro;
 using namespace theme::pro;
 }
 
-// 最终导出类型，组合检查器
+// 最终导出类型，组合 Token 来源
 namespace creeper {
 
 using Xxx = Declarative<xxx::internal::Xxx,
-    CheckerOr<xxx::pro::checker, widget::pro::checker, theme::pro::checker>>;
+    TokenOr<xxx::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 }
 ```
 
 - 组件自己的 `xxx::pro` 命名空间必须是用户入口，而不是只放本组件新增 prop；如果组件支持 `widget::pro` 或 `theme::pro`，就在本组件 `pro` 中导入它们，让 IDE 补全从一个命名空间开始。
-- `CheckerOr<...>` 必须覆盖 `xxx::pro` 命名空间导入的所有 prop 来源；如果 `xxx::pro` 导入了 `widget::pro`、`theme::pro`、`button::pro`，公开别名中也应包含对应 checker。
+- `TokenOr<...>` 必须覆盖 `xxx::pro` 命名空间导入的所有 prop 来源；如果 `xxx::pro` 导入了 `widget::pro`、`theme::pro`、`button::pro`，公开别名中也应包含对应 token。
 - 简单 prop 优先用 `SetterProp` 或 `DerivedProp` 转发到 setter，保持运行时成本接近手写 setter；只有需要设置多个字段、支持多种构造来源或包含额外逻辑时，才手写继承 `Token` 的 prop 和 `apply()`。
 - 从通用 prop 模板实例化本组件 prop 时，始终绑定本组件的 `Token`；不要直接要求用户混用基础组件命名空间中的 prop 名称。
 - prop 的 `apply()` 只做声明式配置，不应启动复杂业务流程；复杂状态应先被封装成组件 setter 或内部方法，再由 prop 调用。
@@ -188,7 +183,7 @@ auto paint_xxx(QPaintEvent*) -> void {
 开发组件时的检查清单：
 
 - 公开 prop 是否都能从组件自己的 `xxx::pro` 命名空间补全到。
-- `CheckerOr` 是否覆盖了 `xxx::pro` 中导入的所有 checker。
+- `TokenOr` 是否覆盖了 `xxx::pro` 中导入的所有 token。
 - prop 是否最终调用明确 setter，而不是直接接触内部字段。
 - 主题色是否按 enabled/focused/error/disabled 等状态归档，而不是散落在绘制逻辑中。
 - 绘制树是否只表达结构，复杂计算是否已提前命名。
