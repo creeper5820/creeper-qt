@@ -1,7 +1,6 @@
 #pragma once
 
 #include "creeper-qt/utility/trait/widget.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/layout.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
 

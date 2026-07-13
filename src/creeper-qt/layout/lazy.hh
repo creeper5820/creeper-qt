@@ -1,4 +1,5 @@
 #pragma once
+#include "creeper-qt/utility/trait/widget.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
@@ -11,13 +12,35 @@ class LazyLayout : public QWidget {
 public:
 };
 
+class LazyColumn : public LazyLayout {
+public:
+    LazyColumn() {
+        // ......
+    }
+};
+class LazyRow : public LazyLayout {
+public:
+    LazyRow() {
+        // ......
+    }
+};
+
 }
 namespace creeper::lazy::pro {
 
 using Token = creeper::Token<details::LazyLayout>;
 
-using namespace widget::pro;
+template <widget_trait T>
+struct Item : Token { };
 
+template <widget_trait T>
+struct Items : Token {
+
+    template <std::ranges::range Range>
+    explicit Items(Range range) { }
+};
+
+using namespace widget::pro;
 }
 namespace creeper {
 

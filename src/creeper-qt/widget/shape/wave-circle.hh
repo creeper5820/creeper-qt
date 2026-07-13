@@ -3,8 +3,8 @@
 #include "creeper-qt/utility/solution/round-angle.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
+#include "creeper-qt/utility/wrapper/widget.hh"
 #include "creeper-qt/widget/shape/shape.hh"
-#include "creeper-qt/widget/widget.hh"
 
 #include <cmath>
 #include <qpainterpath.h>
@@ -76,11 +76,11 @@ private:
             inside.setY(protruding_ratio_ * radius * std::sin(double(-index + 0.5) * step));
         }
 
-        auto begin  = QPointF {};
-        path_cache_ = QPainterPath {};
+        auto begin  = QPointF { };
+        path_cache_ = QPainterPath { };
         for (int index = 0; index < flange_number_; index++) {
             const auto convex  = RoundAngleSolution(center + outside[index], center + inside[index],
-                 center + inside[index + 1], flange_radius_);
+                center + inside[index + 1], flange_radius_);
             const auto concave = RoundAngleSolution(center + inside[index + 1],
                 center + outside[index + 1], center + outside[index], flange_radius_);
             if (index == 0) begin = convex.start, path_cache_.moveTo(begin);
