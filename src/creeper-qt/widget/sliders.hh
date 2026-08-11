@@ -97,7 +97,7 @@ public:
 
     /// @bug Signals can not be exported on Windows
     /// TODO: Fix it
-signals:
+Q_SIGNALS:
     auto signal_value_change(double) -> void;
     auto signal_value_change_finished(double) -> void;
 
