@@ -192,20 +192,20 @@ public:
 
         pressed = false;
         update_progress(event->pos());
-        emit self.signal_value_change_finished(progress);
+        Q_EMIT self.signal_value_change_finished(progress);
     }
     auto mouse_press_event(QMouseEvent* event) noexcept -> void {
         if (!enabled) return;
 
         pressed = true;
         update_progress(event->pos());
-        emit self.signal_value_change(progress);
+        Q_EMIT self.signal_value_change(progress);
     }
     auto mouse_move_event(QMouseEvent* event) noexcept -> void {
         if (!enabled) return;
 
         update_progress(event->pos());
-        emit self.signal_value_change(progress);
+        Q_EMIT self.signal_value_change(progress);
     }
 
 private:

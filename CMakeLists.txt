@@ -31,6 +31,7 @@ target_link_libraries(
     PRIVATE
         ${QT_VERSION}::Network
 )
+target_compile_definitions(${PROJECT_NAME}-widgets PUBLIC QT_NO_KEYWORDS)
 add_library(${PROJECT_NAME}::widgets ALIAS ${PROJECT_NAME}-widgets)
 
 # All Modules
