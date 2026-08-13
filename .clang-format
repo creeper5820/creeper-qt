@@ -1,5 +1,5 @@
 Language: Cpp
- 
+
 BasedOnStyle: WebKit
 
 # 使用空格而不是 Tab
@@ -11,16 +11,21 @@ TabWidth: 4
 
 # 访问修饰符（public）等靠左对齐
 AccessModifierOffset: -4
-AlignTrailingComments: true
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 0
 
 # 大括号的换行规则
 BreakBeforeBraces: Attach
 
 # 模板定义的换行规则
-BreakTemplateDeclarations: true
+BreakTemplateDeclarations: Yes
 
 # 最大列宽度
 ColumnLimit: 100
+
+# 空大括号 {} 中默认加一个空格
+SpaceInEmptyBraces: Always
 
 # 是否允许短的函数，语句块等单独一行
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
@@ -30,4 +35,5 @@ AllowShortFunctionsOnASingleLine: All
 BreakBeforeBinaryOperators: NonAssignment
 PenaltyBreakAssignment: 2
 PenaltyBreakString: 2
-AlignConsecutiveAssignments: true
+AlignConsecutiveAssignments:
+  Enabled: true
