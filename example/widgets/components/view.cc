@@ -13,6 +13,7 @@
 #include <creeper-qt/widget/custom/widget.hh>
 #include <creeper-qt/widget/dropdown-menu.hh>
 #include <creeper-qt/widget/image.hh>
+#include <creeper-qt/widget/indicator/circular-progress-indicator.hh>
 #include <creeper-qt/widget/shape/wave-circle.hh>
 #include <creeper-qt/widget/sliders.hh>
 #include <creeper-qt/widget/switch.hh>
@@ -23,10 +24,11 @@
 #include <random>
 
 using namespace creeper;
-namespace capro = card::pro;
-namespace lnpro = linear::pro;
-namespace impro = image::pro;
-namespace ibpro = icon_button::pro;
+namespace capro  = card::pro;
+namespace lnpro  = linear::pro;
+namespace impro  = image::pro;
+namespace ibpro  = icon_button::pro;
+namespace cpipro = circular_progress_indicator::pro;
 
 namespace repeat_literals {
 auto operator*(std::invocable<std::size_t> auto&& f, std::size_t n) {
@@ -263,10 +265,21 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                     p,
                 },
                 slider::pro::OnValueChange {
-                    [=](double progress) { *s = QString::number(progress, 'f', 3); },
+                    [=](double progress) {
+                        *s = QString::number(progress, 'f', 3);
+                        *p = progress;
+                    },
                 },
                 slider::pro::OnValueChangeFinished {
                     [](double num) { qDebug() << "[view] Slider changed:" << num; } },
+            },
+            lnpro::Item<CircularProgressIndicator> {
+                cpipro::ThemeManager { state.manager },
+                cpipro::FixedSize { 40, 40 },
+                MutableForward {
+                    cpipro::Progress { 0. },
+                    p,
+                },
             },
         };
     };
