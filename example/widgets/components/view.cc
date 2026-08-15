@@ -11,7 +11,6 @@
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/cards/outlined-card.hh>
 #include <creeper-qt/widget/custom/widget.hh>
-#include <creeper-qt/widget/dropdown-menu.hh>
 #include <creeper-qt/widget/image.hh>
 #include <creeper-qt/widget/indicator/circular-progress-indicator.hh>
 #include <creeper-qt/widget/shape/wave-circle.hh>
@@ -20,7 +19,9 @@
 #include <creeper-qt/widget/text-fields.hh>
 #include <creeper-qt/widget/text.hh>
 
+#include <chrono>
 #include <qfontdatabase.h>
+#include <qtimer.h>
 #include <random>
 
 using namespace creeper;
@@ -37,7 +38,7 @@ auto operator*(std::invocable<std::size_t> auto&& f, std::size_t n) {
 auto operator*(std::size_t n, std::invocable<std::size_t> auto&& f) {
     std::ranges::for_each(std::views::iota(std::size_t { 0 }, n), std::forward<decltype(f)>(f));
 }
-}
+} // namespace repeat_literals
 
 static auto print_material_fonts() noexcept {
     const auto& families = QFontDatabase::families();
@@ -54,11 +55,15 @@ static auto print_material_fonts() noexcept {
 
 static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noexcept {
 
-    auto slogen_context = std::make_shared<MutableValue<QString>>();
-    slogen_context->set_silent("BanG Dream! It’s MyGO!!!!!");
+    struct Context {
+        std::chrono::steady_clock::time_point timeline = std::chrono::steady_clock::now();
 
-    auto select_context = std::make_shared<MutableValue<QStringList>>();
-    select_context->set_silent(QStringList { "1st", "2ed", "3rd" });
+        MutableQString slogen { "BanG Dream! It’s MyGO!!!!!" };
+        MutableBool loading { false };
+        MutableDouble progress { 0.0 };
+    };
+    const auto context = std::make_shared<Context>();
+
     const auto row = new Row {
         lnpro::Item<OutlinedTextField> {
             text_field::pro::ThemeManager { manager },
@@ -71,20 +76,36 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
             },
             MutableForward {
                 text_field::pro::LabelText { },
-                slogen_context,
+                context->slogen,
+            },
+            text_field::pro::OnChanged {
+                [context](const QString& text) {
+                    const auto count = text.size();
+
+                    using namespace std::chrono_literals;
+                    constexpr auto kCheckInterval = 1s;
+
+                    context->timeline = std::chrono::steady_clock::now() + kCheckInterval;
+                    context->loading  = true;
+                    QTimer::singleShot(kCheckInterval, [context, count] {
+                        if (std::chrono::steady_clock::now() < context->timeline) return;
+                        context->loading  = false;
+                        context->progress = std::min(count / 20.0, 1.0);
+                    });
+                },
             },
         },
         lnpro::SpacingItem { 10 },
-        lnpro::Item<FilledDropdownMenu> {
-            dropdown_menu::pro::ThemeManager { manager },
-            dropdown_menu::pro::LabelText { "Item" },
-            dropdown_menu::pro::FixedWidth { 100 },
-            MutableForward {
-                dropdown_menu::pro::Items { },
-                select_context,
-            },
+
+        lnpro::Item<CircularProgressIndicator> {
+            cpipro::ThemeManager { manager },
+            cpipro::FixedSize { 40, 40 },
+            MutableForward { cpipro::Indeterminate { false }, context->loading },
+            MutableForward { cpipro::Progress { 0. }, context->progress },
         },
-        lnpro::SpacingItem { 20 },
+
+        lnpro::SpacingItem { 10 },
+
         lnpro::Item<IconButton> {
             ibpro::ThemeManager { manager },
             ibpro::FixedSize { 40, 40 },
@@ -99,7 +120,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
             ibpro::Color { IconButton::Color::TONAL },
             ibpro::Font { material::kRoundSmallFont },
             ibpro::FontIcon { material::icon::kFavorite },
-            ibpro::Clickable { [slogen_context] {
+            ibpro::Clickable { [context] {
                 constexpr auto random_slogen = [] {
                     constexpr auto slogens = std::array {
                         "为什么要演奏《春日影》！",
@@ -113,7 +134,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                     std::uniform_int_distribution<> dist(0, slogens.size() - 1);
                     return QString::fromUtf8(slogens[dist(gen)]);
                 };
-                *slogen_context = random_slogen();
+                context->slogen = random_slogen();
             } },
         },
         lnpro::Item<IconButton> {
@@ -182,13 +203,17 @@ static auto BannerComponent(ThemeManager& manager) noexcept {
 
     const auto sources = std::array {
         source_type( // 大户爱
-            "https://c-ssl.duitang.com/uploads/blog/202103/16/20210316112119_181c8.jpeg"),
+            "https://c-ssl.duitang.com/uploads/blog/202103/16/"
+            "20210316112119_181c8.jpeg"),
         source_type( // 长期素食
-            "https://c-ssl.duitang.com/uploads/blog/202506/28/V2SOXgQEFm7Q626.jpeg"),
+            "https://c-ssl.duitang.com/uploads/blog/202506/28/"
+            "V2SOXgQEFm7Q626.jpeg"),
         source_type( // 长期素食
-            "https://c-ssl.duitang.com/uploads/blog/202411/25/pGSGeMXVcBx95ZO.jpeg"),
+            "https://c-ssl.duitang.com/uploads/blog/202411/25/"
+            "pGSGeMXVcBx95ZO.jpeg"),
         source_type( // MYGO
-            "https://c-ssl.duitang.com/uploads/blog/202507/02/4ESmYpG3Fo8L4mA.jpeg"),
+            "https://c-ssl.duitang.com/uploads/blog/202507/02/"
+            "4ESmYpG3Fo8L4mA.jpeg"),
     };
 
     return new Image {
@@ -207,7 +232,7 @@ static auto BannerComponent(ThemeManager& manager) noexcept {
     };
 }
 
-static constexpr auto slider_measurements = Slider::Measurements::S();
+constexpr auto kSliderMeasurements = Slider::Measurements::S();
 
 auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
 
@@ -241,8 +266,8 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
             lnpro::Alignment { Qt::AlignLeft },
             lnpro::Item<FilledCard> {
                 filled_card::pro::ThemeManager { state.manager },
-                filled_card::pro::FixedSize { 100, slider_measurements.track_height },
-                filled_card::pro::Radius { static_cast<double>(slider_measurements.track_shape) },
+                filled_card::pro::FixedSize { 100, kSliderMeasurements.track_height },
+                filled_card::pro::Radius { static_cast<double>(kSliderMeasurements.track_shape) },
                 filled_card::pro::LevelLowest,
                 filled_card::pro::Layout<Row> {
                     lnpro::Spacing { 0 },
@@ -257,8 +282,8 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
             },
             lnpro::Item<Slider> {
                 slider::pro::ThemeManager { state.manager },
-                slider::pro::Measurements { slider_measurements },
-                slider::pro::FixedHeight { slider_measurements.minimum_height() },
+                slider::pro::Measurements { kSliderMeasurements },
+                slider::pro::FixedHeight { kSliderMeasurements.minimum_height() },
                 slider::pro::FixedWidth { 300 },
                 MutableForward {
                     slider::pro::Progress { 0. },
@@ -275,11 +300,8 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
             },
             lnpro::Item<CircularProgressIndicator> {
                 cpipro::ThemeManager { state.manager },
-                cpipro::FixedSize { 40, 40 },
-                MutableForward {
-                    cpipro::Progress { 0. },
-                    p,
-                },
+                cpipro::FixedSize { 25, 25 },
+                MutableForward { cpipro::Progress { 0. }, p },
             },
         };
     };
@@ -322,7 +344,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                     { 255 },
                     card::pro::ThemeManager { state.manager },
                     card::pro::LevelLowest,
-                    card::pro::FixedHeight { slider_measurements.minimum_height() * 3 + 40 },
+                    card::pro::FixedHeight { kSliderMeasurements.minimum_height() * 3 + 40 },
                     card::pro::Layout<Col> {
                         lnpro::Item { SwitchRow() },
                         lnpro::Item { SwitchRow() },

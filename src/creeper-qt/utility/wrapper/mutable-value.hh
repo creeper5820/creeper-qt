@@ -157,4 +157,5 @@ using MutableUInt8   = MutableValue<uint8_t>;
 using MutableUInt16  = MutableValue<uint16_t>;
 using MutableInt8    = MutableValue<int8_t>;
 using MutableInt16   = MutableValue<int16_t>;
+using MutableBool    = MutableValue<bool>;
 }
