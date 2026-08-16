@@ -25,6 +25,49 @@ using MenuItemDetails = creeper::dropdown_menu_item::details::DropdownMenuItem;
 
 struct DropdownMenu::Impl {
 public:
+    static constexpr auto kContainerVPadding = 8;
+
+    static constexpr auto kWindowVMargin = 48;
+    static constexpr auto kWindowHMargin = 8;
+
+    static constexpr auto kShadowBlurRadius = 10;
+    static constexpr auto kShadowOffsetY    = 2;
+    static constexpr auto kShadowMargin     = 16;
+    static constexpr auto kShadowOpacity    = 0.28;
+
+    // M3 spec: 菜单容器最小宽度 112dp，最大宽度 280dp
+    static constexpr auto kMinMenuWidth = 112;
+    static constexpr auto kMaxMenuWidth = 280;
+
+    QWidget* container          = nullptr;
+    QWidget* viewport           = nullptr;
+    QVBoxLayout* content_layout = nullptr;
+
+    QWidget* anchor_widget = nullptr;
+    QWidget* filter_anchor = nullptr;
+    QPoint offset { 0, 0 };
+
+    QColor theme_container_color;
+    QColor container_color_override;
+    double corner_radius                           = 4.0;
+    QGraphicsDropShadowEffect* shadow_effect       = nullptr;
+    QGraphicsOpacityEffect* content_opacity_effect = nullptr;
+
+    QPointF transform_origin { 0.5, 0.0 };
+
+    int scroll_offset   = 0;
+    int highlight_index = -1;
+
+    bool expanded_          = false;
+    bool closing            = false;
+    bool programmatic_close = false;
+
+    Animatable animatable;
+    std::unique_ptr<TransitionValue<SpringState<double>>> scale;
+    std::unique_ptr<TransitionValue<SpringState<double>>> opacity;
+
+    DropdownMenu& self;
+
     explicit Impl(DropdownMenu& self) noexcept
         : animatable { self }
         , self { self } {
@@ -64,8 +107,7 @@ public:
         }
 
         content_layout = new QVBoxLayout { viewport };
-        content_layout->setContentsMargins(
-            0, kContainerVerticalPadding, 0, kContainerVerticalPadding);
+        content_layout->setContentsMargins(0, kContainerVPadding, 0, kContainerVPadding);
         content_layout->setSpacing(0);
     }
 
@@ -91,10 +133,19 @@ public:
         self.setParent(widget, self.windowFlags());
 
         if (self.isVisible()) {
+            // 可见时换锚：迁移事件过滤器并重新定位
+            uninstall_anchor_filters();
+            install_anchor_filters(widget);
             reposition();
         } else if (expanded_) {
             show_menu();
         }
+    }
+
+    auto parent_changed() -> void {
+        // Child<T> 等声明式挂载在 prop 求值之后才设置 parent，
+        // 此时补齐因缺少锚点而未能执行的展开
+        if (expanded_ && !self.isVisible()) show_menu();
     }
 
     auto anchor() const noexcept -> QWidget* { return anchor_widget; }
@@ -168,12 +219,7 @@ public:
         closing   = false;
         expanded_ = false;
 
-        if (anchor_widget != nullptr) {
-            anchor_widget->removeEventFilter(&self);
-            if (anchor_widget->window() != nullptr && anchor_widget->window() != anchor_widget) {
-                anchor_widget->window()->removeEventFilter(&self);
-            }
-        }
+        uninstall_anchor_filters();
 
         // 仅用户驱动的关闭（外部点击、Esc）才上报 dismiss_requested
         if (!programmatic_close) Q_EMIT self.dismiss_requested();
@@ -181,7 +227,7 @@ public:
     }
 
     auto event_filter(QObject* watched, QEvent* event) -> bool {
-        if (watched == anchor_widget && event->type() == QEvent::Hide) {
+        if (watched == filter_anchor && event->type() == QEvent::Hide) {
             programmatic_close = true;
             self.hide();
             return false;
@@ -235,10 +281,7 @@ private:
             return;
         }
 
-        anchor->installEventFilter(&self);
-        if (anchor->window() != anchor) {
-            anchor->window()->installEventFilter(&self);
-        }
+        install_anchor_filters(anchor);
 
         reposition();
 
@@ -277,6 +320,24 @@ private:
         closing = true;
         scale->transition_to(0.8);
         opacity->transition_to(0.0);
+    }
+
+    auto install_anchor_filters(QWidget* anchor) -> void {
+        filter_anchor = anchor;
+        anchor->installEventFilter(&self);
+        if (anchor->window() != anchor) {
+            anchor->window()->installEventFilter(&self);
+        }
+    }
+
+    auto uninstall_anchor_filters() -> void {
+        if (filter_anchor == nullptr) return;
+
+        filter_anchor->removeEventFilter(&self);
+        if (filter_anchor->window() != nullptr && filter_anchor->window() != filter_anchor) {
+            filter_anchor->window()->removeEventFilter(&self);
+        }
+        filter_anchor = nullptr;
     }
 
     auto resolved_anchor() const noexcept -> QWidget* {
@@ -360,7 +421,7 @@ private:
         const auto content_size = content_layout->sizeHint();
         const auto menu_size    = QSize {
             std::min(std::clamp(content_size.width(), kMinMenuWidth, kMaxMenuWidth),
-                screen_rect.width() - 2 * kWindowHorizontalMargin),
+                screen_rect.width() - 2 * kWindowHMargin),
             std::min(content_size.height(), available_height(anchor_rect, screen_rect)),
         };
         const auto window_size = QSize {
@@ -373,8 +434,8 @@ private:
                 anchor_rect.left(),
                 anchor_rect.right() - menu_size.width() + 1,
                 anchor_rect.center().x() < screen_rect.center().x()
-                    ? screen_rect.left() + kWindowHorizontalMargin
-                    : screen_rect.right() - kWindowHorizontalMargin - menu_size.width() + 1,
+                    ? screen_rect.left() + kWindowHMargin
+                    : screen_rect.right() - kWindowHMargin - menu_size.width() + 1,
             };
             for (const auto x : x_candidates) {
                 position.setX(
@@ -389,9 +450,8 @@ private:
             } else if (above >= screen_rect.top()) {
                 position.setY(above);
             } else {
-                const auto lo = screen_rect.top() + kWindowVerticalMargin;
-                const auto hi =
-                    screen_rect.bottom() - kWindowVerticalMargin - menu_size.height() + 1;
+                const auto lo = screen_rect.top() + kWindowVMargin;
+                const auto hi = screen_rect.bottom() - kWindowVMargin - menu_size.height() + 1;
                 position.setY(std::clamp(
                     anchor_rect.center().y() < screen_rect.center().y() ? lo : hi, lo, hi));
             }
@@ -443,48 +503,8 @@ private:
 
     auto available_height(const QRect& anchor_rect, const QRect& screen_rect) const noexcept
         -> int {
-        const auto above = anchor_rect.top() - screen_rect.top() - kWindowVerticalMargin;
-        const auto below = screen_rect.bottom() - kWindowVerticalMargin - anchor_rect.bottom();
+        const auto above = anchor_rect.top() - screen_rect.top() - kWindowVMargin;
+        const auto below = screen_rect.bottom() - kWindowVMargin - anchor_rect.bottom();
         return std::max({ 0, above, below });
     }
-
-    static constexpr int kContainerVerticalPadding = 8;
-    static constexpr int kWindowVerticalMargin     = 48;
-    static constexpr int kWindowHorizontalMargin   = 8;
-    static constexpr int kShadowBlurRadius         = 10;
-    static constexpr int kShadowOffsetY            = 2;
-    static constexpr int kShadowMargin             = 16;
-    static constexpr double kShadowOpacity         = 0.28;
-
-    // M3 spec: 菜单容器最小宽度 112dp，最大宽度 280dp
-    static constexpr int kMinMenuWidth = 112;
-    static constexpr int kMaxMenuWidth = 280;
-
-    QWidget* container          = nullptr;
-    QWidget* viewport           = nullptr;
-    QVBoxLayout* content_layout = nullptr;
-
-    QWidget* anchor_widget = nullptr;
-    QPoint offset { 0, 0 };
-
-    QColor theme_container_color;
-    QColor container_color_override;
-    double corner_radius                           = 4.0;
-    QGraphicsDropShadowEffect* shadow_effect       = nullptr;
-    QGraphicsOpacityEffect* content_opacity_effect = nullptr;
-
-    QPointF transform_origin { 0.5, 0.0 };
-
-    int scroll_offset   = 0;
-    int highlight_index = -1;
-
-    bool expanded_          = false;
-    bool closing            = false;
-    bool programmatic_close = false;
-
-    Animatable animatable;
-    std::unique_ptr<TransitionValue<SpringState<double>>> scale;
-    std::unique_ptr<TransitionValue<SpringState<double>>> opacity;
-
-    DropdownMenu& self;
 };

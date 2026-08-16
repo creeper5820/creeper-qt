@@ -6,6 +6,7 @@
 #include <creeper-qt/layout/stacked.hh>
 #include <creeper-qt/utility/material-icon.hh>
 #include <creeper-qt/utility/math/lattice.hh>
+#include <creeper-qt/utility/wrapper/foreach.hh>
 #include <creeper-qt/utility/wrapper/mutable-value.hh>
 #include <creeper-qt/widget/buttons/filled-button.hh>
 #include <creeper-qt/widget/buttons/icon-button.hh>
@@ -28,14 +29,15 @@
 #include <random>
 
 using namespace creeper;
-namespace capro  = card::pro;
-namespace lnpro  = linear::pro;
-namespace impro  = image::pro;
-namespace ibpro  = icon_button::pro;
-namespace cpipro = circular_progress_indicator::pro;
-namespace dmp    = dropdown_menu::pro;
-namespace dmip   = dropdown_menu_item::pro;
-namespace fbp    = filled_button::pro;
+
+namespace cap  = card::pro;
+namespace lnp  = linear::pro;
+namespace imp  = image::pro;
+namespace ibp  = icon_button::pro;
+namespace cpip = circular_progress_indicator::pro;
+namespace dmp  = dropdown_menu::pro;
+namespace dmip = dropdown_menu_item::pro;
+namespace tfp  = text_field::pro;
 
 namespace repeat_literals {
 auto operator*(std::invocable<std::size_t> auto&& f, std::size_t n) {
@@ -65,30 +67,28 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
         std::chrono::steady_clock::time_point timeline = std::chrono::steady_clock::now();
 
         MutableQString slogen { "BanG Dream! It’s MyGO!!!!!" };
-        MutableQString selected { "选择成员" };
+        MutableQString selected { };
         MutableBool menu_expanded { false };
         MutableBool loading { false };
         MutableDouble progress { 0.0 };
     };
     const auto context = std::make_shared<Context>();
 
-    auto menu_anchor = static_cast<FilledButton*>(nullptr);
-
     const auto row = new Row {
-        lnpro::Item<OutlinedTextField> {
-            text_field::pro::ThemeManager { manager },
-            text_field::pro::LeadingIcon {
+        lnp::Item<OutlinedTextField> {
+            MutableForward {
+                tfp::LabelText { },
+                context->slogen,
+            },
+            tfp::ThemeManager { manager },
+            tfp::LeadingIcon {
                 material::icon::kSearch,
                 material::round::font,
             },
-            text_field::pro::Measurements {
+            tfp::Measurements {
                 OutlinedTextField::Measurements { },
             },
-            MutableForward {
-                text_field::pro::LabelText { },
-                context->slogen,
-            },
-            text_field::pro::OnChanged {
+            tfp::OnChanged {
                 [context](const QString& text) {
                     const auto count = text.size();
 
@@ -106,42 +106,65 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
             },
         },
 
-        lnpro::SpacingItem { 10 },
+        lnp::SpacingItem { 10 },
 
-        lnpro::Item<FilledButton> {
-            fbp::ThemeManager { manager },
-            fbp::FixedSize { 160, 40 },
-            MutableForward { fbp::Text { }, context->selected },
-            fbp::Clickable { [context] { context->menu_expanded = true; } },
-            fbp::Bind { menu_anchor },
+        lnp::Item<OutlinedTextField> {
+            MutableForward { tfp::Text { }, context->selected },
+
+            tfp::ThemeManager { manager },
+            tfp::ReadOnly { true },
+            tfp::LabelText { "成员" },
+            tfp::FixedWidth { 120 },
+
+        },
+        lnp::Item<IconButton> {
+            ibp::ThemeManager { manager },
+            ibp::FixedSize { 40, 40 },
+            ibp::Color { IconButton::Color::TONAL },
+            ibp::Font { material::kRoundSmallFont },
+            ibp::FontIcon { material::icon::kArrowDropDown },
+            ibp::Clickable { [context] { context->menu_expanded = true; } },
+
+            ibp::Child<DropdownMenu> {
+                MutableForward { dmp::Expanded { false }, context->menu_expanded },
+
+                dmp::ThemeManager { manager },
+                dmp::OnDismissRequest { [context] { context->menu_expanded = false; } },
+
+                Util::ForEach(std::array { "高松灯", "千早爱音", "要乐奈", "长崎爽世", "椎名立希" },
+                    [&](auto index, auto name) {
+                        return dmp::Item<DropdownMenuItem> {
+                            dmip::ThemeManager { manager },
+                            dmip::Text { std::format("{}. {}", index + 1, name) },
+                            dmip::OnClicked { [=] {
+                                context->selected      = name;
+                                context->menu_expanded = false;
+
+                                qDebug() << "[view] Select " << name;
+                            } },
+                        };
+                    }),
+            },
+
         },
 
-        lnpro::SpacingItem { 10 },
+        lnp::SpacingItem { 10 },
 
-        lnpro::Item<CircularProgressIndicator> {
-            cpipro::ThemeManager { manager },
-            cpipro::FixedSize { 40, 40 },
-            MutableForward { cpipro::Indeterminate { false }, context->loading },
-            MutableForward { cpipro::Progress { 0. }, context->progress },
+        lnp::Item<IconButton> {
+            ibp::ThemeManager { manager },
+            ibp::FixedSize { 40, 40 },
+            ibp::Color { IconButton::Color::TONAL },
+            ibp::Font { material::kRoundSmallFont },
+            ibp::FontIcon { "change_circle" },
+            ibp::Clickable { refresh_callback },
         },
-
-        lnpro::SpacingItem { 10 },
-
-        lnpro::Item<IconButton> {
-            ibpro::ThemeManager { manager },
-            ibpro::FixedSize { 40, 40 },
-            ibpro::Color { IconButton::Color::TONAL },
-            ibpro::Font { material::kRoundSmallFont },
-            ibpro::FontIcon { "change_circle" },
-            ibpro::Clickable { refresh_callback },
-        },
-        lnpro::Item<IconButton> {
-            ibpro::ThemeManager { manager },
-            ibpro::FixedSize { 40, 40 },
-            ibpro::Color { IconButton::Color::TONAL },
-            ibpro::Font { material::kRoundSmallFont },
-            ibpro::FontIcon { material::icon::kFavorite },
-            ibpro::Clickable { [context] {
+        lnp::Item<IconButton> {
+            ibp::ThemeManager { manager },
+            ibp::FixedSize { 40, 40 },
+            ibp::Color { IconButton::Color::TONAL },
+            ibp::Font { material::kRoundSmallFont },
+            ibp::FontIcon { material::icon::kFavorite },
+            ibp::Clickable { [context] {
                 constexpr auto random_slogen = [] {
                     constexpr auto slogens = std::array {
                         "为什么要演奏《春日影》！",
@@ -158,53 +181,22 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                 context->slogen = random_slogen();
             } },
         },
-        lnpro::Item<IconButton> {
-            ibpro::ThemeManager { manager },
-            ibpro::FixedSize { 40, 40 },
-            ibpro::Color { IconButton::Color::TONAL },
-            ibpro::Font { material::kRoundSmallFont },
-            ibpro::FontIcon { "font_download" },
-            ibpro::Clickable { &print_material_fonts },
+        lnp::Item<IconButton> {
+            ibp::ThemeManager { manager },
+            ibp::FixedSize { 40, 40 },
+            ibp::Color { IconButton::Color::TONAL },
+            ibp::Font { material::kRoundSmallFont },
+            ibp::FontIcon { "font_download" },
+            ibp::Clickable { &print_material_fonts },
         },
 
-    };
+        lnp::SpacingItem { 10 },
 
-    // 标准 DropdownMenu 用法：不占布局空间，锚定到上方按钮，
-    // 受控展开；外部点击 / Esc 时通过 OnDismissRequest 同步状态，
-    // 点击菜单项不自动关闭，由应用在 OnClicked 中显式收起。
-    const auto select_item = [context](const QString& name) {
-        context->selected      = name;
-        context->menu_expanded = false;
-    };
-    const auto menu = new DropdownMenu {
-        dmp::ThemeManager { manager },
-        dmp::Anchor { menu_anchor },
-        MutableForward { dmp::Expanded { false }, context->menu_expanded },
-        dmp::OnDismissRequest { [context] { context->menu_expanded = false; } },
-        dmp::Item<DropdownMenuItem> {
-            dmip::ThemeManager { manager },
-            dmip::Text { "高松灯" },
-            dmip::OnClicked { [=] { select_item(QStringLiteral("高松灯")); } },
-        },
-        dmp::Item<DropdownMenuItem> {
-            dmip::ThemeManager { manager },
-            dmip::Text { "千早爱音" },
-            dmip::OnClicked { [=] { select_item(QStringLiteral("千早爱音")); } },
-        },
-        dmp::Item<DropdownMenuItem> {
-            dmip::ThemeManager { manager },
-            dmip::Text { "要乐奈" },
-            dmip::OnClicked { [=] { select_item(QStringLiteral("要乐奈")); } },
-        },
-        dmp::Item<DropdownMenuItem> {
-            dmip::ThemeManager { manager },
-            dmip::Text { "长崎爽世" },
-            dmip::OnClicked { [=] { select_item(QStringLiteral("长崎爽世")); } },
-        },
-        dmp::Item<DropdownMenuItem> {
-            dmip::ThemeManager { manager },
-            dmip::Text { "椎名立希" },
-            dmip::OnClicked { [=] { select_item(QStringLiteral("椎名立希")); } },
+        lnp::Item<CircularProgressIndicator> {
+            MutableForward { cpip::Indeterminate { false }, context->loading },
+            MutableForward { cpip::Progress { 0. }, context->progress },
+            cpip::ThemeManager { manager },
+            cpip::FixedSize { 40, 40 },
         },
     };
 
@@ -319,12 +311,12 @@ static auto BannerComponent(ThemeManager& manager) noexcept {
     };
 
     return new Image {
-        impro::ContentScale { ContentScale::CROP },
-        impro::SizePolicy { QSizePolicy::Expanding },
-        impro::BorderWidth { 3 },
-        impro::FixedHeight { 300 },
-        impro::PainterResource { sources.at(std::rand() % sources.size()) },
-        impro::Apply { [&manager](Image& self) {
+        imp::ContentScale { ContentScale::CROP },
+        imp::SizePolicy { QSizePolicy::Expanding },
+        imp::BorderWidth { 3 },
+        imp::FixedHeight { 300 },
+        imp::PainterResource { sources.at(std::rand() % sources.size()) },
+        imp::Apply { [&manager](Image& self) {
             manager.append_handler(&self, [&](const ThemeManager& manager) {
                 const auto colorscheme = manager.color_scheme();
                 const auto colorborder = colorscheme.secondary_container;
@@ -365,16 +357,16 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
     const auto SliderComponent = [&](std::shared_ptr<MutableValue<QString>> s,
                                      std::shared_ptr<MutableValue<double>> p) {
         return new Row {
-            lnpro::Alignment { Qt::AlignLeft },
-            lnpro::Item<FilledCard> {
+            lnp::Alignment { Qt::AlignLeft },
+            lnp::Item<FilledCard> {
                 filled_card::pro::ThemeManager { state.manager },
                 filled_card::pro::FixedSize { 100, kSliderMeasurements.track_height },
                 filled_card::pro::Radius { static_cast<double>(kSliderMeasurements.track_shape) },
                 filled_card::pro::LevelLowest,
                 filled_card::pro::Layout<Row> {
-                    lnpro::Spacing { 0 },
-                    lnpro::Margin { 0 },
-                    lnpro::Item<Text> {
+                    lnp::Spacing { 0 },
+                    lnp::Margin { 0 },
+                    lnp::Item<Text> {
                         text::pro::ThemeManager { state.manager },
                         text::pro::Alignment { Qt::AlignCenter },
                         text::pro::FixedWidth { 100 },
@@ -382,7 +374,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                     },
                 },
             },
-            lnpro::Item<Slider> {
+            lnp::Item<Slider> {
                 slider::pro::ThemeManager { state.manager },
                 slider::pro::Measurements { kSliderMeasurements },
                 slider::pro::FixedHeight { kSliderMeasurements.minimum_height() },
@@ -400,24 +392,24 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                 slider::pro::OnValueChangeFinished {
                     [](double num) { qDebug() << "[view] Slider changed:" << num; } },
             },
-            lnpro::Item<CircularProgressIndicator> {
-                cpipro::ThemeManager { state.manager },
-                cpipro::FixedSize { 25, 25 },
-                MutableForward { cpipro::Progress { 0. }, p },
+            lnp::Item<CircularProgressIndicator> {
+                cpip::ThemeManager { state.manager },
+                cpip::FixedSize { 25, 25 },
+                MutableForward { cpip::Progress { 0. }, p },
             },
         };
     };
 
     return new FilledCard {
-        capro::ThemeManager { state.manager },
-        capro::SizePolicy { QSizePolicy::Expanding },
+        cap::ThemeManager { state.manager },
+        cap::SizePolicy { QSizePolicy::Expanding },
 
-        capro::Layout<Col> {
-            lnpro::Alignment { Qt::AlignTop },
-            lnpro::Margin { 10 },
-            lnpro::Spacing { 10 },
+        cap::Layout<Col> {
+            lnp::Alignment { Qt::AlignTop },
+            lnp::Margin { 10 },
+            lnp::Spacing { 10 },
 
-            lnpro::Item {
+            lnp::Item {
                 SearchComponent(state.manager,
                     [texts, progresses] {
                         constexpr auto random_unit = []() {
@@ -433,31 +425,31 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                         }
                     }),
             },
-            lnpro::Item { BannerComponent(state.manager) },
-            lnpro::Item<Row> {
-                lnpro::Margin { 20 },
-                lnpro::Spacing { 15 },
-                lnpro::Item<Col> {
-                    lnpro::Item { SliderComponent(texts.at(0), progresses.at(0)) },
-                    lnpro::Item { SliderComponent(texts.at(1), progresses.at(1)) },
-                    lnpro::Item { SliderComponent(texts.at(2), progresses.at(2)) },
+            lnp::Item { BannerComponent(state.manager) },
+            lnp::Item<Row> {
+                lnp::Margin { 20 },
+                lnp::Spacing { 15 },
+                lnp::Item<Col> {
+                    lnp::Item { SliderComponent(texts.at(0), progresses.at(0)) },
+                    lnp::Item { SliderComponent(texts.at(1), progresses.at(1)) },
+                    lnp::Item { SliderComponent(texts.at(2), progresses.at(2)) },
                 },
-                lnpro::Item<OutlinedCard> {
+                lnp::Item<OutlinedCard> {
                     { 255 },
                     card::pro::ThemeManager { state.manager },
                     card::pro::LevelLowest,
                     card::pro::FixedHeight { kSliderMeasurements.minimum_height() * 3 + 40 },
                     card::pro::Layout<Col> {
-                        lnpro::Item { SwitchRow() },
-                        lnpro::Item { SwitchRow() },
-                        lnpro::Item { SwitchRow() },
+                        lnp::Item { SwitchRow() },
+                        lnp::Item { SwitchRow() },
+                        lnp::Item { SwitchRow() },
                     },
                 },
             },
-            lnpro::Item<AssetCenter> {
+            lnp::Item<AssetCenter> {
                 state.manager,
             },
-            lnpro::Item<CustomWidget> {
+            lnp::Item<CustomWidget> {
                 custom::pro::FixedHeight { 300 },
                 custom::pro::OnPaint<std::reference_wrapper<ThemeManager>> {
                     std::ref(state.manager),
@@ -477,12 +469,11 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                     },
                 },
             },
-            lnpro::Item<Flow> {
+            lnp::Item<Flow> {
                 flow::pro::RowSpacing { 10 },
                 flow::pro::ColSpacing { 10 },
                 flow::pro::RowLimit { 6 },
                 flow::pro::Apply { [&](Flow& self) {
-                    self.addWidget(DropdownMenuItemComponent(state.manager));
                     using namespace repeat_literals;
                     1'000 * [&](auto i) { self.addWidget(ItemComponent(state.manager, i)); };
                 } },

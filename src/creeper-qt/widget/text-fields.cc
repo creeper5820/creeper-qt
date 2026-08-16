@@ -60,6 +60,11 @@ auto BasicTextField::focusOutEvent(QFocusEvent* event) -> void {
     QLineEdit::focusOutEvent(event);
 }
 
+auto BasicTextField::mousePressEvent(QMouseEvent* event) -> void {
+    QLineEdit::mousePressEvent(event);
+    Q_EMIT signal_pressed();
+}
+
 auto FilledTextField::paintEvent(QPaintEvent* event) -> void {
     pimpl->paint_filled(event);
     QLineEdit::paintEvent(event);

@@ -1,5 +1,4 @@
 #pragma once
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 
 namespace creeper::custom::details {
@@ -42,7 +41,7 @@ struct OnPaint : Token {
         std::decay_t<F> on_paint;
 
         explicit Instantiated(F&& on_paint) noexcept
-            : state {}
+            : state { }
             , on_paint { std::forward<F>(on_paint) } { }
 
         explicit Instantiated(State&& state, F&& on_paint) noexcept
@@ -85,6 +84,6 @@ struct OnPaint : Token {
 using namespace widget::pro;
 }
 namespace creeper {
-using CustomWidget = Declarative<custom::details::CustomWidget,
-    TokenOr<custom::pro::Token, widget::pro::Token>>;
+using CustomWidget =
+    Declarative<custom::details::CustomWidget, TokenOr<custom::pro::Token, widget::pro::Token>>;
 }

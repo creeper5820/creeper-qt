@@ -230,9 +230,12 @@ auto switch_widget = new Switch {
 | `LabelText` | `QString` | 标签文本（浮动标签） |
 | `LeadingIcon` | `QString, QString` | 前置图标（图标代码，字体名称） |
 | `ClearButton` | `bool` | 是否显示清除按钮 |
+| `Text` | `QString` | 输入框文本内容 |
+| `ReadOnly` | `bool` | 是否只读 |
 | `OnTextChanged` | `[](const QString&){}` | 文本改变时的回调函数 |
 | `OnEditingFinished` | `[]{}` | 编辑完成时的回调函数 |
 | `OnChanged` | `[](const QString&){}` | `OnTextChanged` 的别名 |
+| `OnPressed` | `[]{}` | 鼠标按下时的回调函数 |
 
 ```cpp
 using namespace creeper;
@@ -354,7 +357,7 @@ auto bound_slider = new Slider {
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
-| `Anchor` | `QWidget*` | 锚组件，菜单依据其全局位置定位，同时作为菜单的 parent |
+| `Anchor` | `QWidget*` | 锚组件，菜单依据其全局位置定位；缺省回退到 parent 组件 |
 | `Expanded` | `bool` | 受控展开状态，可配合 `MutableForward<MutableBool>` |
 | `OnDismissRequest` | `[](){}` | 用户请求关闭（点击菜单外部 / Esc）时触发 |
 | `Offset` | `QPoint` | 定位完成后叠加的偏移，RTL 布局下 x 方向取反 |
@@ -364,6 +367,8 @@ auto bound_slider = new Slider {
 
 菜单是**受控组件**：点击菜单外部或 Esc 时菜单自行收起并发出 `OnDismissRequest`，应用应在其中把绑定状态置回 `false`；点击菜单项**不会**自动关闭菜单，需要在 `OnClicked` 中显式收起。内容超出可用高度时自动滚动，支持方向键导航。与标准的差异：`scrollState`、`properties`、`tonalElevation`、`shadowElevation`、`border` 未暴露，阴影取自主题。
 
+推荐用 `widget::pro::Child<T>` 把菜单声明式地挂进锚组件：菜单以锚组件为 parent（缺省锚），不占布局空间，随锚组件自动销毁。
+
 ```cpp
 using namespace creeper;
 namespace dmp  = creeper::dropdown_menu::pro;
@@ -371,30 +376,36 @@ namespace dmip = creeper::dropdown_menu_item::pro;
 namespace fbp  = creeper::filled_button::pro;
 
 auto expanded = std::make_shared<MutableBool>(false);
-auto anchor   = static_cast<FilledButton*>(nullptr);
 
 auto button = new FilledButton {
     fbp::ThemeManager { manager },
     fbp::Text { "打开菜单" },
     fbp::Clickable { [expanded] { *expanded = true; } },
-    fbp::Bind { anchor },
+    fbp::Child<DropdownMenu> {
+        dmp::ThemeManager { manager },
+        MutableForward { dmp::Expanded { false }, expanded },
+        dmp::OnDismissRequest { [expanded] { *expanded = false; } },
+        dmp::Item<DropdownMenuItem> {
+            dmip::ThemeManager { manager },
+            dmip::Text { "选项1" },
+            dmip::OnClicked { [expanded] { *expanded = false; } },
+        },
+        dmp::Item<DropdownMenuItem> {
+            dmip::ThemeManager { manager },
+            dmip::Text { "选项2" },
+            dmip::OnClicked { [expanded] { *expanded = false; } },
+        },
+    },
 };
+```
 
+锚组件不是菜单的 parent 时，才需要显式 `Anchor`：
+
+```cpp
 auto menu = new DropdownMenu {
     dmp::ThemeManager { manager },
-    dmp::Anchor { anchor },
-    MutableForward { dmp::Expanded { false }, expanded },
-    dmp::OnDismissRequest { [expanded] { *expanded = false; } },
-    dmp::Item<DropdownMenuItem> {
-        dmip::ThemeManager { manager },
-        dmip::Text { "选项1" },
-        dmip::OnClicked { [expanded] { *expanded = false; } },
-    },
-    dmp::Item<DropdownMenuItem> {
-        dmip::ThemeManager { manager },
-        dmip::Text { "选项2" },
-        dmip::OnClicked { [expanded] { *expanded = false; } },
-    },
+    dmp::Anchor { some_other_widget },
+    // ...
 };
 ```
 
