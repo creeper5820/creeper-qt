@@ -344,69 +344,83 @@ auto bound_slider = new Slider {
 
 ---
 
-### FilledDropdownMenu 下拉菜单
+### DropdownMenu 下拉菜单
 
 命名空间：`creeper::dropdown_menu::pro`
+
+对应 Material 3 的 DropdownMenu：在独立弹出窗口中显示的选择列表，自身不占据布局空间，通过 `Anchor` 锚定到其他组件上定位。
 
 继承属性：`creeper::util::theme::pro`、`creeper::widget::pro`
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
-| `LabelText` | `QString` | 标签文本 |
-| `LeadingIcon` | `QString, QString` | 前置图标（图标代码，字体名称） |
-| `Items` | `QVector<QString>` | 选项列表 |
-| `IndexChanged` | `[](int){}` | 选中项改变时的回调函数 |
+| `Anchor` | `QWidget*` | 锚组件，菜单依据其全局位置定位，同时作为菜单的 parent |
+| `Expanded` | `bool` | 受控展开状态，可配合 `MutableForward<MutableBool>` |
+| `OnDismissRequest` | `[](){}` | 用户请求关闭（点击菜单外部 / Esc）时触发 |
+| `Offset` | `QPoint` | 定位完成后叠加的偏移，RTL 布局下 x 方向取反 |
+| `ContainerColor` | `QColor` | 覆盖容器颜色，默认取自主题 `surface_container` |
+| `CornerRadius` | `double` | 容器圆角半径，默认 4 |
+| `Item<T>` | `T* / 构造参数` | 向内容列追加菜单项，通常为 `DropdownMenuItem` |
+
+菜单是**受控组件**：点击菜单外部或 Esc 时菜单自行收起并发出 `OnDismissRequest`，应用应在其中把绑定状态置回 `false`；点击菜单项**不会**自动关闭菜单，需要在 `OnClicked` 中显式收起。内容超出可用高度时自动滚动，支持方向键导航。与标准的差异：`scrollState`、`properties`、`tonalElevation`、`shadowElevation`、`border` 未暴露，阴影取自主题。
 
 ```cpp
 using namespace creeper;
+namespace dmp  = creeper::dropdown_menu::pro;
+namespace dmip = creeper::dropdown_menu_item::pro;
+namespace fbp  = creeper::filled_button::pro;
 
-auto dropdown = new FilledDropdownMenu {
-    dropdown_menu::pro::ThemeManager { manager },
-    dropdown_menu::pro::LabelText { "选择项" },
-    dropdown_menu::pro::Items { QStringList { "选项1", "选项2", "选项3" } },
-    dropdown_menu::pro::IndexChanged { [](int index) {
-        qDebug() << "选中索引:" << index;
-    }}
+auto expanded = std::make_shared<MutableBool>(false);
+auto anchor   = static_cast<FilledButton*>(nullptr);
+
+auto button = new FilledButton {
+    fbp::ThemeManager { manager },
+    fbp::Text { "打开菜单" },
+    fbp::Clickable { [expanded] { *expanded = true; } },
+    fbp::Bind { anchor },
 };
 
-// 与 MutableValue 绑定
-auto items_value = std::make_shared<MutableValue<QStringList>>();
-items_value->set_silent(QStringList { "1st", "2nd", "3rd" });
-
-auto bound_dropdown = new FilledDropdownMenu {
-    dropdown_menu::pro::ThemeManager { manager },
-    dropdown_menu::pro::LabelText { "Item" },
-    MutableForward {
-        dropdown_menu::pro::Items {},
-        items_value
-    }
+auto menu = new DropdownMenu {
+    dmp::ThemeManager { manager },
+    dmp::Anchor { anchor },
+    MutableForward { dmp::Expanded { false }, expanded },
+    dmp::OnDismissRequest { [expanded] { *expanded = false; } },
+    dmp::Item<DropdownMenuItem> {
+        dmip::ThemeManager { manager },
+        dmip::Text { "选项1" },
+        dmip::OnClicked { [expanded] { *expanded = false; } },
+    },
+    dmp::Item<DropdownMenuItem> {
+        dmip::ThemeManager { manager },
+        dmip::Text { "选项2" },
+        dmip::OnClicked { [expanded] { *expanded = false; } },
+    },
 };
 ```
 
 ---
 
-### FilledSelect 选择器
+### DropdownMenuItem 菜单项
 
-命名空间：`creeper::select_widget::pro`
-
-与 `FilledDropdownMenu` 功能类似，但外观和交互略有不同。
+命名空间：`creeper::dropdown_menu_item::pro`
 
 继承属性：`creeper::util::theme::pro`、`creeper::widget::pro`
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
-| `LabelText` | `QString` | 标签文本 |
-| `LeadingIcon` | `QString, QString` | 前置图标（默认使用下拉箭头图标） |
-| `Items` | `QVector<QString>` | 选项列表 |
-| `IndexChanged` | `[](int){}` | 选中项改变时的回调函数 |
+| `Text` | `QString` | 主文本 |
+| `LeadingIcon` | `QString, QString` | 前置图标（图标代码，字体名称） |
+| `TrailingIcon` | `QString, QString` | 后置图标（图标代码，字体名称） |
+| `TrailingText` | `QString` | 后置文本 |
+| `Disabled` | `bool` | 禁用 |
+| `OnClicked` | `[](){}` | 点击回调 |
 
 ```cpp
-using namespace creeper;
-
-auto select = new FilledSelect {
-    select_widget::pro::ThemeManager { manager },
-    select_widget::pro::LabelText { "选择" },
-    select_widget::pro::Items { QStringList { "选项A", "选项B", "选项C" } }
+auto item = new DropdownMenuItem {
+    dmip::ThemeManager { manager },
+    dmip::Text { "编辑" },
+    dmip::LeadingIcon { material::icon::kEdit, material::round::font },
+    dmip::OnClicked { [] { /* ... */ } },
 };
 ```
 
