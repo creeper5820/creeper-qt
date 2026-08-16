@@ -42,7 +42,7 @@ auto content = FilledCard {
 - 按可预测的顺序组织 prop：主题/状态、尺寸/布局、内容、回调，最后是 `Apply` 等兜底式自定义。
 - 优先使用专用 prop，而不是 `Apply`。仅当封装层尚未暴露所需 Qt 操作时再使用 `Apply`。
 - 将复杂业务逻辑放在 prop 列表之外。先命名 lambda、状态对象和回调，再传入 UI 声明。
-- 避免接触 `internal::`、`details::` 等内部命名空间下的实现，也不要直接调用 `prop.apply()`。prop 是内部机制，UI 代码应仅通过声明式嵌套使用。缺 prop 时使用 `Apply` 进行自定义。
+- 避免接触 `details::` 等内部命名空间下的实现，也不要直接调用 `prop.apply()`。prop 是内部机制，UI 代码应仅通过声明式嵌套使用。缺 prop 时使用 `Apply` 进行自定义。
 - 保持现有模式：声明式 prop 最终应调用用户手写时也会调用的同一个 Qt setter 或组件 setter。
 
 ## Qt 生命周期和指针
@@ -78,9 +78,9 @@ auto content = FilledCard {
 
 ## 组件开发模式
 
-- 开发新组件时，优先遵循 `text-fields.hh` / `text-fields.impl.hh` 展示的三层结构：`internal` 实现类负责 Qt 行为，组件自己的 `xxx::pro` 命名空间负责声明式属性入口，公开 `using Xxx = Declarative<...>` 负责把两者连接起来。
-- `internal` 类应继承最贴近语义的 Qt 基类，而不是重新发明行为；例如文本输入继续继承 `QLineEdit`，按钮继续基于 Qt 按钮能力，绘制和交互只补足本组件的样式差异。
-- `internal` 类中集中保存组件运行状态，例如 hover、focus、disabled、error、checked、动画值、颜色 token、尺寸 token、缓存字体等；这些状态应最终驱动 Qt setter、绘制树或主题响应。
+- 开发新组件时，优先遵循 `text-fields.hh` / `text-fields.impl.hh` 展示的三层结构：`details` 实现类负责 Qt 行为，组件自己的 `xxx::pro` 命名空间负责声明式属性入口，公开 `using Xxx = Declarative<...>` 负责把两者连接起来。
+- `details` 类应继承最贴近语义的 Qt 基类，而不是重新发明行为；例如文本输入继续继承 `QLineEdit`，按钮继续基于 Qt 按钮能力，绘制和交互只补足本组件的样式差异。
+- `details` 类中集中保存组件运行状态，例如 hover、focus、disabled、error、checked、动画值、颜色 token、尺寸 token、缓存字体等；这些状态应最终驱动 Qt setter、绘制树或主题响应。
 - 对外暴露给 prop 使用的接口应是清晰的 setter，例如 `set_label_text()`、`set_measurements()`、`set_color_scheme()`、`load_theme_manager()`；不要让 prop 直接改内部字段。
 - `.hh` 文件声明组件形状、状态结构和 prop 表面；`.impl.hh` 或 `.cc` 文件承载绘制、动画、主题映射和事件处理细节，避免把实现逻辑塞进公开头文件的声明式入口。
 
@@ -88,7 +88,7 @@ auto content = FilledCard {
 
 ```cpp
 // 原始实现，不包含声明式封装
-namespace creeper::xxx::internal {
+namespace creeper::xxx::details {
 
 class Xxx : public QWidget {
     CREEPER_PIMPL_DEFINITION(Xxx);
@@ -107,7 +107,7 @@ protected:
 // 声明式属性的包装，优先复用已有的 Wrapper
 namespace creeper::xxx::pro {
 
-using Token = creeper::Token<internal::Xxx>;
+using Token = creeper::Token<details::Xxx>;
 
 using LabelText = common::pro::String<Token,
     [](auto& self, const auto& value) { self.set_label_text(value); }>;
@@ -120,7 +120,7 @@ using namespace theme::pro;
 // 最终导出类型，组合 Token 来源
 namespace creeper {
 
-using Xxx = Declarative<xxx::internal::Xxx,
+using Xxx = Declarative<xxx::details::Xxx,
     TokenOr<xxx::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 }

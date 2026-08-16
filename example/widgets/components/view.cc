@@ -11,6 +11,8 @@
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/cards/outlined-card.hh>
 #include <creeper-qt/widget/custom/widget.hh>
+#include <creeper-qt/widget/dropdown-menu-item.hh>
+#include <creeper-qt/widget/dropdown-menu.hh>
 #include <creeper-qt/widget/image.hh>
 #include <creeper-qt/widget/indicator/circular-progress-indicator.hh>
 #include <creeper-qt/widget/shape/wave-circle.hh>
@@ -59,6 +61,9 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
         std::chrono::steady_clock::time_point timeline = std::chrono::steady_clock::now();
 
         MutableQString slogen { "BanG Dream! It’s MyGO!!!!!" };
+        MutableValue<QStringList> options {
+            QStringList { "高松灯", "千早爱音", "要乐奈", "长崎爽世", "椎名立希" },
+        };
         MutableBool loading { false };
         MutableDouble progress { 0.0 };
     };
@@ -95,6 +100,19 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                 },
             },
         },
+
+        lnpro::SpacingItem { 10 },
+
+        lnpro::Item<OutlinedDropdownMenu> {
+            dropdown_menu::pro::ThemeManager { manager },
+            dropdown_menu::pro::LabelText { "Item" },
+            dropdown_menu::pro::FixedWidth { 160 },
+            MutableForward {
+                dropdown_menu::pro::Items { },
+                context->options,
+            },
+        },
+
         lnpro::SpacingItem { 10 },
 
         lnpro::Item<CircularProgressIndicator> {
@@ -145,6 +163,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
             ibpro::FontIcon { "font_download" },
             ibpro::Clickable { &print_material_fonts },
         },
+
     };
     return new Widget {
         widget::pro::Layout { row },
@@ -193,6 +212,47 @@ static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
                 card::pro::ThemeManager { manager },
                 card::pro::LevelLow,
                 card::pro::FixedSize { 100, 30 },
+            },
+        },
+    };
+}
+static auto DropdownMenuItemComponent(ThemeManager& manager) noexcept {
+    namespace dmip = dropdown_menu_item::pro;
+
+    return new Widget {
+        widget::pro::FixedSize { 170, 290 },
+        widget::pro::Layout<Col> {
+            col::pro::Alignment { Qt::AlignVCenter | Qt::AlignHCenter },
+            col::pro::Spacing { 0 },
+            col::pro::Margin { 10 },
+
+            col::pro::Item<DropdownMenuItem> {
+                dmip::ThemeManager { manager },
+                dmip::Text { "编辑" },
+                dmip::LeadingIcon {
+                    material::icon::kEdit,
+                    material::round::font,
+                },
+                dmip::TrailingIcon {
+                    material::icon::kArrowRight,
+                    material::round::font,
+                },
+                dmip::OnClicked { [] { qDebug() << "[view] 编辑"; } },
+            },
+            col::pro::Item<DropdownMenuItem> {
+                dmip::ThemeManager { manager },
+                dmip::Text { "收藏" },
+                dmip::LeadingIcon {
+                    material::icon::kFavorite,
+                    material::round::font,
+                },
+                dmip::OnClicked { [] { qDebug() << "[view] 收藏"; } },
+            },
+            col::pro::Item<DropdownMenuItem> {
+                dmip::ThemeManager { manager },
+                dmip::Text { "删除（禁用）" },
+                dmip::Disabled { true },
+                dmip::OnClicked { [] { qDebug() << "[view] 删除"; } },
             },
         },
     };
@@ -380,6 +440,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                 flow::pro::ColSpacing { 10 },
                 flow::pro::RowLimit { 6 },
                 flow::pro::Apply { [&](Flow& self) {
+                    self.addWidget(DropdownMenuItemComponent(state.manager));
                     using namespace repeat_literals;
                     1'000 * [&](auto i) { self.addWidget(ItemComponent(state.manager, i)); };
                 } },
