@@ -36,6 +36,11 @@ auto DropdownMenu::content_count() const noexcept -> int { return pimpl->content
 
 auto DropdownMenu::paintEvent(QPaintEvent* event) -> void { pimpl->paint_event(event); }
 
+auto DropdownMenu::event(QEvent* event) -> bool {
+    if (event->type() == QEvent::ParentChange) pimpl->parent_changed();
+    return QWidget::event(event);
+}
+
 auto DropdownMenu::hideEvent(QHideEvent* event) -> void {
     pimpl->hide_event(event);
     QWidget::hideEvent(event);

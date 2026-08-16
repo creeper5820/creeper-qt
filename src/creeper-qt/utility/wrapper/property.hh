@@ -1,6 +1,7 @@
 #pragma once
 
 #include <concepts>
+#include <ranges>
 #include <tuple>
 #include <type_traits>
 #include <utility>
@@ -89,8 +90,8 @@ struct ActionProp : Token {
 /// @brief
 /// 声明式包装，非侵入式实现 Setter 的声明式化
 ///
-/// 该包装器支持将 std::tuple 与单个 prop 混合传入，不受顺序限制。内部通过
-/// helper 检查 tuple 中的所有元素，递归调用 apply 将属性应用到 底层 Widget。
+/// 该包装器支持将单个 prop、std::tuple 与 range 混合传入，不受顺序限制。内部通过
+/// helper 检查 tuple 与 range 中的所有元素，递归调用 apply 将属性应用到 底层 Widget。
 /// 利用 Token 延迟模板实例化，在 concept 层面约束属性类型， 从而避免因
 /// 递归参数展开而产生的海量且难以定位的模板错误。
 ///
@@ -120,16 +121,28 @@ private:
     static constexpr auto impl_tuple_trait<std::tuple<Ts...>, Token> =
         (impl_props_trait<Ts, Token> && ...);
 
+    // 同理 range：主模板 false，range 约束的偏特化检查 value_type
+    template <typename T, class Token>
+    static constexpr auto impl_range_trait = false;
+
+    template <std::ranges::range R, class Token>
+    static constexpr auto impl_range_trait<R, Token> =
+        impl_props_trait<std::ranges::range_value_t<R>, Token>;
+
     /* For check props */
     template <class T>
     static constexpr auto props_trait = impl_props_trait<T, Token_>;
+
+    template <class T>
+    static constexpr auto range_trait = impl_range_trait<std::remove_cvref_t<T>, Token_>;
 
     /* For check tuple */
     template <class T>
     static constexpr auto tuple_trait = impl_tuple_trait<std::remove_cvref_t<T>, Token_>;
 
     template <class... Args>
-    static constexpr auto mixed_trait = ((props_trait<Args> || tuple_trait<Args>) && ...);
+    static constexpr auto mixed_trait =
+        ((props_trait<Args> || tuple_trait<Args> || range_trait<Args>) && ...);
 
     // Error Message Helper
 
@@ -155,6 +168,11 @@ private:
         (generate_prop_error_message<Ts>(), ...);
     }
 
+    template <std::ranges::range R>
+    static constexpr auto generate_error_message(R&&) {
+        generate_prop_error_message<std::ranges::range_value_t<R>>();
+    }
+
 public:
     using Widget = Widget_;
     using Token  = Token_;
@@ -175,17 +193,28 @@ public:
         (generate_error_message(props), ...);
     }
 
-    auto apply(this auto& self, auto&& tuple) noexcept -> void
-        requires tuple_trait<decltype(tuple)>
+    template <class T>
+    auto apply(this auto& self, T&& tuple) noexcept -> void
+        requires tuple_trait<T>
     {
         std::apply(
-            [&self](auto&&... args) { (self.apply(std::forward<decltype(args)>(args)), ...); },
-            std::forward<decltype(tuple)>(tuple));
+            [&self]<typename... Ts>(Ts&&... args) { (self.apply(std::forward<Ts>(args)), ...); },
+            std::forward<T>(tuple));
     }
-    auto apply(this auto& self, auto&& prop) noexcept -> void
-        requires props_trait<decltype(prop)>
+
+    template <class P>
+    auto apply(this auto& self, P&& prop) noexcept -> void
+        requires props_trait<P>
     {
-        std::forward<decltype(prop)>(prop).apply(self);
+        std::forward<P>(prop).apply(self);
+    }
+
+    template <class R>
+    auto apply(this auto& self, R&& range) noexcept -> void
+        requires range_trait<R> && (!props_trait<R>) && (!tuple_trait<R>)
+    {
+        for (auto&& prop : range)
+            self.apply(prop);
     }
 };
 

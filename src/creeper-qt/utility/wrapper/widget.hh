@@ -1,5 +1,6 @@
 #pragma once
 
+#include "creeper-qt/utility/trait/widget.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
 
 #include <qgraphicseffect.h>
@@ -45,7 +46,36 @@ using WindowOpacity =
     SetterProp<Token, double, [](auto& self, double v) { self.setWindowOpacity(v); }>;
 
 using Parent = SetterProp<Token, QWidget*, [](auto& self, QWidget* v) { self.setParent(v); }>;
-using Child  = SetterProp<Token, QWidget*, [](auto& self, QWidget* v) { v->setParent(&self); }>;
+
+/// @brief 委托构造子组件并将其 parent 设为当前组件
+///
+/// 适用于弹窗、菜单等需要 QObject parent 提供生命周期与定位上下文、
+/// 但不进入布局的组件，例如把 DropdownMenu 声明式地锚定到按钮：
+///
+/// @code
+///     lnpro::Item<FilledButton> {
+///         fbp::Child<DropdownMenu> {
+///             dmp::Item<DropdownMenuItem> { ... },
+///         },
+///     }
+/// @endcode
+///
+/// @note 该属性本质是转发构造，有 new 的行为
+template <widget_trait T>
+struct Child : Token {
+    T* child_pointer = nullptr;
+
+    explicit Child(T* pointer) noexcept
+        : child_pointer { pointer } { }
+
+    explicit Child(auto&&... args) noexcept
+        requires std::constructible_from<T, decltype(args)...>
+        : child_pointer { new T { std::forward<decltype(args)>(args)... } } { }
+
+    auto apply(QWidget& self) const {
+        child_pointer->setParent(&self, child_pointer->windowFlags());
+    }
+};
 
 using MinimumSize =
     DerivedProp<Token, QSize, [](auto& self, const QSize& v) { self.setMinimumSize(v); }>;

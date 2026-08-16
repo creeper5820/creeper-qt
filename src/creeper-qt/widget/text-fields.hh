@@ -14,6 +14,7 @@ namespace text_field::internal {
     class OutlinedTextField;
 
     class BasicTextField : public QLineEdit {
+        Q_OBJECT
         CREEPER_PIMPL_DEFINITION(BasicTextField);
 
         friend FilledTextField;
@@ -87,6 +88,9 @@ namespace text_field::internal {
 
         auto set_measurements(const Measurements& measurements) noexcept -> void;
 
+    Q_SIGNALS:
+        auto signal_pressed() -> void;
+
     protected:
         void resizeEvent(QResizeEvent*) override;
 
@@ -95,6 +99,8 @@ namespace text_field::internal {
 
         void focusInEvent(QFocusEvent*) override;
         void focusOutEvent(QFocusEvent*) override;
+
+        void mousePressEvent(QMouseEvent*) override;
     };
 
     class FilledTextField : public BasicTextField {
@@ -119,6 +125,10 @@ namespace text_field::pro {
     using LabelText = common::pro::String<Token,
         [](auto& self, const auto& string) { self.set_label_text(string); }>;
 
+    using Text = common::pro::Text<Token>;
+
+    using ReadOnly = SetterProp<Token, bool, [](auto& self, bool v) { self.setReadOnly(v); }>;
+
     struct LeadingIcon : Token {
         QString code;
         QString font;
@@ -138,6 +148,10 @@ namespace text_field::pro {
 
     template <typename F>
     using OnChanged = OnTextChanged<F>;
+
+    template <typename F>
+    using OnPressed =
+        common::pro::SignalInjection<F, Token, &internal::BasicTextField::signal_pressed>;
 
     using namespace widget::pro;
     using namespace theme::pro;
