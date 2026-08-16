@@ -7,17 +7,20 @@
 #include "creeper-qt/utility/wrapper/property.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 
-#include <qcombobox.h>
+#include <qwidget.h>
 
 namespace creeper {
 
 class FilledDropdownMenu;
+class OutlinedDropdownMenu;
 
-namespace dropdown_menu::internal {
+namespace dropdown_menu::details {
 
-    class DropdownMenu : public QComboBox {
+    class DropdownMenu : public QWidget {
+        Q_OBJECT
         CREEPER_PIMPL_DEFINITION(DropdownMenu);
         friend FilledDropdownMenu;
+        friend OutlinedDropdownMenu;
 
     public:
         struct ColorSpace {
@@ -33,11 +36,6 @@ namespace dropdown_menu::internal {
 
                 QColor leading_icon;
                 QColor outline;
-
-                QColor itemlist_bg;
-                QColor item_bg;
-                QColor item_selected_bg;
-                QColor item_hovered_bg;
             };
 
             Tokens enabled;
@@ -46,7 +44,6 @@ namespace dropdown_menu::internal {
             Tokens error;
 
             QColor state_layer;
-            QColor selection_container;
         };
 
         struct Measurements {
@@ -72,45 +69,42 @@ namespace dropdown_menu::internal {
         };
         auto set_color_scheme(const ColorScheme&) -> void;
 
-        void load_theme_manager(ThemeManager&);
+        auto load_theme_manager(ThemeManager&) -> void;
 
-        void set_label_text(const QString&);
+        auto set_label_text(const QString&) -> void;
 
-        void set_leading_icon(const QIcon&);
+        auto set_leading_icon(const QIcon&) -> void;
 
-        void set_leading_icon(const QString& code, const QString& font);
+        auto set_leading_icon(const QString& code, const QString& font) -> void;
 
         auto set_measurements(const Measurements&) noexcept -> void;
 
+        auto set_items(const QStringList&) -> void;
+
+        auto set_current_index(int) -> void;
+        auto current_index() const noexcept -> int;
+        auto current_text() const -> QString;
+
+        auto set_expanded(bool) -> void;
+        auto expanded() const noexcept -> bool;
+
+    Q_SIGNALS:
+        auto signal_index_changed(int) -> void;
+
     protected:
-        void resizeEvent(QResizeEvent* event) override;
+        auto enterEvent(qt::EnterEvent* event) -> void override;
+        auto leaveEvent(QEvent* event) -> void override;
 
-        void enterEvent(qt::EnterEvent* event) override;
-        void leaveEvent(QEvent* event) override;
+        auto focusInEvent(QFocusEvent*) -> void override;
+        auto focusOutEvent(QFocusEvent* event) -> void override;
 
-        void focusInEvent(QFocusEvent*) override;
-        void focusOutEvent(QFocusEvent* event) override;
-
-        void changeEvent(QEvent* event) override;
-
-        void showPopup() override;
-        void hidePopup() override;
-
-    private:
-        friend struct Impl;
-
-    public:
-        void setTextMargins(const QMargins& margins);
-        QMargins textMargins() const;
-
-    private:
-        QMargins margins { 13, 24, 13, 0 };
+        auto mousePressEvent(QMouseEvent*) -> void override;
+        auto keyPressEvent(QKeyEvent*) -> void override;
     };
 }
 
 namespace dropdown_menu::pro {
-
-    using Token = creeper::Token<internal::DropdownMenu>;
+    using Token = creeper::Token<details::DropdownMenu>;
 
     using LabelText = common::pro::String<Token,
         [](auto& self, const auto& string) { self.set_label_text(string); }>;
@@ -121,31 +115,37 @@ namespace dropdown_menu::pro {
         explicit LeadingIcon(const QString& code, const QString& font)
             : code { code }
             , font { font } { }
-        void apply(auto& self) const { self.set_leading_icon(code, font); }
+        auto apply(auto& self) const -> void { self.set_leading_icon(code, font); }
     };
 
-    /// @note: currentIndexChanged(int index)
     template <typename F>
     using IndexChanged =
-        common::pro::SignalInjection<F, Token, &internal::DropdownMenu::currentIndexChanged>;
+        common::pro::SignalInjection<F, Token, &details::DropdownMenu::signal_index_changed>;
 
-    using Items = DerivedProp<Token, QVector<QString>, //
-        [](auto& self, const auto& vec) {
-            self.clear();
-            self.addItems(vec);
-            self.setCurrentIndex(-1);
-        }>;
-using namespace widget::pro;
+    using Items = DerivedProp<Token, QStringList,
+        [](auto& self, const auto& items) { self.set_items(items); }>;
+
+    using namespace widget::pro;
     using namespace theme::pro;
+
+    using GroupToken = TokenOr<dropdown_menu::pro::Token, widget::pro::Token, theme::pro::Token>;
 }
 
 struct FilledDropdownMenu
-    : public Declarative<dropdown_menu::internal::DropdownMenu,
-          TokenOr<dropdown_menu::pro::Token, widget::pro::Token, theme::pro::Token>> {
+    : public Declarative<dropdown_menu::details::DropdownMenu, dropdown_menu::pro::GroupToken> {
     using Declarative::Declarative;
-    void paintEvent(QPaintEvent* event) override;
+    auto paintEvent(QPaintEvent* event) -> void override;
 };
+struct OutlinedDropdownMenu
+    : public Declarative<dropdown_menu::details::DropdownMenu, dropdown_menu::pro::GroupToken> {
+    using Declarative::Declarative;
+    auto paintEvent(QPaintEvent* event) -> void override;
+};
+
 namespace filled_dropdown_menu::pro {
+    using namespace dropdown_menu::pro;
+}
+namespace outlined_dropdown_menu::pro {
     using namespace dropdown_menu::pro;
 }
 

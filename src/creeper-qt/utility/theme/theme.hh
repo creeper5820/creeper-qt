@@ -3,7 +3,6 @@
 #include <qwidget.h>
 
 #include "creeper-qt/utility/theme/color-scheme.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
 
@@ -13,7 +12,7 @@ class ThemeManager;
 
 template <class T>
 concept color_scheme_setter_trait = requires(T t) {
-    { t.set_color_scheme(ColorScheme {}) };
+    { t.set_color_scheme(ColorScheme { }) };
 };
 template <class T>
 concept theme_manager_loader_trait =
