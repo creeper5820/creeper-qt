@@ -1,6 +1,5 @@
 #pragma once
 #include "creeper-qt/utility/trait/widget.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
 
 namespace creeper::group::internal {
@@ -28,11 +27,11 @@ struct Group : public T {
 
     template <std::ranges::range R, typename F>
         requires foreach_invoke_ranges_trait<R, F>
-    constexpr auto compose(const R& ranges, F&& f, Qt::Alignment a = {}) noexcept -> void {
+    constexpr auto compose(const R& ranges, F&& f, Qt::Alignment a = { }) noexcept -> void {
         for (const auto& item : ranges) {
             using ItemT = decltype(item);
 
-            auto widget_pointer = (W*) {};
+            auto widget_pointer = (W*) { };
 
             if constexpr (foreach_invoke_item_trait<F, ItemT>)
                 widget_pointer = std::invoke(f, item);
@@ -81,7 +80,7 @@ struct Compose : Token {
     F method;
     Qt::Alignment alignment;
 
-    explicit Compose(const R& r, F f, Qt::Alignment a = {}) noexcept
+    explicit Compose(const R& r, F f, Qt::Alignment a = { }) noexcept
         : ranges { r }
         , method { std::move(f) }
         , alignment { a } { }

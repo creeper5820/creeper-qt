@@ -7,6 +7,7 @@
 #include <creeper-qt/utility/material-icon.hh>
 #include <creeper-qt/utility/math/lattice.hh>
 #include <creeper-qt/utility/wrapper/mutable-value.hh>
+#include <creeper-qt/widget/buttons/filled-button.hh>
 #include <creeper-qt/widget/buttons/icon-button.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/cards/outlined-card.hh>
@@ -32,6 +33,9 @@ namespace lnpro  = linear::pro;
 namespace impro  = image::pro;
 namespace ibpro  = icon_button::pro;
 namespace cpipro = circular_progress_indicator::pro;
+namespace dmp    = dropdown_menu::pro;
+namespace dmip   = dropdown_menu_item::pro;
+namespace fbp    = filled_button::pro;
 
 namespace repeat_literals {
 auto operator*(std::invocable<std::size_t> auto&& f, std::size_t n) {
@@ -61,13 +65,14 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
         std::chrono::steady_clock::time_point timeline = std::chrono::steady_clock::now();
 
         MutableQString slogen { "BanG Dream! It’s MyGO!!!!!" };
-        MutableValue<QStringList> options {
-            QStringList { "高松灯", "千早爱音", "要乐奈", "长崎爽世", "椎名立希" },
-        };
+        MutableQString selected { "选择成员" };
+        MutableBool menu_expanded { false };
         MutableBool loading { false };
         MutableDouble progress { 0.0 };
     };
     const auto context = std::make_shared<Context>();
+
+    auto menu_anchor = static_cast<FilledButton*>(nullptr);
 
     const auto row = new Row {
         lnpro::Item<OutlinedTextField> {
@@ -103,14 +108,12 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
 
         lnpro::SpacingItem { 10 },
 
-        lnpro::Item<OutlinedDropdownMenu> {
-            dropdown_menu::pro::ThemeManager { manager },
-            dropdown_menu::pro::LabelText { "Item" },
-            dropdown_menu::pro::FixedWidth { 160 },
-            MutableForward {
-                dropdown_menu::pro::Items { },
-                context->options,
-            },
+        lnpro::Item<FilledButton> {
+            fbp::ThemeManager { manager },
+            fbp::FixedSize { 160, 40 },
+            MutableForward { fbp::Text { }, context->selected },
+            fbp::Clickable { [context] { context->menu_expanded = true; } },
+            fbp::Bind { menu_anchor },
         },
 
         lnpro::SpacingItem { 10 },
@@ -165,6 +168,46 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
         },
 
     };
+
+    // 标准 DropdownMenu 用法：不占布局空间，锚定到上方按钮，
+    // 受控展开；外部点击 / Esc 时通过 OnDismissRequest 同步状态，
+    // 点击菜单项不自动关闭，由应用在 OnClicked 中显式收起。
+    const auto select_item = [context](const QString& name) {
+        context->selected      = name;
+        context->menu_expanded = false;
+    };
+    const auto menu = new DropdownMenu {
+        dmp::ThemeManager { manager },
+        dmp::Anchor { menu_anchor },
+        MutableForward { dmp::Expanded { false }, context->menu_expanded },
+        dmp::OnDismissRequest { [context] { context->menu_expanded = false; } },
+        dmp::Item<DropdownMenuItem> {
+            dmip::ThemeManager { manager },
+            dmip::Text { "高松灯" },
+            dmip::OnClicked { [=] { select_item(QStringLiteral("高松灯")); } },
+        },
+        dmp::Item<DropdownMenuItem> {
+            dmip::ThemeManager { manager },
+            dmip::Text { "千早爱音" },
+            dmip::OnClicked { [=] { select_item(QStringLiteral("千早爱音")); } },
+        },
+        dmp::Item<DropdownMenuItem> {
+            dmip::ThemeManager { manager },
+            dmip::Text { "要乐奈" },
+            dmip::OnClicked { [=] { select_item(QStringLiteral("要乐奈")); } },
+        },
+        dmp::Item<DropdownMenuItem> {
+            dmip::ThemeManager { manager },
+            dmip::Text { "长崎爽世" },
+            dmip::OnClicked { [=] { select_item(QStringLiteral("长崎爽世")); } },
+        },
+        dmp::Item<DropdownMenuItem> {
+            dmip::ThemeManager { manager },
+            dmip::Text { "椎名立希" },
+            dmip::OnClicked { [=] { select_item(QStringLiteral("椎名立希")); } },
+        },
+    };
+
     return new Widget {
         widget::pro::Layout { row },
     };
@@ -217,7 +260,6 @@ static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
     };
 }
 static auto DropdownMenuItemComponent(ThemeManager& manager) noexcept {
-    namespace dmip = dropdown_menu_item::pro;
 
     return new Widget {
         widget::pro::FixedSize { 170, 290 },
