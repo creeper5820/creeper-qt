@@ -211,7 +211,7 @@ auto main(int argc, char* argv[]) -> int {
 
 <div align="center">
 
-[![Star History Chart](https://api.star-history.com/svg?repos=creeper5820/creeper-qt&type=Date)](https://www.star-history.com/#creeper5820/creeper-qt&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=creeper5820/creeper-qt&type=Date)](https://star-history.dera.page/#creeper5820/creeper-qt&Date)
 
 </div>
 
