@@ -67,7 +67,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
         std::chrono::steady_clock::time_point timeline = std::chrono::steady_clock::now();
 
         MutableQString slogen { "BanG Dream! It’s MyGO!!!!!" };
-        MutableQString selected { };
+        MutableQString selected {};
         MutableBool menu_expanded { false };
         MutableBool loading { false };
         MutableDouble progress { 0.0 };
@@ -77,7 +77,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
     const auto row = new Row {
         lnp::Item<OutlinedTextField> {
             MutableForward {
-                tfp::LabelText { },
+                tfp::LabelText {},
                 context->slogen,
             },
             tfp::ThemeManager { manager },
@@ -86,7 +86,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                 material::round::font,
             },
             tfp::Measurements {
-                OutlinedTextField::Measurements { },
+                OutlinedTextField::Measurements {},
             },
             tfp::OnChanged {
                 [context](const QString& text) {
@@ -109,7 +109,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
         lnp::SpacingItem { 10 },
 
         lnp::Item<OutlinedTextField> {
-            MutableForward { tfp::Text { }, context->selected },
+            MutableForward { tfp::Text {}, context->selected },
 
             tfp::ThemeManager { manager },
             tfp::ReadOnly { true },
@@ -173,9 +173,10 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                         "那你愿意……跟我组一辈子的乐队吗？",
                         "过去软弱的我…已经死了。",
                     };
-                    static std::random_device rd;
-                    static std::mt19937 gen(rd());
-                    std::uniform_int_distribution<> dist(0, slogens.size() - 1);
+                    static auto rd  = std::random_device {};
+                    static auto gen = std::mt19937 { rd() };
+
+                    auto dist = std::uniform_int_distribution<> { 0, slogens.size() - 1 };
                     return QString::fromUtf8(slogens[dist(gen)]);
                 };
                 context->slogen = random_slogen();
@@ -205,7 +206,6 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
     };
 }
 static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
-
     return new Widget {
         widget::pro::Layout<Col> {
             col::pro::Alignment { Qt::AlignTop | Qt::AlignLeft },
@@ -370,7 +370,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                         text::pro::ThemeManager { state.manager },
                         text::pro::Alignment { Qt::AlignCenter },
                         text::pro::FixedWidth { 100 },
-                        MutableForward { text::pro::Text { }, s },
+                        MutableForward { text::pro::Text {}, s },
                     },
                 },
             },

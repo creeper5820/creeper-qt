@@ -86,7 +86,6 @@ namespace creeper {
 using CardLevel = card::internal::Card::Level;
 
 using BasicCard = Declarative<card::internal::Card,
-    TokenOr<card::pro::Token, rounded_rect::pro::Token, theme::pro::Token,
-        widget::pro::Token>>;
+    TokenOr<card::pro::Token, rounded_rect::pro::Token, theme::pro::Token, widget::pro::Token>>;
 
 }
