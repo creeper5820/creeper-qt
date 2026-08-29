@@ -24,9 +24,6 @@ BreakTemplateDeclarations: Yes
 # 最大列宽度
 ColumnLimit: 100
 
-# 空大括号 {} 中默认加一个空格
-SpaceInEmptyBraces: Always
-
 # 是否允许短的函数，语句块等单独一行
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 AllowShortBlocksOnASingleLine: Empty

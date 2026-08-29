@@ -1,4 +1,6 @@
 #pragma once
+#include "components/control-panel.hh"
+
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/layout/stacked.hh>
 #include <creeper-qt/utility/theme/theme.hh>
@@ -20,9 +22,6 @@ struct DisplayWidget {
 /// - 展示各种组件
 /// - 抓取完整展示的图片
 struct DisplayBoard : public FilledCard {
-
-    ThemeManager& manager;
-
     NavHost nav_host {
         nav_host::pro::CurrentIndex { 0 },
         nav_host::pro::Margin { 10 },
@@ -30,9 +29,9 @@ struct DisplayBoard : public FilledCard {
     };
     std::unordered_map<const QWidget*, DisplayWidget> widget_map;
 
-    auto Component() noexcept {
+    auto Component(creeper::ThemeManager& manager) noexcept {
         return new Col {
-            // ...
+            col::pro::Item { ControlPanel(manager) },
         };
     }
 
@@ -44,9 +43,8 @@ struct DisplayBoard : public FilledCard {
     explicit DisplayBoard(creeper::ThemeManager& manager)
         : FilledCard {
             fcp::ThemeManager { manager },
-            fcp::Layout { Component() },
-        }
-        , manager { manager } { }
+            fcp::Layout { Component(manager) },
+        } { }
 };
 
 }

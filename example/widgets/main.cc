@@ -5,7 +5,7 @@
 ///     如果使用 Arch Linux，则可以通过 AUR 安装：ttf-material-icons-git，
 ///     使用其他 Nerd Font 也是可以的
 
-#include "component.hh"
+#include "components/component.hh"
 #include "components/display-board.hh"
 
 #include <QtWidgets>
@@ -66,7 +66,7 @@ auto main(int argc, char** argv) -> int {
     auto list_component_state = ListComponentState { .manager = manager };
     auto view_component_state = ViewComponentState { .manager = manager };
 
-    auto mask_window = (MixerMask*) { };
+    auto mask_window = (MixerMask*) {};
 
     /// @NOTE: 有时候 Windows 总是给我来点惊喜，
     ///        ShowWindow 这么常见命名的函数都放在全局作用域
@@ -79,7 +79,7 @@ auto main(int argc, char** argv) -> int {
             // C 键居中
             auto shortcut_c = new QShortcut { Qt::Key_C, &window };
             QObject::connect(shortcut_c, &QShortcut::activated,
-                [&window] { window.apply(mwpro::MoveCenter { }); });
+                [&window] { window.apply(mwpro::MoveCenter {}); });
 
             // S 键保存截图
             auto shortcut_s = new QShortcut { Qt::Key_S, &window };
@@ -119,7 +119,7 @@ auto main(int argc, char** argv) -> int {
                 lnpro::Item<Stacked> {
                     { 1 },
                     MutableForward {
-                        stpro::CurrentIndex { },
+                        stpro::CurrentIndex {},
                         stack_index,
                     },
                     stpro::Item<Widget> {
