@@ -1,13 +1,9 @@
 cmake_minimum_required(VERSION 3.22)
 project(widgets LANGUAGES CXX)
 
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_AUTOMOC ON)
-
 find_package(Qt6 REQUIRED COMPONENTS Widgets Network)
 
-if(NOT TARGET creeper-qt::widgets)
+if(PROJECT_IS_TOP_LEVEL)
     include(FetchContent)
     FetchContent_Declare(
         creeper-qt
@@ -16,6 +12,8 @@ if(NOT TARGET creeper-qt::widgets)
         GIT_SHALLOW TRUE
     )
     FetchContent_MakeAvailable(creeper-qt)
+elseif(NOT TARGET creeper-qt::widgets)
+    message(FATAL_ERROR "creeper-qt::widgets 不存在：请独立构建 example/desktop，或在仓库根目录启用 BUILD_EXAMPLE")
 endif()
 
 file(
@@ -26,6 +24,11 @@ file(
 add_executable(${PROJECT_NAME}
     ${APP_COMPONENT_SOURCE}
     "${CMAKE_CURRENT_SOURCE_DIR}/main.cc"
+)
+set_target_properties(
+    ${PROJECT_NAME} PROPERTIES
+    AUTOMOC ON
+    EXPORT_COMPILE_COMMANDS ON
 )
 target_include_directories(
     ${PROJECT_NAME} PRIVATE

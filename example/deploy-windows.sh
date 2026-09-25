@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define paths
-BIN="example/widgets/widgets.exe"
+BIN="example/desktop/widgets.exe"
 DLL="libcreeper-qt-widgets.dll"
 TARGET_DIR="./build/AppDir"
 

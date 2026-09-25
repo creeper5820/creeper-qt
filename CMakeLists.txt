@@ -1,14 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 project(creeper-qt VERSION 2.0.0 LANGUAGES CXX)
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_STANDARD 23)
-
-set(BUILD_EXAMPLE true)
-set(CMAKE_AUTOMOC ON)
-
-add_compile_options(-Os -O2)
+option(BUILD_EXAMPLE "Build the example applications" ON)
 
 set(QT_VERSION Qt6)
 find_package(${QT_VERSION} REQUIRED COMPONENTS Widgets Network)
@@ -18,7 +11,14 @@ include(cmake/collect.cmake)
 
 # Widgets
 add_library(${PROJECT_NAME}-widgets ${WIDGETS_SOURCE})
-set_target_properties(${PROJECT_NAME}-widgets PROPERTIES EXPORT_NAME widgets)
+set_target_properties(
+    ${PROJECT_NAME}-widgets PROPERTIES
+    EXPORT_NAME widgets
+    AUTOMOC ON
+    EXPORT_COMPILE_COMMANDS ON
+)
+target_compile_features(${PROJECT_NAME}-widgets PUBLIC cxx_std_23)
+target_compile_options(${PROJECT_NAME}-widgets PRIVATE -Os -O2)
 target_include_directories(
     ${PROJECT_NAME}-widgets PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
@@ -42,11 +42,11 @@ target_link_libraries(
 )
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+if(PROJECT_IS_TOP_LEVEL)
     include(cmake/install.cmake)
     include(cmake/package.cmake)
 
     if(BUILD_EXAMPLE)
-        add_subdirectory(example/widgets)
+        add_subdirectory(example/desktop)
     endif()
 endif()

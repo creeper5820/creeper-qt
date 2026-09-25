@@ -124,7 +124,7 @@ cd creeper-qt
 cmake -B build -DBUILD_EXAMPLE=ON
 cmake --build build -j$(nproc)
 
-./build/widgets
+./build/example/desktop/widgets
 
 # 安装到系统（可选，默认安装到 /usr/local）
 sudo cmake --build build --target install
@@ -160,7 +160,7 @@ cmake -G "MinGW Makefiles" \
 cmake --build build -j
 cmake --build build --target install
 
-./build/widgets.exe
+./build/example/desktop/widgets.exe
 ```
 
 如果在 Windows 资源管理器中直接运行可执行文件，可能会提示找不到 Qt 的 DLL 文件。这是因为通过 MSYS2 安装的 Qt 库没有暴露到 Windows 系统环境中。建议在 MSYS2 终端中运行，或将 MSYS2 的 `lib` 和 `bin` 添加到系统 PATH。
@@ -177,7 +177,7 @@ target_link_libraries(your_target PRIVATE creeper-qt::widgets)
 #### 独立构建示例程序
 
 ```bash
-cd example/widgets
+cd example/desktop
 cmake -B build
 cmake --build build -j$(nproc)
 ./build/widgets
