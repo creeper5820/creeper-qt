@@ -1,4 +1,7 @@
 #pragma once
+
+// TODO: 尚未实现。LazyColumn/LazyRow 构造函数与 Item/Items 属性均为占位，
+//       惰性布局逻辑待补全。
 #include "creeper-qt/utility/trait/widget.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 #include "creeper-qt/utility/wrapper/property.hh"
