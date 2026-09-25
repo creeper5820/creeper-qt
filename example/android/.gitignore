@@ -1,0 +1,5 @@
+# 本地工具链与构建输出
+build/
+
+# keystore 不入库
+*.keystore
