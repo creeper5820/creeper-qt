@@ -23,10 +23,22 @@ auto Image::set_painter_resource(std::shared_ptr<PainterResource> resource) noex
 }
 auto Image::painter_resource() const noexcept -> PainterResource { return *pimpl->resource_origin; }
 
-auto Image::set_opacity(double opacity) noexcept -> void { pimpl->opacity = opacity; }
-auto Image::set_radius(double radius) noexcept -> void { pimpl->radius = radius; }
-auto Image::set_border_width(double width) noexcept -> void { pimpl->border_width = width; }
-auto Image::set_border_color(QColor color) noexcept -> void { pimpl->border_color = color; }
+auto Image::set_opacity(double opacity) noexcept -> void {
+    pimpl->opacity = opacity;
+    update();
+}
+auto Image::set_radius(double radius) noexcept -> void {
+    pimpl->radius = radius;
+    update();
+}
+auto Image::set_border_width(double width) noexcept -> void {
+    pimpl->border_width = width;
+    update();
+}
+auto Image::set_border_color(QColor color) noexcept -> void {
+    pimpl->border_color = color;
+    update();
+}
 
 auto Image::paintEvent(QPaintEvent* event) -> void { pimpl->paint_event(*event); }
 auto Image::resizeEvent(QResizeEvent* event) -> void { pimpl->resize_event(*event); }

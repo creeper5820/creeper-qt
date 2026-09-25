@@ -7,6 +7,7 @@
 #include "creeper-qt/widget/shape/shape.hh"
 
 #include <cmath>
+#include <numbers>
 #include <qpainterpath.h>
 #include <ranges>
 
