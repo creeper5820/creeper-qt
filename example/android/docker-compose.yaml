@@ -1,0 +1,17 @@
+services:
+  build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      # host 网络使宿主代理在容器内可达
+      network: host
+    image: creeper-qt-android-builder:24.04
+    # 容器内路径与宿主一致，构建缓存可直接复用
+    working_dir: ${PWD}
+    # host 网络：gradle/maven 依赖经宿主代理下载
+    network_mode: host
+    volumes:
+      - ${PWD}:${PWD}
+    environment:
+      HOME: /tmp
+      GRADLE_USER_HOME: /tmp/gradle

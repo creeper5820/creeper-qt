@@ -12,6 +12,10 @@ void IconButton::load_theme_manager(ThemeManager& manager) noexcept {
     pimpl->load_theme_manager(*this, manager);
 }
 
+void IconButton::resizeEvent(QResizeEvent* event) {
+    pimpl->resize_event(*this, *event);
+    QAbstractButton::resizeEvent(event);
+}
 void IconButton::enterEvent(qt::EnterEvent* event) {
     pimpl->enter_event(*this, *event);
     QAbstractButton::enterEvent(event);

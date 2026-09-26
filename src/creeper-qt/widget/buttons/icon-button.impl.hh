@@ -71,6 +71,8 @@ struct IconButton::Impl {
             state->config.epsilon = kThreshold1D;
             state->config.k       = kSpringK;
             state->config.d       = kSpringD;
+            state->value          = 0.0;
+            state->target         = 0.0;
 
             now_container_radius = make_transition(animatable, std::move(state));
         }
@@ -107,6 +109,11 @@ struct IconButton::Impl {
     }
 
     auto leave_event(IconButton& self, const QEvent& event) { is_hovered = false; }
+
+    auto resize_event(IconButton& self, const QResizeEvent&) {
+        update_animation_status(self);
+        now_container_radius->snap_to(target_radius(self));
+    }
 
     auto paint_event(IconButton& self, const QPaintEvent& event) {
         // TODO: 做计算数据缓存优化，特别是 Resize 相关的计算
@@ -234,32 +241,6 @@ struct IconButton::Impl {
     }
 
 private:
-    auto update_animation_status(IconButton& self) -> void {
-
-        const auto container_color_target = (types == Types::DEFAULT) ? container_color : //
-            (types == Types::TOGGLE_SELECTED) ? container_color_selected
-                                              : container_color_unselected;
-        now_color_container->transition_to(from_color(container_color_target));
-
-        const auto icon_color_target = (types == Types::DEFAULT) ? icon_color : //
-            (types == Types::TOGGLE_SELECTED) ? icon_color_selected
-                                              : icon_color_unselected;
-        now_color_icon->transition_to(from_color(icon_color_target));
-
-        const auto outline_color_target //
-            = (types == Types::DEFAULT)         ? outline_color
-            : (types == Types::TOGGLE_SELECTED) ? outline_color_selected
-                                                : outline_color_unselected;
-        now_color_outline->transition_to(from_color(outline_color_target));
-
-        const auto rectangle     = container_rectangle(self);
-        const auto radius_round  = std::min<double>(rectangle.width(), rectangle.height()) / 2.;
-        const auto radius_target = (types == Types::TOGGLE_SELECTED || shape == Shape::SQUARE)
-            ? radius_round * kSquareRatio
-            : radius_round * 1.0;
-        now_container_radius->transition_to(radius_target);
-    }
-
     auto get_hover_color() const noexcept -> QColor {
         switch (types) {
         case Types::DEFAULT:
@@ -278,9 +259,40 @@ private:
     }
 
     // 设计指南上的大小全是固定的，十分不自由，故转成比例
-    auto container_rectangle(IconButton& self) -> QRectF {
+    auto container_rectangle(IconButton& self) const -> QRectF {
         return (width == Width::DEFAULT) ? (extract_rect(self.rect(), 1, 1))
             : (width == Width::NARROW)   ? (extract_rect(self.rect(), 1, kWidthRatio))
                                          : (extract_rect(self.rect(), kWidthRatio, 1));
+    }
+
+    auto target_radius(IconButton& self) const -> double {
+        const auto rectangle     = container_rectangle(self);
+        const auto radius_round  = std::min<double>(rectangle.width(), rectangle.height()) / 2.;
+        const auto radius_target = (types == Types::TOGGLE_SELECTED || shape == Shape::SQUARE)
+            ? radius_round * kSquareRatio
+            : radius_round * 1.0;
+
+        return radius_target;
+    }
+
+    auto update_animation_status(IconButton& self) -> void {
+
+        const auto container_color_target = (types == Types::DEFAULT) ? container_color : //
+            (types == Types::TOGGLE_SELECTED) ? container_color_selected
+                                              : container_color_unselected;
+        now_color_container->transition_to(from_color(container_color_target));
+
+        const auto icon_color_target = (types == Types::DEFAULT) ? icon_color : //
+            (types == Types::TOGGLE_SELECTED) ? icon_color_selected
+                                              : icon_color_unselected;
+        now_color_icon->transition_to(from_color(icon_color_target));
+
+        const auto outline_color_target //
+            = (types == Types::DEFAULT)         ? outline_color
+            : (types == Types::TOGGLE_SELECTED) ? outline_color_selected
+                                                : outline_color_unselected;
+        now_color_outline->transition_to(from_color(outline_color_target));
+
+        now_container_radius->transition_to(target_radius(self));
     }
 };

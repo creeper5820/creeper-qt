@@ -1,6 +1,8 @@
 name: 📦 Nightly Build Example
 
 on:
+  push:
+    branches: [ main ]
   schedule:
   - cron: '0 0 * * *'
   workflow_dispatch:
@@ -71,8 +73,88 @@ jobs:
         name: windows-artifacts
         path: build/widgets-windows-x86_64.zip
 
+  pack-android:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install host dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ninja-build python3-venv
+
+    - name: Cache Android toolchain
+      uses: actions/cache@v4
+      with:
+        path: |
+          example/android/build/android-sdk
+          example/android/build/Qt
+          example/android/build/aqt-env
+          ~/.gradle
+        key: android-toolchain-${{ hashFiles('example/android/CMakePresets.json') }}
+
+    - name: Download SDK / NDK and Qt for Android
+      working-directory: example/android
+      run: |
+        cmake --workflow --preset download-sdk
+        cmake --workflow --preset download-dep
+
+    - name: Configure
+      working-directory: example/android
+      run: |
+        cmake -S . -B build/app -G Ninja \
+          -DCMAKE_TOOLCHAIN_FILE=cmake/android-toolchain.cmake \
+          -DFETCHCONTENT_SOURCE_DIR_CREEPER-QT=$GITHUB_WORKSPACE
+
+    - name: Build and package APK
+      working-directory: example/android
+      run: |
+        cmake --build build/app --target apk --parallel "$(nproc)"
+        cmake --build build/tools --target package
+
+    - name: Decode release keystore
+      working-directory: example/android
+      env:
+        KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+      run: |
+        if [ -z "$KEYSTORE_BASE64" ]; then
+          echo "缺少 ANDROID_KEYSTORE_BASE64，无法签名发布包" >&2
+          exit 1
+        fi
+        printf '%s' "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.keystore"
+
+    - name: Sign APK
+      working-directory: example/android
+      env:
+        KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      run: |
+        SDK=build/android-sdk
+        "$SDK"/build-tools/*/apksigner sign \
+          --ks "$RUNNER_TEMP/release.keystore" \
+          --ks-pass env:KEYSTORE_PASSWORD \
+          --ks-key-alias "$KEY_ALIAS" \
+          --key-pass env:KEY_PASSWORD \
+          --out build/dist/widgets-android-arm64-v8a-signed.apk \
+          build/dist/widgets-android-arm64-v8a.apk
+
+    - name: Verify APK signature
+      working-directory: example/android
+      run: |
+        SDK=build/android-sdk
+        "$SDK"/build-tools/*/apksigner verify --print-certs \
+          build/dist/widgets-android-arm64-v8a-signed.apk
+
+    - name: Upload Android Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-artifacts
+        path: example/android/build/dist/widgets-android-arm64-v8a-signed.apk
+
   publish-release:
-    needs: [ pack-linux, pack-windows ]
+    needs: [ pack-linux, pack-windows, pack-android ]
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -90,13 +172,19 @@ jobs:
         name: windows-artifacts
         path: build
 
+    - name: Download Android Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: android-artifacts
+        path: build
+
     - name: Publish Nightly Build Example
       uses: softprops/action-gh-release@v2
       with:
         tag_name: nightly-example
         name: "🚀 Example App — Nightly Build"
         body: |
-          自动生成的 **示例程序** 完整包（Linux + Windows）。
+          自动生成的 **示例程序** 完整包（Linux + Windows + Android）。
           每次推送 main 分支即更新，方便快速体验功能。
 
           **Linux**  
@@ -105,10 +193,16 @@ jobs:
 
           **Windows**  
           - 解压 `widgets-windows-x86_64.zip` 后运行 `widgets.exe`
+
+          **Android**  
+          - 安装包 `widgets-android-arm64-v8a-signed.apk`（arm64-v8a，最低 Android 9 / API 28）
+          - 安装：`adb install -r widgets-android-arm64-v8a-signed.apk`
+          - 签名证书 SHA-256：`F2:6D:79:56:D6:7B:1F:1C:D3:D5:4D:0A:94:C8:0A:AC:4C:FF:4F:1E:43:87:8F:67:33:6F:ED:AF:5D:05:44:96`
         files: |
           build/widgets-linux-x86_64.AppImage
           build/widgets-linux-x86_64.tar.gz
           build/widgets-windows-x86_64.zip
+          build/widgets-android-arm64-v8a-signed.apk
         fail_on_unmatched_files: true
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}

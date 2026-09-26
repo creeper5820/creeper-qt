@@ -11,6 +11,7 @@
 #include <array>
 
 #include <qboxlayout.h>
+#include <qcoreapplication.h>
 #include <qdebug.h>
 #include <qevent.h>
 #include <qgraphicseffect.h>

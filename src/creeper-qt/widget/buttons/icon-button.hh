@@ -75,6 +75,7 @@ public:
     // TODO: 详细的颜色自定义接口有缘再写
 
 protected:
+    auto resizeEvent(QResizeEvent*) -> void override;
     auto enterEvent(qt::EnterEvent*) -> void override;
     auto leaveEvent(QEvent*) -> void override;
 

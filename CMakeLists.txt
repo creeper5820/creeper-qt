@@ -28,6 +28,7 @@ target_link_libraries(
     ${PROJECT_NAME}-widgets
     PUBLIC
         ${QT_VERSION}::Widgets
+        Eigen3::Eigen
     PRIVATE
         ${QT_VERSION}::Network
 )

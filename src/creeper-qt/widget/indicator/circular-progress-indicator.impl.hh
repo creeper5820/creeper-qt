@@ -7,6 +7,7 @@
 #include "creeper-qt/utility/animation/transition.hh"
 
 #include <cmath>
+#include <numbers>
 #include <qpainter.h>
 
 using namespace creeper::circular_progress_indicator::details;

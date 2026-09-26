@@ -1,5 +1,6 @@
 #include "round-angle.hh"
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
+#include <numbers>
 
 using namespace creeper;
 using Eigen::Vector2d, std::numbers::pi;
