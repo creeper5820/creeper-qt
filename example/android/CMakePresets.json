@@ -20,7 +20,7 @@
         "ANDROID_EMU_ABI": "x86_64",
         "ANDROID_EMU_IMAGE": "system-images;android-36;google_apis;x86_64",
         "ANDROID_EMU_NAME": "creeper",
-        "CREEPER_QT_GIT_TAG": "develop"
+        "CREEPER_QT_GIT_TAG": "main"
       }
     },
     {
