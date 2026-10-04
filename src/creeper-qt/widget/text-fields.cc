@@ -25,9 +25,9 @@ auto BasicTextField::setLeadingIcon(const QString& code, const QString& font) ->
     pimpl->setLeadingIcon(code, font);
 }
 
-auto BasicTextField::setTraillingIcon(const QIcon& text) -> void { }
+auto BasicTextField::setTrailingIcon(const QIcon& text) -> void { }
 
-auto BasicTextField::setTraillingIcon(const QString& code, const QString& font) -> void { }
+auto BasicTextField::setTrailingIcon(const QString& code, const QString& font) -> void { }
 
 auto BasicTextField::setMeasurements(const Measurements& measurements) noexcept -> void {
     pimpl->setMeasurements(measurements);

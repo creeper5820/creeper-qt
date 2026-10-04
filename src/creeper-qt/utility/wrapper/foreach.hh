@@ -20,7 +20,7 @@ constexpr auto ForEach(const R& range, Generator&& generator) {
     return std::forward<decltype(range)>(range) | std::views::enumerate
         | std::views::transform([&](auto&& pair) {
               auto&& [index, value] = pair;
-              return std::forward<Generator>(generator)(index, value);
+              return generator(index, value);
           })
         | std::ranges::to<std::vector>();
 }

@@ -36,8 +36,6 @@ public:
         int label_font_size    = 14;
     };
 
-    using QWidget::QWidget;
-
     explicit DropdownMenuItem(auto&&... props)
         : DropdownMenuItem { } {
         construct_with(std::forward<decltype(props)>(props)...);

@@ -13,7 +13,6 @@ class Image : public QWidget, public DSL {
     CREEPER_PIMPL_DEFINITION(Image)
 
 public:
-    using QWidget::QWidget;
     explicit Image(auto&&... props)
         : Image { } {
         construct_with(std::forward<decltype(props)>(props)...);

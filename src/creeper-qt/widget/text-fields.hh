@@ -89,9 +89,9 @@ public:
 
     void setLeadingIcon(const QString& code, const QString& font);
 
-    void setTraillingIcon(const QIcon&);
+    void setTrailingIcon(const QIcon&);
 
-    void setTraillingIcon(const QString& code, const QString& font);
+    void setTrailingIcon(const QString& code, const QString& font);
 
     auto setMeasurements(const Measurements& measurements) noexcept -> void;
 

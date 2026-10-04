@@ -21,8 +21,6 @@ class DropdownMenu : public QWidget, public DSL {
     CREEPER_PIMPL_DEFINITION(DropdownMenu);
 
 public:
-    using QWidget::QWidget;
-
     explicit DropdownMenu(auto&&... props)
         : DropdownMenu { } {
         construct_with(std::forward<decltype(props)>(props)...);
