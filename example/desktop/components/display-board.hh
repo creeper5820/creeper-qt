@@ -31,7 +31,7 @@ struct DisplayBoard : public FilledCard {
 
     auto Component(creeper::ThemeManager& manager) noexcept {
         return new Col {
-            col::pro::Item { ControlPanel(manager) },
+            ControlPanel(manager),
         };
     }
 

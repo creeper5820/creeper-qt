@@ -66,7 +66,7 @@ auto main(int argc, char** argv) -> int {
     auto list_component_state = ListComponentState { .manager = manager };
     auto view_component_state = ViewComponentState { .manager = manager };
 
-    auto mask_window = (MixerMask*) { };
+    auto mask_window = (MixerMask*) {};
 
     /// @NOTE: 有时候 Windows 总是给我来点惊喜，
     ///        ShowWindow 这么常见命名的函数都放在全局作用域
@@ -78,8 +78,8 @@ auto main(int argc, char** argv) -> int {
 
             // C 键居中
             auto shortcut_c = new QShortcut { Qt::Key_C, &window };
-            QObject::connect(shortcut_c, &QShortcut::activated,
-                [&window] { window.use(mwpro::MoveCenter { }); });
+            QObject::connect(
+                shortcut_c, &QShortcut::activated, [&window] { window.use(mwpro::MoveCenter {}); });
 
             // S 键保存截图
             auto shortcut_s = new QShortcut { Qt::Key_S, &window };
@@ -109,23 +109,21 @@ auto main(int argc, char** argv) -> int {
                 lnpro::Margin { 0 },
                 lnpro::Spacing { 0 },
 
-                lnpro::Item {
-                    NavComponent(nav_component_state),
-                },
-                lnpro::Item<Col> {
+                NavComponent(nav_component_state),
+                new Col {
                     lnpro::ContentsMargin { 15, 15, 5, 15 },
-                    lnpro::Item { ListComponent(list_component_state) },
+                    ListComponent(list_component_state),
                 },
                 lnpro::Item<Stacked> {
                     { 1 },
                     MutableForward {
-                        stpro::CurrentIndex { },
+                        stpro::CurrentIndex {},
                         stack_index,
                     },
                     stpro::Item<Widget> {
                         capro::Layout<Col> {
                             lnpro::ContentsMargin { 5, 15, 15, 15 },
-                            lnpro::Item<ScrollArea> {
+                            new ScrollArea {
                                 scroll::pro::ThemeManager { manager },
                                 scroll::pro::HorizontalScrollBarPolicy {
                                     Qt::ScrollBarAlwaysOff,
@@ -139,7 +137,7 @@ auto main(int argc, char** argv) -> int {
                     stpro::Item<Widget> {
                         capro::Layout<Col> {
                             lnpro::ContentsMargin { { 5, 15, 15, 15 } },
-                            lnpro::Item<DisplayBoard> { manager },
+                            new DisplayBoard { manager },
                         },
                     },
                 },

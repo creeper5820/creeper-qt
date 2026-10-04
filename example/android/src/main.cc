@@ -262,7 +262,7 @@ auto FloatingToolbar(ThemeManager& manager, ThemeCycle& cycle) noexcept {
                 ln::Spacing { 4 },
                 each(std::array { "stars", "stars", "stars" },
                     [&](const char* icon) {
-                        return ln::Item<IconButton> { button, ibp::FontIcon { icon } };
+                        return new IconButton { button, ibp::FontIcon { icon } };
                     }),
             },
         },
@@ -275,7 +275,7 @@ auto FloatingToolbar(ThemeManager& manager, ThemeCycle& cycle) noexcept {
             ecp::Layout<Row> {
                 ln::Margin { 0 },
                 ln::Alignment { Qt::AlignCenter },
-                ln::Item<IconButton> {
+                new IconButton {
                     button,
                     ibp::FontIcon { "palette" },
                     ibp::Clickable { [&cycle] { cycle.next(); } },

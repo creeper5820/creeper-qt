@@ -47,7 +47,7 @@ auto ListComponent(ListComponentState& state) noexcept -> raw_pointer<QWidget> {
         fcpro::ThemeManager { state.manager },
         fcpro::Radius { 10 },
         fcpro::Layout<Col> {
-            lnpro::Item<ScrollArea> {
+            new ScrollArea {
                 scroll::pro::ThemeManager { state.manager },
                 scroll::pro::ScrollBarPolicy {
                     Qt::ScrollBarAlwaysOff,

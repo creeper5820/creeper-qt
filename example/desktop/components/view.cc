@@ -67,17 +67,17 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
         std::chrono::steady_clock::time_point timeline = std::chrono::steady_clock::now();
 
         MutableQString slogen { "BanG Dream! It’s MyGO!!!!!" };
-        MutableQString selected { };
+        MutableQString selected {};
         MutableBool menu_expanded { false };
         MutableBool loading { false };
         MutableDouble progress { 0.0 };
     };
     const auto context = std::make_shared<Context>();
 
-    const auto row = new Row {
-        lnp::Item<OutlinedTextField> {
+    const auto SearchRow = new Row {
+        new OutlinedTextField {
             MutableForward {
-                tfp::LabelText { },
+                tfp::LabelText {},
                 context->slogen,
             },
             tfp::ThemeManager { manager },
@@ -85,9 +85,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                 material::icon::kSearch,
                 material::round::font,
             },
-            tfp::Measurements {
-                OutlinedTextField::Measurements { },
-            },
+            OutlinedTextField::Measurements {},
             tfp::OnChanged {
                 [context](const QString& text) {
                     const auto count = text.size();
@@ -108,8 +106,8 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
 
         lnp::SpacingItem { 10 },
 
-        lnp::Item<OutlinedTextField> {
-            MutableForward { tfp::Text { }, context->selected },
+        new OutlinedTextField {
+            MutableForward { tfp::Text {}, context->selected },
 
             tfp::ThemeManager { manager },
             tfp::ReadOnly { true },
@@ -117,7 +115,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
             tfp::FixedWidth { 120 },
 
         },
-        lnp::Item<IconButton> {
+        new IconButton {
             ibp::ThemeManager { manager },
             ibp::FixedSize { 40, 40 },
             ibp::Color { IconButton::Color::TONAL },
@@ -150,7 +148,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
 
         lnp::SpacingItem { 10 },
 
-        lnp::Item<IconButton> {
+        new IconButton {
             ibp::ThemeManager { manager },
             ibp::FixedSize { 40, 40 },
             ibp::Color { IconButton::Color::TONAL },
@@ -158,7 +156,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
             ibp::FontIcon { "change_circle" },
             ibp::Clickable { refresh_callback },
         },
-        lnp::Item<IconButton> {
+        new IconButton {
             ibp::ThemeManager { manager },
             ibp::FixedSize { 40, 40 },
             ibp::Color { IconButton::Color::TONAL },
@@ -173,7 +171,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                         "那你愿意……跟我组一辈子的乐队吗？",
                         "过去软弱的我…已经死了。",
                     };
-                    static auto rd  = std::random_device { };
+                    static auto rd  = std::random_device {};
                     static auto gen = std::mt19937 { rd() };
 
                     auto dist = std::uniform_int_distribution<> { 0, slogens.size() - 1 };
@@ -182,7 +180,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                 context->slogen = random_slogen();
             } },
         },
-        lnp::Item<IconButton> {
+        new IconButton {
             ibp::ThemeManager { manager },
             ibp::FixedSize { 40, 40 },
             ibp::Color { IconButton::Color::TONAL },
@@ -193,7 +191,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
 
         lnp::SpacingItem { 10 },
 
-        lnp::Item<CircularProgressIndicator> {
+        new CircularProgressIndicator {
             MutableForward { cpip::Indeterminate { false }, context->loading },
             MutableForward { cpip::Progress { 0. }, context->progress },
             cpip::ThemeManager { manager },
@@ -202,7 +200,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
     };
 
     return new Widget {
-        widget::pro::Layout { row },
+        widget::pro::Layout { SearchRow },
     };
 }
 static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
@@ -212,7 +210,7 @@ static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
             col::pro::Spacing { 5 },
             col::pro::Margin { 10 },
 
-            col::pro::Item<WaveCircle> {
+            new WaveCircle {
                 wave_circle::pro::FixedSize { 150, 200 },
                 wave_circle::pro::FlangeNumber { 8 },
                 wave_circle::pro::FlangeRadius { 20 },
@@ -227,12 +225,12 @@ static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
                     });
                 } },
             },
-            col::pro::Item<FilledCard> {
+            new FilledCard {
                 card::pro::ThemeManager { manager },
                 card::pro::LevelLow,
                 card::pro::FixedSize { 150, 30 },
                 card::pro::Layout<Row> {
-                    row::pro::Item<Text> {
+                    new Text {
                         text::pro::Text { QString { "Item %1" }.arg(index) },
                         text::pro::Apply { [&manager](Text& self) {
                             manager.appendHandler(&self, [&](const ThemeManager& manager) {
@@ -243,7 +241,7 @@ static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
                     },
                 },
             },
-            col::pro::Item<FilledCard> {
+            new FilledCard {
                 card::pro::ThemeManager { manager },
                 card::pro::LevelLow,
                 card::pro::FixedSize { 100, 30 },
@@ -260,7 +258,7 @@ static auto DropdownMenuItemComponent(ThemeManager& manager) noexcept {
             col::pro::Spacing { 0 },
             col::pro::Margin { 10 },
 
-            col::pro::Item<DropdownMenuItem> {
+            new DropdownMenuItem {
                 dmip::ThemeManager { manager },
                 dmip::Text { "编辑" },
                 dmip::LeadingIcon {
@@ -273,7 +271,7 @@ static auto DropdownMenuItemComponent(ThemeManager& manager) noexcept {
                 },
                 dmip::OnClicked { [] { qDebug() << "[view] 编辑"; } },
             },
-            col::pro::Item<DropdownMenuItem> {
+            new DropdownMenuItem {
                 dmip::ThemeManager { manager },
                 dmip::Text { "收藏" },
                 dmip::LeadingIcon {
@@ -282,7 +280,7 @@ static auto DropdownMenuItemComponent(ThemeManager& manager) noexcept {
                 },
                 dmip::OnClicked { [] { qDebug() << "[view] 收藏"; } },
             },
-            col::pro::Item<DropdownMenuItem> {
+            new DropdownMenuItem {
                 dmip::ThemeManager { manager },
                 dmip::Text { "删除（禁用）" },
                 dmip::Disabled { true },
@@ -343,11 +341,11 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
 
     const auto SwitchRow = [&] {
         return new Row {
-            row::pro::Item<Switch> {
+            new Switch {
                 _switch::pro::ThemeManager { state.manager },
                 _switch::pro::FixedSize { 70, 40 },
             },
-            row::pro::Item<FilledCard> {
+            new FilledCard {
                 card::pro::ThemeManager { state.manager },
                 card::pro::FixedHeight { 40 },
             },
@@ -358,7 +356,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                                      std::shared_ptr<MutableValue<double>> p) {
         return new Row {
             lnp::Alignment { Qt::AlignLeft },
-            lnp::Item<FilledCard> {
+            new FilledCard {
                 filled_card::pro::ThemeManager { state.manager },
                 filled_card::pro::FixedSize { 100, kSliderMeasurements.track_height },
                 filled_card::pro::Radius { static_cast<double>(kSliderMeasurements.track_shape) },
@@ -366,17 +364,17 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                 filled_card::pro::Layout<Row> {
                     lnp::Spacing { 0 },
                     lnp::Margin { 0 },
-                    lnp::Item<Text> {
+                    new Text {
                         text::pro::ThemeManager { state.manager },
                         text::pro::Alignment { Qt::AlignCenter },
                         text::pro::FixedWidth { 100 },
-                        MutableForward { text::pro::Text { }, s },
+                        MutableForward { text::pro::Text {}, s },
                     },
                 },
             },
-            lnp::Item<Slider> {
+            new Slider {
                 slider::pro::ThemeManager { state.manager },
-                slider::pro::Measurements { kSliderMeasurements },
+                kSliderMeasurements,
                 slider::pro::FixedHeight { kSliderMeasurements.minimumHeight() },
                 slider::pro::FixedWidth { 300 },
                 MutableForward {
@@ -392,7 +390,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                 slider::pro::OnValueChangeFinished {
                     [](double num) { qDebug() << "[view] Slider changed:" << num; } },
             },
-            lnp::Item<CircularProgressIndicator> {
+            new CircularProgressIndicator {
                 cpip::ThemeManager { state.manager },
                 cpip::FixedSize { 25, 25 },
                 MutableForward { cpip::Progress { 0. }, p },
@@ -409,30 +407,28 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
             lnp::Margin { 10 },
             lnp::Spacing { 10 },
 
-            lnp::Item {
-                SearchComponent(state.manager,
-                    [texts, progresses] {
-                        constexpr auto random_unit = []() {
-                            static std::random_device rd;
-                            static std::mt19937 gen(rd());
-                            static std::uniform_real_distribution<double> dist(0.0, 1.0);
-                            return dist(gen);
-                        };
-                        for (auto&& [string, number] : std::views::zip(texts, progresses)) {
-                            auto v  = random_unit();
-                            *number = v;
-                            *string = QString::number(v, 'f', 3);
-                        }
-                    }),
-            },
-            lnp::Item { BannerComponent(state.manager) },
-            lnp::Item<Row> {
+            SearchComponent(state.manager,
+                [texts, progresses] {
+                    constexpr auto random_unit = []() {
+                        static std::random_device rd;
+                        static std::mt19937 gen(rd());
+                        static std::uniform_real_distribution<double> dist(0.0, 1.0);
+                        return dist(gen);
+                    };
+                    for (auto&& [string, number] : std::views::zip(texts, progresses)) {
+                        auto v  = random_unit();
+                        *number = v;
+                        *string = QString::number(v, 'f', 3);
+                    }
+                }),
+            BannerComponent(state.manager),
+            new Row {
                 lnp::Margin { 20 },
                 lnp::Spacing { 15 },
-                lnp::Item<Col> {
-                    lnp::Item { SliderComponent(texts.at(0), progresses.at(0)) },
-                    lnp::Item { SliderComponent(texts.at(1), progresses.at(1)) },
-                    lnp::Item { SliderComponent(texts.at(2), progresses.at(2)) },
+                new Col {
+                    SliderComponent(texts.at(0), progresses.at(0)),
+                    SliderComponent(texts.at(1), progresses.at(1)),
+                    SliderComponent(texts.at(2), progresses.at(2)),
                 },
                 lnp::Item<OutlinedCard> {
                     { 255 },
@@ -440,16 +436,16 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                     card::pro::LevelLowest,
                     card::pro::FixedHeight { kSliderMeasurements.minimumHeight() * 3 + 40 },
                     card::pro::Layout<Col> {
-                        lnp::Item { SwitchRow() },
-                        lnp::Item { SwitchRow() },
-                        lnp::Item { SwitchRow() },
+                        SwitchRow(),
+                        SwitchRow(),
+                        SwitchRow(),
                     },
                 },
             },
-            lnp::Item<AssetCenter> {
+            new AssetCenter {
                 state.manager,
             },
-            lnp::Item<CustomWidget> {
+            new CustomWidget {
                 custom::pro::FixedHeight { 300 },
                 custom::pro::OnPaint<std::reference_wrapper<ThemeManager>> {
                     std::ref(state.manager),
@@ -469,7 +465,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                     },
                 },
             },
-            lnp::Item<Flow> {
+            new Flow {
                 flow::pro::RowSpacing { 10 },
                 flow::pro::ColSpacing { 10 },
                 flow::pro::RowLimit { 6 },

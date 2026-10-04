@@ -162,12 +162,12 @@ struct AssetCenter : creeper::Widget {
         using namespace creeper;
         return new Row {
             row::pro::Margin { 0 },
-            row::pro::Item<OutlinedCard> {
+            new OutlinedCard {
                 card::pro::ThemeManager { manager },
                 card::pro::LevelLowest,
                 card::pro::MinimumHeight { 200 },
                 card::pro::Layout<Row> {
-                    row::pro::Item<Group<Col, OutlinedButton>> {
+                    new Group<Col, OutlinedButton> {
                         col::pro::Margin { 15 },
                         col::pro::Spacing { 10 },
                         col::pro::Alignment { Qt::AlignTop },
@@ -187,10 +187,10 @@ struct AssetCenter : creeper::Widget {
                             },
                         },
                     },
-                    row::pro::Item<Col> {
+                    new Col {
                         col::pro::Margin { 20 },
                         col::pro::Spacing { 10 },
-                        col::pro::Item<Text> {
+                        new Text {
                             text::pro::ThemeManager { manager },
                             text::pro::Text {
                                 QString {
@@ -206,7 +206,7 @@ struct AssetCenter : creeper::Widget {
                                 Qt::TextInteractionFlag::TextSelectableByMouse,
                             },
                         },
-                        col::pro::Item<FilledTextField> {
+                        new FilledTextField {
                             text_field::pro::ThemeManager { manager },
                             text_field::pro::LeadingIcon {
                                 "public",

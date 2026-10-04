@@ -138,18 +138,16 @@ auto main(int argc, char* argv[]) -> int {
                 lp::Margin { 0 },
                 lp::Spacing { 0 },
 
-                lp::Item {
-                    // 某些自定义组件
-                    NavComponent(nav_component_state),
-                },
-                lp::Item<Col> {
+                // 某些自定义组件
+                NavComponent(nav_component_state),
+                new Col {
                     lp::ContentsMargin { { 15, 15, 5, 15 } },
-                    lp::Item { ListComponent(list_component_state) },
+                    ListComponent(list_component_state),
                 },
                 lp::Item<Col> {
                     { 255 },
                     lp::ContentsMargin { { 5, 15, 15, 15 } },
-                    lp::Item<ScrollArea> {
+                    new ScrollArea {
                         sp::ThemeManager { manager },
                         sp::HorizontalScrollBarPolicy {
                             Qt::ScrollBarAlwaysOff,
