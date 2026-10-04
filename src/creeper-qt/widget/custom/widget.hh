@@ -1,18 +1,31 @@
 #pragma once
+
+#include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 
-namespace creeper::custom::details {
+#include <concepts>
+#include <memory>
+#include <type_traits>
+#include <utility>
+#include <variant>
 
-struct CustomWidget : public QWidget {
+namespace creeper {
 
+class CustomWidget : public QWidget, public DSL {
+public:
     struct OnPaint {
         virtual auto paint(CustomWidget&) -> void = 0;
         virtual ~OnPaint() { }
     };
 
+    using QWidget::QWidget;
+
+    explicit CustomWidget(auto&&... args) { construct_with(std::forward<decltype(args)>(args)...); }
+
     std::unique_ptr<OnPaint> on_paint = nullptr;
 
-    auto set_on_paint(std::unique_ptr<OnPaint> _on_paint) noexcept {
+    auto setOnPaint(std::unique_ptr<OnPaint> _on_paint) noexcept {
         //
         on_paint = std::move(_on_paint);
     }
@@ -24,66 +37,68 @@ struct CustomWidget : public QWidget {
     }
 };
 
-}
-namespace creeper::custom::pro {
+namespace custom::pro {
 
-using Token = creeper::Token<details::CustomWidget>;
+    using namespace common::pro;
+    using namespace widget::pro;
 
-/// @note:
-/// - std::invocable<F, QPaintEvent&, State&>
-/// - std::invocable<F, QPaintEvent&>
-template <typename State = std::monostate>
-struct OnPaint : Token {
+    /// @note:
+    /// - std::invocable<F, CustomWidget&>
+    /// - std::invocable<F, CustomWidget&, State&>
+    template <typename State = std::monostate>
+    struct OnPaint {
 
-    template <typename F>
-    struct Instantiated : public details::CustomWidget::OnPaint {
-        std::decay_t<State> state;
-        std::decay_t<F> on_paint;
+        template <typename F>
+        struct Instantiated : public CustomWidget::OnPaint {
+            std::decay_t<State> state;
+            std::decay_t<F> on_paint;
 
-        explicit Instantiated(F&& on_paint) noexcept
-            : state { }
-            , on_paint { std::forward<F>(on_paint) } { }
+            explicit Instantiated(F&& on_paint) noexcept
+                : state { }
+                , on_paint { std::forward<F>(on_paint) } { }
 
-        explicit Instantiated(State&& state, F&& on_paint) noexcept
-            : state { std::forward<State>(state) }
-            , on_paint { std::forward<F>(on_paint) } { }
+            explicit Instantiated(State&& state, F&& on_paint) noexcept
+                : state { std::forward<State>(state) }
+                , on_paint { std::forward<F>(on_paint) } { }
 
-        ~Instantiated() override = default;
+            ~Instantiated() override = default;
 
-        auto paint(details::CustomWidget& widget) -> void override {
-            if constexpr (std::same_as<State, std::monostate>) {
-                on_paint(widget);
-            } else {
-                on_paint(widget, state);
+            auto paint(CustomWidget& widget) -> void override {
+                if constexpr (std::same_as<State, std::monostate>) {
+                    on_paint(widget);
+                } else {
+                    on_paint(widget, state);
+                }
             }
+        };
+        std::unique_ptr<CustomWidget::OnPaint> on_paint;
+
+        template <typename F>
+            requires std::invocable<F, CustomWidget&>
+        explicit OnPaint(F&& f) noexcept
+            requires std::same_as<State, std::monostate>
+            : on_paint { std::make_unique<Instantiated<F>>(std::forward<F>(f)) } { }
+
+        template <typename F>
+            requires std::invocable<F, CustomWidget&, State&>
+        explicit OnPaint(F&& f) noexcept
+            requires std::default_initializable<State>
+            : on_paint { std::make_unique<Instantiated<F>>(std::forward<F>(f)) } { }
+
+        template <typename F>
+            requires std::invocable<F, CustomWidget&, State&>
+        explicit OnPaint(State&& state, F&& f) noexcept
+            requires std::movable<State>
+            : on_paint { std::make_unique<Instantiated<F>>(
+                  std::forward<State>(state), std::forward<F>(f)) } { }
+
+        friend auto dsl_invoke(CustomWidget& self, auto&& prop) -> void
+            requires std::same_as<std::remove_cvref_t<decltype(prop)>, OnPaint>
+        {
+            self.setOnPaint(std::move(prop.on_paint));
         }
     };
-    std::unique_ptr<details::CustomWidget::OnPaint> on_paint;
 
-    template <typename F>
-        requires std::invocable<F, details::CustomWidget&>
-    explicit OnPaint(F&& f) noexcept
-        requires std::same_as<State, std::monostate>
-        : on_paint { std::make_unique<Instantiated<F>>(std::forward<F>(f)) } { }
-
-    template <typename F>
-        requires std::invocable<F, details::CustomWidget&, State&>
-    explicit OnPaint(F&& f) noexcept
-        requires std::default_initializable<State>
-        : on_paint { std::make_unique<Instantiated<F>>(std::forward<F>(f)) } { }
-
-    template <typename F>
-        requires std::invocable<F, details::CustomWidget&, State&>
-    explicit OnPaint(State&& state, F&& f) noexcept
-        requires std::movable<State>
-        : on_paint { std::make_unique<Instantiated<F>>(
-              std::forward<State>(state), std::forward<F>(f)) } { }
-
-    auto apply(auto& widget) { widget.set_on_paint(std::move(on_paint)); }
-};
-using namespace widget::pro;
 }
-namespace creeper {
-using CustomWidget =
-    Declarative<custom::details::CustomWidget, TokenOr<custom::pro::Token, widget::pro::Token>>;
+
 }

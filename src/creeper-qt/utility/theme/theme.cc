@@ -12,7 +12,7 @@ struct ThemeManager::Impl {
     ThemePack theme_pack;
     ColorMode color_mode;
 
-    auto apply_theme(const ThemeManager& manager) const {
+    auto applyTheme(const ThemeManager& manager) const {
         for (auto const& callback : begin_callbacks)
             callback(manager);
         for (auto& [_, callback] : handlers)
@@ -21,12 +21,12 @@ struct ThemeManager::Impl {
             callback(manager);
     }
 
-    auto append_handler(Key key, const Handler& handler) {
+    auto appendHandler(Key key, const Handler& handler) {
         handlers[key] = handler;
-        QObject::connect(key, &QObject::destroyed, [this, key] { remove_handler(key); });
+        QObject::connect(key, &QObject::destroyed, [this, key] { removeHandler(key); });
     }
 
-    void remove_handler(Key key) { handlers.erase(key); }
+    void removeHandler(Key key) { handlers.erase(key); }
 };
 
 ThemeManager::ThemeManager()
@@ -40,33 +40,33 @@ ThemeManager::ThemeManager(const ThemePack& pack, ColorMode mode)
 
 ThemeManager::~ThemeManager() = default;
 
-void ThemeManager::apply_theme() const { pimpl->apply_theme(*this); }
+void ThemeManager::applyTheme() const { pimpl->applyTheme(*this); }
 
-void ThemeManager::append_handler(const QObject* key, const Handler& handler) {
-    pimpl->append_handler(key, handler);
+void ThemeManager::appendHandler(const QObject* key, const Handler& handler) {
+    pimpl->appendHandler(key, handler);
 }
 
-auto ThemeManager::append_begin_callback(const Handler& callback) noexcept -> void {
+auto ThemeManager::appendBeginCallback(const Handler& callback) noexcept -> void {
     pimpl->begin_callbacks.push_back(callback);
 }
-auto ThemeManager::append_final_callback(const Handler& callback) noexcept -> void {
+auto ThemeManager::appendFinalCallback(const Handler& callback) noexcept -> void {
     pimpl->final_callbacks.push_back(callback);
 }
 
-void ThemeManager::remove_handler(const QObject* key) { pimpl->remove_handler(key); }
+void ThemeManager::removeHandler(const QObject* key) { pimpl->removeHandler(key); }
 
-void ThemeManager::set_theme_pack(const ThemePack& pack) { pimpl->theme_pack = pack; }
-void ThemeManager::set_color_mode(const ColorMode& mode) { pimpl->color_mode = mode; }
+void ThemeManager::setThemePack(const ThemePack& pack) { pimpl->theme_pack = pack; }
+void ThemeManager::setColorMode(const ColorMode& mode) { pimpl->color_mode = mode; }
 
-void ThemeManager::toggle_color_mode() {
+void ThemeManager::toggleColorMode() {
     pimpl->color_mode = (pimpl->color_mode == ColorMode::LIGHT) //
         ? ColorMode::DARK
         : ColorMode::LIGHT;
 }
 
-ThemePack ThemeManager::theme_pack() const { return pimpl->theme_pack; }
-ColorMode ThemeManager::color_mode() const { return pimpl->color_mode; }
+ThemePack ThemeManager::themePack() const { return pimpl->theme_pack; }
+ColorMode ThemeManager::colorMode() const { return pimpl->color_mode; }
 
-ColorScheme ThemeManager::color_scheme() const {
-    return pimpl->theme_pack.color_scheme(pimpl->color_mode);
+ColorScheme ThemeManager::colorScheme() const {
+    return pimpl->theme_pack.colorScheme(pimpl->color_mode);
 }

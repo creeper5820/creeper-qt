@@ -3,112 +3,90 @@
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/property.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 
 #include <qabstractbutton.h>
 
 namespace creeper {
-namespace _switch::internal {
-    class Switch : public QAbstractButton {
-        CREEPER_PIMPL_DEFINITION(Switch)
 
-    public:
-        void set_color_scheme(const ColorScheme&);
-        void load_theme_manager(ThemeManager&);
+class Switch : public QAbstractButton, public DSL {
+    CREEPER_PIMPL_DEFINITION(Switch)
 
-        void set_disabled(bool);
-        bool disabled() const;
+public:
+    explicit Switch(auto&&... props)
+        : Switch { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 
-        void set_checked(bool);
-        bool checked() const;
+    auto loadColorScheme(const ColorScheme&) -> void;
+    auto bindThemeManager(ThemeManager&) -> void;
 
-        void set_track_color_unchecked(const QColor&);
-        void set_track_color_checked(const QColor&);
-        void set_track_color_unchecked_disabled(const QColor&);
-        void set_track_color_checked_disabled(const QColor&);
+    auto setDisabled(bool) -> void;
+    auto disabled() const -> bool;
 
-        void set_handle_color_unchecked(const QColor&);
-        void set_handle_color_checked(const QColor&);
-        void set_handle_color_unchecked_disabled(const QColor&);
-        void set_handle_color_checked_disabled(const QColor&);
+    auto setChecked(bool) -> void;
+    auto checked() const -> bool;
 
-        void set_outline_color_unchecked(const QColor&);
-        void set_outline_color_checked(const QColor&);
-        void set_outline_color_unchecked_disabled(const QColor&);
-        void set_outline_color_checked_disabled(const QColor&);
+    auto setTrackColorUnchecked(const QColor&) -> void;
+    auto setTrackColorChecked(const QColor&) -> void;
+    auto setTrackColorUncheckedDisabled(const QColor&) -> void;
+    auto setTrackColorCheckedDisabled(const QColor&) -> void;
 
-        void set_hover_color_unchecked(const QColor&);
-        void set_hover_color_checked(const QColor&);
+    auto setHandleColorUnchecked(const QColor&) -> void;
+    auto setHandleColorChecked(const QColor&) -> void;
+    auto setHandleColorUncheckedDisabled(const QColor&) -> void;
+    auto setHandleColorCheckedDisabled(const QColor&) -> void;
 
-    protected:
-        // 添加 Hover 动画
-        void enterEvent(qt::EnterEvent* event) override;
-        void leaveEvent(QEvent* event) override;
+    auto setOutlineColorUnchecked(const QColor&) -> void;
+    auto setOutlineColorChecked(const QColor&) -> void;
+    auto setOutlineColorUncheckedDisabled(const QColor&) -> void;
+    auto setOutlineColorCheckedDisabled(const QColor&) -> void;
 
-        // 实现视觉效果
-        void paintEvent(QPaintEvent* event) override;
-    };
-}
+    auto setHoverColorUnchecked(const QColor&) -> void;
+    auto setHoverColorChecked(const QColor&) -> void;
+
+protected:
+    // 添加 Hover 动画
+    auto enterEvent(qt::EnterEvent* event) -> void override;
+    auto leaveEvent(QEvent* event) -> void override;
+
+    // 实现视觉效果
+    auto paintEvent(QPaintEvent* event) -> void override;
+};
+
 namespace _switch::pro {
 
-    using Token = creeper::Token<internal::Switch>;
+    using namespace common::pro;
+    using namespace widget::pro;
+    using namespace theme::pro;
 
     /// @note 碎碎念，这么多颜色，真的会用得上么...
 
-    using TrackColorUnchecked = SetterProp<Token, QColor,
-        [](auto& self, const QColor& v) { self.set_track_color_unchecked(v); }>;
+    using TrackColorUnchecked = ForwardProp<&Switch::setTrackColorUnchecked>;
+    using TrackColorChecked   = ForwardProp<&Switch::setTrackColorChecked>;
 
-    using TrackColorChecked = SetterProp<Token, QColor,
-        [](auto& self, const QColor& v) { self.set_track_color_checked(v); }>;
+    using TrackColorUncheckedDisabled = ForwardProp<&Switch::setTrackColorUncheckedDisabled>;
+    using TrackColorCheckedDisabled   = ForwardProp<&Switch::setTrackColorCheckedDisabled>;
 
-    using TrackColorUncheckedDisabled = SetterProp<Token, QColor,
-        [](auto& self, const QColor& v) { self.set_track_color_unchecked_disabled(v); }>;
+    using HandleColorUnchecked = ForwardProp<&Switch::setHandleColorUnchecked>;
+    using HandleColorChecked   = ForwardProp<&Switch::setHandleColorChecked>;
 
-    using TrackColorCheckedDisabled = SetterProp<Token, QColor,
-        [](auto& self, const QColor& v) { self.set_track_color_checked_disabled(v); }>;
+    using HandleColorUncheckedDisabled = ForwardProp<&Switch::setHandleColorUncheckedDisabled>;
+    using HandleColorCheckedDisabled   = ForwardProp<&Switch::setHandleColorCheckedDisabled>;
 
-    using HandleColorUnchecked = SetterProp<Token, QColor,
-        [](auto& self, const QColor& v) { self.set_handle_color_unchecked(v); }>;
+    using OutlineColorUnchecked = ForwardProp<&Switch::setOutlineColorUnchecked>;
+    using OutlineColorChecked   = ForwardProp<&Switch::setOutlineColorChecked>;
 
-    using HandleColorChecked = SetterProp<Token, QColor,
-        [](auto& self, const QColor& v) { self.set_handle_color_checked(v); }>;
+    using OutlineColorUncheckedDisabled = ForwardProp<&Switch::setOutlineColorUncheckedDisabled>;
+    using OutlineColorCheckedDisabled   = ForwardProp<&Switch::setOutlineColorCheckedDisabled>;
 
-    using HandleColorUncheckedDisabled = SetterProp<Token, QColor,
-        [](auto& self, const QColor& v) { self.set_handle_color_unchecked_disabled(v); }>;
+    using HoverColorUnchecked = ForwardProp<&Switch::setHoverColorUnchecked>;
+    using HoverColorChecked   = ForwardProp<&Switch::setHoverColorChecked>;
 
-    using HandleColorCheckedDisabled = SetterProp<Token, QColor,
-        [](auto& self, const QColor& v) { self.set_handle_color_checked_disabled(v); }>;
-
-    using OutlineColorUnchecked = SetterProp<Token, QColor,
-        [](auto& self, const QColor& v) { self.set_outline_color_unchecked(v); }>;
-
-    using OutlineColorChecked = SetterProp<Token, QColor,
-        [](auto& self, const QColor& v) { self.set_outline_color_checked(v); }>;
-
-    using OutlineColorUncheckedDisabled = SetterProp<Token, QColor,
-        [](auto& self, const QColor& v) { self.set_outline_color_unchecked_disabled(v); }>;
-
-    using OutlineColorCheckedDisabled = SetterProp<Token, QColor,
-        [](auto& self, const QColor& v) { self.set_outline_color_checked_disabled(v); }>;
-
-    using HoverColorUnchecked = SetterProp<Token, QColor,
-        [](auto& self, const QColor& v) { self.set_hover_color_unchecked(v); }>;
-
-    using HoverColorChecked = SetterProp<Token, QColor,
-        [](auto& self, const QColor& v) { self.set_hover_color_checked(v); }>;
-
-    template <typename Callback>
-    using Clickable = common::pro::Clickable<Callback, Token>;
-
-    using Disabled = common::pro::Disabled<Token>;
-    using Checked  = common::pro::Checked<Token>;
-using namespace theme::pro;
-    using namespace widget::pro;
 }
 /// @note 使用时建议比例 w : h > 7 : 4 ，过冲动画会多占用一些宽度，倘若 w 过短，可能会出现 hover
 /// 层画面被截断的情况
-using Switch = Declarative<_switch::internal::Switch,
-    TokenOr<_switch::pro::Token, widget::pro::Token, theme::pro::Token>>;
 }

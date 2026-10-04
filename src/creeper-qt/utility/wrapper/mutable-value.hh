@@ -1,4 +1,5 @@
 #pragma once
+#include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 #include <qobject.h>
 #include <unordered_map>
@@ -82,7 +83,7 @@ struct MutableForward final : public P {
                 : w { w } { }
             ~Functor() noexcept = default;
             auto update(const T& value) -> void override {
-                w.apply(P { value });
+                dsl_invoke(w, P { value });
                 w.update();
             }
         };
@@ -95,14 +96,15 @@ struct MutableForward final : public P {
             if (alive.lock()) mutable_value.callbacks.erase(key);
         });
     }
-    auto apply(auto& widget) noexcept -> void {
-        P::apply(widget);
-        attach_callback_to_mutable(widget);
+
+    friend auto dsl_invoke(auto& widget, const MutableForward& prop) noexcept -> void {
+        dsl_invoke(widget, static_cast<const P&>(prop));
+        const_cast<MutableForward&>(prop).attach_callback_to_mutable(widget);
     }
 };
 
 template <typename T, typename F>
-struct MutableTransform : widget::pro::Token {
+struct MutableTransform {
     F apply_function;
     MutableValue<T>& mutable_value;
 
@@ -136,17 +138,18 @@ struct MutableTransform : widget::pro::Token {
             if (alive.lock()) mutable_value.callbacks.erase(key);
         });
     }
-    auto apply(auto& widget) noexcept -> void {
+
+    friend auto dsl_invoke(auto& widget, const MutableTransform& prop) noexcept -> void {
         constexpr auto invocable = requires { //
-            apply_function(widget, mutable_value.get());
+            prop.apply_function(widget, prop.mutable_value.get());
         };
         static_assert(invocable,
             "\nFunction can not be invoked with given widget_type& and const value_type&."
             "\n  the correct signature should be: "
             "\n  [](widget_type& widget, const value_type& v){ ... }");
 
-        apply_function(widget, mutable_value.get());
-        attach_callback_to_mutable(widget);
+        prop.apply_function(widget, prop.mutable_value.get());
+        const_cast<MutableTransform&>(prop).attach_callback_to_mutable(widget);
     }
 };
 

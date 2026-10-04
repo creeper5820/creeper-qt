@@ -1,24 +1,31 @@
 #pragma once
 
-#include "creeper-qt/utility/wrapper/common.hh"
-#include "creeper-qt/utility/wrapper/property.hh"
+#include "creeper-qt/utility/trait/widget.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/forward_prop.hh"
+#include "creeper-qt/utility/wrapper/layout.hh"
 
 #include <qgridlayout.h>
 
 namespace creeper {
-namespace grid::internal {
-    class Grid : public QGridLayout { };
-}
+
+class Grid : public QGridLayout, public DSL {
+public:
+    using QGridLayout::QGridLayout;
+
+    explicit Grid(auto&&... args) { construct_with(std::forward<decltype(args)>(args)...); }
+};
+
 namespace grid::pro {
-    using Token = creeper::Token<QGridLayout>;
 
-    struct RowSpacing : Token { };
+    /// 行间距：行沿垂直方向堆叠，对应 setVerticalSpacing
+    using RowSpacing = ForwardProp<&QGridLayout::setVerticalSpacing>;
 
-    struct ColSpacing : Token { };
+    /// 列间距：列沿水平方向排列，对应 setHorizontalSpacing
+    using ColSpacing = ForwardProp<&QGridLayout::setHorizontalSpacing>;
 
-    template <class T>
-        requires std::is_convertible_v<T*, QWidget*> || std::is_convertible_v<T*, QLayout*>
-    struct Item : Token {
+    template <item_trait T>
+    struct Item {
         using Align = Qt::Alignment;
 
         struct LayoutMethod {
@@ -26,12 +33,12 @@ namespace grid::pro {
             int col = 0, col_span = 0;
             Align align;
 
-            explicit LayoutMethod(int row, int col, Align align = {})
+            explicit LayoutMethod(int row, int col, Align align = { })
                 : row { row }
                 , col { col }
                 , align { align } { }
 
-            explicit LayoutMethod(int row, int row_span, int col, int col_span, Align align = {})
+            explicit LayoutMethod(int row, int row_span, int col, int col_span, Align align = { })
                 : row { row }
                 , col { col }
                 , row_span { row_span }
@@ -51,27 +58,32 @@ namespace grid::pro {
             : item_pointer { pointer }
             , method { method } { }
 
-        void apply(QGridLayout& layout) const {
-            if (method.col_span == 0) {
+        friend auto dsl_invoke(QGridLayout& layout, const Item& prop) -> void {
+            if (prop.method.col_span == 0) {
                 if constexpr (std::is_convertible_v<T*, QWidget*>)
-                    layout.addWidget(item_pointer, method.row, method.col, method.align);
+                    layout.addWidget(
+                        prop.item_pointer, prop.method.row, prop.method.col, prop.method.align);
                 if constexpr (std::is_convertible_v<T*, QLayout*>)
-                    layout.addLayout(item_pointer, method.row, method.col, method.align);
+                    layout.addLayout(
+                        prop.item_pointer, prop.method.row, prop.method.col, prop.method.align);
             } else {
                 if constexpr (std::is_convertible_v<T*, QWidget*>)
-                    layout.addWidget(item_pointer, method.row, method.row_span, method.col,
-                        method.col_span, method.align);
+                    layout.addWidget(prop.item_pointer, prop.method.row, prop.method.row_span,
+                        prop.method.col, prop.method.col_span, prop.method.align);
                 if constexpr (std::is_convertible_v<T*, QLayout*>)
-                    layout.addLayout(item_pointer, method.row, method.row_span, method.col,
-                        method.col_span, method.align);
+                    layout.addLayout(prop.item_pointer, prop.method.row, prop.method.row_span,
+                        prop.method.col, prop.method.col_span, prop.method.align);
             }
         }
     };
 
-    struct Items : Token {
+    struct Items {
         explicit Items() { }
-        void apply(QGridLayout& self) const { }
+
+        friend auto dsl_invoke(QGridLayout&, const Items&) -> void { }
     };
+
+    using namespace layout::pro;
 }
-using Grid = Declarative<grid::internal::Grid, grid::pro::Token>;
+
 }

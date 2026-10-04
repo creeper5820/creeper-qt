@@ -183,7 +183,7 @@ private:
     static auto make_rounded_rect_path(
         const QRectF& rect, qreal tl, qreal tr, qreal br, qreal bl) noexcept -> QPainterPath {
 
-        auto path = QPainterPath {};
+        auto path = QPainterPath { };
 
         const auto half_width  = rect.width() / 2.0;
         const auto half_height = rect.height() / 2.0;

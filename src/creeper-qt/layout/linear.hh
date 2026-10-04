@@ -1,33 +1,21 @@
 #pragma once
 
 #include "creeper-qt/utility/trait/widget.hh"
+#include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/layout.hh"
-#include "creeper-qt/utility/wrapper/property.hh"
 
 #include <qboxlayout.h>
 #include <qstackedlayout.h>
 
 namespace creeper::linear::pro {
 
-using Token = creeper::Token<QBoxLayout>;
+using SpacingItem = ForwardProp<&QBoxLayout::addSpacing>;
 
-struct SpacingItem : Token {
-    int size;
-    explicit SpacingItem(int p) { size = p; }
-    void apply(QBoxLayout& self) const { self.addSpacing(size); }
-};
+using Stretch = ForwardProp<&QBoxLayout::addStretch>;
 
-struct Stretch : Token {
-    int stretch;
-    explicit Stretch(int p) { stretch = p; }
-    void apply(QBoxLayout& self) const { self.addStretch(stretch); }
-};
-
-struct SpacerItem : Token {
-    QSpacerItem* spacer_item;
-    explicit SpacerItem(QSpacerItem* p) { spacer_item = p; }
-    void apply(QBoxLayout& self) const { self.addSpacerItem(spacer_item); }
-};
+using SpacerItem = ForwardProp<&QBoxLayout::addSpacerItem>;
 
 /// @brief
 /// 布局项包装器，用于声明式地将 Widget 或 Layout 添加到布局中
@@ -50,7 +38,7 @@ struct SpacerItem : Token {
 /// };
 ///
 template <item_trait T>
-struct Item : Token {
+struct Item {
     struct LayoutMethod {
         int stretch         = 0;
         Qt::Alignment align = { };
@@ -75,18 +63,26 @@ struct Item : Token {
     explicit Item(Args&&... args) noexcept
         : item_pointer { new T { std::forward<Args>(args)... } } { }
 
-    auto apply(linear_trait auto& layout) const {
-        if constexpr (widget_trait<T>) layout.addWidget(item_pointer, method.stretch, method.align);
-        if constexpr (layout_trait<T>) layout.addLayout(item_pointer, method.stretch);
+    friend auto dsl_invoke(linear_trait auto& layout, const Item& prop) -> void {
+        if constexpr (widget_trait<T>)
+            layout.addWidget(prop.item_pointer, prop.method.stretch, prop.method.align);
+        if constexpr (layout_trait<T>) layout.addLayout(prop.item_pointer, prop.method.stretch);
     }
 };
+
+using namespace common::pro;
 using namespace layout::pro;
 }
 
 namespace creeper {
 
-template <class T>
-using BoxLayout = Declarative<T, TokenOr<linear::pro::Token, layout::pro::Token>>;
+template <layout_trait T>
+class BoxLayout : public T, public DSL {
+public:
+    using T::T;
+
+    explicit BoxLayout(auto&&... args) { construct_with(std::forward<decltype(args)>(args)...); }
+};
 
 using Row = BoxLayout<QHBoxLayout>;
 using Col = BoxLayout<QVBoxLayout>;
@@ -99,14 +95,5 @@ using VBoxLayout = Col;
 
 namespace h_box_layout = linear;
 namespace v_box_layout = linear;
-
-namespace internal {
-    inline auto use_the_namespace_alias_to_eliminate_warnings() {
-        std::ignore = row::pro::Token { };
-        std::ignore = col::pro::Token { };
-        std::ignore = h_box_layout::pro::Token { };
-        std::ignore = v_box_layout::pro::Token { };
-    }
-}
 
 }

@@ -20,9 +20,9 @@
 #include <qscreen.h>
 #include <qtimer.h>
 
-using namespace creeper::dropdown_menu::details;
+using namespace creeper;
 
-using MenuItemDetails = creeper::dropdown_menu_item::details::DropdownMenuItem;
+using MenuItemDetails = creeper::DropdownMenuItem;
 
 struct DropdownMenu::Impl {
 public:
@@ -112,7 +112,7 @@ public:
         content_layout->setSpacing(0);
     }
 
-    auto set_color_scheme(const ColorScheme& scheme) -> void {
+    auto loadColorScheme(const ColorScheme& scheme) -> void {
         theme_container_color = scheme.surface_container;
 
         auto shadow = scheme.shadow;
@@ -122,9 +122,9 @@ public:
         self.update();
     }
 
-    auto load_theme_manager(ThemeManager& manager) -> void {
-        manager.append_handler(&self,
-            [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
+    auto bindThemeManager(ThemeManager& manager) -> void {
+        manager.appendHandler(
+            &self, [this](const ThemeManager& manager) { loadColorScheme(manager.colorScheme()); });
     }
 
     auto set_anchor(QWidget* widget) -> void {
@@ -222,8 +222,8 @@ public:
 
         uninstall_anchor_filters();
 
-        // 仅用户驱动的关闭（外部点击、Esc）才上报 dismiss_requested
-        if (!programmatic_close) Q_EMIT self.dismiss_requested();
+        // 仅用户驱动的关闭（外部点击、Esc）才上报 dismissRequested
+        if (!programmatic_close) Q_EMIT self.dismissRequested();
         programmatic_close = false;
     }
 
@@ -301,7 +301,7 @@ private:
         opacity->transition_to(1.0);
     }
 
-    /// 程序性关闭：应用通过 set_expanded(false) 发起，不 emit dismiss_requested
+    /// 程序性关闭：应用通过 setExpanded(false) 发起，不 emit dismissRequested
     auto close_programmatically() -> void {
         if (!self.isVisible() || closing) return;
 
@@ -309,7 +309,7 @@ private:
         start_close_animation();
     }
 
-    /// 用户请求关闭：Esc 等路径，hide 后 emit dismiss_requested
+    /// 用户请求关闭：Esc 等路径，hide 后 emit dismissRequested
     auto close_by_user_request() -> void {
         if (!self.isVisible() || closing) return;
 

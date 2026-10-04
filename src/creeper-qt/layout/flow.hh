@@ -1,16 +1,21 @@
 #pragma once
-#include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/layout.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 #include <qlayout.h>
 
-namespace creeper::flow::internal {
+namespace creeper {
 
-class Flow : public QLayout {
+class Flow : public QLayout, public DSL {
     CREEPER_PIMPL_DEFINITION(Flow)
 
 public:
     using Item = QLayoutItem;
+
+    explicit Flow(auto&&... props)
+        : Flow { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 
     auto addItem(Item*) -> void override;
     auto takeAt(int) -> Item* override;
@@ -26,34 +31,57 @@ public:
     auto sizeHint() const -> QSize override;
 
 public:
-    auto set_row_spacing(int) noexcept -> void;
-    auto row_spacing() const noexcept -> int;
+    auto setRowSpacing(int) noexcept -> void;
+    auto rowSpacing() const noexcept -> int;
 
-    auto set_col_spacing(int) noexcept -> void;
-    auto col_spacing() const noexcept -> int;
+    auto setColSpacing(int) noexcept -> void;
+    auto colSpacing() const noexcept -> int;
 
-    auto set_row_limit(int) noexcept -> void;
-    auto row_limit() const noexcept -> int;
+    auto setRowLimit(int) noexcept -> void;
+    auto rowLimit() const noexcept -> int;
 };
 
 }
 namespace creeper::flow::pro {
 
-using Token = creeper::Token<internal::Flow>;
+struct RowSpacing {
+    std::int32_t value;
 
-using RowSpacing = SetterProp<Token, int, [](auto& self, int v) { self.set_row_spacing(v); }>;
+    explicit RowSpacing(std::int32_t v) noexcept
+        : value { v } { }
 
-using ColSpacing = SetterProp<Token, int, [](auto& self, int v) { self.set_col_spacing(v); }>;
+    friend auto dsl_invoke(Flow& self, const RowSpacing& prop) -> void {
+        self.setRowSpacing(prop.value);
+    }
+};
 
-using RowLimit = SetterProp<Token, int, [](auto& self, int v) { self.set_row_limit(v); }>;
+struct ColSpacing {
+    std::int32_t value;
+
+    explicit ColSpacing(std::int32_t v) noexcept
+        : value { v } { }
+
+    friend auto dsl_invoke(Flow& self, const ColSpacing& prop) -> void {
+        self.setColSpacing(prop.value);
+    }
+};
+
+struct RowLimit {
+    std::int32_t value;
+
+    explicit RowLimit(std::int32_t v) noexcept
+        : value { v } { }
+
+    friend auto dsl_invoke(Flow& self, const RowLimit& prop) -> void {
+        self.setRowLimit(prop.value);
+    }
+};
 
 using MainAxisSpacing   = RowSpacing;
 using CrossAxisSpacing  = ColSpacing;
 using MaxItemsInEachRow = RowLimit;
-using namespace layout::pro;
-}
-namespace creeper {
 
-using Flow = Declarative<flow::internal::Flow, TokenOr<flow::pro::Token, layout::pro::Token>>;
+using namespace common::pro;
+using namespace layout::pro;
 
 }

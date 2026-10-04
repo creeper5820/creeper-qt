@@ -7,7 +7,7 @@
 #include <qpicture.h>
 #include <qwidget.h>
 
-using namespace creeper::image::internal;
+using namespace creeper;
 
 struct Image::Impl final {
 public:
@@ -32,7 +32,7 @@ public:
                 (width - pixmap.width()) / 2.,
                 (height - pixmap.height()) / 2.,
             };
-            auto path = QPainterPath {};
+            auto path = QPainterPath { };
             path.addRoundedRect(border_width, border_width, width - 2 * border_width,
                 height - 2 * border_width, radius - border_width, radius - border_width);
 
@@ -74,9 +74,9 @@ public:
     double radius  = 10.;
     double opacity = 01.;
 
-    std::shared_ptr<PainterResource> resource_origin {};
+    std::shared_ptr<PainterResource> resource_origin { };
     std::shared_ptr<PainterResource> resource_render {
-        std::make_shared<PainterResource>(QPixmap {}),
+        std::make_shared<PainterResource>(QPixmap { }),
     };
 
     Image& self;

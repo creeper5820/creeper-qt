@@ -2,24 +2,28 @@
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/trait/widget.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
-#include "creeper-qt/utility/wrapper/property.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/forward_prop.hh"
+#include "creeper-qt/utility/wrapper/widget.hh"
 #include "creeper-qt/widget/widget.hh"
 #include <qscrollarea.h>
 #include <qscrollbar.h>
 
-namespace creeper::scroll::internal {
+namespace creeper {
 
 /// NOTE: 先拿 qss 勉强用着吧，找时间完全重构
-class ScrollArea : public QScrollArea {
+class ScrollArea : public QScrollArea, public DSL {
 public:
-    explicit ScrollArea() noexcept {
+    explicit ScrollArea(auto&&... props) {
         viewport()->setStyleSheet("background:transparent;border:none;");
         setStyleSheet("QScrollArea{background:transparent;border:none;}");
 
         setWidgetResizable(true);
+
+        construct_with(std::forward<decltype(props)>(props)...);
     }
 
-    void set_color_scheme(const ColorScheme& scheme) {
+    void loadColorScheme(const ColorScheme& scheme) {
         constexpr auto q = [](const QColor& c, int a = 255) {
             return QString("rgba(%1,%2,%3,%4)").arg(c.red()).arg(c.green()).arg(c.blue()).arg(a);
         };
@@ -49,38 +53,24 @@ public:
                 .arg(q(scheme.primary.darker(110))));
     }
 
-    void load_theme_manager(ThemeManager& manager) {
-        manager.append_handler(this,
-            [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
+    void bindThemeManager(ThemeManager& manager) {
+        manager.appendHandler(
+            this, [this](const ThemeManager& manager) { loadColorScheme(manager.colorScheme()); });
     }
 };
 
 }
+
 namespace creeper::scroll::pro {
 
-using Token = creeper::Token<internal::ScrollArea>;
+using namespace common::pro;
+using namespace widget::pro;
+using namespace theme::pro;
 
-struct VerticalScrollBarPolicy : Token {
-    Qt::ScrollBarPolicy policy;
+using VerticalScrollBarPolicy   = ForwardProp<&QScrollArea::setVerticalScrollBarPolicy>;
+using HorizontalScrollBarPolicy = ForwardProp<&QScrollArea::setHorizontalScrollBarPolicy>;
 
-    explicit VerticalScrollBarPolicy(Qt::ScrollBarPolicy policy) noexcept
-        : policy { policy } { }
-
-    auto apply(auto& self) const noexcept -> void { //
-        self.setVerticalScrollBarPolicy(policy);
-    }
-};
-struct HorizontalScrollBarPolicy : Token {
-    Qt::ScrollBarPolicy policy;
-
-    explicit HorizontalScrollBarPolicy(Qt::ScrollBarPolicy policy) noexcept
-        : policy { policy } { }
-
-    auto apply(auto& self) const noexcept -> void { //
-        self.setHorizontalScrollBarPolicy(policy);
-    }
-};
-struct ScrollBarPolicy : Token {
+struct ScrollBarPolicy {
     Qt::ScrollBarPolicy v;
     Qt::ScrollBarPolicy h;
 
@@ -88,14 +78,14 @@ struct ScrollBarPolicy : Token {
         : v { v }
         , h { h } { }
 
-    auto apply(auto& self) const noexcept -> void {
-        self.setVerticalScrollBarPolicy(v);
-        self.setHorizontalScrollBarPolicy(h);
+    friend auto dsl_invoke(ScrollArea& self, const ScrollBarPolicy& prop) -> void {
+        self.setVerticalScrollBarPolicy(prop.v);
+        self.setHorizontalScrollBarPolicy(prop.h);
     }
 };
 
 template <item_trait T>
-struct Item : Token {
+struct Item {
     T* item_pointer = nullptr;
 
     explicit Item(auto&&... args) noexcept
@@ -105,27 +95,20 @@ struct Item : Token {
     explicit Item(T* pointer) noexcept
         : item_pointer { pointer } { }
 
-    auto apply(area_trait auto& layout) const noexcept -> void {
+    friend auto dsl_invoke(ScrollArea& self, const Item& prop) -> void {
         if constexpr (widget_trait<T>) {
-            layout.setWidget(item_pointer);
+            self.setWidget(prop.item_pointer);
         }
         // NOTE: 这里可能有调整的空间，直接设置 Layout，
         //       布局 Size 行为是不正确的
         else if constexpr (layout_trait<T>) {
-            const auto content = new Widget {
-                widget::pro::Layout { item_pointer },
+            const auto content = new creeper::Widget {
+                widget::pro::Layout { prop.item_pointer },
             };
-            layout.setWidget(content);
+            self.setWidget(content);
         }
     }
 };
-using namespace widget::pro;
-using namespace theme::pro;
-}
-namespace creeper {
-
-using ScrollArea = Declarative<scroll::internal::ScrollArea,
-    TokenOr<scroll::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 }
 

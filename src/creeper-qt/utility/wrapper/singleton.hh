@@ -3,7 +3,8 @@
 
 namespace creeper::util {
 
-template <typename T> class Singleton {
+template <typename T>
+class Singleton {
 public:
     static T& instance();
 
@@ -15,8 +16,9 @@ protected:
     Singleton() = default;
 };
 
-template <typename T> inline T& Singleton<T>::instance() {
-    static const std::unique_ptr<T> instance { new T { token {} } };
+template <typename T>
+inline T& Singleton<T>::instance() {
+    static const std::unique_ptr<T> instance { new T { token { } } };
     return *instance;
 }
 

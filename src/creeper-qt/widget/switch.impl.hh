@@ -9,7 +9,7 @@
 #include "creeper-qt/utility/animation/transition.hh"
 #include "creeper-qt/utility/painter/helper.hh"
 
-using namespace creeper::_switch::internal;
+using namespace creeper;
 
 struct Switch::Impl {
 
@@ -78,7 +78,7 @@ struct Switch::Impl {
         QObject::connect(&self, &Switch::clicked, [this, &self] { set_checked(self, !checked); });
     }
 
-    void set_color_scheme(Switch& self, const ColorScheme& scheme) {
+    void loadColorScheme(Switch& self, const ColorScheme& scheme) {
         track_unchecked          = scheme.surface_variant;
         track_checked            = scheme.primary;
         track_unchecked_disabled = scheme.surface_variant;

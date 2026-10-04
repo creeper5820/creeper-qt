@@ -2,32 +2,39 @@
 
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
+#include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/property.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
-#include "creeper-qt/widget/buttons/button.hh"
-#include "qabstractbutton.h"
 
-namespace creeper::filled_button::internal {
+#include <qabstractbutton.h>
 
-class FilledButton : public QAbstractButton {
+namespace creeper {
+
+class FilledButton : public QAbstractButton, public DSL {
     CREEPER_PIMPL_DEFINITION(FilledButton);
 
 public:
-    void set_color_scheme(const ColorScheme& pack);
-    void load_theme_manager(ThemeManager& manager);
+    explicit FilledButton(auto&&... props)
+        : FilledButton { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 
-    void set_radius(double radius);
-    void set_border_width(double border);
+    void loadColorScheme(const ColorScheme& pack);
+    void bindThemeManager(ThemeManager& manager);
 
-    void set_water_color(const QColor& color);
-    void set_border_color(const QColor& color);
-    void set_text_color(const QColor& color);
-    void set_background(const QColor& color);
-    void set_hover_color(const QColor& color);
+    void setRadius(double radius);
+    void setBorderWidth(double border);
 
-    void set_water_ripple_status(bool enable);
-    void set_water_ripple_step(double step);
+    void setWaterColor(const QColor& color);
+    void setBorderColor(const QColor& color);
+    void setTextColor(const QColor& color);
+    void setBackground(const QColor& color);
+    void setHoverColor(const QColor& color);
+
+    void setWaterRippleStatus(bool enable);
+    void setWaterRippleStep(double step);
 
 protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
@@ -41,14 +48,12 @@ protected:
 }
 namespace creeper::filled_button::pro {
 
-using namespace button::pro;
+using namespace common::pro;
 using namespace widget::pro;
 using namespace theme::pro;
 
-}
-namespace creeper {
-
-using FilledButton = Declarative<filled_button::internal::FilledButton,
-    TokenOr<button::pro::Token, widget::pro::Token, theme::pro::Token>>;
+using HoverColor        = ForwardProp<&FilledButton::setHoverColor>;
+using WaterRippleStatus = ForwardProp<&FilledButton::setWaterRippleStatus>;
+using WaterRippleStep   = ForwardProp<&FilledButton::setWaterRippleStep>;
 
 }

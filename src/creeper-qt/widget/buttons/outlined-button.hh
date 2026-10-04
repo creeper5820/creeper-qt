@@ -1,45 +1,48 @@
 #pragma once
 #include "filled-button.hh"
 
-namespace creeper::outlined_button::internal {
+namespace creeper {
 
-class OutlinedButton : public filled_button::internal::FilledButton {
+class OutlinedButton : public FilledButton {
 public:
-    void set_color_scheme(const ColorScheme& color_scheme) {
-        set_background(Qt::transparent);
-        set_border_color(color_scheme.outline);
-        set_text_color(color_scheme.primary);
+    explicit OutlinedButton(auto&&... props)
+        : FilledButton { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
+
+    void loadColorScheme(const ColorScheme& color_scheme) {
+        setBackground(Qt::transparent);
+        setBorderColor(color_scheme.outline);
+        setTextColor(color_scheme.primary);
 
         auto hover_color = color_scheme.primary;
         hover_color.setAlphaF(0.08);
-        set_hover_color(hover_color);
+        setHoverColor(hover_color);
 
-        auto water_color = QColor {};
+        auto water_color = QColor { };
         if (color_scheme.primary.lightness() > 128) {
             water_color = color_scheme.primary.darker(130);
         } else {
             water_color = color_scheme.primary.lighter(130);
         }
         water_color.setAlphaF(0.25);
-        set_water_color(water_color);
+        setWaterColor(water_color);
 
         update();
     }
 
-    auto load_theme_manager(ThemeManager& manager) noexcept -> void {
-        set_border_width(1.5);
-        manager.append_handler(this,
-            [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
+    auto bindThemeManager(ThemeManager& manager) noexcept -> void {
+        setBorderWidth(1.5);
+        manager.appendHandler(
+            this, [this](const ThemeManager& manager) { loadColorScheme(manager.colorScheme()); });
     }
 };
 
-}
-namespace creeper {
-
 namespace outlined_button::pro {
+    using namespace common::pro;
+    using namespace widget::pro;
+    using namespace theme::pro;
     using namespace filled_button::pro;
 }
 
-using OutlinedButton = Declarative<outlined_button::internal::OutlinedButton,
-    TokenOr<button::pro::Token, widget::pro::Token, theme::pro::Token>>;
 }

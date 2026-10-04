@@ -29,10 +29,10 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
             [] { qDebug() << "[main] Image loading completed"; },
         },
     };
-    state.manager.append_handler(AvatarComponent, [AvatarComponent](const ThemeManager& manager) {
-        const auto colorscheme = manager.color_scheme();
+    state.manager.appendHandler(AvatarComponent, [AvatarComponent](const ThemeManager& manager) {
+        const auto colorscheme = manager.colorScheme();
         const auto colorborder = colorscheme.secondary_container;
-        AvatarComponent->set_border_color(colorborder);
+        AvatarComponent->setBorderColor(colorborder);
     });
 
     const auto navigation_icons_config = std::tuple {
@@ -41,8 +41,8 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
         ic::ShapeRound,
         ic::TypesToggleUnselected,
         ic::WidthDefault,
-        ic::Font { material::round::font_1 },
-        ic::FixedSize { IconButton::kSmallContainerSize },
+        widget::pro::Font(material::round::font_1),
+        widget::pro::FixedSize(IconButton::kSmallContainerSize),
     };
 
     return new FilledCard {
@@ -76,7 +76,7 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
                             navigation_icons_config,
                             status,
                             ic::ColorFilled,
-                            ic::FontIcon { icon.data() },
+                            ic::FontIcon { QString::fromUtf8(icon.data(), icon.size()) },
                             ic::Clickable { [=] { state.switch_callback(index, name); } },
                         };
                     },
@@ -107,8 +107,8 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
                 ic::FontIcon { material::icon::kDarkMode },
                 ic::Clickable { [&](IconButton& self) {
                     std::ignore = self.selected();
-                    state.manager.toggle_color_mode();
-                    state.manager.apply_theme();
+                    state.manager.toggleColorMode();
+                    state.manager.applyTheme();
                 } },
             },
         },

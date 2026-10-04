@@ -4,7 +4,6 @@
 
 #include "creeper-qt/utility/theme/color-scheme.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/property.hh"
 
 namespace creeper::theme {
 
@@ -12,15 +11,15 @@ class ThemeManager;
 
 template <class T>
 concept color_scheme_setter_trait = requires(T t) {
-    { t.set_color_scheme(ColorScheme { }) };
+    { t.loadColorScheme(ColorScheme { }) };
 };
 template <class T>
 concept theme_manager_loader_trait =
-    requires(T t, ThemeManager& manager) { t.load_theme_manager(manager); };
+    requires(T t, ThemeManager& manager) { t.bindThemeManager(manager); };
 
 struct ThemePack {
     ColorScheme light, dark;
-    auto color_scheme(this auto&& self, ColorMode mode) noexcept {
+    auto colorScheme(this auto&& self, ColorMode mode) noexcept {
         return (mode == ColorMode::LIGHT) ? self.light : self.dark;
     }
 };
@@ -30,70 +29,72 @@ class ThemeManager {
 public:
     explicit ThemeManager(const ThemePack& pack, ColorMode mode = ColorMode::LIGHT);
 
-    void apply_theme() const;
+    void applyTheme() const;
 
     using Handler = std::function<void(const ThemeManager&)>;
 
     /// Registers a theme change callback for the specified widget.
     ///
-    /// When ThemeManager::apply_theme() is called, the registered handler will be executed.
+    /// When ThemeManager::applyTheme() is called, the registered handler will be executed.
     ///
     /// Args:
     ///   key: Pointer to the widget. Serves as the key in the handler map.
     ///   handler: The callback function to register.
     ///
     /// Note:
-    ///   When the widget is destroyed, ThemeManager::remove_handler() will be called automatically
+    ///   When the widget is destroyed, ThemeManager::removeHandler() will be called automatically
     ///   to remove the associated handler.
-    void append_handler(const QObject* key, const Handler& handler);
+    void appendHandler(const QObject* key, const Handler& handler);
 
-    auto append_handler(color_scheme_setter_trait auto& widget) { append_handler(&widget, widget); }
-    auto append_handler(const QObject* key, color_scheme_setter_trait auto& widget) {
+    auto appendHandler(color_scheme_setter_trait auto& widget) { appendHandler(&widget, widget); }
+    auto appendHandler(const QObject* key, color_scheme_setter_trait auto& widget) {
         const auto handler = [&widget](const ThemeManager& manager) {
-            const auto color_mode = manager.color_mode();
-            const auto theme_pack = manager.theme_pack();
-            widget.set_color_scheme(theme_pack.color_scheme(color_mode));
+            const auto color_mode = manager.colorMode();
+            const auto theme_pack = manager.themePack();
+            widget.loadColorScheme(theme_pack.colorScheme(color_mode));
         };
-        append_handler(key, std::move(handler));
+        appendHandler(key, std::move(handler));
     }
 
-    auto append_begin_callback(const Handler&) noexcept -> void;
-    auto append_final_callback(const Handler&) noexcept -> void;
+    auto appendBeginCallback(const Handler&) noexcept -> void;
+    auto appendFinalCallback(const Handler&) noexcept -> void;
 
-    void remove_handler(const QObject* key);
+    void removeHandler(const QObject* key);
 
-    void set_theme_pack(const ThemePack& pack);
-    void set_color_mode(const ColorMode& mode);
-    void toggle_color_mode();
+    void setThemePack(const ThemePack& pack);
+    void setColorMode(const ColorMode& mode);
+    void toggleColorMode();
 
-    ThemePack theme_pack() const;
-    ColorMode color_mode() const;
+    ThemePack themePack() const;
+    ColorMode colorMode() const;
 
-    ColorScheme color_scheme() const;
+    ColorScheme colorScheme() const;
 };
 
 }
 namespace creeper::theme::pro {
 
-using Token = creeper::Token<ThemeManager>;
-
-struct ColorScheme : public theme::ColorScheme, Token {
+struct ColorScheme : public theme::ColorScheme {
     using theme::ColorScheme::ColorScheme;
     explicit ColorScheme(const theme::ColorScheme& p)
         : theme::ColorScheme(p) { }
-    auto apply(color_scheme_setter_trait auto& self) const noexcept -> void {
-        self.set_color_scheme(*this);
+
+    friend auto dsl_invoke(color_scheme_setter_trait auto& self, const ColorScheme& prop) -> void {
+        self.loadColorScheme(prop);
     }
 };
 
-struct ThemeManager : Token {
+struct ThemeManager {
     theme::ThemeManager& manager;
     explicit ThemeManager(theme::ThemeManager& p)
         : manager(p) { }
-    auto apply(theme_manager_loader_trait auto& self) const noexcept -> void {
-        self.load_theme_manager(manager);
+
+    friend auto dsl_invoke(theme_manager_loader_trait auto& self, const ThemeManager& prop)
+        -> void {
+        self.bindThemeManager(prop.manager);
     }
 };
+
 }
 namespace creeper {
 

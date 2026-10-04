@@ -49,7 +49,7 @@ struct MakeLayoutFunction {
 // ----------------------------------------------------------------------
 
 struct SurfaceImpl : public MakeLayoutFunction, ContainerProps {
-    constexpr explicit SurfaceImpl(const qt::size& size, const qt::point& origin = {})
+    constexpr explicit SurfaceImpl(const qt::size& size, const qt::point& origin = { })
         : ContainerProps {
             .size   = size,
             .origin = origin,
@@ -117,7 +117,7 @@ struct BufferImpl : public MakeLayoutFunction, ContainerProps {
 struct BoxImpl : public MakeLayoutFunction, ContainerProps {
 
     constexpr explicit BoxImpl(
-        const qt::size& size, const qt::align& align, const qt::point& origin = {})
+        const qt::size& size, const qt::align& align, const qt::point& origin = { })
         : ContainerProps {
             .size   = size,
             .align  = align,
@@ -162,16 +162,13 @@ struct BoxImpl : public MakeLayoutFunction, ContainerProps {
 struct RowImpl : public MakeLayoutFunction, ContainerProps {
     const qt::align main_align;
 
-    constexpr explicit RowImpl(
-        const qt::size& size,
-        const qt::align& main_align = Qt::AlignLeft,
-        const qt::align& cross_align = Qt::AlignVCenter,
-        const qt::point& origin = {})
+    constexpr explicit RowImpl(const qt::size& size, const qt::align& main_align = Qt::AlignLeft,
+        const qt::align& cross_align = Qt::AlignVCenter, const qt::point& origin = { })
         : ContainerProps {
-              .size   = size,
-              .align  = cross_align, // ContainerProps::align 存储非主轴对齐
-              .origin = origin,
-          }
+            .size   = size,
+            .align  = cross_align, // ContainerProps::align 存储非主轴对齐
+            .origin = origin,
+        }
         , main_align(main_align) // 存储主轴对齐
     { }
 
@@ -234,16 +231,13 @@ struct RowImpl : public MakeLayoutFunction, ContainerProps {
 struct ColImpl : public MakeLayoutFunction, ContainerProps {
     const qt::align main_align;
 
-    constexpr explicit ColImpl(
-        const qt::size& size,
-        const qt::align& main_align = Qt::AlignTop,
-        const qt::align& cross_align = Qt::AlignHCenter,
-        const qt::point& origin = {})
+    constexpr explicit ColImpl(const qt::size& size, const qt::align& main_align = Qt::AlignTop,
+        const qt::align& cross_align = Qt::AlignHCenter, const qt::point& origin = { })
         : ContainerProps {
-              .size   = size,
-              .align  = cross_align,
-              .origin = origin,
-          }
+            .size   = size,
+            .align  = cross_align,
+            .origin = origin,
+        }
         , main_align(main_align) // 存储主轴对齐
     { }
 

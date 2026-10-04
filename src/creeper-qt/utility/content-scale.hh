@@ -18,7 +18,7 @@ public:
     operator decltype(data)() const noexcept { return data; }
 
     auto transform(const QPixmap& pixmap, const QSize& size) const -> QPixmap {
-        if (pixmap.isNull()) return {};
+        if (pixmap.isNull()) return { };
 
         auto image_size    = QPointF(pixmap.width(), pixmap.height());
         auto target_width  = static_cast<double>(size.width());
@@ -56,7 +56,7 @@ public:
                 Qt::IgnoreAspectRatio, mode);
         }
 
-        return {};
+        return { };
     }
 };
 

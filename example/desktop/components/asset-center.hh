@@ -24,14 +24,12 @@ struct NetworkContext final {
     QNetworkAccessManager accessor;
     std::atomic<bool> downloading = false;
 
-    explicit NetworkContext() noexcept {
-        accessor.setTransferTimeout(5'000);
-    }
+    explicit NetworkContext() noexcept { accessor.setTransferTimeout(5'000); }
 
     auto set_proxy(std::string const& host = "127.0.0.1", uint16_t port = 7890,
         QNetworkProxy::ProxyType type = QNetworkProxy::HttpProxy) noexcept {
 
-        auto proxy = QNetworkProxy {};
+        auto proxy = QNetworkProxy { };
         proxy.setType(type);
         proxy.setHostName(QString::fromStdString(host));
         proxy.setPort(port);

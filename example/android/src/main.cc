@@ -49,11 +49,13 @@ namespace {
 
 /// Grid 尚未提供 Apply，补一个与 widget::pro::Apply 同义的 prop
 template <typename F>
-struct GridApply : gp::Token {
+struct GridApply {
     F function;
     explicit GridApply(F function) noexcept
         : function { std::move(function) } { }
-    auto apply(QGridLayout& self) const noexcept -> void { function(self); }
+    friend auto dsl_invoke(QGridLayout& layout, const GridApply& prop) noexcept -> void {
+        prop.function(layout);
+    }
 };
 
 /// props 列表直接接受 range：按数据逐项生成 prop
@@ -73,7 +75,7 @@ auto icon_font(int px) noexcept -> QFont {
 }
 
 auto text_font(int px, QFont::Weight weight = QFont::Normal) noexcept -> QFont {
-    auto font = QFont {};
+    auto font = QFont { };
     font.setPixelSize(px);
     font.setWeight(weight);
     return font;
@@ -87,8 +89,8 @@ public:
 
     auto next() noexcept -> void {
         index = (index + 1) % kPacks.size();
-        manager.set_theme_pack(kPacks[index]);
-        manager.apply_theme();
+        manager.setThemePack(kPacks[index]);
+        manager.applyTheme();
     }
 
 private:
@@ -137,7 +139,7 @@ constexpr auto kDestinations = std::array {
 /// 顶栏：菜单 + 胶囊按钮 + 头像
 auto TopBar(ThemeManager& manager) noexcept {
     return ln::Item<Row> {
-        { 0, Qt::Alignment {} },
+        { 0, Qt::Alignment { } },
         ln::ContentsMargin { { 4, 8, 12, 8 } },
         ln::Spacing { 4 },
 
@@ -158,12 +160,12 @@ auto TopBar(ThemeManager& manager) noexcept {
             obp::Font { text_font(16) },
             obp::Text { "Label" },
             obp::Apply { [&manager](OutlinedButton& self) {
-                manager.append_handler(&self, [&self](const ThemeManager& manager) {
-                    const auto& scheme = manager.color_scheme();
-                    self.set_color_scheme(scheme);
-                    self.set_border_width(1);
-                    self.set_border_color(scheme.outline);
-                    self.set_text_color(scheme.on_surface_variant);
+                manager.appendHandler(&self, [&self](const ThemeManager& manager) {
+                    const auto& scheme = manager.colorScheme();
+                    self.loadColorScheme(scheme);
+                    self.setBorderWidth(1);
+                    self.setBorderColor(scheme.outline);
+                    self.setTextColor(scheme.on_surface_variant);
                 });
             } },
         },
@@ -174,11 +176,11 @@ auto TopBar(ThemeManager& manager) noexcept {
             rrp::Background { Qt::transparent },
             rrp::BorderWidth { 1 },
             rrp::Apply { [&manager](RoundedRect& self) {
-                manager.append_handler(&self, [&self](const ThemeManager& manager) {
-                    const auto& scheme = manager.color_scheme();
+                manager.appendHandler(&self, [&self](const ThemeManager& manager) {
+                    const auto& scheme = manager.colorScheme();
                     // RoundedRect 继承自 Shape，setter 不触发重绘，须显式 update
-                    self.set_background(Qt::transparent);
-                    self.set_border_color(scheme.outline);
+                    self.setBackground(Qt::transparent);
+                    self.setBorderColor(scheme.outline);
                     self.update();
                 });
             } },
@@ -225,15 +227,15 @@ auto CardWall(ThemeManager& manager) noexcept {
 
 /// 悬浮工具条：三个动作按钮的胶囊 + 主题轮切按钮
 auto FloatingToolbar(ThemeManager& manager, ThemeCycle& cycle) noexcept {
-    /// ElevatedCard 继承自 Shape，set_background/set_border_color 不触发重绘，
-    /// surface_container_low 也不在 Card::set_color_scheme 的 level 映射里，
+    /// ElevatedCard 继承自 Shape，setBackground/setBorderColor 不触发重绘，
+    /// surface_container_low 也不在 Card::loadColorScheme 的 level 映射里，
     /// 因此主题变化时需要自己 setter 并 update。
     const auto tint = [&manager](ElevatedCard& self) {
-        manager.append_handler(&self, [&self](const ThemeManager& manager) {
-            const auto& scheme = manager.color_scheme();
-            self.set_color_scheme(scheme);
-            self.set_background(scheme.surface_container_low);
-            self.set_border_color(scheme.outline);
+        manager.appendHandler(&self, [&self](const ThemeManager& manager) {
+            const auto& scheme = manager.colorScheme();
+            self.loadColorScheme(scheme);
+            self.setBackground(scheme.surface_container_low);
+            self.setBorderColor(scheme.outline);
             self.update();
         });
     };
@@ -286,7 +288,7 @@ auto FloatingToolbar(ThemeManager& manager, ThemeCycle& cycle) noexcept {
 /// 底部导航：选中项由 selected 驱动，按钮只负责写入
 auto NavigationBar(ThemeManager& manager, MutableValue<int>& selected) noexcept {
     return ln::Item<Row> {
-        { 0, Qt::Alignment {} },
+        { 0, Qt::Alignment { } },
         ln::ContentsMargin { { 0, 12, 0, 16 } },
 
         each(kDestinations,
@@ -294,9 +296,9 @@ auto NavigationBar(ThemeManager& manager, MutableValue<int>& selected) noexcept 
                 const auto index = destination.index;
 
                 const auto indicate = [&manager, index](IconButton& self, int current) {
-                    self.set_color(
+                    self.setColor(
                         index == current ? IconButton::Color::TONAL : IconButton::Color::STANDARD);
-                    self.set_color_scheme(manager.color_scheme());
+                    self.loadColorScheme(manager.colorScheme());
                 };
                 const auto emphasize = [index](Text& self, int current) {
                     self.setFont(text_font(12, index == current ? QFont::Bold : QFont::Normal));
@@ -325,8 +327,8 @@ auto NavigationBar(ThemeManager& manager, MutableValue<int>& selected) noexcept 
                         txp::Alignment { Qt::AlignCenter },
                         txp::Text { destination.label },
                         txp::Apply { [&manager](Text& self) {
-                            manager.append_handler(&self, [&self](const ThemeManager& manager) {
-                                self.set_color(manager.color_scheme().on_surface_variant);
+                            manager.appendHandler(&self, [&self](const ThemeManager& manager) {
+                                self.setColor(manager.colorScheme().on_surface_variant);
                             });
                         } },
                     },
@@ -356,8 +358,8 @@ auto main(int argc, char** argv) -> int {
         mwp::Central<FilledCard> {
             fcp::Radius { 0 },
             fcp::Apply { [&manager](FilledCard& self) {
-                manager.append_handler(&self, [&self](const ThemeManager& manager) {
-                    self.set_background(manager.color_scheme().surface);
+                manager.appendHandler(&self, [&self](const ThemeManager& manager) {
+                    self.setBackground(manager.colorScheme().surface);
                     self.update();
                 });
             } },
@@ -367,7 +369,7 @@ auto main(int argc, char** argv) -> int {
 
                 TopBar(manager),
                 ln::Item<Grid> {
-                    { 1, Qt::Alignment {} },
+                    { 1, Qt::Alignment { } },
                     gp::Item<ScrollArea> {
                         GridCell<ScrollArea> { 0, 0 },
                         scp::ThemeManager { manager },
@@ -384,6 +386,6 @@ auto main(int argc, char** argv) -> int {
         },
     };
 
-    manager.apply_theme();
+    manager.applyTheme();
     return app::exec();
 }

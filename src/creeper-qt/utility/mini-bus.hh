@@ -51,7 +51,7 @@ private:
         QObject* receiver;
         auto (*notify)(QObject*, const MessageT&) -> void;
     };
-    static inline std::vector<Action> actions {};
+    static inline std::vector<Action> actions { };
 };
 
 }

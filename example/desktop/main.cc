@@ -47,12 +47,12 @@ auto main(int argc, char** argv) -> int {
                 kGoldenHarvestThemePack,
             };
             try {
-                manager.set_theme_pack(packs.at(index));
+                manager.setThemePack(packs.at(index));
             } catch (const std::out_of_range& e) {
-                manager.set_theme_pack(packs[0]);
+                manager.setThemePack(packs[0]);
                 qDebug() << "[nav] Fallback to kBlueMikuThemePack";
             }
-            manager.apply_theme();
+            manager.applyTheme();
         },
         .next_tab = next_tab,
         .buttons_context = {
@@ -66,7 +66,7 @@ auto main(int argc, char** argv) -> int {
     auto list_component_state = ListComponentState { .manager = manager };
     auto view_component_state = ViewComponentState { .manager = manager };
 
-    auto mask_window = (MixerMask*) {};
+    auto mask_window = (MixerMask*) { };
 
     /// @NOTE: 有时候 Windows 总是给我来点惊喜，
     ///        ShowWindow 这么常见命名的函数都放在全局作用域
@@ -79,7 +79,7 @@ auto main(int argc, char** argv) -> int {
             // C 键居中
             auto shortcut_c = new QShortcut { Qt::Key_C, &window };
             QObject::connect(shortcut_c, &QShortcut::activated,
-                [&window] { window.apply(mwpro::MoveCenter {}); });
+                [&window] { window.use(mwpro::MoveCenter { }); });
 
             // S 键保存截图
             auto shortcut_s = new QShortcut { Qt::Key_S, &window };
@@ -113,18 +113,18 @@ auto main(int argc, char** argv) -> int {
                     NavComponent(nav_component_state),
                 },
                 lnpro::Item<Col> {
-                    lnpro::ContentsMargin { { 15, 15, 5, 15 } },
+                    lnpro::ContentsMargin { 15, 15, 5, 15 },
                     lnpro::Item { ListComponent(list_component_state) },
                 },
                 lnpro::Item<Stacked> {
                     { 1 },
                     MutableForward {
-                        stpro::CurrentIndex {},
+                        stpro::CurrentIndex { },
                         stack_index,
                     },
                     stpro::Item<Widget> {
                         capro::Layout<Col> {
-                            lnpro::ContentsMargin { { 5, 15, 15, 15 } },
+                            lnpro::ContentsMargin { 5, 15, 15, 15 },
                             lnpro::Item<ScrollArea> {
                                 scroll::pro::ThemeManager { manager },
                                 scroll::pro::HorizontalScrollBarPolicy {
@@ -148,12 +148,11 @@ auto main(int argc, char** argv) -> int {
         mixer::pro::SetMixerMask { mask_window },
     };
 
-    manager.apply_theme();
-    manager.append_begin_callback( //
-        [mask_window](const ThemeManager&) {
-            // 未 Apply 前，Mask 会呈现灰色
-            auto const point = mask_window->mapFromGlobal(QCursor::pos());
-            mask_window->initiate_animation(point);
-        });
+    manager.applyTheme();
+    manager.appendBeginCallback([mask_window](const ThemeManager&) {
+        // 未 Apply 前，Mask 会呈现灰色
+        auto const point = mask_window->mapFromGlobal(QCursor::pos());
+        mask_window->initiateAnimation(point);
+    });
     return app::exec();
 }

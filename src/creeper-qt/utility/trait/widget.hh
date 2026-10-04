@@ -22,14 +22,14 @@ concept item_trait = widget_trait<T> || layout_trait<T>;
 
 template <class T>
 concept linear_trait = requires(T t) {
-    { t.addWidget(std::declval<QWidget*>(), int {}, Qt::AlignCenter) };
-    { t.addLayout(std::declval<QLayout*>(), int {}) };
+    { t.addWidget(std::declval<QWidget*>(), int { }, Qt::AlignCenter) };
+    { t.addLayout(std::declval<QLayout*>(), int { }) };
 };
 
 template <class T>
 concept stacked_trait = requires(T t) {
-    {t.addWidget(std::declval<QWidget*>())};
-    {t.insertWidget(int {}, std::declval<QWidget*>())};
+    { t.addWidget(std::declval<QWidget*>()) };
+    { t.insertWidget(int { }, std::declval<QWidget*>()) };
 };
 
 template <class T>
@@ -41,7 +41,7 @@ concept area_trait = requires(T t) {
 template <class T>
 concept selectable_trait = requires(T t) {
     { std::as_const(t).selected() } -> std::convertible_to<bool>;
-    { t.set_selected(bool {}) };
+    { t.set_selected(bool { }) };
 };
 
 }

@@ -5,59 +5,63 @@ Switch::Switch()
 
 Switch::~Switch() = default;
 
-void Switch::set_color_scheme(const ColorScheme& scheme) {
-    pimpl->set_color_scheme(*this, scheme), update();
+auto Switch::loadColorScheme(const ColorScheme& scheme) -> void {
+    pimpl->loadColorScheme(*this, scheme), update();
 }
 
-void Switch::load_theme_manager(ThemeManager& manager) {
-    manager.append_handler(
-        this, [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
+auto Switch::bindThemeManager(ThemeManager& manager) -> void {
+    manager.appendHandler(
+        this, [this](const ThemeManager& manager) { loadColorScheme(manager.colorScheme()); });
 }
 
-void Switch::set_disabled(bool on) { pimpl->set_disabled(*this, on); }
-bool Switch::disabled() const { return pimpl->disabled; }
+auto Switch::setDisabled(bool on) -> void { pimpl->set_disabled(*this, on); }
+auto Switch::disabled() const -> bool { return pimpl->disabled; }
 
-void Switch::set_checked(bool on) { pimpl->set_checked(*this, on); }
-bool Switch::checked() const { return pimpl->checked; }
+auto Switch::setChecked(bool on) -> void { pimpl->set_checked(*this, on); }
+auto Switch::checked() const -> bool { return pimpl->checked; }
 
-void Switch::set_track_color_unchecked(const QColor& color) { pimpl->track_unchecked = color; }
-void Switch::set_track_color_checked(const QColor& color) { pimpl->track_checked = color; }
-void Switch::set_track_color_unchecked_disabled(const QColor& color) {
+auto Switch::setTrackColorUnchecked(const QColor& color) -> void { pimpl->track_unchecked = color; }
+auto Switch::setTrackColorChecked(const QColor& color) -> void { pimpl->track_checked = color; }
+auto Switch::setTrackColorUncheckedDisabled(const QColor& color) -> void {
     pimpl->track_unchecked_disabled = color;
 }
-void Switch::set_track_color_checked_disabled(const QColor& color) {
+auto Switch::setTrackColorCheckedDisabled(const QColor& color) -> void {
     pimpl->track_checked_disabled = color;
 }
 
-void Switch::set_handle_color_unchecked(const QColor& color) { pimpl->handle_unchecked = color; }
-void Switch::set_handle_color_checked(const QColor& color) { pimpl->handle_checked = color; }
-void Switch::set_handle_color_unchecked_disabled(const QColor& color) {
+auto Switch::setHandleColorUnchecked(const QColor& color) -> void {
+    pimpl->handle_unchecked = color;
+}
+auto Switch::setHandleColorChecked(const QColor& color) -> void { pimpl->handle_checked = color; }
+auto Switch::setHandleColorUncheckedDisabled(const QColor& color) -> void {
     pimpl->handle_unchecked_disabled = color;
 }
-void Switch::set_handle_color_checked_disabled(const QColor& color) {
+auto Switch::setHandleColorCheckedDisabled(const QColor& color) -> void {
     pimpl->handle_checked_disabled = color;
 }
 
-void Switch::set_outline_color_unchecked(const QColor& color) { pimpl->outline_unchecked = color; }
-void Switch::set_outline_color_checked(const QColor& color) { pimpl->outline_checked = color; }
-void Switch::set_outline_color_unchecked_disabled(const QColor& color) {
+auto Switch::setOutlineColorUnchecked(const QColor& color) -> void {
+    pimpl->outline_unchecked = color;
+}
+auto Switch::setOutlineColorChecked(const QColor& color) -> void { pimpl->outline_checked = color; }
+auto Switch::setOutlineColorUncheckedDisabled(const QColor& color) -> void {
     pimpl->outline_unchecked_disabled = color;
 }
-void Switch::set_outline_color_checked_disabled(const QColor& color) {
+auto Switch::setOutlineColorCheckedDisabled(const QColor& color) -> void {
     pimpl->outline_checked_disabled = color;
 }
 
-void Switch::set_hover_color_unchecked(const QColor& color) { pimpl->hover_unchecked = color; }
-void Switch::set_hover_color_checked(const QColor& color) { pimpl->hover_checked = color; }
+auto Switch::setHoverColorUnchecked(const QColor& color) -> void { pimpl->hover_unchecked = color; }
+auto Switch::setHoverColorChecked(const QColor& color) -> void { pimpl->hover_checked = color; }
 
-void Switch::enterEvent(qt::EnterEvent* event) {
+auto Switch::enterEvent(qt::EnterEvent* event) -> void {
     pimpl->enter_event(*this, *event);
     QAbstractButton::enterEvent(event);
 }
 
-void Switch::leaveEvent(QEvent* event) {
+auto Switch::leaveEvent(QEvent* event) -> void {
     pimpl->leave_event(*this, *event);
     QAbstractButton::leaveEvent(event);
 }
 
-void Switch::paintEvent(QPaintEvent* event) { pimpl->paint_event(*this, *event); }
+auto Switch::paintEvent(QPaintEvent* event) -> void { pimpl->paint_event(*this, *event); }

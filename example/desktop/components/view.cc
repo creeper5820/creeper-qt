@@ -67,7 +67,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
         std::chrono::steady_clock::time_point timeline = std::chrono::steady_clock::now();
 
         MutableQString slogen { "BanG Dream! It’s MyGO!!!!!" };
-        MutableQString selected {};
+        MutableQString selected { };
         MutableBool menu_expanded { false };
         MutableBool loading { false };
         MutableDouble progress { 0.0 };
@@ -77,7 +77,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
     const auto row = new Row {
         lnp::Item<OutlinedTextField> {
             MutableForward {
-                tfp::LabelText {},
+                tfp::LabelText { },
                 context->slogen,
             },
             tfp::ThemeManager { manager },
@@ -86,7 +86,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                 material::round::font,
             },
             tfp::Measurements {
-                OutlinedTextField::Measurements {},
+                OutlinedTextField::Measurements { },
             },
             tfp::OnChanged {
                 [context](const QString& text) {
@@ -109,7 +109,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
         lnp::SpacingItem { 10 },
 
         lnp::Item<OutlinedTextField> {
-            MutableForward { tfp::Text {}, context->selected },
+            MutableForward { tfp::Text { }, context->selected },
 
             tfp::ThemeManager { manager },
             tfp::ReadOnly { true },
@@ -173,7 +173,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                         "那你愿意……跟我组一辈子的乐队吗？",
                         "过去软弱的我…已经死了。",
                     };
-                    static auto rd  = std::random_device {};
+                    static auto rd  = std::random_device { };
                     static auto gen = std::mt19937 { rd() };
 
                     auto dist = std::uniform_int_distribution<> { 0, slogens.size() - 1 };
@@ -220,10 +220,10 @@ static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
                 wave_circle::pro::ProtrudingRatio { 0.8 },
                 wave_circle::pro::BorderColor { Qt::transparent },
                 wave_circle::pro::Apply { [&manager](WaveCircle& self) {
-                    manager.append_handler(&self, [&](const ThemeManager& manager) {
-                        const auto colorscheme = manager.color_scheme();
+                    manager.appendHandler(&self, [&](const ThemeManager& manager) {
+                        const auto colorscheme = manager.colorScheme();
                         const auto colorborder = colorscheme.surface_container_lowest;
-                        self.set_background(colorborder);
+                        self.setBackground(colorborder);
                     });
                 } },
             },
@@ -235,9 +235,9 @@ static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
                     row::pro::Item<Text> {
                         text::pro::Text { QString { "Item %1" }.arg(index) },
                         text::pro::Apply { [&manager](Text& self) {
-                            manager.append_handler(&self, [&](const ThemeManager& manager) {
-                                const auto scheme = manager.color_scheme();
-                                self.set_color(scheme.primary);
+                            manager.appendHandler(&self, [&](const ThemeManager& manager) {
+                                const auto scheme = manager.colorScheme();
+                                self.setColor(scheme.primary);
                             });
                         } },
                     },
@@ -317,10 +317,10 @@ static auto BannerComponent(ThemeManager& manager) noexcept {
         imp::FixedHeight { 300 },
         imp::PainterResource { sources.at(std::rand() % sources.size()) },
         imp::Apply { [&manager](Image& self) {
-            manager.append_handler(&self, [&](const ThemeManager& manager) {
-                const auto colorscheme = manager.color_scheme();
+            manager.appendHandler(&self, [&](const ThemeManager& manager) {
+                const auto colorscheme = manager.colorScheme();
                 const auto colorborder = colorscheme.secondary_container;
-                self.set_border_color(colorborder);
+                self.setBorderColor(colorborder);
             });
         } },
     };
@@ -370,14 +370,14 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                         text::pro::ThemeManager { state.manager },
                         text::pro::Alignment { Qt::AlignCenter },
                         text::pro::FixedWidth { 100 },
-                        MutableForward { text::pro::Text {}, s },
+                        MutableForward { text::pro::Text { }, s },
                     },
                 },
             },
             lnp::Item<Slider> {
                 slider::pro::ThemeManager { state.manager },
                 slider::pro::Measurements { kSliderMeasurements },
-                slider::pro::FixedHeight { kSliderMeasurements.minimum_height() },
+                slider::pro::FixedHeight { kSliderMeasurements.minimumHeight() },
                 slider::pro::FixedWidth { 300 },
                 MutableForward {
                     slider::pro::Progress { 0. },
@@ -438,7 +438,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                     { 255 },
                     card::pro::ThemeManager { state.manager },
                     card::pro::LevelLowest,
-                    card::pro::FixedHeight { kSliderMeasurements.minimum_height() * 3 + 40 },
+                    card::pro::FixedHeight { kSliderMeasurements.minimumHeight() * 3 + 40 },
                     card::pro::Layout<Col> {
                         lnp::Item { SwitchRow() },
                         lnp::Item { SwitchRow() },
@@ -460,7 +460,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                         solution.set_size(widget.size());
 
                         auto painter = QPainter { &widget };
-                        painter.setBrush(state.color_scheme().surface_container_highest);
+                        painter.setBrush(state.colorScheme().surface_container_highest);
                         painter.setPen(Qt::NoPen);
                         painter.setRenderHint(QPainter::Antialiasing);
                         for (auto [px, py] : solution.solve()) {

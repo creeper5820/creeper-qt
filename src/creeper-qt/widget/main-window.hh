@@ -3,30 +3,32 @@
 
 #include "creeper-qt/utility/trait/widget.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/property.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 
-namespace creeper::main_window::internal {
+namespace creeper {
 
-template <class T>
-concept central_widget_trait = requires(T t, QWidget* widget) {
-    { t.setCentralWidget(widget) };
-};
-
-class MainWindow : public QMainWindow {
+class MainWindow : public QMainWindow, public DSL {
     CREEPER_PIMPL_DEFINITION(MainWindow)
 
-protected:
-    auto paintEvent(QPaintEvent*) -> void override;
+public:
+    using QMainWindow::QMainWindow;
+
+    explicit MainWindow(auto&&... props)
+        : MainWindow { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 };
 
 }
 namespace creeper::main_window::pro {
-using Token = creeper::Token<QMainWindow>;
+using namespace common::pro;
+using namespace widget::pro;
 
 template <widget_trait T>
-struct Central : Token {
+struct Central {
     T* widget_pointer;
 
     explicit Central(T* pointer) noexcept
@@ -37,16 +39,13 @@ struct Central : Token {
         : widget_pointer {
             new T { std::forward<decltype(args)>(args)... },
         } { }
-    auto apply(internal::central_widget_trait auto& self) const noexcept -> void {
-        self.setCentralWidget(this->widget_pointer);
+    friend auto dsl_invoke(MainWindow& self, const Central& prop) -> void {
+        self.setCentralWidget(prop.widget_pointer);
     }
 };
-using namespace widget::pro;
+
 }
 namespace creeper {
-
-using MainWindow = Declarative<main_window::internal::MainWindow,
-    TokenOr<main_window::pro::Token, widget::pro::Token>>;
 
 /// @brief 一点显示窗口的语法糖
 template <widget_trait T>

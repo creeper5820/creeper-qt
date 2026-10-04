@@ -6,12 +6,14 @@
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/property.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 
-namespace creeper::icon_button::internal {
-class IconButton : public QAbstractButton {
+namespace creeper {
+
+class IconButton : public QAbstractButton, public DSL {
     CREEPER_PIMPL_DEFINITION(IconButton);
 
 public:
@@ -53,24 +55,29 @@ public:
     static constexpr auto kExtraLargeFontIconSize  = int { 32 };
 
 public:
-    auto set_color_scheme(const ColorScheme&) noexcept -> void;
-    auto load_theme_manager(ThemeManager&) noexcept -> void;
+    explicit IconButton(auto&&... props)
+        : IconButton { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 
-    auto set_icon(const QString&) noexcept -> void;
-    auto set_icon(const QIcon&) noexcept -> void;
+    auto loadColorScheme(const ColorScheme&) noexcept -> void;
+    auto bindThemeManager(ThemeManager&) noexcept -> void;
 
-    auto set_types(Types) noexcept -> void;
-    auto set_shape(Shape) noexcept -> void;
-    auto set_color(Color) noexcept -> void;
-    auto set_width(Width) noexcept -> void;
+    auto setFontIcon(const QString&) noexcept -> void;
+    auto setIcon(const QIcon&) noexcept -> void;
 
-    auto types_enum() const noexcept -> Types;
-    auto shape_enum() const noexcept -> Shape;
-    auto color_enum() const noexcept -> Color;
-    auto width_enum() const noexcept -> Width;
+    auto setTypes(Types) noexcept -> void;
+    auto setShape(Shape) noexcept -> void;
+    auto setColor(Color) noexcept -> void;
+    auto setWidth(Width) noexcept -> void;
+
+    auto typesEnum() const noexcept -> Types;
+    auto shapeEnum() const noexcept -> Shape;
+    auto colorEnum() const noexcept -> Color;
+    auto widthEnum() const noexcept -> Width;
 
     auto selected() const noexcept -> bool;
-    auto set_selected(bool) noexcept -> void;
+    auto setSelected(bool) noexcept -> void;
 
     // TODO: 详细的颜色自定义接口有缘再写
 
@@ -81,48 +88,40 @@ protected:
 
     auto paintEvent(QPaintEvent*) -> void override;
 };
-}
-namespace creeper::icon_button::pro {
-using Token = creeper::Token<internal::IconButton>;
 
-using Icon =
-    creeper::DerivedProp<Token, QIcon, [](auto& self, const auto& v) { self.set_icon(v); }>;
-using FontIcon =
-    creeper::DerivedProp<Token, QString, [](auto& self, const auto& v) { self.set_icon(v); }>;
+namespace icon_button::pro {
 
-using Color = creeper::SetterProp<Token, internal::IconButton::Color,
-    [](auto& self, const auto& v) { self.set_color(v); }>;
-using Shape = creeper::SetterProp<Token, internal::IconButton::Shape,
-    [](auto& self, const auto& v) { self.set_shape(v); }>;
-using Types = creeper::SetterProp<Token, internal::IconButton::Types,
-    [](auto& self, const auto& v) { self.set_types(v); }>;
-using Width = creeper::SetterProp<Token, internal::IconButton::Width,
-    [](auto& self, const auto& v) { self.set_width(v); }>;
+    using namespace common::pro;
+    using namespace widget::pro;
+    using namespace theme::pro;
 
-constexpr auto ColorFilled   = Color { internal::IconButton::Color::DEFAULT_FILLED };
-constexpr auto ColorOutlined = Color { internal::IconButton::Color::OUTLINED };
-constexpr auto ColorStandard = Color { internal::IconButton::Color::STANDARD };
-constexpr auto ColorTonal    = Color { internal::IconButton::Color::TONAL };
+    using Icon     = ForwardProp<&IconButton::setIcon>;
+    using FontIcon = ForwardProp<&IconButton::setFontIcon>;
 
-constexpr auto ShapeRound  = Shape { internal::IconButton::Shape::DEFAULT_ROUND };
-constexpr auto ShapeSquare = Shape { internal::IconButton::Shape::SQUARE };
+    using Color = ForwardProp<&IconButton::setColor>;
+    using Shape = ForwardProp<&IconButton::setShape>;
+    using Types = ForwardProp<&IconButton::setTypes>;
+    using Width = ForwardProp<&IconButton::setWidth>;
 
-constexpr auto TypesDefault          = Types { internal::IconButton::Types::DEFAULT };
-constexpr auto TypesToggleSelected   = Types { internal::IconButton::Types::TOGGLE_SELECTED };
-constexpr auto TypesToggleUnselected = Types { internal::IconButton::Types::TOGGLE_UNSELECTED };
+    constexpr auto ColorFilled   = Color { IconButton::Color::DEFAULT_FILLED };
+    constexpr auto ColorOutlined = Color { IconButton::Color::OUTLINED };
+    constexpr auto ColorStandard = Color { IconButton::Color::STANDARD };
+    constexpr auto ColorTonal    = Color { IconButton::Color::TONAL };
 
-constexpr auto WidthDefault = Width { internal::IconButton::Width::DEFAULT };
-constexpr auto WidthNarrow  = Width { internal::IconButton::Width::NARROW };
-constexpr auto WidthWide    = Width { internal::IconButton::Width::WIDE };
+    constexpr auto ShapeRound  = Shape { IconButton::Shape::DEFAULT_ROUND };
+    constexpr auto ShapeSquare = Shape { IconButton::Shape::SQUARE };
 
-template <typename Callback>
-using Clickable = common::pro::Clickable<Callback, Token>;
-using namespace widget::pro;
-using namespace theme::pro;
-}
-namespace creeper {
+    constexpr auto TypesDefault          = Types { IconButton::Types::DEFAULT };
+    constexpr auto TypesToggleSelected   = Types { IconButton::Types::TOGGLE_SELECTED };
+    constexpr auto TypesToggleUnselected = Types { IconButton::Types::TOGGLE_UNSELECTED };
 
-using IconButton = Declarative<icon_button::internal::IconButton,
-    TokenOr<icon_button::pro::Token, widget::pro::Token, theme::pro::Token>>;
+    constexpr auto WidthDefault = Width { IconButton::Width::DEFAULT };
+    constexpr auto WidthNarrow  = Width { IconButton::Width::NARROW };
+    constexpr auto WidthWide    = Width { IconButton::Width::WIDE };
 
-}
+    template <typename Callback>
+    using Clickable = common::pro::Clickable<Callback>;
+
+} // namespace icon_button::pro
+
+} // namespace creeper
