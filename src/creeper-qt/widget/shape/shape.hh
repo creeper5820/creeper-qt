@@ -9,16 +9,16 @@ class Shape : public QWidget {
 public:
     using QWidget::QWidget;
 
-    void set_background(const QColor& color) {
+    void setBackground(const QColor& color) {
         background_ = color;
         update();
     }
 
-    void set_border_color(const QColor& color) {
+    void setBorderColor(const QColor& color) {
         border_color_ = color;
         update();
     }
-    void set_border_width(double width) {
+    void setBorderWidth(double width) {
         border_width_ = width;
         update();
     }

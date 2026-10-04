@@ -11,7 +11,7 @@ FilledCard* ControlPanel(ThemeManager& manager) noexcept {
     namespace rp = row::pro;
     namespace cp = col::pro;
 
-    namespace fcp = filled_card::pro;
+    namespace fcp = card::pro;
     namespace obp = outlined_button::pro;
 
     struct Context {

@@ -2,12 +2,14 @@
 
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 
-namespace creeper::slider::internal {
+namespace creeper {
 
-class Slider : public QWidget {
+class Slider : public QWidget, public DSL {
     Q_OBJECT
     CREEPER_PIMPL_DEFINITION(Slider)
 
@@ -42,7 +44,7 @@ public:
 
         int inset_icon_size = 0;
 
-        constexpr auto minimum_height() const { return handle_height; }
+        constexpr auto minimumHeight() const { return handle_height; }
 
         static constexpr auto Xs() {
             return Measurements {
@@ -87,19 +89,22 @@ public:
     };
 
 public:
-    auto set_color_scheme(const ColorScheme&) -> void;
-    auto set_measurements(const Measurements&) -> void;
+    explicit Slider(auto&&... props)
+        : Slider { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 
-    auto load_theme_manager(ThemeManager&) -> void;
+    auto loadColorScheme(const ColorScheme&) -> void;
+    auto setMeasurements(const Measurements&) -> void;
 
-    auto set_progress(double) noexcept -> void;
-    auto get_progress() const noexcept -> double;
+    auto bindThemeManager(ThemeManager&) -> void;
 
-    /// @bug Signals can not be exported on Windows
-    /// TODO: Fix it
+    auto setProgress(double) noexcept -> void;
+    auto getProgress() const noexcept -> double;
+
 Q_SIGNALS:
-    auto signal_value_change(double) -> void;
-    auto signal_value_change_finished(double) -> void;
+    auto valueChanged(double) -> void;
+    auto valueChangedFinished(double) -> void;
 
 protected:
     auto mousePressEvent(QMouseEvent*) -> void override;
@@ -109,29 +114,22 @@ protected:
     auto paintEvent(QPaintEvent*) -> void override;
 };
 
+namespace slider::pro {
+
+    using namespace common::pro;
+    using namespace widget::pro;
+    using namespace theme::pro;
+
+    template <typename F>
+    using OnValueChange = common::pro::SignalInjection<F, &Slider::valueChanged>;
+
+    template <typename F>
+    using OnValueChangeFinished = common::pro::SignalInjection<F, &Slider::valueChangedFinished>;
+
+    using Measurements = ForwardProp<&Slider::setMeasurements>;
+
+    using Progress = ForwardProp<&Slider::setProgress>;
+
 }
-namespace creeper::slider::pro {
-
-using Token = creeper::Token<internal::Slider>;
-
-template <typename F>
-using OnValueChange =
-    common::pro::SignalInjection<F, Token, &internal::Slider::signal_value_change>;
-
-template <typename F>
-using OnValueChangeFinished =
-    common::pro::SignalInjection<F, Token, &internal::Slider::signal_value_change_finished>;
-
-using Measurements = SetterProp<Token, internal::Slider::Measurements,
-    [](auto& self, const auto& v) { self.set_measurements(v); }>;
-
-using Progress = SetterProp<Token, double, [](auto& self, auto v) { self.set_progress(v); }>;
-using namespace widget::pro;
-using namespace theme::pro;
-}
-namespace creeper {
-
-using Slider = Declarative<slider::internal::Slider,
-    TokenOr<slider::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 }

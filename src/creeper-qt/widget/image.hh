@@ -2,52 +2,48 @@
 #include "creeper-qt/utility/content-scale.hh"
 #include "creeper-qt/utility/painter-resource.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 
 namespace creeper {
-namespace image::internal {
-    class Image : public QWidget {
-        CREEPER_PIMPL_DEFINITION(Image)
 
-    public:
-        auto update_pixmap() noexcept -> void;
+class Image : public QWidget, public DSL {
+    CREEPER_PIMPL_DEFINITION(Image)
 
-        auto set_content_scale(ContentScale) noexcept -> void;
-        auto content_scale() const noexcept -> ContentScale;
+public:
+    explicit Image(auto&&... props)
+        : Image { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 
-        auto set_painter_resource(std::shared_ptr<PainterResource>) noexcept -> void;
-        auto painter_resource() const noexcept -> PainterResource;
+    auto updatePixmap() noexcept -> void;
 
-        auto set_opacity(double) noexcept -> void;
-        auto set_radius(double) noexcept -> void;
-        auto set_border_width(double) noexcept -> void;
-        auto set_border_color(QColor) noexcept -> void;
+    auto setContentScale(ContentScale) noexcept -> void;
+    auto contentScale() const noexcept -> ContentScale;
 
-    protected:
-        auto paintEvent(QPaintEvent*) -> void override;
-        auto resizeEvent(QResizeEvent*) -> void override;
-    };
-}
+    auto setPainterResource(std::shared_ptr<PainterResource>) noexcept -> void;
+    auto painterResource() const noexcept -> PainterResource;
+
+    auto setOpacity(double) noexcept -> void;
+    auto setRadius(double) noexcept -> void;
+    auto setBorderWidth(double) noexcept -> void;
+    auto setBorderColor(QColor) noexcept -> void;
+
+protected:
+    auto paintEvent(QPaintEvent*) -> void override;
+    auto resizeEvent(QResizeEvent*) -> void override;
+};
+
 namespace image::pro {
 
-    using Token = creeper::Token<internal::Image>;
+    using namespace common::pro;
+    using namespace widget::pro;
 
-    struct ContentScale : Token {
-        using T = creeper::ContentScale;
-        T content_scale;
-        explicit ContentScale(T content_scale) noexcept
-            : content_scale { content_scale } { }
-        explicit ContentScale(const auto& e) noexcept
-            requires std::constructible_from<T, decltype(e)>
-            : content_scale { e } { }
-        auto apply(auto& self) const noexcept -> void
-            requires requires { self.set_content_scale(content_scale); }
-        {
-            self.set_content_scale(content_scale);
-        }
-    };
-    struct PainterResource : Token {
+    using ContentScale = ForwardProp<&Image::setContentScale>;
+
+    struct PainterResource {
         using T = creeper::PainterResource;
         mutable std::shared_ptr<T> resource;
 
@@ -58,20 +54,12 @@ namespace image::pro {
             requires std::constructible_from<T, decltype(args)...>
             : resource { std::make_shared<T>(std::forward<decltype(args)>(args)...) } { }
 
-        auto apply(auto& self) const noexcept -> void
-            requires requires { self.set_painter_resource(std::move(resource)); }
-        {
-            self.set_painter_resource(std::move(resource));
+        friend auto dsl_invoke(Image& self, const PainterResource& prop) -> void {
+            self.setPainterResource(std::move(prop.resource));
         }
     };
     using Pixmap = PainterResource;
 
-    using Opacity     = common::pro::Opacity<Token>;
-    using Radius      = common::pro::Radius<Token>;
-    using BorderColor = common::pro::BorderColor<Token>;
-    using BorderWidth = common::pro::BorderWidth<Token>;
-using namespace widget::pro;
 }
-using Image =
-    Declarative<image::internal::Image, TokenOr<image::pro::Token, widget::pro::Token>>;
+
 }

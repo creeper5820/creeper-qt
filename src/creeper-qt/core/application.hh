@@ -1,15 +1,13 @@
 #pragma once
 
 #include "creeper-qt/utility/wrapper/common.hh"
-#include "creeper-qt/utility/wrapper/property.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
 #include <qapplication.h>
 #include <qcoreapplication.h>
 
 namespace creeper::app::pro {
 
-using Token = creeper::Token<QApplication>;
-
-struct Complete : Token {
+struct Complete {
 
     int& argument_count;
     char** argument_array;
@@ -20,16 +18,16 @@ struct Complete : Token {
         , argument_array { argv }
         , application_flags { flags } { }
 
-    void apply(auto&) const noexcept {
+    friend auto dsl_invoke(auto&, const Complete& prop) noexcept -> void {
         new ::QApplication {
-            argument_count,
-            argument_array,
-            application_flags,
+            prop.argument_count,
+            prop.argument_array,
+            prop.application_flags,
         };
     }
 };
 
-struct Attribute : Token {
+struct Attribute {
 
     ::Qt::ApplicationAttribute attribute;
     bool on;
@@ -38,17 +36,27 @@ struct Attribute : Token {
         : attribute { attribute }
         , on { on } { }
 
-    void apply(auto&) const noexcept { ::QApplication::setAttribute(attribute, on); }
+    friend auto dsl_invoke(auto&, const Attribute& prop) noexcept -> void {
+        ::QApplication::setAttribute(prop.attribute, prop.on);
+    }
 };
+
 }
+
 namespace creeper::app {
 
-struct Application { };
-using init = Declarative<Application, pro::Token>;
+class Application : public DSL {
+public:
+    explicit Application(auto&&... props) {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
+};
+
+using init = Application;
 
 inline auto exec() { return ::QApplication::exec(); }
 inline auto quit() { return ::QApplication::quit(); }
 
-inline auto focus_widget() { return ::QApplication::focusWidget(); }
-inline auto focus_object() { return ::QApplication::focusObject(); }
+inline auto focusWidget() { return ::QApplication::focusWidget(); }
+inline auto focusObject() { return ::QApplication::focusObject(); }
 }

@@ -1,8 +1,20 @@
 #pragma once
 #include "creeper-qt/utility/trait/widget.hh"
-#include "creeper-qt/utility/wrapper/property.hh"
+#include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
 
-namespace creeper::group::internal {
+#include <concepts>
+#include <functional>
+#include <ranges>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+#include <vector>
+
+namespace creeper::group {
+
+/// 占位基类：当布局类型 T 已经继承 DSL 时用它替代，避免重复的 DSL 基类。
+struct NoDslBase { };
 
 template <typename F, typename T>
 concept foreach_invoke_item_trait = requires {
@@ -20,23 +32,32 @@ concept foreach_item_trait = foreach_invoke_item_trait<F, T> || foreach_apply_it
 template <typename R, typename F>
 concept foreach_invoke_ranges_trait = foreach_item_trait<F, std::ranges::range_value_t<R>>;
 
+}
+
+namespace creeper {
+
 template <layout_trait T, widget_trait W>
-struct Group : public T {
+class Group : public T,
+              public std::conditional_t<std::derived_from<T, DSL>, group::NoDslBase, DSL> {
+public:
     using T::T;
+
+    explicit Group(auto&&... args) { this->construct_with(std::forward<decltype(args)>(args)...); }
+
     std::vector<W*> widgets;
 
     template <std::ranges::range R, typename F>
-        requires foreach_invoke_ranges_trait<R, F>
+        requires group::foreach_invoke_ranges_trait<R, F>
     constexpr auto compose(const R& ranges, F&& f, Qt::Alignment a = { }) noexcept -> void {
         for (const auto& item : ranges) {
             using ItemT = decltype(item);
 
             auto widget_pointer = (W*) { };
 
-            if constexpr (foreach_invoke_item_trait<F, ItemT>)
+            if constexpr (group::foreach_invoke_item_trait<F, ItemT>)
                 widget_pointer = std::invoke(f, item);
 
-            else if constexpr (foreach_apply_item_trait<F, ItemT>)
+            else if constexpr (group::foreach_apply_item_trait<F, ItemT>)
                 widget_pointer = std::apply(f, item);
 
             if (widget_pointer != nullptr) {
@@ -45,6 +66,7 @@ struct Group : public T {
             }
         }
     }
+
     auto foreach_(this auto&& self, auto&& f) noexcept
         requires std::invocable<decltype(f), W&>
     {
@@ -53,11 +75,11 @@ struct Group : public T {
     }
 };
 
-};
+}
 
 namespace creeper::group::pro {
 
-using Token = creeper::Token<internal::Group<QLayout, QWidget>>;
+using namespace common::pro;
 
 /// @note
 /// 一种典型的用法，委托构造时，所传函数只能接受常量引用，
@@ -74,8 +96,8 @@ using Token = creeper::Token<internal::Group<QLayout, QWidget>>;
 /// }
 ///
 template <typename R, typename F>
-    requires internal::foreach_invoke_ranges_trait<R, F>
-struct Compose : Token {
+    requires group::foreach_invoke_ranges_trait<R, F>
+struct Compose {
     const R& ranges;
     F method;
     Qt::Alignment alignment;
@@ -85,8 +107,8 @@ struct Compose : Token {
         , method { std::move(f) }
         , alignment { a } { }
 
-    auto apply(auto& self) noexcept -> void { //
-        self.compose(ranges, std::move(method), alignment);
+    friend auto dsl_invoke(auto& self, const Compose& prop) -> void {
+        self.compose(prop.ranges, prop.method, prop.alignment);
     }
 };
 
@@ -97,22 +119,16 @@ struct Compose : Token {
 ///
 template <typename F>
     requires(!std::invocable<F>)
-struct Foreach : Token {
+struct Foreach {
     F function;
 
     explicit Foreach(F&& f) noexcept
         : function { std::forward<F>(f) } { }
 
-    auto apply(auto& self) const noexcept {
+    friend auto dsl_invoke(auto& self, const Foreach& prop) -> void {
         // 很遗憾，Qt 占用了 foreach 这个单词
-        self.foreach_(std::move(function));
+        self.foreach_(prop.function);
     }
 };
-};
-namespace creeper {
-
-template <layout_trait T, widget_trait W>
-using Group =
-    Declarative<group::internal::Group<T, W>, TokenOr<group::pro::Token, typename T::Token>>;
 
 }

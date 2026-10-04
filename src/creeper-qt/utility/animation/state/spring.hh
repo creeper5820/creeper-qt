@@ -36,8 +36,8 @@ struct SpringState : public NormalAccessor {
             return;
         }
 
-        target = new_target;
-        velocity = animate::zero<T>();
+        target         = new_target;
+        velocity       = animate::zero<T>();
         last_timestamp = Clock::now();
     }
 
@@ -67,8 +67,8 @@ struct SpringState : public NormalAccessor {
 
         last_timestamp = now;
 
-        const bool done = animate::magnitude(value - target) < config.epsilon &&
-            animate::magnitude(velocity) < config.epsilon;
+        const bool done = animate::magnitude(value - target) < config.epsilon
+            && animate::magnitude(velocity) < config.epsilon;
 
         if (done) velocity = animate::zero<T>();
         return !done;

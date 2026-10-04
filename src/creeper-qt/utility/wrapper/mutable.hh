@@ -1,13 +1,15 @@
 #pragma once
 
+#include "creeper-qt/utility/wrapper/dsl.hh"
 #include <functional>
 #include <qwidget.h>
+#include <unordered_map>
 
 namespace creeper {
 
 /// @brief 响应式属性包装器，允许属性变更后自动同步到所有已绑定组件。
 ///
-/// 该模板用于包装具备 apply 方法的属性类型，使其具备响应式能力。
+/// 该模板用于包装具备 dsl_invoke 方法的属性类型，使其具备响应式能力。
 /// 通过 Mutable 包装后的属性可以被多个组件共享，
 /// 当属性发生变更时，所有通过 Mutable 绑定的组件会自动更新自身属性，
 /// 达到类似“全局属性联动”的效果。
@@ -44,15 +46,16 @@ public:
     Mutable(const Mutable&) = delete;
     Mutable(Mutable&&)      = delete;
 
-    auto apply(auto& self) const noexcept -> void {
-        T::apply(self);
-        Mutable::bind(self);
+    friend auto dsl_invoke(auto& self, const Mutable& prop) -> void {
+        dsl_invoke(self, static_cast<const T&>(prop));
+        prop.bind(self);
     }
+
     auto bind(auto& self) const noexcept -> void {
         callbacks_.insert({
             &self,
             [&](const T& pro) {
-                pro.apply(self);
+                dsl_invoke(self, pro);
                 self.update();
             },
         });

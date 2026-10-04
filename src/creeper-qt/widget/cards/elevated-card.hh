@@ -2,40 +2,37 @@
 #include "basic-card.hh"
 
 namespace creeper {
-namespace elevated_card::internal {
-    class ElevatedCard : public card::internal::Card {
-    public:
-        explicit ElevatedCard() {
-            using namespace card::internal;
-            shadow_effect.setBlurRadius(kElevatedShadowBlurRadius);
-            shadow_effect.setOffset(kElevatedShadowOffsetX, kElevatedShadowOffsetY);
-            setGraphicsEffect(&shadow_effect);
-        }
 
-        void set_color_scheme(const ColorScheme& scheme) {
-            using namespace card::internal;
+class ElevatedCard : public Card {
+public:
+    explicit ElevatedCard(auto&&... props)
+        : Card { } {
+        shadow_effect.setBlurRadius(card::kElevatedShadowBlurRadius);
+        shadow_effect.setOffset(card::kElevatedShadowOffsetX, card::kElevatedShadowOffsetY);
+        setGraphicsEffect(&shadow_effect);
 
-            auto shadow_color = scheme.shadow;
-            shadow_color.setAlphaF(kElevatedShadowOpacity);
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 
-            shadow_effect.setColor(shadow_color);
-            Card::set_color_scheme(scheme);
-        }
+    auto loadColorScheme(const ColorScheme& scheme) -> void {
+        auto shadow_color = scheme.shadow;
+        shadow_color.setAlphaF(card::kElevatedShadowOpacity);
 
-        void load_theme_manager(ThemeManager& manager) {
-            manager.append_handler(this,
-                [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
-        }
+        shadow_effect.setColor(shadow_color);
+        Card::loadColorScheme(scheme);
+    }
 
-    private:
-        QGraphicsDropShadowEffect shadow_effect {};
-    };
+    auto bindThemeManager(ThemeManager& manager) -> void {
+        manager.appendHandler(
+            this, [this](const ThemeManager& manager) { loadColorScheme(manager.colorScheme()); });
+    }
 
-}
+private:
+    QGraphicsDropShadowEffect shadow_effect { };
+};
+
 namespace elevated_card::pro {
     using namespace card::pro;
 }
-using ElevatedCard = Declarative<elevated_card::internal::ElevatedCard,
-    TokenOr<card::pro::Token, rounded_rect::pro::Token, theme::pro::Token,
-        widget::pro::Token>>;
+
 }

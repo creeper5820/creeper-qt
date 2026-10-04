@@ -5,34 +5,36 @@ CircularProgressIndicator::CircularProgressIndicator()
 
 CircularProgressIndicator::~CircularProgressIndicator() = default;
 
-void CircularProgressIndicator::set_color_scheme(const ColorScheme& scheme) {
-    pimpl->set_color_scheme(*this, scheme);
+auto CircularProgressIndicator::loadColorScheme(const ColorScheme& scheme) -> void {
+    pimpl->loadColorScheme(*this, scheme);
 }
 
-void CircularProgressIndicator::load_theme_manager(ThemeManager& manager) {
-    manager.append_handler(this, *this);
+auto CircularProgressIndicator::bindThemeManager(ThemeManager& manager) -> void {
+    manager.appendHandler(this, *this);
 }
 
-void CircularProgressIndicator::set_progress(double value) noexcept {
+auto CircularProgressIndicator::setProgress(double value) noexcept -> void {
     pimpl->set_progress(*this, value);
 }
-double CircularProgressIndicator::progress() const noexcept { return pimpl->progress; }
+auto CircularProgressIndicator::progress() const noexcept -> double { return pimpl->progress; }
 
-void CircularProgressIndicator::set_indeterminate(bool on) noexcept {
+auto CircularProgressIndicator::setIndeterminate(bool on) noexcept -> void {
     pimpl->set_indeterminate(*this, on);
 }
-bool CircularProgressIndicator::indeterminate() const noexcept { return pimpl->indeterminate; }
+auto CircularProgressIndicator::indeterminate() const noexcept -> bool {
+    return pimpl->indeterminate;
+}
 
-void CircularProgressIndicator::set_indicator_color(const QColor& color) noexcept {
+auto CircularProgressIndicator::setIndicatorColor(const QColor& color) noexcept -> void {
     pimpl->indicator_color = color, update();
 }
-void CircularProgressIndicator::set_track_color(const QColor& color) noexcept {
+auto CircularProgressIndicator::setTrackColor(const QColor& color) noexcept -> void {
     pimpl->track_color = color, update();
 }
-void CircularProgressIndicator::set_stroke_width(double width) noexcept {
+auto CircularProgressIndicator::setStrokeWidth(double width) noexcept -> void {
     pimpl->stroke_width = width, update();
 }
 
-void CircularProgressIndicator::paintEvent(QPaintEvent* event) {
+auto CircularProgressIndicator::paintEvent(QPaintEvent* event) -> void {
     pimpl->paint_event(*this, *event);
 }

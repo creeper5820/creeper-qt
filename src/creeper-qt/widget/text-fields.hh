@@ -3,164 +3,174 @@
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/forward_prop.hh"
+#include "creeper-qt/utility/wrapper/pimpl.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 
 #include <qlineedit.h>
 
 namespace creeper {
-namespace text_field::internal {
 
-    class FilledTextField;
-    class OutlinedTextField;
+class FilledTextField;
+class OutlinedTextField;
 
-    class BasicTextField : public QLineEdit {
-        Q_OBJECT
-        CREEPER_PIMPL_DEFINITION(BasicTextField);
+class BasicTextField : public QLineEdit, public DSL {
+    Q_OBJECT
+    CREEPER_PIMPL_DEFINITION(BasicTextField);
 
-        friend FilledTextField;
-        friend OutlinedTextField;
+    friend FilledTextField;
+    friend OutlinedTextField;
 
-    public:
-        struct ColorSpecs {
-            struct Tokens {
-                QColor container;
-                QColor caret;
-                QColor active_indicator;
+public:
+    struct ColorSpecs {
+        struct Tokens {
+            QColor container;
+            QColor caret;
+            QColor active_indicator;
 
-                QColor input_text;
-                QColor label_text;
-                QColor supporting_text;
+            QColor input_text;
+            QColor label_text;
+            QColor supporting_text;
 
-                QColor leading_icon;
-                QColor trailing_icon;
+            QColor leading_icon;
+            QColor trailing_icon;
 
-                QColor outline;
-            };
-
-            Tokens enabled;
-            Tokens disabled;
-            Tokens focused;
-            Tokens error;
-
-            QColor state_layer;
-            QColor selection_container;
+            QColor outline;
         };
 
-        struct Measurements {
-            int container_height = 56;
+        Tokens enabled;
+        Tokens disabled;
+        Tokens focused;
+        Tokens error;
 
-            int icon_rect_size  = 24;
-            int input_rect_size = 24;
-            int label_rect_size = 16;
-
-            int standard_font_height = 16;
-
-            int col_padding                      = 8;
-            int row_padding_without_icons        = 16;
-            int row_padding_with_icons           = 12;
-            int row_padding_populated_label_text = 4;
-
-            int padding_icons_text = 16;
-
-            int supporting_text_and_character_counter_top_padding = 4;
-            int supporting_text_and_character_counter_row_padding = 16;
-
-            auto icon_size() const { return QSize { icon_rect_size, icon_rect_size }; }
-        };
-
-        void set_color_scheme(const ColorScheme&);
-
-        void load_theme_manager(ThemeManager&);
-
-        void set_label_text(const QString&);
-
-        void set_hint_text(const QString&);
-
-        void set_supporting_text(const QString&);
-
-        void set_leading_icon(const QIcon&);
-
-        void set_leading_icon(const QString& code, const QString& font);
-
-        void set_trailling_icon(const QIcon&);
-
-        void set_trailling_icon(const QString& code, const QString& font);
-
-        auto set_measurements(const Measurements& measurements) noexcept -> void;
-
-    Q_SIGNALS:
-        auto signal_pressed() -> void;
-
-    protected:
-        void resizeEvent(QResizeEvent*) override;
-
-        void enterEvent(qt::EnterEvent*) override;
-        void leaveEvent(QEvent*) override;
-
-        void focusInEvent(QFocusEvent*) override;
-        void focusOutEvent(QFocusEvent*) override;
-
-        void mousePressEvent(QMouseEvent*) override;
+        QColor state_layer;
+        QColor selection_container;
     };
 
-    class FilledTextField : public BasicTextField {
-    protected:
-        void paintEvent(QPaintEvent*) override;
+    struct Measurements {
+        int container_height = 56;
+
+        int icon_rect_size  = 24;
+        int input_rect_size = 24;
+        int label_rect_size = 16;
+
+        int standard_font_height = 16;
+
+        int col_padding                      = 8;
+        int row_padding_without_icons        = 16;
+        int row_padding_with_icons           = 12;
+        int row_padding_populated_label_text = 4;
+
+        int padding_icons_text = 16;
+
+        int supporting_text_and_character_counter_top_padding = 4;
+        int supporting_text_and_character_counter_row_padding = 16;
+
+        auto iconSize() const { return QSize { icon_rect_size, icon_rect_size }; }
     };
-    class OutlinedTextField : public BasicTextField {
-    protected:
-        void paintEvent(QPaintEvent*) override;
-    };
+
+    explicit BasicTextField(auto&&... props)
+        : BasicTextField { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
+
+    void loadColorScheme(const ColorScheme&);
+
+    void bindThemeManager(ThemeManager&);
+
+    void setLabelText(const QString&);
+
+    void setHintText(const QString&);
+
+    void setSupportingText(const QString&);
+
+    void setLeadingIcon(const QIcon&);
+
+    void setLeadingIcon(const QString& code, const QString& font);
+
+    void setTrailingIcon(const QIcon&);
+
+    void setTrailingIcon(const QString& code, const QString& font);
+
+    auto setMeasurements(const Measurements& measurements) noexcept -> void;
+
+Q_SIGNALS:
+    auto pressed() -> void;
+
+protected:
+    void resizeEvent(QResizeEvent*) override;
+
+    void enterEvent(qt::EnterEvent*) override;
+    void leaveEvent(QEvent*) override;
+
+    void focusInEvent(QFocusEvent*) override;
+    void focusOutEvent(QFocusEvent*) override;
+
+    void mousePressEvent(QMouseEvent*) override;
+};
+
+class FilledTextField : public BasicTextField {
+public:
+    explicit FilledTextField(auto&&... props)
+        : BasicTextField { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
+
+protected:
+    void paintEvent(QPaintEvent*) override;
+};
+
+class OutlinedTextField : public BasicTextField {
+public:
+    explicit OutlinedTextField(auto&&... props)
+        : BasicTextField { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
+
+protected:
+    void paintEvent(QPaintEvent*) override;
+};
 
 }
-namespace text_field::pro {
-    using Token = creeper::Token<internal::BasicTextField>;
+namespace creeper::text_field::pro {
 
-    using ClearButton = SetterProp<Token, bool,
-        [](auto& self, bool enable) { self.setClearButtonEnabled(enable); }>;
+using namespace common::pro;
+using namespace widget::pro;
+using namespace theme::pro;
 
-    using Measurements = SetterProp<Token, internal::BasicTextField::Measurements,
-        [](auto& self, const auto& var) { self.set_measurements(var); }>;
+using ClearButton = ForwardProp<&QLineEdit::setClearButtonEnabled>;
 
-    using LabelText = common::pro::String<Token,
-        [](auto& self, const auto& string) { self.set_label_text(string); }>;
+using Measurements = ForwardProp<&BasicTextField::setMeasurements>;
 
-    using Text = common::pro::Text<Token>;
+using LabelText =
+    common::pro::String<[](auto& self, const auto& text) { self.setLabelText(text); }>;
 
-    using ReadOnly = SetterProp<Token, bool, [](auto& self, bool v) { self.setReadOnly(v); }>;
+using Text = common::pro::Text;
 
-    struct LeadingIcon : Token {
-        QString code;
-        QString font;
-        explicit LeadingIcon(const QString& code, const QString& font)
-            : code { code }
-            , font { font } { }
-        void apply(auto& self) const { self.set_leading_icon(code, font); }
-    };
+using ReadOnly = ForwardProp<&QLineEdit::setReadOnly>;
 
-    template <typename F>
-    using OnTextChanged =
-        common::pro::SignalInjection<F, Token, &internal::BasicTextField::textChanged>;
+struct LeadingIcon {
+    QString code;
+    QString font;
+    explicit LeadingIcon(const QString& code, const QString& font)
+        : code { code }
+        , font { font } { }
+    friend auto dsl_invoke(BasicTextField& self, const LeadingIcon& prop) -> void {
+        self.setLeadingIcon(prop.code, prop.font);
+    }
+};
 
-    template <typename F>
-    using OnEditingFinished =
-        common::pro::SignalInjection<F, Token, &internal::BasicTextField::editingFinished>;
+template <typename F>
+using OnTextChanged = common::pro::SignalInjection<F, &BasicTextField::textChanged>;
 
-    template <typename F>
-    using OnChanged = OnTextChanged<F>;
+template <typename F>
+using OnEditingFinished = common::pro::SignalInjection<F, &BasicTextField::editingFinished>;
 
-    template <typename F>
-    using OnPressed =
-        common::pro::SignalInjection<F, Token, &internal::BasicTextField::signal_pressed>;
+template <typename F>
+using OnChanged = OnTextChanged<F>;
 
-    using namespace widget::pro;
-    using namespace theme::pro;
-}
-
-using FilledTextField = Declarative<text_field::internal::FilledTextField,
-    TokenOr<text_field::pro::Token, widget::pro::Token, theme::pro::Token>>;
-
-using OutlinedTextField = Declarative<text_field::internal::OutlinedTextField,
-    TokenOr<text_field::pro::Token, widget::pro::Token, theme::pro::Token>>;
+template <typename F>
+using OnPressed = common::pro::SignalInjection<F, &BasicTextField::pressed>;
 
 }

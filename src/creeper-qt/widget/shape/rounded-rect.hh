@@ -2,15 +2,19 @@
 
 #include "creeper-qt/utility/painter/helper.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
-#include "creeper-qt/utility/wrapper/property.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 #include "creeper-qt/widget/shape/shape.hh"
 
-namespace creeper::rounded_rect::internal {
+namespace creeper {
 
-class RoundedRect : public Shape {
+class RoundedRect : public Shape, public DSL {
 public:
-    void set_radius(double radius) {
+    using Shape::Shape;
+
+    explicit RoundedRect(auto&&... args) { construct_with(std::forward<decltype(args)>(args)...); }
+
+    auto setRadius(double radius) -> void {
         radius_nx_ny_ = radius;
         radius_px_py_ = radius;
         radius_nx_py_ = radius;
@@ -18,30 +22,30 @@ public:
         update();
     }
 
-    void set_radius_nx_ny(double radius) {
+    auto setRadiusNxNy(double radius) -> void {
         radius_nx_ny_ = radius;
         update();
     }
-    void set_radius_px_py(double radius) {
+    auto setRadiusPxPy(double radius) -> void {
         radius_px_py_ = radius;
         update();
     }
-    void set_radius_nx_py(double radius) {
+    auto setRadiusNxPy(double radius) -> void {
         radius_nx_py_ = radius;
         update();
     }
-    void set_radius_px_ny(double radius) {
+    auto setRadiusPxNy(double radius) -> void {
         radius_px_ny_ = radius;
         update();
     }
 
-    void set_radius_top_left(double radius) { set_radius_nx_ny(radius); }
+    auto setRadiusTopLeft(double radius) -> void { setRadiusNxNy(radius); }
 
-    void set_radius_top_right(double radius) { set_radius_px_ny(radius); }
+    auto setRadiusTopRight(double radius) -> void { setRadiusPxNy(radius); }
 
-    void set_radius_bottom_left(double radius) { set_radius_nx_py(radius); }
+    auto setRadiusBottomLeft(double radius) -> void { setRadiusNxPy(radius); }
 
-    void set_radius_bottom_right(double radius) { set_radius_px_py(radius); }
+    auto setRadiusBottomRight(double radius) -> void { setRadiusPxPy(radius); }
 
 protected:
     void paintEvent(QPaintEvent* event) override {
@@ -66,32 +70,14 @@ private:
     double radius_px_ny_ = 0;
 };
 
+namespace rounded_rect::pro {
+    using namespace common::pro;
+    using namespace widget::pro;
+
+    using RadiusTopLeft     = RadiusNxNy;
+    using RadiusTopRight    = RadiusPxNy;
+    using RadiusBottomLeft  = RadiusNxPy;
+    using RadiusBottomRight = RadiusPxPy;
 }
-namespace creeper::rounded_rect::pro {
-using Token = creeper::Token<internal::RoundedRect>;
-
-// 通用属性
-using Radius = common::pro::Radius<Token>;
-
-using RadiusPxPy = common::pro::RadiusPxPy<Token>;
-using RadiusNxNy = common::pro::RadiusNxNy<Token>;
-using RadiusPxNy = common::pro::RadiusPxNy<Token>;
-using RadiusNxPy = common::pro::RadiusNxPy<Token>;
-
-using RadiusTopLeft     = RadiusNxNy;
-using RadiusTopRight    = RadiusPxNy;
-using RadiusBottomLeft  = RadiusNxPy;
-using RadiusBottomRight = RadiusPxPy;
-
-using Background = common::pro::Background<Token>;
-
-using BorderWidth = common::pro::BorderWidth<Token>;
-using BorderColor = common::pro::BorderColor<Token>;
-using namespace widget::pro;
-}
-namespace creeper {
-
-using RoundedRect = Declarative<rounded_rect::internal::RoundedRect,
-    TokenOr<rounded_rect::pro::Token, widget::pro::Token>>;
 
 }

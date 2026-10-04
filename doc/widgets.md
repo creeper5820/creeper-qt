@@ -72,20 +72,7 @@ auto widget_b = new Widget {
 
 命名空间：`creeper::button::pro`
 
-```cpp
-namespace button::pro {
-    using Text        = common::pro::Text<Token>;
-    using TextColor   = common::pro::TextColor<Token>;
-    using Radius      = common::pro::Radius<Token>;
-    using BorderWidth = common::pro::BorderWidth<Token>;
-    using BorderColor = common::pro::BorderColor<Token>;
-    using Background  = common::pro::Background<Token>;
-    using WaterColor  = common::pro::WaterColor<Token>;
-
-    template <typename Callback, class Token>
-    struct Clickable : Token;
-}
-```
+按钮组件通过 `using namespace common::pro;` 导入通用属性，无需显式指定模板参数。
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
@@ -153,22 +140,35 @@ auto button = new FilledButton {
 
 ### 属性组合复用
 
-由于属性通过 `concept` 约束定义，以下等价关系成立：
+所有按钮组件的 `pro` 命名空间都导入了通用属性，可以直接使用：
 
 ```cpp
-static_assert(std::same_as<filled_button::pro::Text, button::pro::Text>);
-static_assert(std::same_as<filled_button::pro::Radius, button::pro::Radius>);
+namespace fbp = creeper::filled_button::pro;
+namespace obp = creeper::outlined_button::pro;
+
+// 通用属性可以直接使用，无需区分来源
+const auto properties = std::tuple {
+    fbp::ThemeManager { theme_manager },
+    fbp::FixedSize { 100, 50 },
+    fbp::Font { "JetBrains Mono", 12 },
+    fbp::Text { "你好世界" },
+    fbp::Radius { 25 },
+};
 ```
 
 因此可以定义通用属性集合并应用到任意按钮类型：
 
 ```cpp
+namespace fbp = creeper::filled_button::pro;
+namespace obp = creeper::outlined_button::pro;
+namespace tbp = creeper::text_button::pro;
+
 const auto properties = std::tuple {
-    util::theme::pro::ThemeManager { theme_manager },
-    widget::pro::FixedSize { 100, 50 },
-    widget::pro::Font { "JetBrains Mono", 12 },
-    button::pro::Text { "你好世界" },
-    button::pro::Radius { 25 },
+    fbp::ThemeManager { theme_manager },
+    fbp::FixedSize { 100, 50 },
+    fbp::Font { "JetBrains Mono", 12 },
+    fbp::Text { "你好世界" },
+    fbp::Radius { 25 },
 };
 
 auto filled_button = FilledButton { properties };

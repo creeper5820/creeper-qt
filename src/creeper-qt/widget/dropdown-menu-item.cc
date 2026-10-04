@@ -8,7 +8,7 @@
 #include <qevent.h>
 #include <qpainter.h>
 
-using namespace creeper::dropdown_menu_item::details;
+using namespace creeper;
 
 struct DropdownMenuItem::Impl {
     enum class Trailing { None, Icon, Text };
@@ -47,7 +47,7 @@ struct DropdownMenuItem::Impl {
         set_measurements(Measurements { });
     }
 
-    auto set_color_scheme(const ColorScheme& scheme) -> void {
+    auto loadColorScheme(const ColorScheme& scheme) -> void {
         color_space.enabled.label_text    = scheme.on_surface;
         color_space.enabled.leading_icon  = scheme.on_surface_variant;
         color_space.enabled.trailing_icon = scheme.on_surface_variant;
@@ -68,7 +68,7 @@ struct DropdownMenuItem::Impl {
         self.update();
     }
 
-    auto load_theme_manager(ThemeManager& manager) -> void { manager.append_handler(self); }
+    auto bindThemeManager(ThemeManager& manager) -> void { manager.appendHandler(self); }
 
     auto set_measurements(const Measurements& value) noexcept -> void {
         measurements = value;
@@ -244,7 +244,7 @@ struct DropdownMenuItem::Impl {
         if (enable_water_ripple)
             water_ripple.clicked(event->pos(), std::max(self.width(), self.height()));
 
-        Q_EMIT self.signal_clicked();
+        Q_EMIT self.clicked();
     }
 };
 
@@ -253,40 +253,40 @@ DropdownMenuItem::DropdownMenuItem()
 
 DropdownMenuItem::~DropdownMenuItem() = default;
 
-auto DropdownMenuItem::set_color_scheme(const ColorScheme& scheme) -> void {
-    pimpl->set_color_scheme(scheme);
+auto DropdownMenuItem::loadColorScheme(const ColorScheme& scheme) -> void {
+    pimpl->loadColorScheme(scheme);
 }
 
-auto DropdownMenuItem::load_theme_manager(ThemeManager& manager) -> void {
-    pimpl->load_theme_manager(manager);
+auto DropdownMenuItem::bindThemeManager(ThemeManager& manager) -> void {
+    pimpl->bindThemeManager(manager);
 }
 
-auto DropdownMenuItem::set_measurements(const Measurements& measurements) noexcept -> void {
+auto DropdownMenuItem::setMeasurements(const Measurements& measurements) noexcept -> void {
     pimpl->set_measurements(measurements);
 }
 
-auto DropdownMenuItem::set_text(const QString& text) -> void { pimpl->set_text(text); }
+auto DropdownMenuItem::setText(const QString& text) -> void { pimpl->set_text(text); }
 
-auto DropdownMenuItem::set_leading_icon(const QString& code, const QString& font) -> void {
+auto DropdownMenuItem::setLeadingIcon(const QString& code, const QString& font) -> void {
     pimpl->set_leading_icon(code, font);
 }
 
-auto DropdownMenuItem::set_trailing_icon(const QString& code, const QString& font) -> void {
+auto DropdownMenuItem::setTrailingIcon(const QString& code, const QString& font) -> void {
     pimpl->set_trailing_icon(code, font);
 }
 
-auto DropdownMenuItem::set_trailing_text(const QString& text) -> void {
+auto DropdownMenuItem::setTrailingText(const QString& text) -> void {
     pimpl->set_trailing_text(text);
 }
 
-auto DropdownMenuItem::set_disabled(bool disabled) -> void { pimpl->set_disabled(disabled); }
+auto DropdownMenuItem::setDisabled(bool disabled) -> void { pimpl->set_disabled(disabled); }
 
-auto DropdownMenuItem::set_water_color(const QColor& color) -> void {
+auto DropdownMenuItem::setWaterColor(const QColor& color) -> void {
     pimpl->water_color = color;
     update();
 }
 
-auto DropdownMenuItem::set_water_ripple_status(bool enable) -> void {
+auto DropdownMenuItem::setWaterRippleStatus(bool enable) -> void {
     pimpl->enable_water_ripple = enable;
 }
 

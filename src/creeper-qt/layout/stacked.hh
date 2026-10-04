@@ -1,51 +1,51 @@
 #pragma once
 #include "creeper-qt/utility/trait/widget.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/layout.hh"
-#include "creeper-qt/utility/wrapper/property.hh"
 
 #include <concepts>
 #include <qstackedlayout.h>
 
-namespace creeper::stacked::internal {
-class Stacked : public QStackedLayout { };
-}
+namespace creeper {
 
-namespace creeper::stacked::pro {
+class Stacked : public QStackedLayout, public DSL {
+public:
+    using QStackedLayout::QStackedLayout;
 
-using Token = creeper::Token<internal::Stacked>;
-
-/// @note: currentChanged(int index)
-template <typename F>
-using IndexChanged = common::pro::SignalInjection<F, Token, &internal::Stacked::currentChanged>;
-
-using CurrentIndex =
-    SetterProp<Token, int, [](auto& self, auto index) { self.setCurrentIndex(index); }>;
-
-template <item_trait T>
-struct Item : Token {
-    T* item_pointer = nullptr;
-
-    explicit Item(T* pointer) noexcept
-        : item_pointer { pointer } { }
-
-    explicit Item(auto&&... args) noexcept
-        requires std::constructible_from<T, decltype(args)...>
-        : item_pointer { new T { std::forward<decltype(args)>(args)... } } { }
-
-    void apply(stacked_trait auto& layout) const {
-        if constexpr (widget_trait<T>) {
-            layout.addWidget(item_pointer);
-        }
-    }
+    explicit Stacked(auto&&... props) { construct_with(std::forward<decltype(props)>(props)...); }
 };
 
-using namespace layout::pro;
+namespace stacked::pro {
+    using namespace common::pro;
+    using namespace layout::pro;
+
+    /// @note: currentChanged(int index)
+    template <typename F>
+    using IndexChanged = common::pro::SignalInjection<F, &Stacked::currentChanged>;
+
+    using CurrentIndex = ForwardProp<&Stacked::setCurrentIndex>;
+
+    template <item_trait T>
+    struct Item {
+        T* item_pointer = nullptr;
+
+        explicit Item(T* pointer) noexcept
+            : item_pointer { pointer } { }
+
+        explicit Item(auto&&... args) noexcept
+            requires std::constructible_from<T, decltype(args)...>
+            : item_pointer { new T { std::forward<decltype(args)>(args)... } } { }
+
+        friend auto dsl_invoke(Stacked& layout, const Item& prop) -> void {
+            if constexpr (widget_trait<T>) {
+                layout.addWidget(prop.item_pointer);
+            }
+        }
+    };
 }
 
-namespace creeper {
-using Stacked = Declarative<stacked::internal::Stacked,
-    TokenOr<stacked::pro::Token, layout::pro::Token>>;
 using NavHost = Stacked;
 
 namespace nav_host::pro {

@@ -1,63 +1,58 @@
 #pragma once
 
 #include "creeper-qt/utility/theme/theme.hh"
+#include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/property.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 
 #include <qwidget.h>
 
-namespace creeper::circular_progress_indicator::details {
+namespace creeper {
 
-class CircularProgressIndicator : public QWidget {
+class CircularProgressIndicator : public QWidget, public DSL {
     CREEPER_PIMPL_DEFINITION(CircularProgressIndicator);
 
 public:
-    void set_color_scheme(const ColorScheme&);
-    void load_theme_manager(ThemeManager&);
+    explicit CircularProgressIndicator(auto&&... props)
+        : CircularProgressIndicator { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 
-    void set_progress(double) noexcept;
-    double progress() const noexcept;
+    auto loadColorScheme(const ColorScheme&) -> void;
+    auto bindThemeManager(ThemeManager&) -> void;
 
-    void set_indeterminate(bool) noexcept;
-    bool indeterminate() const noexcept;
+    auto setProgress(double) noexcept -> void;
+    auto progress() const noexcept -> double;
 
-    void set_indicator_color(const QColor&) noexcept;
-    void set_track_color(const QColor&) noexcept;
+    auto setIndeterminate(bool) noexcept -> void;
+    auto indeterminate() const noexcept -> bool;
+
+    auto setIndicatorColor(const QColor&) noexcept -> void;
+    auto setTrackColor(const QColor&) noexcept -> void;
 
     /// @note 线宽为 0 时按直径的 10% 自适应
-    void set_stroke_width(double) noexcept;
+    auto setStrokeWidth(double) noexcept -> void;
 
 protected:
-    void paintEvent(QPaintEvent*) override;
+    auto paintEvent(QPaintEvent*) -> void override;
 };
 
+namespace circular_progress_indicator::pro {
+    using namespace common::pro;
+    using namespace widget::pro;
+    using namespace theme::pro;
+
+    using Progress = ForwardProp<&CircularProgressIndicator::setProgress>;
+
+    using Indeterminate = ForwardProp<&CircularProgressIndicator::setIndeterminate>;
+
+    using IndicatorColor = ForwardProp<&CircularProgressIndicator::setIndicatorColor>;
+
+    using TrackColor = ForwardProp<&CircularProgressIndicator::setTrackColor>;
+
+    using StrokeWidth = ForwardProp<&CircularProgressIndicator::setStrokeWidth>;
 }
-namespace creeper::circular_progress_indicator::pro {
-
-using Token = creeper::Token<details::CircularProgressIndicator>;
-
-using Progress = SetterProp<Token, double, [](auto& self, double v) { self.set_progress(v); }>;
-
-using Indeterminate =
-    SetterProp<Token, bool, [](auto& self, bool v) { self.set_indeterminate(v); }>;
-
-using IndicatorColor =
-    SetterProp<Token, QColor, [](auto& self, const QColor& v) { self.set_indicator_color(v); }>;
-
-using TrackColor =
-    SetterProp<Token, QColor, [](auto& self, const QColor& v) { self.set_track_color(v); }>;
-
-using StrokeWidth =
-    SetterProp<Token, double, [](auto& self, double v) { self.set_stroke_width(v); }>;
-
-using namespace theme::pro;
-using namespace widget::pro;
-}
-namespace creeper {
-
-using CircularProgressIndicator =
-    Declarative<circular_progress_indicator::details::CircularProgressIndicator,
-        TokenOr<circular_progress_indicator::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 }

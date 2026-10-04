@@ -122,34 +122,39 @@ auto main(int argc, char* argv[]) -> int {
     auto manager = ThemeManager { kBlueMikuThemePack };
 
     // 和正常 Qt 一致的使用方式也是 OK 的，这里用声明式的方法示例
+    namespace mwp = main_window::pro;
+    namespace cp = card::pro;
+    namespace lp = linear::pro;
+    namespace sp = scroll::pro;
+
     creeper::ShowWindow<MainWindow> {
-        mwpro::MinimumSize { 1080, 720 },
-        mwpro::Central<FilledCard> {
-            capro::ThemeManager { manager },
-            capro::Radius { 0 },
-            capro::Level { CardLevel::HIGHEST },
+        mwp::MinimumSize { 1080, 720 },
+        mwp::Central<FilledCard> {
+            cp::ThemeManager { manager },
+            cp::Radius { 0 },
+            cp::Level { CardLevel::HIGHEST },
 
-            capro::Layout<Row> {
-                lnpro::Margin { 0 },
-                lnpro::Spacing { 0 },
+            cp::Layout<Row> {
+                lp::Margin { 0 },
+                lp::Spacing { 0 },
 
-                lnpro::Item {
+                lp::Item {
                     // 某些自定义组件
                     NavComponent(nav_component_state),
                 },
-                lnpro::Item<Col> {
-                    lnpro::ContentsMargin { { 15, 15, 5, 15 } },
-                    lnpro::Item { ListComponent(list_component_state) },
+                lp::Item<Col> {
+                    lp::ContentsMargin { { 15, 15, 5, 15 } },
+                    lp::Item { ListComponent(list_component_state) },
                 },
-                lnpro::Item<Col> {
+                lp::Item<Col> {
                     { 255 },
-                    lnpro::ContentsMargin { { 5, 15, 15, 15 } },
-                    lnpro::Item<ScrollArea> {
-                        scroll::pro::ThemeManager { manager },
-                        scroll::pro::HorizontalScrollBarPolicy {
+                    lp::ContentsMargin { { 5, 15, 15, 15 } },
+                    lp::Item<ScrollArea> {
+                        sp::ThemeManager { manager },
+                        sp::HorizontalScrollBarPolicy {
                             Qt::ScrollBarAlwaysOff,
                         },
-                        scroll::pro::Item {
+                        sp::Item {
                             ViewComponent(view_component_state),
                         },
                     },
@@ -161,7 +166,7 @@ auto main(int argc, char* argv[]) -> int {
     };
 
     // 将主题应用到注册过的组件中
-    manager.apply_theme();
+    manager.applyTheme();
 
     return application->exec();
 }

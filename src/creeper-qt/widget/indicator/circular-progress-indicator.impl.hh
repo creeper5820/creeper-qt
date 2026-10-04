@@ -10,7 +10,7 @@
 #include <numbers>
 #include <qpainter.h>
 
-using namespace creeper::circular_progress_indicator::details;
+using namespace creeper;
 
 struct CircularProgressIndicator::Impl {
     bool indeterminate = false;
@@ -45,7 +45,7 @@ struct CircularProgressIndicator::Impl {
         }
     }
 
-    void set_color_scheme(CircularProgressIndicator& self, const ColorScheme& scheme) {
+    void loadColorScheme(CircularProgressIndicator& self, const ColorScheme& scheme) {
         indicator_color = scheme.primary;
         track_color     = scheme.secondary_container;
         self.update();

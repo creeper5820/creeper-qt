@@ -1,11 +1,23 @@
 #pragma once
+#include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 
-namespace creeper::widget::internal {
+namespace creeper {
 
-class Widget : public QWidget { };
+class Widget : public QWidget, public DSL {
+public:
+    using QWidget::QWidget;
+
+    explicit Widget(auto&&... props)
+        : Widget { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
+};
 
 }
-namespace creeper {
-using Widget = Declarative<widget::internal::Widget, widget::pro::Token>;
+
+namespace creeper::widget::pro {
+using namespace common::pro;
+using namespace widget::pro;
 }

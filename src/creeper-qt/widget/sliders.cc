@@ -5,20 +5,16 @@ Slider::Slider()
 
 Slider::~Slider() = default;
 
-auto Slider::set_color_scheme(const ColorScheme& scheme) -> void {
-    pimpl->set_color_scheme(scheme);
-}
-auto Slider::set_measurements(const Measurements& measurements) -> void {
+auto Slider::loadColorScheme(const ColorScheme& scheme) -> void { pimpl->loadColorScheme(scheme); }
+auto Slider::setMeasurements(const Measurements& measurements) -> void {
     pimpl->set_measurements(measurements);
 }
-auto Slider::load_theme_manager(ThemeManager& manager) -> void {
-    pimpl->load_theme_manager(manager);
-}
+auto Slider::bindThemeManager(ThemeManager& manager) -> void { pimpl->bindThemeManager(manager); }
 
-auto Slider::set_progress(double progress) noexcept -> void {
+auto Slider::setProgress(double progress) noexcept -> void {
     pimpl->set_progress(progress); //
 }
-auto Slider::get_progress() const noexcept -> double {
+auto Slider::getProgress() const noexcept -> double {
     return pimpl->get_progress(); //
 }
 

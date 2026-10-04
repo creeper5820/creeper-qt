@@ -10,7 +10,7 @@
 #include <qpainter.h>
 #include <qpainterpath.h>
 
-using namespace creeper::text_field::internal;
+using namespace creeper;
 
 struct BasicTextField::Impl {
 public:
@@ -30,11 +30,11 @@ public:
         }
 
         self.setAlignment(Qt::AlignVCenter);
-        set_measurements(Measurements { });
+        setMeasurements(Measurements { });
     }
 
     /// @note https://m3.material.io/components/text-fields/specs
-    auto set_color_scheme(const ColorScheme& scheme) -> void {
+    auto loadColorScheme(const ColorScheme& scheme) -> void {
 
         color_specs.enabled.container        = scheme.surface_container_highest;
         color_specs.enabled.label_text       = scheme.on_surface_variant;
@@ -96,15 +96,15 @@ public:
         );
     }
 
-    auto load_theme_manager(ThemeManager& manager) -> void {
-        manager.append_handler(&self, [this](const ThemeManager& manager) { //
-            set_color_scheme(manager.color_scheme());
+    auto bindThemeManager(ThemeManager& manager) -> void {
+        manager.appendHandler(&self, [this](const ThemeManager& manager) { //
+            loadColorScheme(manager.colorScheme());
         });
     }
 
-    auto set_label_text(const QString& text) -> void { label_text = text; }
+    auto setLabelText(const QString& text) -> void { label_text = text; }
 
-    auto set_leading_icon(const QString& code, const QString& font) -> void {
+    auto setLeadingIcon(const QString& code, const QString& font) -> void {
         leading_icon_code = code;
         leading_font_name = font;
 
@@ -112,7 +112,7 @@ public:
         use_leading_icon           = true;
     }
 
-    auto set_measurements(const Measurements& measurements) noexcept -> void {
+    auto setMeasurements(const Measurements& measurements) noexcept -> void {
         this->measurements = measurements;
         self.setFixedHeight(measurements.container_height + measurements.standard_font_height);
 

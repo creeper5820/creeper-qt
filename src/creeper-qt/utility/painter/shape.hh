@@ -5,7 +5,13 @@
 
 namespace creeper::painter::internal {
 
-struct EraseRectangle : public CommonProps {
+struct EraseRectangle : public CommonProps, public DSL {
+    using CommonProps::CommonProps;
+
+    explicit EraseRectangle(auto&&... props) {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
+
     auto operator()(qt::painter& painter) const noexcept {
         painter.save();
 
@@ -19,7 +25,9 @@ struct EraseRectangle : public CommonProps {
     }
 };
 
-struct Rectangle : public CommonProps, ShapeProps {
+struct Rectangle : public CommonProps, public ShapeProps, public DSL {
+    explicit Rectangle(auto&&... props) { construct_with(std::forward<decltype(props)>(props)...); }
+
     auto operator()(qt::painter& painter) const noexcept {
         painter.save();
 
@@ -42,13 +50,17 @@ struct Rectangle : public CommonProps, ShapeProps {
     }
 };
 
-struct RoundedRectangle : public CommonProps, ShapeProps {
+struct RoundedRectangle : public CommonProps, public ShapeProps, public DSL {
     double radius_tl = 0;
     double radius_tr = 0;
     double radius_bl = 0;
     double radius_br = 0;
 
-    auto set_radiuses(double r) {
+    explicit RoundedRectangle(auto&&... props) {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
+
+    auto setRadiuses(double r) -> void {
         radius_tl = r;
         radius_tr = r;
         radius_bl = r;
@@ -85,7 +97,7 @@ struct RoundedRectangle : public CommonProps, ShapeProps {
     static constexpr auto make_rounded_rect_path(
         const qt::rect& rect, qreal tl, qreal tr, qreal br, qreal bl) noexcept -> QPainterPath {
 
-        auto path = QPainterPath {};
+        auto path = QPainterPath { };
 
         const auto max_radius = std::min(rect.width(), rect.height()) / 2.0;
         const auto clamp      = [&](qreal r) -> qreal {
@@ -128,12 +140,14 @@ struct RoundedRectangle : public CommonProps, ShapeProps {
     }
 };
 
-struct Text : CommonProps {
+struct Text : public CommonProps, public DSL {
     qt::string text;
     qt::font font;
     qt::color color = Qt::black;
     qt::text_option text_option;
     qt::real scale = 1.;
+
+    explicit Text(auto&&... props) { construct_with(std::forward<decltype(props)>(props)...); }
 
     auto operator()(qt::painter& painter) const noexcept {
         painter.save();
@@ -161,13 +175,15 @@ struct Text : CommonProps {
     }
 };
 
-struct Icon : CommonProps {
+struct Icon : public CommonProps, public DSL {
     using IconSource = qt::icon;
     using FontSource = std::tuple<qt::string, qt::string>;
     using MutiSource = std::variant<FontSource, IconSource>;
 
     MutiSource source;
     qt::color color = Qt::black;
+
+    explicit Icon(auto&&... props) { construct_with(std::forward<decltype(props)>(props)...); }
 
     auto operator()(qt::painter& painter) const noexcept {
         if (size.isEmpty()) return;
@@ -185,7 +201,7 @@ struct Icon : CommonProps {
                     auto font = qt::font { font_family };
                     font.setPointSizeF(std::min(size.height(), size.width()));
 
-                    auto option = qt::text_option {};
+                    auto option = qt::text_option { };
                     option.setAlignment(Qt::AlignCenter);
 
                     painter.setFont(font);
@@ -206,33 +222,89 @@ struct Icon : CommonProps {
 }
 namespace creeper::painter {
 
-/// Export Rounded Rectangle
-using RadiusTL = SetterProp<common::pro::Token, double,
-    [](auto& self, auto radius) { self.radius_tl = radius; }>;
-using RadiusTR = SetterProp<common::pro::Token, double,
-    [](auto& self, auto radius) { self.radius_tr = radius; }>;
-using RadiusBL = SetterProp<common::pro::Token, double,
-    [](auto& self, auto radius) { self.radius_bl = radius; }>;
-using RadiusBR = SetterProp<common::pro::Token, double,
-    [](auto& self, auto radius) { self.radius_br = radius; }>;
-using Radiuses = SetterProp<common::pro::Token, double,
-    [](auto& self, auto radius) { self.set_radiuses(radius); }>;
+struct RadiusTL {
+    double value;
+    explicit RadiusTL(double v)
+        : value { v } { }
+    friend auto dsl_invoke(auto& self, const RadiusTL& prop) -> void {
+        self.radius_tl = prop.value;
+    }
+};
 
-/// Export Text
-using Text  = DerivedProp<common::pro::Token, qt::string,
-     [](auto& self, const auto& text) { self.text = text; }>;
-using Font  = DerivedProp<common::pro::Token, qt::font,
-     [](auto& self, const auto& font) { self.font = font; }>;
-using Color = DerivedProp<common::pro::Token, qt::color,
-    [](auto& self, const auto& color) { self.color = color; }>;
-using Scale = SetterProp<common::pro::Token, qt::real,
-    [](auto& self, const auto& scale) { self.scale = scale; }>;
+struct RadiusTR {
+    double value;
+    explicit RadiusTR(double v)
+        : value { v } { }
+    friend auto dsl_invoke(auto& self, const RadiusTR& prop) -> void {
+        self.radius_tr = prop.value;
+    }
+};
 
-using TextOption = DerivedProp<common::pro::Token, qt::text_option,
-    [](auto& self, const auto& option) { self.text_option = option; }>;
+struct RadiusBL {
+    double value;
+    explicit RadiusBL(double v)
+        : value { v } { }
+    friend auto dsl_invoke(auto& self, const RadiusBL& prop) -> void {
+        self.radius_bl = prop.value;
+    }
+};
 
-/// Export Icon
-struct Icon : common::pro::Token {
+struct RadiusBR {
+    double value;
+    explicit RadiusBR(double v)
+        : value { v } { }
+    friend auto dsl_invoke(auto& self, const RadiusBR& prop) -> void {
+        self.radius_br = prop.value;
+    }
+};
+
+struct Radiuses {
+    double value;
+    explicit Radiuses(double v)
+        : value { v } { }
+    friend auto dsl_invoke(auto& self, const Radiuses& prop) -> void {
+        self.setRadiuses(prop.value);
+    }
+};
+
+struct Text {
+    qt::string value;
+    explicit Text(const qt::string& v)
+        : value { v } { }
+    friend auto dsl_invoke(auto& self, const Text& prop) -> void { self.text = prop.value; }
+};
+
+struct Font {
+    qt::font value;
+    explicit Font(const qt::font& v)
+        : value { v } { }
+    friend auto dsl_invoke(auto& self, const Font& prop) -> void { self.font = prop.value; }
+};
+
+struct Color {
+    qt::color value;
+    explicit Color(const qt::color& v)
+        : value { v } { }
+    friend auto dsl_invoke(auto& self, const Color& prop) -> void { self.color = prop.value; }
+};
+
+struct Scale {
+    qt::real value;
+    explicit Scale(qt::real v)
+        : value { v } { }
+    friend auto dsl_invoke(auto& self, const Scale& prop) -> void { self.scale = prop.value; }
+};
+
+struct TextOption {
+    qt::text_option value;
+    explicit TextOption(const qt::text_option& v)
+        : value { v } { }
+    friend auto dsl_invoke(auto& self, const TextOption& prop) -> void {
+        self.text_option = prop.value;
+    }
+};
+
+struct Icon {
     using T = internal::Icon;
     T::MutiSource source;
 
@@ -242,16 +314,17 @@ struct Icon : common::pro::Token {
     constexpr explicit Icon(const qt::icon& icon) noexcept
         : source { T::IconSource { icon } } { }
 
-    auto apply(auto& self) const noexcept { self.source = source; }
+    friend auto dsl_invoke(auto& self, const Icon& prop) noexcept -> void {
+        self.source = prop.source;
+    }
 };
 
 namespace Paint {
-    using EraseRectangle = Declarative<internal::EraseRectangle, common::pro::Token>;
-    using Rectangle      = Declarative<internal::Rectangle, common::pro::Token>;
-    using RoundedRectangle =
-        Declarative<internal::RoundedRectangle, common::pro::Token>;
-    using Text = Declarative<internal::Text, common::pro::Token>;
-    using Icon = Declarative<internal::Icon, common::pro::Token>;
+    using EraseRectangle   = internal::EraseRectangle;
+    using Rectangle        = internal::Rectangle;
+    using RoundedRectangle = internal::RoundedRectangle;
+    using Text             = internal::Text;
+    using Icon             = internal::Icon;
 }
 
 }

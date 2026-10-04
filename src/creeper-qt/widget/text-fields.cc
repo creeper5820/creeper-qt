@@ -5,34 +5,32 @@ BasicTextField::BasicTextField()
 
 BasicTextField::~BasicTextField() = default;
 
-auto BasicTextField::set_color_scheme(const ColorScheme& scheme) -> void {
-    pimpl->set_color_scheme(scheme);
+auto BasicTextField::loadColorScheme(const ColorScheme& scheme) -> void {
+    pimpl->loadColorScheme(scheme);
 }
 
-auto BasicTextField::load_theme_manager(ThemeManager& manager) -> void {
-    pimpl->load_theme_manager(manager);
+auto BasicTextField::bindThemeManager(ThemeManager& manager) -> void {
+    pimpl->bindThemeManager(manager);
 }
 
-auto BasicTextField::set_label_text(const QString& text) -> void {
-    pimpl->set_label_text(text); //
+auto BasicTextField::setLabelText(const QString& text) -> void { pimpl->setLabelText(text); }
+
+auto BasicTextField::setHintText(const QString& text) -> void { }
+
+auto BasicTextField::setSupportingText(const QString& text) -> void { }
+
+auto BasicTextField::setLeadingIcon(const QIcon& text) -> void { }
+
+auto BasicTextField::setLeadingIcon(const QString& code, const QString& font) -> void {
+    pimpl->setLeadingIcon(code, font);
 }
 
-auto BasicTextField::set_hint_text(const QString& text) -> void { }
+auto BasicTextField::setTrailingIcon(const QIcon& text) -> void { }
 
-auto BasicTextField::set_supporting_text(const QString& text) -> void { }
+auto BasicTextField::setTrailingIcon(const QString& code, const QString& font) -> void { }
 
-auto BasicTextField::set_leading_icon(const QIcon& text) -> void { }
-
-auto BasicTextField::set_leading_icon(const QString& code, const QString& font) -> void {
-    pimpl->set_leading_icon(code, font);
-}
-
-auto BasicTextField::set_trailling_icon(const QIcon& text) -> void { }
-
-auto BasicTextField::set_trailling_icon(const QString& code, const QString& font) -> void { }
-
-auto BasicTextField::set_measurements(const Measurements& measurements) noexcept -> void {
-    pimpl->set_measurements(measurements);
+auto BasicTextField::setMeasurements(const Measurements& measurements) noexcept -> void {
+    pimpl->setMeasurements(measurements);
 }
 
 auto BasicTextField::resizeEvent(QResizeEvent* event) -> void {
@@ -62,7 +60,7 @@ auto BasicTextField::focusOutEvent(QFocusEvent* event) -> void {
 
 auto BasicTextField::mousePressEvent(QMouseEvent* event) -> void {
     QLineEdit::mousePressEvent(event);
-    Q_EMIT signal_pressed();
+    Q_EMIT pressed();
 }
 
 auto FilledTextField::paintEvent(QPaintEvent* event) -> void {

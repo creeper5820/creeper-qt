@@ -2,54 +2,50 @@
 
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 #include <qlabel.h>
 
-namespace creeper::text::internal {
+namespace creeper {
 
-class Text : public QLabel {
+class Text : public QLabel, public DSL {
+public:
     using QLabel::QLabel;
 
-public:
-    auto set_color_scheme(const ColorScheme& scheme) noexcept -> void {
-        set_color(scheme.on_surface);
+    explicit Text(auto&&... props) { construct_with(std::forward<decltype(props)>(props)...); }
+
+    auto loadColorScheme(const ColorScheme& scheme) noexcept -> void {
+        setColor(scheme.on_surface);
     }
-    auto load_theme_manager(ThemeManager& manager) noexcept -> void {
-        manager.append_handler(this,
-            [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
+    auto bindThemeManager(ThemeManager& manager) noexcept -> void {
+        manager.appendHandler(
+            this, [this](const ThemeManager& manager) { loadColorScheme(manager.colorScheme()); });
     }
 
-    auto set_color(QColor color) noexcept -> void {
+    auto setColor(QColor color) noexcept -> void {
         const auto name  = color.name(QColor::HexArgb);
         const auto style = QString("QLabel { color : %1; }");
         setStyleSheet(style.arg(name));
     }
 };
 
+namespace text::pro {
+
+    using namespace common::pro;
+    using namespace widget::pro;
+    using namespace theme::pro;
+
+    using Color = ForwardProp<&creeper::Text::setColor>;
+
+    using WordWrap = ForwardProp<&QLabel::setWordWrap>;
+
+    using AdjustSize = ForwardProp<&QWidget::adjustSize>;
+
+    using Alignment = ForwardProp<&QLabel::setAlignment>;
+
+    using TextInteractionFlags = ForwardProp<&QLabel::setTextInteractionFlags>;
+
 }
-namespace creeper::text::pro {
-
-using Token = creeper::Token<internal::Text>;
-
-using Text = common::pro::Text<Token>;
-
-using Color = SetterProp<Token, QColor, [](auto& self, const auto& v) { self.set_color(v); }>;
-
-using WordWrap = SetterProp<Token, bool, [](auto& self, const auto& v) { self.setWordWrap(v); }>;
-
-using AdjustSize = ActionProp<Token, [](auto& self) { self.adjustSize(); }>;
-
-using Alignment =
-    SetterProp<Token, Qt::Alignment, [](auto& self, const auto& v) { self.setAlignment(v); }>;
-
-using TextInteractionFlags = SetterProp<Token, Qt::TextInteractionFlags,
-    [](auto& self, const auto& v) { self.setTextInteractionFlags(v); }>;
-using namespace widget::pro;
-using namespace theme::pro;
-}
-namespace creeper {
-
-using Text = Declarative<text::internal::Text,
-    TokenOr<text::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 }

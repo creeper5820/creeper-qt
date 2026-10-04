@@ -1,7 +1,7 @@
 #include "flow.hh"
 #include <qstyle.h>
 
-using namespace creeper::flow::internal;
+using namespace creeper;
 
 struct Flow::Impl {
     QList<Item*> items;
@@ -119,7 +119,7 @@ auto Flow::takeAt(int index) -> Item* {
     return (index < 0 || index > items.size() - 1) ? nullptr : items.takeAt(index);
 }
 
-auto Flow::expandingDirections() const -> Qt::Orientations { return {}; }
+auto Flow::expandingDirections() const -> Qt::Orientations { return { }; }
 
 auto Flow::hasHeightForWidth() const -> bool { return true; }
 
@@ -132,7 +132,7 @@ auto Flow::itemAt(int index) const -> Item* { return pimpl->items.value(index); 
 auto Flow::count() const -> int { return pimpl->items.size(); }
 
 auto Flow::minimumSize() const -> QSize {
-    auto result = QSize {};
+    auto result = QSize { };
     for (const auto item : std::as_const(pimpl->items))
         result = result.expandedTo(item->minimumSize());
 
@@ -146,11 +146,11 @@ auto Flow::minimumSize() const -> QSize {
 
 auto Flow::sizeHint() const -> QSize { return Flow::minimumSize(); }
 
-auto Flow::set_row_spacing(int spacing) noexcept -> void { pimpl->row_spacing = spacing; }
-auto Flow::row_spacing() const noexcept -> int { return pimpl->row_spacing; }
+auto Flow::setRowSpacing(int spacing) noexcept -> void { pimpl->row_spacing = spacing; }
+auto Flow::rowSpacing() const noexcept -> int { return pimpl->row_spacing; }
 
-auto Flow::set_col_spacing(int spacing) noexcept -> void { pimpl->col_spacing = spacing; }
-auto Flow::col_spacing() const noexcept -> int { return pimpl->col_spacing; }
+auto Flow::setColSpacing(int spacing) noexcept -> void { pimpl->col_spacing = spacing; }
+auto Flow::colSpacing() const noexcept -> int { return pimpl->col_spacing; }
 
-auto Flow::set_row_limit(int limit) noexcept -> void { pimpl->row_limit = limit; }
-auto Flow::row_limit() const noexcept -> int { return pimpl->row_limit; }
+auto Flow::setRowLimit(int limit) noexcept -> void { pimpl->row_limit = limit; }
+auto Flow::rowLimit() const noexcept -> int { return pimpl->row_limit; }

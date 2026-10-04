@@ -16,7 +16,7 @@
 /// [ ] Add Stops
 /// [ ] Add Value indicator
 
-using namespace creeper::slider::internal;
+using namespace creeper;
 
 struct Slider::Impl {
 public:
@@ -48,7 +48,7 @@ public:
         self.update();
     }
 
-    void set_color_scheme(const ColorScheme& scheme) {
+    void loadColorScheme(const ColorScheme& scheme) {
 
         // Alpha 97 (约 38%): 用于禁用状态的文本、图标等前景元素 (Text/Icon).
         auto on_surface_disabled_foreground = scheme.on_surface;
@@ -95,7 +95,7 @@ public:
         disabled.handle = on_surface_disabled_container;
     }
 
-    auto load_theme_manager(ThemeManager& manager) { manager.append_handler(&self, self); }
+    auto bindThemeManager(ThemeManager& manager) { manager.appendHandler(&self, self); }
 
     auto set_progress(double progress, bool animatable = true) noexcept {
         this->progress = std::clamp(progress, 0.0, 1.0);
@@ -124,8 +124,8 @@ public:
         const auto handle_radius    = 0.5 * handle_thickness;
         const auto handle_groove    = self.width() - 2 * handle_thickness;
         const auto handle_center    = is_horizontal()
-               ? QPointF { handle_thickness + *position * handle_groove, 0.5 * self.height() }
-               : QPointF { 0.5 * self.width(), handle_thickness + *position * handle_groove };
+            ? QPointF { handle_thickness + *position * handle_groove, 0.5 * self.height() }
+            : QPointF { 0.5 * self.width(), handle_thickness + *position * handle_groove };
 
         const auto handle_thickness_real = pressed ? 0.5 * handle_thickness : handle_thickness;
 
@@ -192,20 +192,20 @@ public:
 
         pressed = false;
         update_progress(event->pos());
-        Q_EMIT self.signal_value_change_finished(progress);
+        Q_EMIT self.valueChangedFinished(progress);
     }
     auto mouse_press_event(QMouseEvent* event) noexcept -> void {
         if (!enabled) return;
 
         pressed = true;
         update_progress(event->pos());
-        Q_EMIT self.signal_value_change(progress);
+        Q_EMIT self.valueChanged(progress);
     }
     auto mouse_move_event(QMouseEvent* event) noexcept -> void {
         if (!enabled) return;
 
         update_progress(event->pos());
-        Q_EMIT self.signal_value_change(progress);
+        Q_EMIT self.valueChanged(progress);
     }
 
 private:
@@ -218,8 +218,8 @@ private:
         const auto x = point.x();
         const auto y = point.y();
 
-        auto spindle_len = int {};
-        auto spindle_pos = int {};
+        auto spindle_len = int { };
+        auto spindle_pos = int { };
 
         const auto thickness = measurements.handle_width;
         if (!is_horizontal()) {
@@ -244,7 +244,7 @@ private:
 
     Qt::ArrowType direction = Qt::RightArrow;
 
-    ColorSpecs color_specs    = ColorSpecs {};
+    ColorSpecs color_specs    = ColorSpecs { };
     Measurements measurements = Measurements::Xs();
 
     Animatable animatable;

@@ -27,11 +27,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Android")
     endforeach()
 
     set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
-
-    # ---- 依赖：Eigen ----
-
-    include(FetchContent)
     set(FETCHCONTENT_BASE_DIR "${CMAKE_BINARY_DIR}/thirdparty")
+    include(FetchContent)
+
     FetchContent_Declare(
         eigen
         GIT_REPOSITORY https://gitlab.com/libeigen/eigen.git
@@ -48,10 +46,9 @@ if(NOT TARGET Eigen3::Eigen)
     set_target_properties(Eigen3::Eigen PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES \"${FETCHCONTENT_BASE_DIR}/eigen3\")
 endif()
-")
+    ")
     set(Eigen3_DIR "${CMAKE_BINARY_DIR}/eigen" CACHE PATH "" FORCE)
 
-    # ---- 依赖：creeper-qt ----
     FetchContent_Declare(
         creeper-qt
         GIT_REPOSITORY https://github.com/creeper5820/creeper-qt.git
@@ -60,12 +57,10 @@ endif()
     )
     FetchContent_MakeAvailable(creeper-qt)
 
-    # ---- 应用 ----
     qt_add_executable(${PROJECT_NAME}
         src/main.cc
         src/theme.hh
     )
-
     set_target_properties(
         ${PROJECT_NAME} PROPERTIES
         AUTOMOC ON
@@ -77,7 +72,6 @@ endif()
         QT_ANDROID_COMPILE_SDK_VERSION ${ANDROID_COMPILE_SDK_VERSION}
     )
 
-    # ---- 资源：Material Icons Round / Outlined ----
     set(FONT_FILES
         "${TOOLCHAIN_DIR}/fonts/MaterialIconsRound-Regular.otf"
         "${TOOLCHAIN_DIR}/fonts/MaterialIconsOutlined-Regular.otf"

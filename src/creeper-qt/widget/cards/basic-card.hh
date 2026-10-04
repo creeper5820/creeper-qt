@@ -1,8 +1,10 @@
 #pragma once
 #include "creeper-qt/utility/theme/theme.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/widget/shape/rounded-rect.hh"
 
-namespace creeper::card::internal {
+namespace creeper::card {
 
 constexpr auto kCardRadius = double { 12 };
 
@@ -12,6 +14,10 @@ constexpr auto kElevatedShadowOffsetX    = double { 0 };
 constexpr auto kElevatedShadowOffsetY    = double { 2 };
 
 constexpr auto kOutlinedWidth = double { 1.5 };
+
+}
+
+namespace creeper {
 
 class Card : public RoundedRect {
 public:
@@ -23,69 +29,72 @@ public:
         HIGHEST,
     };
 
+    using RoundedRect::RoundedRect;
+
+    explicit Card() {
+        construct_with(rounded_rect::pro::BorderWidth { 0 },
+            rounded_rect::pro::BorderColor { Qt::transparent },
+            rounded_rect::pro::Radius { card::kCardRadius });
+    }
+
+    explicit Card(auto&&... props)
+        : Card { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
+
     Level level = Level::DEFAULT;
 
-public:
-    explicit Card() noexcept
-        : Declarative {
-            rounded_rect::pro::BorderWidth { 0 },
-            rounded_rect::pro::BorderColor { Qt::transparent },
-            rounded_rect::pro::Radius { kCardRadius },
-        } { }
-
-    auto set_level(Level level) noexcept {
+    auto setLevel(Level level) noexcept -> void {
         this->level = level;
         update();
     }
 
-    void set_color_scheme(const ColorScheme& scheme) {
+    auto loadColorScheme(const ColorScheme& scheme) -> void {
         switch (level) {
         case Level::LOWEST:
-            set_background(scheme.surface_container_lowest);
+            setBackground(scheme.surface_container_lowest);
             break;
         case Level::LOW:
-            set_background(scheme.surface_container_low);
+            setBackground(scheme.surface_container_low);
             break;
         case Level::DEFAULT:
-            set_background(scheme.surface_container);
+            setBackground(scheme.surface_container);
             break;
         case Level::HIGH:
-            set_background(scheme.surface_container_high);
+            setBackground(scheme.surface_container_high);
             break;
         case Level::HIGHEST:
-            set_background(scheme.surface_container_highest);
+            setBackground(scheme.surface_container_highest);
             break;
         }
         update();
     }
 
-    void load_theme_manager(ThemeManager& manager) {
-        manager.append_handler(this,
-            [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
+    auto bindThemeManager(ThemeManager& manager) -> void {
+        manager.appendHandler(
+            this, [this](const ThemeManager& manager) { loadColorScheme(manager.colorScheme()); });
     }
 };
 
+namespace card::pro {
+
+    using namespace common::pro;
+    using namespace widget::pro;
+    using namespace theme::pro;
+    using namespace rounded_rect::pro;
+
+    using Level = ForwardProp<&Card::setLevel>;
+
+    constexpr auto LevelDefault = Level { Card::Level::DEFAULT };
+    constexpr auto LevelHigh    = Level { Card::Level::HIGH };
+    constexpr auto LevelHighest = Level { Card::Level::HIGHEST };
+    constexpr auto LevelLow     = Level { Card::Level::LOW };
+    constexpr auto LevelLowest  = Level { Card::Level::LOWEST };
+
 }
-namespace creeper::card::pro {
 
-using Token = creeper::Token<internal::Card>;
+using CardLevel = Card::Level;
 
-using Level =
-    SetterProp<Token, internal::Card::Level, [](auto& self, const auto& v) { self.set_level(v); }>;
-
-constexpr auto LevelDefault = Level { internal::Card::Level::DEFAULT };
-constexpr auto LevelHigh    = Level { internal::Card::Level::HIGH };
-constexpr auto LevelHighest = Level { internal::Card::Level::HIGHEST };
-constexpr auto LevelLow     = Level { internal::Card::Level::LOW };
-constexpr auto LevelLowest  = Level { internal::Card::Level::LOWEST };
-using namespace rounded_rect::pro;
-using namespace theme::pro;
-}
-namespace creeper {
-
-using CardLevel = card::internal::Card::Level;
-
-using BasicCard = Declarative<card::internal::Card,
-    TokenOr<card::pro::Token, rounded_rect::pro::Token, theme::pro::Token, widget::pro::Token>>;
+using BasicCard = Card;
 
 }

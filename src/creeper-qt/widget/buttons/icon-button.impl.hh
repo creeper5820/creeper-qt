@@ -9,7 +9,7 @@
 #include "creeper-qt/utility/animation/water-ripple.hh"
 #include "creeper-qt/utility/painter/helper.hh"
 
-using namespace creeper::icon_button::internal;
+using namespace creeper;
 
 constexpr auto kHoverOpacity = double { 0.1 };
 constexpr auto kWaterOpacity = double { 0.4 };
@@ -28,7 +28,7 @@ struct IconButton::Impl {
 
     bool is_hovered = false;
 
-    QString font_icon {};
+    QString font_icon { };
 
     Types types { Types::DEFAULT };
     Shape shape { Shape::DEFAULT_ROUND };
@@ -128,7 +128,7 @@ struct IconButton::Impl {
         const auto container_radius = *now_container_radius;
         const auto container_rect   = container_rectangle(self);
 
-        auto clip_path = QPainterPath {};
+        auto clip_path = QPainterPath { };
         clip_path.addRoundedRect(container_rect, container_radius, container_radius);
 
         auto renderer = QPainter { &self };
@@ -163,7 +163,7 @@ struct IconButton::Impl {
         update_animation_status(self);
     }
 
-    auto set_color_scheme(IconButton& self, const ColorScheme& scheme) {
+    auto loadColorScheme(IconButton& self, const ColorScheme& scheme) {
         switch (color) {
         case Color::DEFAULT_FILLED:
             container_color = scheme.primary;
@@ -234,9 +234,9 @@ struct IconButton::Impl {
         update_animation_status(self);
     }
 
-    auto load_theme_manager(IconButton& self, ThemeManager& manager) {
-        manager.append_handler(&self, [this, &self](const ThemeManager& manager) {
-            set_color_scheme(self, manager.color_scheme());
+    auto bindThemeManager(IconButton& self, ThemeManager& manager) {
+        manager.appendHandler(&self, [this, &self](const ThemeManager& manager) {
+            loadColorScheme(self, manager.colorScheme());
         });
     }
 

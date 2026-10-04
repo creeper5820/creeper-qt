@@ -1,37 +1,33 @@
 #pragma once
 
 #include "creeper-qt/utility/painter/helper.hh"
-#include "creeper-qt/utility/wrapper/property.hh"
+#include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/widget.hh"
 #include "creeper-qt/widget/shape/shape.hh"
-#include "creeper-qt/widget/widget.hh"
 
 namespace creeper {
 
-namespace ellipse::internal {
-    class Ellipse : public Shape {
-    protected:
-        void paintEvent(QPaintEvent* event) override {
-            auto painter = QPainter { this };
-            painter.setRenderHint(QPainter::Antialiasing);
+class Ellipse : public Shape, public DSL {
+public:
+    using Shape::Shape;
 
-            util::PainterHelper { painter }.ellipse(
-                background_, border_color_, border_width_, rect());
-        }
-    };
-}
+    explicit Ellipse(auto&&... args) { construct_with(std::forward<decltype(args)>(args)...); }
+
+protected:
+    auto paintEvent(QPaintEvent*) -> void override {
+        auto painter = QPainter { this };
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        util::PainterHelper { painter }.ellipse(background_, border_color_, border_width_, rect());
+    }
+};
 
 namespace ellipse::pro {
-    using Token = creeper::Token<internal::Ellipse>;
 
-    // 通用属性
-    using Background = common::pro::Background<Token>;
+    using namespace common::pro;
+    using namespace widget::pro;
 
-    using BorderWidth = common::pro::BorderWidth<Token>;
-    using BorderColor = common::pro::BorderColor<Token>;
-using namespace widget::pro;
 }
-
-using Ellipse =
-    Declarative<ellipse::internal::Ellipse, TokenOr<ellipse::pro::Token, widget::pro::Token>>;
 
 }

@@ -1,34 +1,29 @@
 #pragma once
 #include "basic-card.hh"
 
-namespace creeper::outlined_card::internal {
+namespace creeper {
 
-class OutlinedCard : public BasicCard {
+class OutlinedCard : public Card {
 public:
-    explicit OutlinedCard() {
-        using namespace card::internal;
-        set_border_width(kOutlinedWidth);
+    explicit OutlinedCard(auto&&... props)
+        : Card { } {
+        setBorderWidth(card::kOutlinedWidth);
+        construct_with(std::forward<decltype(props)>(props)...);
     }
 
-    void set_color_scheme(const ColorScheme& scheme) {
-        set_border_color(scheme.outline_variant);
-        Card::set_color_scheme(scheme);
+    auto loadColorScheme(const ColorScheme& scheme) -> void {
+        setBorderColor(scheme.outline_variant);
+        Card::loadColorScheme(scheme);
     }
 
-    void load_theme_manager(ThemeManager& manager) {
-        manager.append_handler(this,
-            [this](const ThemeManager& manager) { set_color_scheme(manager.color_scheme()); });
+    auto bindThemeManager(ThemeManager& manager) -> void {
+        manager.appendHandler(
+            this, [this](const ThemeManager& manager) { loadColorScheme(manager.colorScheme()); });
     }
 };
 
+namespace outlined_card::pro {
+    using namespace card::pro;
 }
-namespace creeper::outlined_card::pro {
-using namespace card::pro;
-}
-namespace creeper {
-
-using OutlinedCard = Declarative<outlined_card::internal::OutlinedCard,
-    TokenOr<card::pro::Token, rounded_rect::pro::Token, theme::pro::Token,
-        widget::pro::Token>>;
 
 }

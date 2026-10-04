@@ -9,7 +9,7 @@
 
 #include <qevent.h>
 
-namespace creeper::filled_button::internal {
+namespace creeper {
 
 constexpr auto kWaterSpeed = double { 5.0 };
 
@@ -92,7 +92,7 @@ public:
 
 private:
     static QPainterPath make_rounded_rectangle_path(const QRectF& rect, double radius) {
-        auto path = QPainterPath {};
+        auto path = QPainterPath { };
         path.addRoundedRect(rect, radius, radius);
         return path;
     }
@@ -103,7 +103,7 @@ FilledButton::FilledButton()
 
 FilledButton::~FilledButton() = default;
 
-void FilledButton::set_color_scheme(const ColorScheme& color_scheme) {
+void FilledButton::loadColorScheme(const ColorScheme& color_scheme) {
     pimpl->background = color_scheme.primary;
     pimpl->text_color = color_scheme.on_primary;
 
@@ -119,36 +119,36 @@ void FilledButton::set_color_scheme(const ColorScheme& color_scheme) {
     update();
 }
 
-void FilledButton::load_theme_manager(ThemeManager& manager) {
-    manager.append_handler(this, [this](const ThemeManager& manager) {
-        const auto color_mode   = manager.color_mode();
-        const auto theme_pack   = manager.theme_pack();
+void FilledButton::bindThemeManager(ThemeManager& manager) {
+    manager.appendHandler(this, [this](const ThemeManager& manager) {
+        const auto color_mode   = manager.colorMode();
+        const auto theme_pack   = manager.themePack();
         const auto color_scheme = color_mode == ColorMode::LIGHT //
             ? theme_pack.light
             : theme_pack.dark;
-        set_color_scheme(color_scheme);
+        loadColorScheme(color_scheme);
     });
 }
 
 // 属性设置接口实现
 
-void FilledButton::set_radius(double radius) { pimpl->radius = radius; }
+void FilledButton::setRadius(double radius) { pimpl->radius = radius; }
 
-void FilledButton::set_border_width(double border) { pimpl->border_width = border; }
+void FilledButton::setBorderWidth(double border) { pimpl->border_width = border; }
 
-void FilledButton::set_border_color(const QColor& color) { pimpl->border_color = color; }
+void FilledButton::setBorderColor(const QColor& color) { pimpl->border_color = color; }
 
-void FilledButton::set_water_color(const QColor& color) { pimpl->water_color = color; }
+void FilledButton::setWaterColor(const QColor& color) { pimpl->water_color = color; }
 
-void FilledButton::set_text_color(const QColor& color) { pimpl->text_color = color; }
+void FilledButton::setTextColor(const QColor& color) { pimpl->text_color = color; }
 
-void FilledButton::set_background(const QColor& color) { pimpl->background = color; }
+void FilledButton::setBackground(const QColor& color) { pimpl->background = color; }
 
-void FilledButton::set_hover_color(const QColor& color) { pimpl->kHoverColor = color; }
+void FilledButton::setHoverColor(const QColor& color) { pimpl->kHoverColor = color; }
 
-void FilledButton::set_water_ripple_status(bool enable) { pimpl->enable_water_ripple = enable; }
+void FilledButton::setWaterRippleStatus(bool enable) { pimpl->enable_water_ripple = enable; }
 
-void FilledButton::set_water_ripple_step(double step) { pimpl->water_ripple_step = step; }
+void FilledButton::setWaterRippleStep(double step) { pimpl->water_ripple_step = step; }
 
 // Qt 接口重载
 

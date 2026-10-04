@@ -1,41 +1,43 @@
 #include "image.impl.hh"
 
+using namespace creeper;
+
 Image::Image()
     : pimpl { std::make_unique<Impl>(*this) } { }
 
 Image::~Image() = default;
 
-auto Image::update_pixmap() noexcept -> void {
+auto Image::updatePixmap() noexcept -> void {
     pimpl->request_regenerate = true;
     this->update();
 }
 
-auto Image::set_content_scale(ContentScale scale) noexcept -> void {
+auto Image::setContentScale(ContentScale scale) noexcept -> void {
     pimpl->content_scale      = scale;
     pimpl->request_regenerate = true;
 }
-auto Image::content_scale() const noexcept -> ContentScale { return pimpl->content_scale; }
+auto Image::contentScale() const noexcept -> ContentScale { return pimpl->content_scale; }
 
-auto Image::set_painter_resource(std::shared_ptr<PainterResource> resource) noexcept -> void {
+auto Image::setPainterResource(std::shared_ptr<PainterResource> resource) noexcept -> void {
     pimpl->resource_origin = std::move(resource);
     pimpl->resource_origin->add_finished_callback([this](auto&) { update(); });
     pimpl->request_regenerate = true;
 }
-auto Image::painter_resource() const noexcept -> PainterResource { return *pimpl->resource_origin; }
+auto Image::painterResource() const noexcept -> PainterResource { return *pimpl->resource_origin; }
 
-auto Image::set_opacity(double opacity) noexcept -> void {
+auto Image::setOpacity(double opacity) noexcept -> void {
     pimpl->opacity = opacity;
     update();
 }
-auto Image::set_radius(double radius) noexcept -> void {
+auto Image::setRadius(double radius) noexcept -> void {
     pimpl->radius = radius;
     update();
 }
-auto Image::set_border_width(double width) noexcept -> void {
+auto Image::setBorderWidth(double width) noexcept -> void {
     pimpl->border_width = width;
     update();
 }
-auto Image::set_border_color(QColor color) noexcept -> void {
+auto Image::setBorderColor(QColor color) noexcept -> void {
     pimpl->border_color = color;
     update();
 }

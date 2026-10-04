@@ -3,12 +3,13 @@
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 
-namespace creeper::dropdown_menu_item::details {
+namespace creeper {
 
-class DropdownMenuItem : public QWidget {
+class DropdownMenuItem : public QWidget, public DSL {
     Q_OBJECT
     CREEPER_PIMPL_DEFINITION(DropdownMenuItem)
 
@@ -35,28 +36,33 @@ public:
         int label_font_size    = 14;
     };
 
-    auto set_color_scheme(const ColorScheme&) -> void;
+    explicit DropdownMenuItem(auto&&... props)
+        : DropdownMenuItem { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 
-    auto load_theme_manager(ThemeManager&) -> void;
+    auto loadColorScheme(const ColorScheme&) -> void;
 
-    auto set_measurements(const Measurements&) noexcept -> void;
+    auto bindThemeManager(ThemeManager&) -> void;
 
-    auto set_text(const QString&) -> void;
+    auto setMeasurements(const Measurements&) noexcept -> void;
 
-    auto set_leading_icon(const QString& code, const QString& font) -> void;
+    auto setText(const QString&) -> void;
 
-    auto set_trailing_icon(const QString& code, const QString& font) -> void;
+    auto setLeadingIcon(const QString& code, const QString& font) -> void;
 
-    auto set_trailing_text(const QString&) -> void;
+    auto setTrailingIcon(const QString& code, const QString& font) -> void;
 
-    auto set_disabled(bool) -> void;
+    auto setTrailingText(const QString&) -> void;
 
-    auto set_water_color(const QColor&) -> void;
+    auto setDisabled(bool) -> void;
 
-    auto set_water_ripple_status(bool) -> void;
+    auto setWaterColor(const QColor&) -> void;
+
+    auto setWaterRippleStatus(bool) -> void;
 
 Q_SIGNALS:
-    auto signal_clicked() -> void;
+    auto clicked() -> void;
 
 public:
     auto sizeHint() const -> QSize override;
@@ -71,55 +77,48 @@ protected:
     auto paintEvent(QPaintEvent*) -> void override;
 };
 
+namespace dropdown_menu_item::pro {
+
+    using namespace common::pro;
+    using namespace widget::pro;
+    using namespace theme::pro;
+
+    using TrailingText =
+        common::pro::String<[](auto& self, const auto& string) { self.setTrailingText(string); }>;
+
+    struct LeadingIcon {
+        QString code;
+        QString font;
+        explicit LeadingIcon(const QString& code, const QString& font)
+            : code { code }
+            , font { font } { }
+        friend auto dsl_invoke(DropdownMenuItem& self, const LeadingIcon& prop) -> void {
+            self.setLeadingIcon(prop.code, prop.font);
+        }
+    };
+
+    struct TrailingIcon {
+        QString code;
+        QString font;
+        explicit TrailingIcon(const QString& code, const QString& font)
+            : code { code }
+            , font { font } { }
+        friend auto dsl_invoke(DropdownMenuItem& self, const TrailingIcon& prop) -> void {
+            self.setTrailingIcon(prop.code, prop.font);
+        }
+    };
+
+    struct Measurements {
+        DropdownMenuItem::Measurements value;
+        explicit Measurements(const DropdownMenuItem::Measurements& value)
+            : value { value } { }
+        friend auto dsl_invoke(DropdownMenuItem& self, const Measurements& prop) -> void {
+            self.setMeasurements(prop.value);
+        }
+    };
+
+    template <typename F>
+    using OnClicked = common::pro::SignalInjection<F, &DropdownMenuItem::clicked>;
 }
-
-namespace creeper::dropdown_menu_item::pro {
-
-using Token = creeper::Token<details::DropdownMenuItem>;
-
-using Text =
-    common::pro::String<Token, [](auto& self, const auto& string) { self.set_text(string); }>;
-
-using TrailingText = common::pro::String<Token,
-    [](auto& self, const auto& string) { self.set_trailing_text(string); }>;
-
-struct LeadingIcon : Token {
-    QString code;
-    QString font;
-    explicit LeadingIcon(const QString& code, const QString& font)
-        : code { code }
-        , font { font } { }
-    auto apply(auto& self) const -> void { self.set_leading_icon(code, font); }
-};
-
-struct TrailingIcon : Token {
-    QString code;
-    QString font;
-    explicit TrailingIcon(const QString& code, const QString& font)
-        : code { code }
-        , font { font } { }
-    auto apply(auto& self) const -> void { self.set_trailing_icon(code, font); }
-};
-
-using Measurements = SetterProp<Token, details::DropdownMenuItem::Measurements,
-    [](auto& self, const auto& value) { self.set_measurements(value); }>;
-
-using Disabled = common::pro::Disabled<Token>;
-
-using WaterColor = common::pro::WaterColor<Token>;
-
-template <typename F>
-using OnClicked =
-    common::pro::SignalInjection<F, Token, &details::DropdownMenuItem::signal_clicked>;
-
-using namespace widget::pro;
-using namespace theme::pro;
-
-}
-
-namespace creeper {
-
-using DropdownMenuItem = Declarative<dropdown_menu_item::details::DropdownMenuItem,
-    TokenOr<dropdown_menu_item::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 }

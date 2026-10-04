@@ -1,5 +1,5 @@
 #pragma once
-#include "creeper-qt/utility/wrapper/property.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
 
 #include <qpainter.h>
 
@@ -48,7 +48,7 @@ struct CommonProps {
 
 struct ContainerProps {
     qt::size size    = qt::size { 0, 0 };
-    qt::align align  = qt::align {};
+    qt::align align  = qt::align { };
     qt::point origin = qt::point { 0, 0 };
     auto rect() const { return qt::rect { origin, size }; }
 };
@@ -62,34 +62,61 @@ struct ShapeProps {
 }
 namespace creeper::painter::common::pro {
 
-struct TokenContext { };
-using Token = creeper::Token<TokenContext>;
+struct Size {
+    qt::size value;
+    explicit Size(const qt::size& v)
+        : value { v } { }
+    friend auto dsl_invoke(auto& self, const Size& prop) -> void { self.size = prop.value; }
+};
 
-using Size   = DerivedProp<Token, qt::size, [](auto& self, auto const& v) { self.size = v; }>;
-using Origin = DerivedProp<Token, qt::point, [](auto& self, auto const& v) { self.origin = v; }>;
+struct Origin {
+    qt::point value;
+    explicit Origin(const qt::point& v)
+        : value { v } { }
+    friend auto dsl_invoke(auto& self, const Origin& prop) -> void { self.origin = prop.value; }
+};
 
-using ContainerColor =
-    SetterProp<Token, qt::color, [](auto& self, auto const& v) { self.container_color = v; }>;
-using OutlineColor =
-    SetterProp<Token, qt::color, [](auto& self, auto const& v) { self.outline_color = v; }>;
-using OutlineWidth =
-    SetterProp<Token, qt::real, [](auto& self, auto const& v) { self.outline_width = v; }>;
-
-struct Outline : Token {
-    qt::color color;
-    qt::real width;
-    Outline(const qt::color& color, qt::real width)
-        : color { color }
-        , width { width } { }
-    auto apply(auto& self) {
-        self.outline_color = color;
-        self.outline_width = width;
+struct ContainerColor {
+    qt::color value;
+    explicit ContainerColor(const qt::color& v)
+        : value { v } { }
+    friend auto dsl_invoke(auto& self, const ContainerColor& prop) -> void {
+        self.container_color = prop.value;
     }
 };
 
-/// Alias
+struct OutlineColor {
+    qt::color value;
+    explicit OutlineColor(const qt::color& v)
+        : value { v } { }
+    friend auto dsl_invoke(auto& self, const OutlineColor& prop) -> void {
+        self.outline_color = prop.value;
+    }
+};
+
+struct OutlineWidth {
+    qt::real value;
+    explicit OutlineWidth(qt::real v)
+        : value { v } { }
+    friend auto dsl_invoke(auto& self, const OutlineWidth& prop) -> void {
+        self.outline_width = prop.value;
+    }
+};
+
+struct Outline {
+    qt::color color;
+    qt::real width;
+
+    Outline(const qt::color& color, qt::real width)
+        : color { color }
+        , width { width } { }
+
+    friend auto dsl_invoke(auto& self, const Outline& prop) -> void {
+        self.outline_color = prop.color;
+        self.outline_width = prop.width;
+    }
+};
 
 using Fill = ContainerColor;
 
-/// Export
 }

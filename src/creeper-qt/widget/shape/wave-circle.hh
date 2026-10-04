@@ -2,7 +2,8 @@
 
 #include "creeper-qt/utility/solution/round-angle.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
-#include "creeper-qt/utility/wrapper/property.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
+#include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 #include "creeper-qt/widget/shape/shape.hh"
 
@@ -11,30 +12,34 @@
 #include <qpainterpath.h>
 #include <ranges>
 
-namespace creeper::wave_circle::internal {
+namespace creeper {
 
-class WaveCircle : public Shape {
+class WaveCircle : public Shape, public DSL {
 public:
-    auto set_flange_number(uint8_t number) noexcept {
+    using Shape::Shape;
+
+    explicit WaveCircle(auto&&... args) { construct_with(std::forward<decltype(args)>(args)...); }
+
+    auto setFlangeNumber(uint8_t number) noexcept -> void {
         generate_request_ = true;
         flange_number_    = number;
     }
-    auto set_flange_radius(double radius) noexcept {
+    auto setFlangeRadius(double radius) noexcept -> void {
         generate_request_ = true;
         flange_radius_    = radius;
     }
-    auto set_overall_radius(double radius) noexcept {
+    auto setOverallRadius(double radius) noexcept -> void {
         generate_request_ = true;
         overall_radius_   = radius;
     }
-    auto set_protruding_ratio(double ratio) noexcept {
+    auto setProtrudingRatio(double ratio) noexcept -> void {
         generate_request_ = true;
         protruding_ratio_ = ratio;
     }
 
 protected:
     auto paintEvent(QPaintEvent*) -> void override {
-        if (generate_request_) generate_path();
+        if (generate_request_) generatePath();
 
         auto painter = QPainter { this };
         painter.setRenderHint(QPainter::Antialiasing, true);
@@ -62,7 +67,7 @@ private:
     double overall_radius_   = 100;
     double protruding_ratio_ = 0.8;
 
-    auto generate_path() noexcept -> void {
+    auto generatePath() noexcept -> void {
 
         const auto center = QPointF(width() / 2., height() / 2.);
         const auto step   = 2 * std::numbers::pi / flange_number_;
@@ -94,31 +99,20 @@ private:
         path_cache_.lineTo(begin);
     }
 };
+
+namespace wave_circle::pro {
+
+    using namespace common::pro;
+    using namespace widget::pro;
+
+    using FlangeNumber = ForwardProp<&WaveCircle::setFlangeNumber>;
+
+    using FlangeRadius = ForwardProp<&WaveCircle::setFlangeRadius>;
+
+    using OverallRadius = ForwardProp<&WaveCircle::setOverallRadius>;
+
+    using ProtrudingRatio = ForwardProp<&WaveCircle::setProtrudingRatio>;
+
 }
-namespace creeper::wave_circle::pro {
-
-using Token = creeper::Token<internal::WaveCircle>;
-
-using Background  = common::pro::Background<Token>;
-using BorderWidth = common::pro::BorderWidth<Token>;
-using BorderColor = common::pro::BorderColor<Token>;
-
-using FlangeNumber =
-    SetterProp<Token, uint8_t, [](auto& self, const auto& v) { self.set_flange_number(v); }>;
-
-using FlangeRadius =
-    SetterProp<Token, double, [](auto& self, const auto& v) { self.set_flange_radius(v); }>;
-
-using OverallRadius =
-    SetterProp<Token, double, [](auto& self, const auto& v) { self.set_overall_radius(v); }>;
-
-using ProtrudingRatio =
-    SetterProp<Token, double, [](auto& self, const auto& v) { self.set_protruding_ratio(v); }>;
-using namespace widget::pro;
-}
-namespace creeper {
-
-using WaveCircle = Declarative<wave_circle::internal::WaveCircle,
-    TokenOr<wave_circle::pro::Token, widget::pro::Token>>;
 
 }

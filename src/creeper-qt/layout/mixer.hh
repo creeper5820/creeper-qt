@@ -6,14 +6,21 @@
 #include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/animation/state/pid.hh"
 #include "creeper-qt/utility/animation/transition.hh"
+#include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/widget.hh"
 
-namespace creeper::mixer::internal {
+namespace creeper {
 
-class MixerMask : public QWidget {
+class MixerMask : public QWidget, public DSL {
 public:
-    explicit MixerMask(auto* widget) noexcept
-        : QWidget { widget }
+    explicit MixerMask(auto&&... props)
+        : MixerMask { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
+
+    MixerMask() noexcept
+        : QWidget { }
         , animatable { *this } {
 
         QWidget::setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -31,7 +38,7 @@ public:
         }
     }
 
-    auto initiate_animation(QPoint const& point) noexcept {
+    auto initiateAnimation(QPoint const& point) noexcept {
         mask_frame.fill(Qt::transparent);
 
         auto* widget = parentWidget();
@@ -46,9 +53,9 @@ public:
         update_animation = true;
         QWidget::setFixedSize(widget->size());
     }
-    auto initiate_animation(int x, int y) noexcept {
+    auto initiateAnimation(int x, int y) noexcept {
         // Forward Point
-        initiate_animation(QPoint { x, y });
+        initiateAnimation(QPoint { x, y });
     }
 
 protected:
@@ -63,7 +70,7 @@ protected:
 
         auto const radius = double { *mask_radius * x };
         auto const round  = [&] {
-            auto path = QPainterPath {};
+            auto path = QPainterPath { };
             path.addRect(QWidget::rect());
 
             auto inner = QPainterPath();
@@ -92,21 +99,21 @@ private:
 };
 
 }
+
 namespace creeper::mixer::pro {
 
-struct SetMixerMask : widget::pro::Token {
-    internal::MixerMask*& mask;
-    explicit SetMixerMask(auto*& mask)
+using namespace common::pro;
+using namespace widget::pro;
+
+struct SetMixerMask {
+    MixerMask*& mask;
+
+    explicit SetMixerMask(MixerMask*& mask) noexcept
         : mask { mask } { }
-    auto apply(auto& self) noexcept {
-        //
-        mask = new internal::MixerMask { &self };
+
+    friend auto dsl_invoke(auto& self, const SetMixerMask& prop) -> void {
+        prop.mask = new MixerMask { Parent { &self } };
     }
 };
-
-}
-namespace creeper {
-
-using MixerMask = mixer::internal::MixerMask;
 
 }
