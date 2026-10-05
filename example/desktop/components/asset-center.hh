@@ -166,7 +166,7 @@ struct AssetCenter : creeper::Widget {
                 card::pro::ThemeManager { manager },
                 card::pro::LevelLowest,
                 card::pro::MinimumHeight { 200 },
-                card::pro::Layout<Row> {
+                new Row {
                     new Group<Col, OutlinedButton> {
                         col::pro::Margin { 15 },
                         col::pro::Spacing { 10 },

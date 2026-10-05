@@ -50,7 +50,7 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
         fc::Radius { 0 },
         fc::Level { CardLevel::HIGHEST },
 
-        fc::Layout<Col> {
+        new Col {
             ln::Spacing { 10 },
             ln::Margin { 15 },
 

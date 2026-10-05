@@ -46,7 +46,7 @@ auto ListComponent(ListComponentState& state) noexcept -> raw_pointer<QWidget> {
     return new FilledCard {
         fcpro::ThemeManager { state.manager },
         fcpro::Radius { 10 },
-        fcpro::Layout<Col> {
+        new Col {
             new ScrollArea {
                 scroll::pro::ThemeManager { state.manager },
                 scroll::pro::ScrollBarPolicy {

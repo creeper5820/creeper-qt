@@ -548,7 +548,7 @@ auto filled_card = new FilledCard {
     capro::Level { CardLevel::HIGHEST },
     capro::Radius { 12 },
     capro::FixedSize { 200, 150 },
-    capro::Layout<Col> {
+    new Col {
         // 卡片内容
     }
 };
@@ -557,7 +557,7 @@ auto outlined_card = new OutlinedCard {
     capro::ThemeManager { manager },
     capro::LevelLowest,
     capro::Radius { 8 },
-    capro::Layout<Row> {
+    new Row {
         // 卡片内容
     }
 };
@@ -565,7 +565,7 @@ auto outlined_card = new OutlinedCard {
 auto elevated_card = new ElevatedCard {
     capro::ThemeManager { manager },
     capro::LevelHigh,
-    capro::Layout<Col> {
+    new Col {
         // 卡片内容
     }
 };
@@ -634,7 +634,7 @@ creeper::ShowWindow<MainWindow> {
     mwpro::MinimumSize { 1080, 720 },
     mwpro::Central<FilledCard> {
         card::pro::ThemeManager { manager },
-        card::pro::Layout<Col> {
+        new Col {
             // 窗口内容
         }
     }

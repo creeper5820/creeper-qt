@@ -193,7 +193,7 @@ auto CardWall(ThemeManager& manager) noexcept {
         // QScrollArea 在 setWidgetResizable(true) 下按内容控件的 size hint 拉伸，
         // 必须显式 Expanding 才能铺满视口，并让内层 Grid 拿到完整高度
         wgp::SizePolicy { QSizePolicy::Expanding, QSizePolicy::Expanding },
-        wgp::Layout<Grid> {
+        new Grid {
             gp::With { std::move(grid_metrics) },
             each(kTiles,
                 [&](const Tile& tile) {
@@ -246,7 +246,7 @@ auto FloatingToolbar(ThemeManager& manager, ThemeCycle& cycle) noexcept {
             ecp::Radius { 26 },
             ecp::BorderWidth { 1.5 },
             ecp::With { std::move(tint) },
-            ecp::Layout<Row> {
+            new Row {
                 ln::ContentsMargin { { 8, 6, 8, 6 } },
                 ln::Spacing { 4 },
                 each(std::array { "stars", "stars", "stars" },
@@ -261,7 +261,7 @@ auto FloatingToolbar(ThemeManager& manager, ThemeCycle& cycle) noexcept {
             ecp::Radius { 12 },
             ecp::BorderWidth { 1.5 },
             ecp::With { std::move(tint) },
-            ecp::Layout<Row> {
+            new Row {
                 ln::Margin { 0 },
                 ln::Alignment { Qt::AlignCenter },
                 new IconButton {
@@ -352,7 +352,7 @@ auto main(int argc, char** argv) -> int {
                     self.update();
                 });
             } },
-            fcp::Layout<Col> {
+            new Col {
                 ln::Margin { 0 },
                 ln::Spacing { 0 },
 

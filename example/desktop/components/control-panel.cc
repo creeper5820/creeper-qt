@@ -22,7 +22,7 @@ FilledCard* ControlPanel(ThemeManager& manager) noexcept {
     return new FilledCard {
         fcp::ThemeManager { manager },
 
-        fcp::Layout<Row> {
+        new Row {
             rp::Spacing { 5 },
             rp::Alignment { Qt::AlignVCenter | Qt::AlignLeft },
 

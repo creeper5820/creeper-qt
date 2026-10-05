@@ -1,6 +1,6 @@
 #pragma once
 
-#include "creeper-qt/utility/api/helper/string.hh"
+#include "creeper-qt/utility/api/helper/string.hh" // IWYU pragma: keep
 
 namespace creeper::api::pro {
 

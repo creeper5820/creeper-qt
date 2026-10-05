@@ -7,11 +7,9 @@
 
 namespace creeper::theme {
 
-class ThemeManager;
-
 template <class T>
 concept color_scheme_setter_trait = requires(T t) {
-    { t.loadColorScheme(ColorScheme { }) };
+    { t.loadColorScheme(ColorScheme {}) };
 };
 
 struct ThemePack {

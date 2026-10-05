@@ -1,10 +1,10 @@
 #pragma once
 
-#include "creeper-qt/utility/api/scope/theme.hh"
+#include "creeper-qt/utility/api/scope/theme.hh" // IWYU pragma: keep
 
-#include "creeper-qt/utility/api/scope/widget.hh"
+#include "creeper-qt/utility/api/scope/widget.hh" // IWYU pragma: keep
 
-#include "creeper-qt/utility/api/scope/common.hh"
+#include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
 #include "filled-button.hh"
 
 namespace creeper {

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "creeper-qt/utility/api/pro/background.hh"
-#include "creeper-qt/utility/api/pro/border.hh"
-#include "creeper-qt/utility/api/pro/radius.hh"
+#include "creeper-qt/utility/api/pro/background.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/border.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/radius.hh" // IWYU pragma: keep
 
 namespace creeper::api::scope::shape {
 

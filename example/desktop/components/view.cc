@@ -67,7 +67,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
         std::chrono::steady_clock::time_point timeline = std::chrono::steady_clock::now();
 
         MutableQString slogen { "BanG Dream! It’s MyGO!!!!!" };
-        MutableQString selected {};
+        MutableQString selected { };
         MutableBool menu_expanded { false };
         MutableBool loading { false };
         MutableDouble progress { 0.0 };
@@ -77,7 +77,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
     const auto SearchRow = new Row {
         new OutlinedTextField {
             MutableForward {
-                tfp::LabelText {},
+                tfp::LabelText { },
                 context->slogen,
             },
             tfp::ThemeManager { manager },
@@ -85,7 +85,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                 material::icon::kSearch,
                 material::round::font,
             },
-            OutlinedTextField::Measurements {},
+            OutlinedTextField::Measurements { },
             tfp::OnChanged {
                 [context](const QString& text) {
                     const auto count = text.size();
@@ -107,7 +107,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
         lnp::SpacingItem { 10 },
 
         new OutlinedTextField {
-            MutableForward { tfp::Text {}, context->selected },
+            MutableForward { tfp::Text { }, context->selected },
 
             tfp::ThemeManager { manager },
             tfp::ReadOnly { true },
@@ -171,7 +171,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                         "那你愿意……跟我组一辈子的乐队吗？",
                         "过去软弱的我…已经死了。",
                     };
-                    static auto rd  = std::random_device {};
+                    static auto rd  = std::random_device { };
                     static auto gen = std::mt19937 { rd() };
 
                     auto dist = std::uniform_int_distribution<> { 0, slogens.size() - 1 };
@@ -200,12 +200,12 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
     };
 
     return new Widget {
-        widget::pro::Layout { SearchRow },
+        SearchRow,
     };
 }
 static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
     return new Widget {
-        widget::pro::Layout<Col> {
+        new Col {
             col::pro::Alignment { Qt::AlignTop | Qt::AlignLeft },
             col::pro::Spacing { 5 },
             col::pro::Margin { 10 },
@@ -229,7 +229,7 @@ static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
                 card::pro::ThemeManager { manager },
                 card::pro::LevelLow,
                 card::pro::FixedSize { 150, 30 },
-                card::pro::Layout<Row> {
+                new Row {
                     new Text {
                         text::pro::Text { QString { "Item %1" }.arg(index) },
                         text::pro::With { [&manager](Text& self) {
@@ -253,7 +253,7 @@ static auto DropdownMenuItemComponent(ThemeManager& manager) noexcept {
 
     return new Widget {
         widget::pro::FixedSize { 170, 290 },
-        widget::pro::Layout<Col> {
+        new Col {
             col::pro::Alignment { Qt::AlignVCenter | Qt::AlignHCenter },
             col::pro::Spacing { 0 },
             col::pro::Margin { 10 },
@@ -361,14 +361,14 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                 filled_card::pro::FixedSize { 100, kSliderMeasurements.track_height },
                 filled_card::pro::Radius { static_cast<double>(kSliderMeasurements.track_shape) },
                 filled_card::pro::LevelLowest,
-                filled_card::pro::Layout<Row> {
+                new Row {
                     lnp::Spacing { 0 },
                     lnp::Margin { 0 },
                     new Text {
                         text::pro::ThemeManager { state.manager },
                         text::pro::Alignment { Qt::AlignCenter },
                         text::pro::FixedWidth { 100 },
-                        MutableForward { text::pro::Text {}, s },
+                        MutableForward { text::pro::Text { }, s },
                     },
                 },
             },
@@ -402,7 +402,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
         cap::ThemeManager { state.manager },
         cap::SizePolicy { QSizePolicy::Expanding },
 
-        cap::Layout<Col> {
+        new Col {
             lnp::Alignment { Qt::AlignTop },
             lnp::Margin { 10 },
             lnp::Spacing { 10 },
@@ -435,7 +435,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                     card::pro::ThemeManager { state.manager },
                     card::pro::LevelLowest,
                     card::pro::FixedHeight { kSliderMeasurements.minimumHeight() * 3 + 40 },
-                    card::pro::Layout<Col> {
+                    new Col {
                         SwitchRow(),
                         SwitchRow(),
                         SwitchRow(),

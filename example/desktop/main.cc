@@ -105,7 +105,7 @@ auto main(int argc, char** argv) -> int {
             capro::Radius { 0 },
             capro::Level { CardLevel::HIGHEST },
 
-            capro::Layout<Row> {
+            new Row {
                 lnpro::Margin { 0 },
                 lnpro::Spacing { 0 },
 
@@ -121,7 +121,7 @@ auto main(int argc, char** argv) -> int {
                         stack_index,
                     },
                     stpro::Item<Widget> {
-                        capro::Layout<Col> {
+                        new Col {
                             lnpro::ContentsMargin { 5, 15, 15, 15 },
                             new ScrollArea {
                                 scroll::pro::ThemeManager { manager },
@@ -135,7 +135,7 @@ auto main(int argc, char** argv) -> int {
                         },
                     },
                     stpro::Item<Widget> {
-                        capro::Layout<Col> {
+                        new Col {
                             lnpro::ContentsMargin { { 5, 15, 15, 15 } },
                             new DisplayBoard { manager },
                         },

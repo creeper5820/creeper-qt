@@ -10,7 +10,7 @@ struct With {
     Lambda&& lambda;
 
     explicit With(Lambda&& lambda) noexcept
-        requires(!std::is_lvalue_reference<Lambda>::value)
+        requires(!std::is_lvalue_reference_v<Lambda>)
         : lambda { static_cast<Lambda&&>(lambda) } { }
 
     template <typename T>

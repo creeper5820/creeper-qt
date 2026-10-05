@@ -1,8 +1,8 @@
 #pragma once
 
-#include "creeper-qt/utility/api/helper/signal-injection.hh"
-#include "creeper-qt/utility/api/scope/common.hh"
-#include "creeper-qt/utility/api/scope/layout.hh"
+#include "creeper-qt/utility/api/helper/signal-injection.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/layout.hh" // IWYU pragma: keep
 #include "creeper-qt/utility/trait/widget.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"

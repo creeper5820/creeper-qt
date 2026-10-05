@@ -28,19 +28,6 @@ concept dsl_invocable = requires(Widget& w, Arg&& arg) {
 };
 
 /// @brief
-/// 兼容旧版 Token 系统的声明式属性
-///
-/// @note
-/// 旧版属性通过成员函数 apply 应用到组件，这里通过 ADL 桥接到 dsl_invoke，
-/// 使尚未迁移的属性仍可用于继承 DSL 的组件。
-///
-template <class Widget, class Prop>
-    requires requires(Prop& prop, Widget& widget) { prop.apply(widget); }
-auto dsl_invoke(Widget& widget, Prop&& prop) -> void {
-    prop.apply(widget);
-}
-
-/// @brief
 /// 声明式基类，为组件提供声明式构造能力
 ///
 /// 该基类通过 CRTP 的简化版本（利用 C++23 的 deducing this）为派生类提供

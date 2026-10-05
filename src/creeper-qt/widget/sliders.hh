@@ -1,11 +1,11 @@
 #pragma once
 
-#include "creeper-qt/utility/api/scope/theme.hh"
+#include "creeper-qt/utility/api/scope/theme.hh" // IWYU pragma: keep
 
-#include "creeper-qt/utility/api/helper/signal-injection.hh"
-#include "creeper-qt/utility/api/scope/common.hh"
+#include "creeper-qt/utility/api/helper/signal-injection.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
 
-#include "creeper-qt/utility/api/scope/widget.hh"
+#include "creeper-qt/utility/api/scope/widget.hh" // IWYU pragma: keep
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
@@ -98,7 +98,7 @@ public:
 
 public:
     explicit Slider(auto&&... props)
-        : Slider { } {
+        : Slider {} {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 
@@ -127,7 +127,8 @@ namespace slider::pro {
     using OnValueChange = api::helper::SignalInjection<F, &Slider::valueChanged>;
     template <typename F>
     using OnValueChangeFinished = api::helper::SignalInjection<F, &Slider::valueChangedFinished>;
-    using Progress              = ForwardProp<&Slider::setProgress>;
+
+    using Progress = ForwardProp<&Slider::setProgress>;
 
     using namespace api::scope::common;
     using namespace api::scope::theme;

@@ -35,3 +35,18 @@ struct Layout {
 };
 
 }
+
+namespace creeper {
+
+/**
+ * @brief 布局指针的隐式转发
+ *
+ * 使 `Widget { new Row { ... } }` 等价于 `Layout<Row> { ... }`。
+ */
+template <class T>
+    requires std::derived_from<T, QLayout>
+auto dsl_invoke(QWidget& widget, T* layout) -> void {
+    widget.setLayout(layout);
+}
+
+}

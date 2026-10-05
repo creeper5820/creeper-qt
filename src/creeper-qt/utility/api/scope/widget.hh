@@ -1,13 +1,13 @@
 #pragma once
 
-#include "creeper-qt/utility/api/pro/font.hh"
-#include "creeper-qt/utility/api/pro/graphics-effect.hh"
-#include "creeper-qt/utility/api/pro/layout-slot.hh"
-#include "creeper-qt/utility/api/pro/mask.hh"
-#include "creeper-qt/utility/api/pro/palette-role.hh"
-#include "creeper-qt/utility/api/pro/parent.hh"
-#include "creeper-qt/utility/api/pro/size.hh"
-#include "creeper-qt/utility/api/pro/window.hh"
+#include "creeper-qt/utility/api/pro/font.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/graphics-effect.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/layout.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/mask.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/palette-role.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/parent.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/size.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/window.hh" // IWYU pragma: keep
 
 namespace creeper::api::scope::widget {
 

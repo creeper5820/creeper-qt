@@ -176,12 +176,12 @@ auto stacked = new Stacked {
         qDebug() << "当前页面索引:" << index;
     }},
     stpro::Item<Widget> {
-        api::scope::widget::Layout<Col> {
+        new Col {
             // 第一页内容
         }
     },
     stpro::Item<Widget> {
-        api::scope::widget::Layout<Col> {
+        new Col {
             // 第二页内容
         }
     }
