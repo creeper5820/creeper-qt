@@ -5,12 +5,7 @@
 
 #include <qwidget.h>
 
-namespace creeper::theme {
-
-template <class T>
-concept color_scheme_setter_trait = requires(T t) {
-    { t.loadColorScheme(ColorScheme { }) };
-};
+namespace creeper {
 
 struct ThemePack {
     ColorScheme light, dark;
@@ -65,13 +60,5 @@ public:
 
     ColorScheme colorScheme() const;
 };
-
-}
-namespace creeper {
-
-using ColorMode    = theme::ColorMode;
-using ColorScheme  = theme::ColorScheme;
-using ThemePack    = theme::ThemePack;
-using ThemeManager = theme::ThemeManager;
 
 }

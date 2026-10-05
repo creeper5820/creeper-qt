@@ -30,7 +30,7 @@ auto ListComponent(ListComponentState& state) noexcept -> raw_pointer<QWidget> {
             list_items | std::views::enumerate,
             [&](auto&& i, auto&& c) {
                 return new TextButton {
-                    tbpro::ThemeManager { state.manager },
+                    state.manager,
                     tbpro::FixedWidth { 120 },
                     tbpro::FixedHeight { 30 },
                     tbpro::Radius { -1 },
@@ -45,16 +45,16 @@ auto ListComponent(ListComponentState& state) noexcept -> raw_pointer<QWidget> {
         },
     };
     return new FilledCard {
-        fcpro::ThemeManager { state.manager },
+        state.manager,
         fcpro::Radius { 10 },
         new Col {
             new ScrollArea {
-                scroll::pro::ThemeManager { state.manager },
+                state.manager,
                 scroll::pro::ScrollBarPolicy {
                     Qt::ScrollBarAlwaysOff,
                     Qt::ScrollBarAlwaysOff,
                 },
-                scroll::pro::Item { ButtonGroup },
+                scroll::pro::ScrollItem { ButtonGroup },
             },
         },
     };

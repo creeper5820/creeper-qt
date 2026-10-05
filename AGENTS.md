@@ -18,16 +18,15 @@
 ```cpp
 namespace cp = creeper::card::pro;
 namespace fbp = creeper::filled_button::pro;
-namespace lp = creeper::linear::pro;
 
 auto content = FilledCard {
-    cp::ThemeManager { manager },
+    manager,
     cp::Layout<Col> {
-        lp::Item<FilledButton> {
-            fbp::ThemeManager { manager },
+        new FilledButton {
+            manager,
             fbp::Text { "OK" },
             fbp::FixedWidth { 120 },
-        },
+        } + Col::Placement { 0 },
     },
 };
 ```

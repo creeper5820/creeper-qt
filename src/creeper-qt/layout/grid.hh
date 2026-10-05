@@ -8,11 +8,31 @@
 
 #include <qgridlayout.h>
 
+#include <type_traits>
+
 namespace creeper {
 
 class Grid : public QGridLayout, public DSL {
 public:
     using QGridLayout::QGridLayout;
+
+    struct Placement {
+        int row, row_span { };
+        int col, col_span { };
+        Qt::Alignment align;
+
+        explicit Placement(int row, int col, Qt::Alignment align = { })
+            : row { row }
+            , col { col }
+            , align { align } { }
+
+        explicit Placement(int row, int row_span, int col, int col_span, Qt::Alignment align = { })
+            : row { row }
+            , col { col }
+            , row_span { row_span }
+            , col_span { col_span }
+            , align { align } { }
+    };
 
     explicit Grid(auto&&... args) { construct_with(std::forward<decltype(args)>(args)...); }
 };
@@ -22,66 +42,49 @@ namespace grid::pro {
     using RowSpacing = ForwardProp<&QGridLayout::setVerticalSpacing>;
     /// 列间距：列沿水平方向排列，对应 setHorizontalSpacing
     using ColSpacing = ForwardProp<&QGridLayout::setHorizontalSpacing>;
+
     template <item_trait T>
-    struct Item {
-        using Align = Qt::Alignment;
-
-        struct LayoutMethod {
-            int row = 0, row_span = 0;
-            int col = 0, col_span = 0;
-            Align align;
-
-            explicit LayoutMethod(int row, int col, Align align = { })
-                : row { row }
-                , col { col }
-                , align { align } { }
-
-            explicit LayoutMethod(int row, int row_span, int col, int col_span, Align align = { })
-                : row { row }
-                , col { col }
-                , row_span { row_span }
-                , col_span { col_span }
-                , align { align } { }
-
-        } method;
-
+    struct GridItem {
+        Grid::Placement placement;
         T* item_pointer = nullptr;
 
-        explicit Item(const LayoutMethod& method, auto&&... args) noexcept
-            requires std::constructible_from<T, decltype(args)...>
-            : item_pointer { new T { std::forward<decltype(args)>(args)... } }
-            , method(method) { }
+        explicit GridItem(const Grid::Placement& placement, T* pointer) noexcept
+            : placement { placement }
+            , item_pointer { pointer } { }
 
-        explicit Item(const LayoutMethod& method, T* pointer) noexcept
-            : item_pointer { pointer }
-            , method { method } { }
+        template <typename... Args>
+            requires std::constructible_from<T, Args...>
+        explicit GridItem(const Grid::Placement& placement, Args&&... args) noexcept
+            : placement { placement }
+            , item_pointer { new T { std::forward<Args>(args)... } } { }
 
-        friend auto dsl_invoke(QGridLayout& layout, const Item& prop) -> void {
-            if (prop.method.col_span == 0) {
+        friend auto dsl_invoke(QGridLayout& layout, const GridItem& prop) -> void {
+            const auto& placement = prop.placement;
+            if (placement.col_span == 0) {
                 if constexpr (std::is_convertible_v<T*, QWidget*>)
                     layout.addWidget(
-                        prop.item_pointer, prop.method.row, prop.method.col, prop.method.align);
+                        prop.item_pointer, placement.row, placement.col, placement.align);
                 if constexpr (std::is_convertible_v<T*, QLayout*>)
                     layout.addLayout(
-                        prop.item_pointer, prop.method.row, prop.method.col, prop.method.align);
+                        prop.item_pointer, placement.row, placement.col, placement.align);
             } else {
                 if constexpr (std::is_convertible_v<T*, QWidget*>)
-                    layout.addWidget(prop.item_pointer, prop.method.row, prop.method.row_span,
-                        prop.method.col, prop.method.col_span, prop.method.align);
+                    layout.addWidget(prop.item_pointer, placement.row, placement.row_span,
+                        placement.col, placement.col_span, placement.align);
                 if constexpr (std::is_convertible_v<T*, QLayout*>)
-                    layout.addLayout(prop.item_pointer, prop.method.row, prop.method.row_span,
-                        prop.method.col, prop.method.col_span, prop.method.align);
+                    layout.addLayout(prop.item_pointer, placement.row, placement.row_span,
+                        placement.col, placement.col_span, placement.align);
             }
         }
-    };
-    struct Items {
-        explicit Items() { }
-
-        friend auto dsl_invoke(QGridLayout&, const Items&) -> void { }
     };
 
     using namespace api::scope::common;
     using namespace api::scope::layout;
+}
+
+template <item_trait W>
+auto operator+(W* item, Grid::Placement placement) -> grid::pro::GridItem<W> {
+    return grid::pro::GridItem<W> { placement, item };
 }
 
 }

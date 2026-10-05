@@ -42,7 +42,7 @@ struct DisplayBoard : public FilledCard {
 
     explicit DisplayBoard(creeper::ThemeManager& manager)
         : FilledCard {
-            fcp::ThemeManager { manager },
+            manager,
             Component(manager),
         } { }
 };

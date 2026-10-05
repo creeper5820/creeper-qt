@@ -82,17 +82,17 @@ namespace dropdown_menu::pro {
     using OnDismissRequest = api::helper::SignalInjection<F, &DropdownMenu::dismissRequested>;
     /// 向菜单内容列追加内容项，通常为 DropdownMenuItem
     template <item_trait T>
-    struct Item {
+    struct MenuWidget {
         T* item_pointer = nullptr;
 
-        explicit Item(T* pointer) noexcept
+        explicit MenuWidget(T* pointer) noexcept
             : item_pointer { pointer } { }
 
-        explicit Item(auto&&... args) noexcept
+        explicit MenuWidget(auto&&... args) noexcept
             requires std::constructible_from<T, decltype(args)...>
             : item_pointer { new T { std::forward<decltype(args)>(args)... } } { }
 
-        friend auto dsl_invoke(DropdownMenu& self, const Item& prop) -> void {
+        friend auto dsl_invoke(DropdownMenu& self, const MenuWidget& prop) -> void {
             self.addItem(prop.item_pointer);
         }
     };

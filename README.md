@@ -130,7 +130,7 @@ auto main(int argc, char* argv[]) -> int {
     creeper::ShowWindow<MainWindow> {
         mwp::MinimumSize { 1080, 720 },
         mwp::Central<FilledCard> {
-            cp::ThemeManager { manager },
+            manager,
             cp::Radius { 0 },
             cp::Level { CardLevel::HIGHEST },
 
@@ -144,19 +144,18 @@ auto main(int argc, char* argv[]) -> int {
                     lp::ContentsMargin { { 15, 15, 5, 15 } },
                     ListComponent(list_component_state),
                 },
-                lp::Item<Col> {
-                    { 255 },
+                new Col {
                     lp::ContentsMargin { { 5, 15, 15, 15 } },
                     new ScrollArea {
-                        sp::ThemeManager { manager },
+                        manager,
                         sp::HorizontalScrollBarPolicy {
                             Qt::ScrollBarAlwaysOff,
                         },
-                        sp::Item {
+                        sp::ScrollItem {
                             ViewComponent(view_component_state),
                         },
                     },
-                },
+                } + Row::Placement { 255 },
             },
             // More Widgets
             // ......

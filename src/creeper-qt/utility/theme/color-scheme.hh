@@ -3,7 +3,9 @@
 #include <qcolor.h>
 #include <qfont.h>
 
-namespace creeper::theme {
+#include <concepts>
+
+namespace creeper {
 
 enum class ColorMode { LIGHT, DARK };
 
@@ -49,6 +51,19 @@ struct ColorScheme {
     QColor surface_container;
     QColor surface_container_low;
     QColor surface_container_lowest;
+
+    /// 声明式属性：要求目标组件实现 void loadColorScheme(const ColorScheme&)
+    friend auto dsl_invoke(auto& self, const ColorScheme& scheme) -> void
+        requires requires { self.loadColorScheme(scheme); }
+    {
+        self.loadColorScheme(scheme);
+    }
+};
+
+/// 约束组件可接收配色方案：要求实现 void loadColorScheme(const ColorScheme&)
+template <class T>
+concept color_scheme_setter_trait = requires(T t) {
+    { t.loadColorScheme(ColorScheme { }) };
 };
 
 struct Typography {

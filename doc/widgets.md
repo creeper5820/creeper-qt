@@ -148,7 +148,7 @@ namespace obp = creeper::outlined_button::pro;
 
 // 通用属性可以直接使用，无需区分来源
 const auto properties = std::tuple {
-    fbp::ThemeManager { theme_manager },
+    theme_manager,
     fbp::FixedSize { 100, 50 },
     fbp::Font { "JetBrains Mono", 12 },
     fbp::Text { "你好世界" },
@@ -164,7 +164,7 @@ namespace obp = creeper::outlined_button::pro;
 namespace tbp = creeper::text_button::pro;
 
 const auto properties = std::tuple {
-    fbp::ThemeManager { theme_manager },
+    theme_manager,
     fbp::FixedSize { 100, 50 },
     fbp::Font { "JetBrains Mono", 12 },
     fbp::Text { "你好世界" },
@@ -241,7 +241,7 @@ auto switch_widget = new Switch {
 using namespace creeper;
 
 auto text_field = new FilledTextField {
-    text_field::pro::ThemeManager { manager },
+    manager,
     text_field::pro::LabelText { "用户名" },
     text_field::pro::FixedSize { 250, 56 },
     text_field::pro::OnTextChanged { [](const QString& text) {
@@ -251,7 +251,7 @@ auto text_field = new FilledTextField {
 
 // 带前置图标
 auto search_field = new FilledTextField {
-    text_field::pro::ThemeManager { manager },
+    manager,
     text_field::pro::LeadingIcon {
         material::icon::kSearch,
         material::round::font
@@ -265,7 +265,7 @@ auto text_value = std::make_shared<MutableValue<QString>>();
 text_value->set_silent("初始值");
 
 auto bound_field = new FilledTextField {
-    text_field::pro::ThemeManager { manager },
+    manager,
     text_field::pro::LabelText { "输入框" },
     MutableForward {
         text_field::pro::LabelText {},
@@ -288,7 +288,7 @@ auto bound_field = new FilledTextField {
 using namespace creeper;
 
 auto outlined_field = new OutlinedTextField {
-    text_field::pro::ThemeManager { manager },
+    manager,
     text_field::pro::LabelText { "密码" },
     text_field::pro::LeadingIcon {
         "lock",
@@ -316,7 +316,7 @@ auto outlined_field = new OutlinedTextField {
 using namespace creeper;
 
 auto slider = new Slider {
-    slider::pro::ThemeManager { manager },
+    manager,
     Slider::Measurements::M(),
     slider::pro::FixedHeight { 52 },
     slider::pro::FixedWidth { 300 },
@@ -331,7 +331,7 @@ auto progress_value = std::make_shared<MutableValue<double>>();
 progress_value->set_silent(0.2);
 
 auto bound_slider = new Slider {
-    slider::pro::ThemeManager { manager },
+    manager,
     Slider::Measurements::S(),
     MutableForward {
         slider::pro::Progress { 0. },
@@ -363,7 +363,7 @@ auto bound_slider = new Slider {
 | `Offset` | `QPoint` | 定位完成后叠加的偏移，RTL 布局下 x 方向取反 |
 | `ContainerColor` | `QColor` | 覆盖容器颜色，默认取自主题 `surface_container` |
 | `CornerRadius` | `double` | 容器圆角半径，默认 4 |
-| `Item<T>` | `T* / 构造参数` | 向内容列追加菜单项，通常为 `DropdownMenuItem` |
+| `MenuWidget<T>` | `T* / 构造参数` | 向内容列追加菜单项，通常为 `DropdownMenuItem` |
 
 菜单是**受控组件**：点击菜单外部或 Esc 时菜单自行收起并发出 `OnDismissRequest`，应用应在其中把绑定状态置回 `false`；点击菜单项**不会**自动关闭菜单，需要在 `OnClicked` 中显式收起。内容超出可用高度时自动滚动，支持方向键导航。与标准的差异：`scrollState`、`properties`、`tonalElevation`、`shadowElevation`、`border` 未暴露，阴影取自主题。
 
@@ -378,20 +378,20 @@ namespace fbp  = creeper::filled_button::pro;
 auto expanded = std::make_shared<MutableBool>(false);
 
 auto button = new FilledButton {
-    fbp::ThemeManager { manager },
+    manager,
     fbp::Text { "打开菜单" },
     fbp::Clickable { [expanded] { *expanded = true; } },
     fbp::Child<DropdownMenu> {
-        dmp::ThemeManager { manager },
+        manager,
         MutableForward { dmp::Expanded { false }, expanded },
         dmp::OnDismissRequest { [expanded] { *expanded = false; } },
-        dmp::Item<DropdownMenuItem> {
-            dmip::ThemeManager { manager },
+        dmp::MenuWidget<DropdownMenuItem> {
+            manager,
             dmip::Text { "选项1" },
             dmip::OnClicked { [expanded] { *expanded = false; } },
         },
-        dmp::Item<DropdownMenuItem> {
-            dmip::ThemeManager { manager },
+        dmp::MenuWidget<DropdownMenuItem> {
+            manager,
             dmip::Text { "选项2" },
             dmip::OnClicked { [expanded] { *expanded = false; } },
         },
@@ -403,7 +403,7 @@ auto button = new FilledButton {
 
 ```cpp
 auto menu = new DropdownMenu {
-    dmp::ThemeManager { manager },
+    manager,
     dmp::Anchor { some_other_widget },
     // ...
 };
@@ -428,7 +428,7 @@ auto menu = new DropdownMenu {
 
 ```cpp
 auto item = new DropdownMenuItem {
-    dmip::ThemeManager { manager },
+    manager,
     dmip::Text { "编辑" },
     dmip::LeadingIcon { material::icon::kEdit, material::round::font },
     dmip::OnClicked { [] { /* ... */ } },
@@ -492,14 +492,14 @@ auto scaled_image = new Image {
 using namespace creeper;
 
 auto text = new Text {
-    text::pro::ThemeManager { manager },
+    manager,
     text::pro::Text { "Hello World" },
     text::pro::Alignment { Qt::AlignCenter }
 };
 
 // 可选择的文本
 auto selectable_text = new Text {
-    text::pro::ThemeManager { manager },
+    manager,
     text::pro::Text { "可选择的文本内容" },
     text::pro::WordWrap { true },
     text::pro::TextInteractionFlags {
@@ -512,7 +512,7 @@ auto text_value = std::make_shared<MutableValue<QString>>();
 text_value->set_silent("初始文本");
 
 auto bound_text = new Text {
-    text::pro::ThemeManager { manager },
+    manager,
     MutableForward {
         text::pro::Text {},
         text_value
@@ -544,7 +544,7 @@ using namespace creeper;
 namespace capro = card::pro;
 
 auto filled_card = new FilledCard {
-    capro::ThemeManager { manager },
+    manager,
     capro::Level { CardLevel::HIGHEST },
     capro::Radius { 12 },
     capro::FixedSize { 200, 150 },
@@ -554,7 +554,7 @@ auto filled_card = new FilledCard {
 };
 
 auto outlined_card = new OutlinedCard {
-    capro::ThemeManager { manager },
+    manager,
     capro::LevelLowest,
     capro::Radius { 8 },
     new Row {
@@ -563,7 +563,7 @@ auto outlined_card = new OutlinedCard {
 };
 
 auto elevated_card = new ElevatedCard {
-    capro::ThemeManager { manager },
+    manager,
     capro::LevelHigh,
     new Col {
         // 卡片内容
@@ -596,7 +596,7 @@ using namespace creeper;
 namespace ibpro = icon_button::pro;
 
 auto icon_button = new IconButton {
-    ibpro::ThemeManager { manager },
+    manager,
     ibpro::FixedSize { 40, 40 },
     ibpro::Color { IconButton::Color::TONAL },
     ibpro::FontIcon { "search" },
@@ -607,7 +607,7 @@ auto icon_button = new IconButton {
 
 // 切换按钮
 auto toggle_button = new IconButton {
-    ibpro::ThemeManager { manager },
+    manager,
     ibpro::Types { IconButton::Types::TOGGLE_UNSELECTED },
     ibpro::FontIcon { "favorite" }
 };
@@ -633,7 +633,7 @@ namespace mwpro = main_window::pro;
 creeper::ShowWindow<MainWindow> {
     mwpro::MinimumSize { 1080, 720 },
     mwpro::Central<FilledCard> {
-        card::pro::ThemeManager { manager },
+        manager,
         new Col {
             // 窗口内容
         }

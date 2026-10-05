@@ -36,7 +36,7 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
     });
 
     const auto navigation_icons_config = std::tuple {
-        ic::ThemeManager { state.manager },
+        ic::BindTheme { state.manager },
         ic::ColorStandard,
         ic::ShapeRound,
         ic::TypesToggleUnselected,
@@ -46,7 +46,7 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
     };
 
     return new FilledCard {
-        fc::ThemeManager { state.manager },
+        state.manager,
         fc::Radius { 0 },
         fc::Level { CardLevel::HIGHEST },
 
@@ -54,13 +54,9 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
             ln::Spacing { 10 },
             ln::Margin { 15 },
 
-            ln::Item {
-                { 0, Qt::AlignHCenter },
-                AvatarComponent,
-            },
+            AvatarComponent + Col::Placement { 0, Qt::AlignHCenter },
             ln::SpacingItem { 20 },
-            ln::Item<SelectGroup<Col, IconButton>> {
-                { 0, Qt::AlignHCenter },
+            new SelectGroup<Col, IconButton> {
                 ln::Margin { 0 },
                 ln::SpacingItem { 10 },
                 sg::Compose {
@@ -83,25 +79,22 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
                     Qt::AlignHCenter,
                 },
                 sg::SignalInjection { &IconButton::clicked },
-            },
+            } + Col::Placement { 0, Qt::AlignHCenter },
             ln::SpacingItem { 40 },
             ln::Stretch { 255 },
-            ln::Item<IconButton> {
-                { 0, Qt::AlignHCenter },
+            new IconButton {
                 navigation_icons_config,
                 ic::TypesDefault,
                 ic::FontIcon { "tab" },
                 ic::Clickable { state.next_tab },
-            },
-            ln::Item<IconButton> {
-                { 0, Qt::AlignHCenter },
+            } + Col::Placement { 0, Qt::AlignHCenter },
+            new IconButton {
                 navigation_icons_config,
                 ic::TypesDefault,
                 ic::FontIcon { material::icon::kLogout },
                 ic::Clickable { &app::quit },
-            },
-            ln::Item<IconButton> {
-                { 0, Qt::AlignHCenter },
+            } + Col::Placement { 0, Qt::AlignHCenter },
+            new IconButton {
                 navigation_icons_config,
                 ic::ColorFilled,
                 ic::FontIcon { material::icon::kDarkMode },
@@ -110,7 +103,7 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
                     state.manager.toggleColorMode();
                     state.manager.applyTheme();
                 } },
-            },
+            } + Col::Placement { 0, Qt::AlignHCenter },
         },
     };
 }

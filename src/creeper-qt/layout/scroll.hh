@@ -81,17 +81,17 @@ struct ScrollBarPolicy {
     }
 };
 template <item_trait T>
-struct Item {
+struct ScrollItem {
     T* item_pointer = nullptr;
 
-    explicit Item(auto&&... args) noexcept
+    explicit ScrollItem(auto&&... args) noexcept
         requires std::constructible_from<T, decltype(args)...>
         : item_pointer { new T { std::forward<decltype(args)>(args)... } } { }
 
-    explicit Item(T* pointer) noexcept
+    explicit ScrollItem(T* pointer) noexcept
         : item_pointer { pointer } { }
 
-    friend auto dsl_invoke(ScrollArea& self, const Item& prop) -> void {
+    friend auto dsl_invoke(ScrollArea& self, const ScrollItem& prop) -> void {
         if constexpr (widget_trait<T>) {
             self.setWidget(prop.item_pointer);
         }

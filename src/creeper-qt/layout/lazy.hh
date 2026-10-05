@@ -2,7 +2,7 @@
 
 #include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
 
-// TODO: 尚未实现。LazyColumn/LazyRow 构造函数与 Item/Items 属性均为占位，
+// TODO: 尚未实现。LazyColumn/LazyRow 构造函数与 LazyWidget/LazyWidgets 属性均为占位，
 //       惰性布局逻辑待补全。
 #include "creeper-qt/utility/api/scope/widget.hh" // IWYU pragma: keep
 #include "creeper-qt/utility/trait/widget.hh"
@@ -41,16 +41,16 @@ public:
 namespace creeper::lazy::pro {
 /// @note 占位属性，惰性布局逻辑待补全
 template <widget_trait T>
-struct Item {
-    friend auto dsl_invoke(auto& self, const Item&) -> void { }
+struct LazyWidget {
+    friend auto dsl_invoke(auto& self, const LazyWidget&) -> void { }
 };
 /// @note 占位属性，惰性布局逻辑待补全
 template <widget_trait T>
-struct Items {
+struct LazyWidgets {
     template <std::ranges::range Range>
-    explicit Items(Range) { }
+    explicit LazyWidgets(Range) { }
 
-    friend auto dsl_invoke(auto& self, const Items&) -> void { }
+    friend auto dsl_invoke(auto& self, const LazyWidgets&) -> void { }
 };
 
 using namespace api::scope::common;

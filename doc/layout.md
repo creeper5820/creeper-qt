@@ -48,7 +48,7 @@ auto layout = new Row {
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
-| `Item` | `Widget*` 或 `Layout*` | 添加子项（组件或布局） |
+| `LinearItem<T>` | `T*` 或构造参数 | 添加子项（组件或布局），可由 `Placement + 指针` 得到 |
 | `SpacingItem` | `int` | 添加固定大小的间距 |
 | `Stretch` | `int` | 添加弹性空间（拉伸因子） |
 | `SpacerItem` | `QSpacerItem*` | 添加自定义间距项 |
@@ -57,41 +57,40 @@ auto layout = new Row {
 using namespace creeper;
 namespace lnpro = linear::pro;
 
-// 水平布局示例
+// 水平布局示例：Row::Placement 指定拉伸因子与对齐方式，再与指针相加
 auto row = new Row {
     lnpro::Spacing { 10 },
-    lnpro::Item<FilledButton> {
-        { 1, Qt::AlignLeft },  // stretch=1, alignment=Left
+    new FilledButton {
         button::pro::Text { "按钮1" }
-    },
+    } + Row::Placement { 1, Qt::AlignLeft },
     lnpro::Stretch { 1 },  // 弹性空间
-    lnpro::Item<FilledButton> {
+    new FilledButton {
         button::pro::Text { "按钮2" }
-    },
+    } + Row::Placement { 0 },
     lnpro::SpacingItem { 20 },  // 固定间距
-    lnpro::Item<FilledButton> {
+    new FilledButton {
         button::pro::Text { "按钮3" }
-    }
+    } + Row::Placement { 0 }
 };
 
-// 垂直布局示例
+// 垂直布局示例：在 Col 中使用 Col::Placement
 auto col = new Col {
     lnpro::ContentsMargin { { 20, 20, 20, 20 } },
-    lnpro::Item<FilledTextField> {
-        text_field::pro::ThemeManager { manager },
+    new FilledTextField {
+        manager,
         text_field::pro::LabelText { "用户名" }
-    },
-    lnpro::Item<FilledTextField> {
-        text_field::pro::ThemeManager { manager },
+    } + Col::Placement { 0 },
+    new FilledTextField {
+        manager,
         text_field::pro::LabelText { "密码" }
-    },
+    } + Col::Placement { 0 },
     lnpro::Stretch { 1 },
-    lnpro::Item<FilledButton> {
+    new FilledButton {
         button::pro::Text { "提交" }
-    }
+    } + Col::Placement { 0 }
 };
 
-// 如果组件是通过函数返回的，直接传入函数调用结果
+// 已有指针时直接与 Placement 相加
 auto createButton = [](const QString& text) {
     return new FilledButton {
         button::pro::Text { text }
@@ -99,9 +98,8 @@ auto createButton = [](const QString& text) {
 };
 
 auto row2 = new Row {
-    lnpro::Item { createButton("按钮1") },
-    lnpro::Item { createButton("按钮2") }
-};
+    createButton("按钮1") + Row::Placement { 0 },
+    createButton("按钮2") + Row::Placement { 0 }};
 ```
 
 ---
@@ -120,7 +118,7 @@ auto row2 = new Row {
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
-| `Item` | `Widget*` 或 `Layout*` | 添加子项，需要指定行列位置 |
+| `GridItem<T>` | `Grid::Placement, T*` 或构造参数 | 添加子项，需要指定行列位置 |
 | `RowSpacing` | `int` | 设置行间距 |
 | `ColSpacing` | `int` | 设置列间距 |
 
@@ -131,16 +129,16 @@ namespace gpro = grid::pro;
 auto grid = new Grid {
     gpro::RowSpacing { 10 },
     gpro::ColSpacing { 10 },
-    gpro::Item<FilledButton> {
-        { 0, 0, Qt::AlignCenter },  // row=0, col=0
+    gpro::GridItem<FilledButton> {
+        Grid::Placement { 0, 0, Qt::AlignCenter },  // row=0, col=0
         button::pro::Text { "左上" }
     },
-    gpro::Item<FilledButton> {
-        { 0, 1 },  // row=0, col=1
+    gpro::GridItem<FilledButton> {
+        Grid::Placement { 0, 1 },  // row=0, col=1
         button::pro::Text { "右上" }
     },
-    gpro::Item<FilledButton> {
-        { 1, 0, 1, 2, Qt::AlignCenter },  // row=1, row_span=1, col=0, col_span=2
+    gpro::GridItem<FilledButton> {
+        Grid::Placement { 1, 1, 0, 2, Qt::AlignCenter },  // row=1, row_span=1, col=0, col_span=2
         button::pro::Text { "跨列按钮" }
     }
 };
@@ -162,7 +160,7 @@ auto grid = new Grid {
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
-| `Item` | `Widget*` | 添加子项（仅支持 Widget） |
+| `Widget*` | `Widget*` | 直接添加子 Widget |
 | `CurrentIndex` | `int` | 设置当前显示的页面索引 |
 | `IndexChanged` | `[](int index){}` | 索引改变时的回调函数（连接 `currentChanged` 信号） |
 
@@ -175,12 +173,12 @@ auto stacked = new Stacked {
     stpro::IndexChanged { [](int index) {
         qDebug() << "当前页面索引:" << index;
     }},
-    stpro::Item<Widget> {
+    new Widget {
         new Col {
             // 第一页内容
         }
     },
-    stpro::Item<Widget> {
+    new Widget {
         new Col {
             // 第二页内容
         }
@@ -256,7 +254,7 @@ auto flow2 = new Flow {
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
-| `Item` | `Widget*` 或 `Layout*` | 设置滚动区域的内容 |
+| `ScrollItem` | `Widget*` 或 `Layout*` | 设置滚动区域的内容 |
 | `VerticalScrollBarPolicy` | `Qt::ScrollBarPolicy` | 设置垂直滚动条策略 |
 | `HorizontalScrollBarPolicy` | `Qt::ScrollBarPolicy` | 设置水平滚动条策略 |
 | `ScrollBarPolicy` | `Qt::ScrollBarPolicy, Qt::ScrollBarPolicy` | 同时设置水平和垂直滚动条策略 |
@@ -265,22 +263,22 @@ auto flow2 = new Flow {
 using namespace creeper;
 
 auto scroll_area = new ScrollArea {
-    scroll::pro::ThemeManager { manager },
+    manager,
     scroll::pro::HorizontalScrollBarPolicy { Qt::ScrollBarAlwaysOff },
     scroll::pro::VerticalScrollBarPolicy { Qt::ScrollBarAsNeeded },
-    scroll::pro::Item {
+    scroll::pro::ScrollItem {
         SomeContentWidget,  // 传入已有的 widget 指针
     }
 };
 
 // 或者直接构造内容组件
 auto scroll_area2 = new ScrollArea {
-    scroll::pro::ThemeManager { manager },
+    manager,
     scroll::pro::ScrollBarPolicy {
         Qt::ScrollBarAlwaysOff,
         Qt::ScrollBarAlwaysOff,
     },
-    scroll::pro::Item { ButtonGroup },  // ButtonGroup 是已构造好的 widget*
+    scroll::pro::ScrollItem { ButtonGroup },  // ButtonGroup 是已构造好的 widget*
 };
 ```
 

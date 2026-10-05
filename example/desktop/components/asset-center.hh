@@ -163,7 +163,7 @@ struct AssetCenter : creeper::Widget {
         return new Row {
             row::pro::Margin { 0 },
             new OutlinedCard {
-                card::pro::ThemeManager { manager },
+                manager,
                 card::pro::LevelLowest,
                 card::pro::MinimumHeight { 200 },
                 new Row {
@@ -179,7 +179,7 @@ struct AssetCenter : creeper::Widget {
                             } },
                             [this](const std::string& text, const auto& function) {
                                 return new OutlinedButton {
-                                    outlined_button::pro::ThemeManager { manager },
+                                    manager,
                                     outlined_button::pro::FixedSize { 70, 40 },
                                     outlined_button::pro::Text { text },
                                     outlined_button::pro::Clickable { function },
@@ -191,7 +191,7 @@ struct AssetCenter : creeper::Widget {
                         col::pro::Margin { 20 },
                         col::pro::Spacing { 10 },
                         new Text {
-                            text::pro::ThemeManager { manager },
+                            manager,
                             text::pro::Text {
                                 QString {
                                     "示例中的所有 ICON 均为 Google Material Icons 字体提供，"
@@ -207,7 +207,7 @@ struct AssetCenter : creeper::Widget {
                             },
                         },
                         new FilledTextField {
-                            text_field::pro::ThemeManager { manager },
+                            manager,
                             text_field::pro::LeadingIcon {
                                 "public",
                                 material::round::font,

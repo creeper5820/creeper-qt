@@ -30,9 +30,9 @@ struct Parent {
  * 但不进入布局的组件，例如把 DropdownMenu 声明式地锚定到按钮：
  *
  * @code
- *     lnpro::Item<FilledButton> {
+ *     Row::Placement { 0 } + new FilledButton {
  *         fbp::Child<DropdownMenu> {
- *             dmp::Item<DropdownMenuItem> { ... },
+ *             dmp::MenuWidget<DropdownMenuItem> { ... },
  *         },
  *     }
  * @endcode

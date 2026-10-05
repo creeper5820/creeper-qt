@@ -1,6 +1,6 @@
 #include "creeper-qt/utility/theme/theme.hh"
 
-using namespace creeper::theme;
+using namespace creeper;
 using Handler = ThemeManager::Handler;
 
 struct ThemeManager::Impl {

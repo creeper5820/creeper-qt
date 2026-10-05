@@ -20,7 +20,7 @@ FilledCard* ControlPanel(ThemeManager& manager) noexcept {
     auto pContext = std::make_shared<Context>();
 
     return new FilledCard {
-        fcp::ThemeManager { manager },
+        manager,
 
         new Row {
             rp::Spacing { 5 },
@@ -35,7 +35,7 @@ FilledCard* ControlPanel(ThemeManager& manager) noexcept {
                     },
                     [&](std::size_t index, std::string_view text) {
                         return new OutlinedButton {
-                            obp::ThemeManager { manager },
+                            manager,
                             obp::FixedSize { 80, 30 },
                             obp::Text { text.data() },
                         };

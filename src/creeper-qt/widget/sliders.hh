@@ -96,7 +96,7 @@ public:
 
 public:
     explicit Slider(auto&&... props)
-        : Slider {} {
+        : Slider { } {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 

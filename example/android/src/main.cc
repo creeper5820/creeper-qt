@@ -54,8 +54,7 @@ auto each(const R& range, Generator generator) noexcept {
     return range | std::views::transform(std::move(generator));
 }
 
-template <class T>
-using GridCell = typename gp::Item<T>::LayoutMethod;
+using GridCell = Grid::Placement;
 
 auto icon_font(int px) noexcept -> QFont {
     auto font = QFont { material::outlined::font };
@@ -127,23 +126,21 @@ constexpr auto kDestinations = std::array {
 
 /// 顶栏：菜单 + 胶囊按钮 + 头像
 auto TopBar(ThemeManager& manager) noexcept {
-    return ln::Item<Row> {
-        { 0, Qt::Alignment { } },
+    return new Row {
         ln::ContentsMargin { { 4, 8, 12, 8 } },
         ln::Spacing { 4 },
 
-        ln::Item<IconButton> {
-            { 0, Qt::AlignVCenter },
+        new IconButton {
             // IconButton 按当前尺寸计算圆角，FixedSize 须先于形状类 prop
             ibp::FixedSize { 48, 48 },
-            ibp::ThemeManager { manager },
+            manager,
             ibp::ColorStandard,
             ibp::ShapeRound,
             ibp::Font { icon_font(20) },
             ibp::FontIcon { material::icon::kMenu },
-        },
-        ln::Item<OutlinedButton> {
-            { 1, Qt::AlignVCenter },
+        } + Row::Placement { 0, Qt::AlignVCenter },
+
+        new OutlinedButton {
             obp::FixedHeight { 48 },
             obp::Radius { 24 },
             obp::Font { text_font(16) },
@@ -157,9 +154,9 @@ auto TopBar(ThemeManager& manager) noexcept {
                     self.setTextColor(scheme.on_surface_variant);
                 });
             } },
-        },
-        ln::Item<RoundedRect> {
-            { 0, Qt::AlignVCenter },
+        } + Row::Placement { 1, Qt::AlignVCenter },
+
+        new RoundedRect {
             rrp::FixedSize { 32, 32 },
             rrp::Radius { 16 },
             rrp::Background { Qt::transparent },
@@ -173,8 +170,9 @@ auto TopBar(ThemeManager& manager) noexcept {
                     self.update();
                 });
             } },
-        },
-    };
+        } + Row::Placement { 0, Qt::AlignVCenter },
+    }
+    + Col::Placement { 0, Qt::Alignment { } };
 }
 
 /// 卡片墙：5 行 3 列等宽，作为 ScrollArea 的内容
@@ -189,7 +187,7 @@ auto CardWall(ThemeManager& manager) noexcept {
             layout.setRowStretch(row, 1);
     };
 
-    return scp::Item<Widget> {
+    return scp::ScrollItem<Widget> {
         // QScrollArea 在 setWidgetResizable(true) 下按内容控件的 size hint 拉伸，
         // 必须显式 Expanding 才能铺满视口，并让内层 Grid 拿到完整高度
         wgp::SizePolicy { QSizePolicy::Expanding, QSizePolicy::Expanding },
@@ -197,15 +195,14 @@ auto CardWall(ThemeManager& manager) noexcept {
             gp::With { std::move(grid_metrics) },
             each(kTiles,
                 [&](const Tile& tile) {
-                    return gp::Item<OutlinedCard> {
-                        GridCell<OutlinedCard> {
-                            tile.row, tile.column, tile.row_span, tile.column_span },
+                    return gp::GridItem<OutlinedCard> {
+                        GridCell { tile.row, tile.column, tile.row_span, tile.column_span },
                         // 卡片自身也要 Expanding，行/列 stretch 才有可分配的余量
                         ocp::SizePolicy { QSizePolicy::Expanding, QSizePolicy::Expanding },
                         // 最小尺寸兜底：空卡片 size hint 接近 0，防止行被压扁成横条
                         ocp::MinimumSize { 64, 64 },
                         ocp::Level { CardLevel::LOWEST },
-                        ocp::ThemeManager { manager },
+                        manager,
                         ocp::Radius { 4 },
                         ocp::BorderWidth { 1 },
                     };
@@ -230,18 +227,17 @@ auto FloatingToolbar(ThemeManager& manager, ThemeCycle& cycle) noexcept {
     };
     const auto button = std::tuple {
         ibp::FixedSize { 40, 40 },
-        ibp::ThemeManager { manager },
+        ibp::BindTheme { manager },
         ibp::ColorStandard,
         ibp::ShapeRound,
         ibp::Font { icon_font(20) },
     };
 
-    return gp::Item<Row> {
-        GridCell<Row> { 0, 0, Qt::AlignBottom | Qt::AlignHCenter },
+    return gp::GridItem<Row> {
+        GridCell { 0, 0, Qt::AlignBottom | Qt::AlignHCenter },
         ln::Spacing { 14 },
 
-        ln::Item<ElevatedCard> {
-            { 0, Qt::AlignVCenter },
+        new ElevatedCard {
             ecp::FixedHeight { 52 },
             ecp::Radius { 26 },
             ecp::BorderWidth { 1.5 },
@@ -254,9 +250,8 @@ auto FloatingToolbar(ThemeManager& manager, ThemeCycle& cycle) noexcept {
                         return new IconButton { button, ibp::FontIcon { icon } };
                     }),
             },
-        },
-        ln::Item<ElevatedCard> {
-            { 0, Qt::AlignVCenter },
+        } + Row::Placement { 0, Qt::AlignVCenter },
+        new ElevatedCard {
             ecp::FixedSize { 46, 46 },
             ecp::Radius { 12 },
             ecp::BorderWidth { 1.5 },
@@ -270,14 +265,13 @@ auto FloatingToolbar(ThemeManager& manager, ThemeCycle& cycle) noexcept {
                     ibp::Clickable { [&cycle] { cycle.next(); } },
                 },
             },
-        },
+        } + Row::Placement { 0, Qt::AlignVCenter },
     };
 }
 
 /// 底部导航：选中项由 selected 驱动，按钮只负责写入
 auto NavigationBar(ThemeManager& manager, MutableValue<int>& selected) noexcept {
-    return ln::Item<Row> {
-        { 0, Qt::Alignment { } },
+    return new Row {
         ln::ContentsMargin { { 0, 12, 0, 16 } },
 
         each(kDestinations,
@@ -293,15 +287,13 @@ auto NavigationBar(ThemeManager& manager, MutableValue<int>& selected) noexcept 
                     self.setFont(text_font(12, index == current ? QFont::Bold : QFont::Normal));
                 };
 
-                return ln::Item<Col> {
-                    { 1, Qt::AlignVCenter },
+                return new Col {
                     ln::Alignment { Qt::AlignCenter },
                     ln::Spacing { 4 },
 
-                    ln::Item<IconButton> {
-                        { 0, Qt::AlignHCenter },
+                    new IconButton {
                         ibp::FixedSize { 40, 32 },
-                        ibp::ThemeManager { manager },
+                        manager,
                         ibp::TypesDefault,
                         ibp::ShapeRound,
                         ibp::WidthWide,
@@ -309,9 +301,8 @@ auto NavigationBar(ThemeManager& manager, MutableValue<int>& selected) noexcept 
                         ibp::Font { icon_font(22) },
                         ibp::FontIcon { destination.icon },
                         ibp::Clickable { [&selected, index] { selected = index; } },
-                    },
-                    ln::Item<Text> {
-                        { 0, Qt::AlignHCenter },
+                    } + Row::Placement { 0, Qt::AlignHCenter },
+                    new Text {
                         MutableTransform { emphasize, selected },
                         txp::Alignment { Qt::AlignCenter },
                         txp::Text { destination.label },
@@ -320,10 +311,12 @@ auto NavigationBar(ThemeManager& manager, MutableValue<int>& selected) noexcept 
                                 self.setColor(manager.colorScheme().on_surface_variant);
                             });
                         } },
-                    },
-                };
+                    } + Row::Placement { 0, Qt::AlignHCenter },
+                }
+                + Col::Placement { 1, Qt::AlignVCenter };
             }),
-    };
+    }
+    + Col::Placement { 0, Qt::Alignment { } };
 }
 
 }
@@ -357,11 +350,10 @@ auto main(int argc, char** argv) -> int {
                 ln::Spacing { 0 },
 
                 TopBar(manager),
-                ln::Item<Grid> {
-                    { 1, Qt::Alignment { } },
-                    gp::Item<ScrollArea> {
-                        GridCell<ScrollArea> { 0, 0 },
-                        scp::ThemeManager { manager },
+                new Grid {
+                    gp::GridItem<ScrollArea> {
+                        GridCell { 0, 0 },
+                        manager,
                         // ScrollArea 在 Grid 中纵向撑满，内容区才能拿到完整高度
                         scp::SizePolicy { QSizePolicy::Expanding, QSizePolicy::Expanding },
                         scp::VerticalScrollBarPolicy { Qt::ScrollBarAlwaysOff },
@@ -369,7 +361,7 @@ auto main(int argc, char** argv) -> int {
                         CardWall(manager),
                     },
                     FloatingToolbar(manager, cycle),
-                },
+                } + Col::Placement { 1, Qt::Alignment { } },
                 NavigationBar(manager, selected),
             },
         },
