@@ -34,6 +34,10 @@ public:
         int icon_size          = 24;
         int icon_text_spacing  = 12;
         int label_font_size    = 14;
+
+        friend auto dsl_invoke(DropdownMenuItem& self, const Measurements& measurements) -> void {
+            self.setMeasurements(measurements);
+        }
     };
 
     explicit DropdownMenuItem(auto&&... props)
@@ -105,15 +109,6 @@ namespace dropdown_menu_item::pro {
             , font { font } { }
         friend auto dsl_invoke(DropdownMenuItem& self, const TrailingIcon& prop) -> void {
             self.setTrailingIcon(prop.code, prop.font);
-        }
-    };
-
-    struct Measurements {
-        DropdownMenuItem::Measurements value;
-        explicit Measurements(const DropdownMenuItem::Measurements& value)
-            : value { value } { }
-        friend auto dsl_invoke(DropdownMenuItem& self, const Measurements& prop) -> void {
-            self.setMeasurements(prop.value);
         }
     };
 

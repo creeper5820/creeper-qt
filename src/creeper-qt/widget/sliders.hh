@@ -86,6 +86,10 @@ public:
                 .inset_icon_size = 32,
             };
         }
+
+        friend auto dsl_invoke(Slider& self, const Measurements& measurements) -> void {
+            self.setMeasurements(measurements);
+        }
     };
 
 public:
@@ -125,8 +129,6 @@ namespace slider::pro {
 
     template <typename F>
     using OnValueChangeFinished = common::pro::SignalInjection<F, &Slider::valueChangedFinished>;
-
-    using Measurements = ForwardProp<&Slider::setMeasurements>;
 
     using Progress = ForwardProp<&Slider::setProgress>;
 

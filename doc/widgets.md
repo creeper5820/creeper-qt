@@ -308,7 +308,7 @@ auto outlined_field = new OutlinedTextField {
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
 | `Progress` | `double` | 进度值（0.0 - 1.0） |
-| `Measurements` | `Measurements` | 尺寸配置（支持 Xs, S, M, L, SL 预设） |
+| `Slider::Measurements` | 结构体 | 尺寸配置（直接作为属性传入，支持 Xs, S, M, L, SL 预设） |
 | `OnValueChange` | `[](double){}` | 值改变时的回调函数 |
 | `OnValueChangeFinished` | `[](double){}` | 值改变完成时的回调函数 |
 
@@ -317,7 +317,7 @@ using namespace creeper;
 
 auto slider = new Slider {
     slider::pro::ThemeManager { manager },
-    slider::pro::Measurements { Slider::Measurements::M() },
+    Slider::Measurements::M(),
     slider::pro::FixedHeight { 52 },
     slider::pro::FixedWidth { 300 },
     slider::pro::Progress { 0.5 },
@@ -332,7 +332,7 @@ progress_value->set_silent(0.2);
 
 auto bound_slider = new Slider {
     slider::pro::ThemeManager { manager },
-    slider::pro::Measurements { Slider::Measurements::S() },
+    Slider::Measurements::S(),
     MutableForward {
         slider::pro::Progress { 0. },
         progress_value

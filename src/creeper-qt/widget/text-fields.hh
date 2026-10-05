@@ -68,10 +68,14 @@ public:
         int supporting_text_and_character_counter_row_padding = 16;
 
         auto iconSize() const { return QSize { icon_rect_size, icon_rect_size }; }
+
+        friend auto dsl_invoke(BasicTextField& self, const Measurements& measurements) -> void {
+            self.setMeasurements(measurements);
+        }
     };
 
     explicit BasicTextField(auto&&... props)
-        : BasicTextField { } {
+        : BasicTextField {} {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 
@@ -113,7 +117,7 @@ protected:
 class FilledTextField : public BasicTextField {
 public:
     explicit FilledTextField(auto&&... props)
-        : BasicTextField { } {
+        : BasicTextField {} {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 
@@ -124,7 +128,7 @@ protected:
 class OutlinedTextField : public BasicTextField {
 public:
     explicit OutlinedTextField(auto&&... props)
-        : BasicTextField { } {
+        : BasicTextField {} {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 
