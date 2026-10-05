@@ -33,8 +33,8 @@
 
 ```cpp
 struct ThemePack {
-    ColorScheme light;  // 明亮模式配色
-    ColorScheme dark;   // 黑暗模式配色
+    ColorScheme light; // 明亮模式配色
+    ColorScheme dark;  // 黑暗模式配色,
 };
 ```
 
@@ -98,7 +98,7 @@ auto manager = ThemeManager { kBlueMikuThemePack };
 // 创建组件并注册主题
 auto button = new FilledButton {
     manager,
-    button::pro::Text { "按钮" }
+    button::pro::Text { "按钮" },
 };
 
 // 应用主题到所有注册的组件
@@ -112,7 +112,7 @@ manager.apply_theme();
 ```cpp
 auto button = new FilledButton {
     manager,
-    button::pro::Text { "按钮" }
+    button::pro::Text { "按钮" },
 };
 ```
 
@@ -120,12 +120,11 @@ auto button = new FilledButton {
 
 ```cpp
 auto button = new FilledButton {
-    button::pro::Text { "按钮" }
+    button::pro::Text { "按钮" },
 };
 
-manager.append_handler(button, [button](const ThemeManager& manager) {
-    button->set_color_scheme(manager.color_scheme());
-});
+manager.append_handler(button,
+    [button](const ThemeManager& manager) { button->set_color_scheme(manager.color_scheme()); });
 ```
 
 ### 切换主题
@@ -155,16 +154,16 @@ manager.apply_theme();
 using namespace creeper;
 
 ColorScheme my_light_scheme {
-    .primary = QColor("#2196F3"),
-    .onPrimary = QColor("#FFFFFF"),
-    .secondary = QColor("#03DAC6"),
-    .onSecondary = QColor("#000000"),
-    .background = QColor("#FFFFFF"),
+    .primary      = QColor("#2196F3"),
+    .onPrimary    = QColor("#FFFFFF"),
+    .secondary    = QColor("#03DAC6"),
+    .onSecondary  = QColor("#000000"),
+    .background   = QColor("#FFFFFF"),
     .onBackground = QColor("#000000"),
-    .surface = QColor("#FFFFFF"),
-    .onSurface = QColor("#000000"),
-    .error = QColor("#B00020"),
-    .onError = QColor("#FFFFFF"),
+    .surface      = QColor("#FFFFFF"),
+    .onSurface    = QColor("#000000"),
+    .error        = QColor("#B00020"),
+    .onError      = QColor("#FFFFFF"),
 };
 ```
 
@@ -175,41 +174,41 @@ ColorScheme my_light_scheme {
 using namespace creeper;
 
 const ColorScheme my_light_scheme {
-    .primary = QColor("#6200EE"),
-    .onPrimary = QColor("#FFFFFF"),
-    .secondary = QColor("#03DAC6"),
-    .onSecondary = QColor("#000000"),
-    .background = QColor("#FFFFFF"),
+    .primary      = QColor("#6200EE"),
+    .onPrimary    = QColor("#FFFFFF"),
+    .secondary    = QColor("#03DAC6"),
+    .onSecondary  = QColor("#000000"),
+    .background   = QColor("#FFFFFF"),
     .onBackground = QColor("#000000"),
-    .surface = QColor("#FFFFFF"),
-    .onSurface = QColor("#000000"),
-    .error = QColor("#B00020"),
-    .onError = QColor("#FFFFFF"),
+    .surface      = QColor("#FFFFFF"),
+    .onSurface    = QColor("#000000"),
+    .error        = QColor("#B00020"),
+    .onError      = QColor("#FFFFFF"),
 };
 
 const ColorScheme my_dark_scheme {
-    .primary = QColor("#BB86FC"),
-    .onPrimary = QColor("#000000"),
-    .secondary = QColor("#03DAC6"),
-    .onSecondary = QColor("#000000"),
-    .background = QColor("#121212"),
+    .primary      = QColor("#BB86FC"),
+    .onPrimary    = QColor("#000000"),
+    .secondary    = QColor("#03DAC6"),
+    .onSecondary  = QColor("#000000"),
+    .background   = QColor("#121212"),
     .onBackground = QColor("#FFFFFF"),
-    .surface = QColor("#1E1E1E"),
-    .onSurface = QColor("#FFFFFF"),
-    .error = QColor("#CF6679"),
-    .onError = QColor("#000000"),
+    .surface      = QColor("#1E1E1E"),
+    .onSurface    = QColor("#FFFFFF"),
+    .error        = QColor("#CF6679"),
+    .onError      = QColor("#000000"),
 };
 
 const ThemePack kMyCustomThemePack {
     .light = my_light_scheme,
-    .dark = my_dark_scheme
+    .dark  = my_dark_scheme,
 };
 
 auto manager = ThemeManager { kMyCustomThemePack, ColorMode::LIGHT };
 
 auto button = new FilledButton {
     manager,
-    button::pro::Text { "自定义主题按钮" }
+    button::pro::Text { "自定义主题按钮" },
 };
 
 manager.apply_theme();

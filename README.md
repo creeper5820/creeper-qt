@@ -123,42 +123,42 @@ auto main(int argc, char* argv[]) -> int {
 
     // 和正常 Qt 一致的使用方式也是 OK 的，这里用声明式的方法示例
     namespace mwp = main_window::pro;
-    namespace cp = card::pro;
-    namespace lp = linear::pro;
-    namespace sp = scroll::pro;
+    namespace cp  = card::pro;
+    namespace lp  = linear::pro;
+    namespace sp  = scroll::pro;
 
     creeper::ShowWindow<MainWindow> {
         mwp::MinimumSize { 1080, 720 },
         mwp::Central<FilledCard> {
-            manager,
-            cp::Radius { 0 },
-            cp::Level { CardLevel::HIGHEST },
+          manager,
+          cp::Radius { 0 },
+          cp::Level { CardLevel::HIGHEST },
 
-            cp::Layout<Row> {
-                lp::Margin { 0 },
-                lp::Spacing { 0 },
+          cp::Layout<Row> {
+            lp::Margin { 0 },
+            lp::Spacing { 0 },
 
-                // 某些自定义组件
-                NavComponent(nav_component_state),
-                new Col {
-                    lp::ContentsMargin { { 15, 15, 5, 15 } },
-                    ListComponent(list_component_state),
-                },
-                new Col {
-                    lp::ContentsMargin { { 5, 15, 15, 15 } },
-                    new ScrollArea {
-                        manager,
-                        sp::HorizontalScrollBarPolicy {
-                            Qt::ScrollBarAlwaysOff,
-                        },
-                        sp::ScrollItem {
-                            ViewComponent(view_component_state),
-                        },
-                    },
-                } + Row::Placement { 255 },
+            // 某些自定义组件
+            NavComponent(nav_component_state),
+            new Col {
+              lp::ContentsMargin { { 15, 15, 5, 15 } },
+              ListComponent(list_component_state),
             },
-            // More Widgets
-            // ......
+            new Col {
+              lp::ContentsMargin { { 5, 15, 15, 15 } },
+              new ScrollArea {
+                manager,
+                sp::HorizontalScrollBarPolicy {
+                  Qt::ScrollBarAlwaysOff,
+                },
+                sp::ScrollItem {
+                  ViewComponent(view_component_state),
+                },
+              },
+            } + Row::Placement { 255 },
+          },
+          // More Widgets
+          // ......
         },
     };
 

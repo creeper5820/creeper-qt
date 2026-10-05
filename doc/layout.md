@@ -61,45 +61,46 @@ namespace lnpro = linear::pro;
 auto row = new Row {
     lnpro::Spacing { 10 },
     new FilledButton {
-        button::pro::Text { "按钮1" }
+      button::pro::Text { "按钮1" },
     } + Row::Placement { 1, Qt::AlignLeft },
-    lnpro::Stretch { 1 },  // 弹性空间
+    lnpro::Stretch { 1 }, // 弹性空间
     new FilledButton {
-        button::pro::Text { "按钮2" }
+      button::pro::Text { "按钮2" },
     } + Row::Placement { 0 },
-    lnpro::SpacingItem { 20 },  // 固定间距
+    lnpro::SpacingItem { 20 }, // 固定间距
     new FilledButton {
-        button::pro::Text { "按钮3" }
-    } + Row::Placement { 0 }
+      button::pro::Text { "按钮3" },
+    } + Row::Placement { 0 },
 };
 
 // 垂直布局示例：在 Col 中使用 Col::Placement
 auto col = new Col {
     lnpro::ContentsMargin { { 20, 20, 20, 20 } },
     new FilledTextField {
-        manager,
-        text_field::pro::LabelText { "用户名" }
+      manager,
+      text_field::pro::LabelText { "用户名" },
     } + Col::Placement { 0 },
     new FilledTextField {
-        manager,
-        text_field::pro::LabelText { "密码" }
+      manager,
+      text_field::pro::LabelText { "密码" },
     } + Col::Placement { 0 },
     lnpro::Stretch { 1 },
     new FilledButton {
-        button::pro::Text { "提交" }
-    } + Col::Placement { 0 }
+      button::pro::Text { "提交" },
+    } + Col::Placement { 0 },
 };
 
 // 已有指针时直接与 Placement 相加
 auto createButton = [](const QString& text) {
     return new FilledButton {
-        button::pro::Text { text }
+        button::pro::Text { text },
     };
 };
 
 auto row2 = new Row {
     createButton("按钮1") + Row::Placement { 0 },
-    createButton("按钮2") + Row::Placement { 0 }};
+    createButton("按钮2") + Row::Placement { 0 },
+};
 ```
 
 ---
@@ -130,17 +131,17 @@ auto grid = new Grid {
     gpro::RowSpacing { 10 },
     gpro::ColSpacing { 10 },
     gpro::GridItem<FilledButton> {
-        Grid::Placement { 0, 0, Qt::AlignCenter },  // row=0, col=0
-        button::pro::Text { "左上" }
+      Grid::Placement { 0, 0, Qt::AlignCenter }, // row=0, col=0
+      button::pro::Text { "左上" },
     },
     gpro::GridItem<FilledButton> {
-        Grid::Placement { 0, 1 },  // row=0, col=1
-        button::pro::Text { "右上" }
+      Grid::Placement { 0, 1 }, // row=0, col=1
+      button::pro::Text { "右上" },
     },
     gpro::GridItem<FilledButton> {
-        Grid::Placement { 1, 1, 0, 2, Qt::AlignCenter },  // row=1, row_span=1, col=0, col_span=2
-        button::pro::Text { "跨列按钮" }
-    }
+      Grid::Placement { 1, 1, 0, 2, Qt::AlignCenter }, // row=1, row_span=1, col=0, col_span=2
+      button::pro::Text { "跨列按钮" },
+    },
 };
 ```
 
@@ -170,19 +171,17 @@ namespace stpro = stacked::pro;
 
 auto stacked = new Stacked {
     stpro::CurrentIndex { 0 },
-    stpro::IndexChanged { [](int index) {
-        qDebug() << "当前页面索引:" << index;
-    }},
+    stpro::IndexChanged { [](int index) { qDebug() << "当前页面索引:" << index; } },
     new Widget {
-        new Col {
-            // 第一页内容
-        }
+      new Col {
+        // 第一页内容
+      },
     },
     new Widget {
-        new Col {
-            // 第二页内容
-        }
-    }
+      new Col {
+        // 第二页内容
+      },
+    },
 };
 
 // 切换页面
@@ -216,12 +215,12 @@ namespace fpro = flow::pro;
 auto flow = new Flow {
     fpro::RowSpacing { 10 },
     fpro::ColSpacing { 10 },
-    fpro::RowLimit { 3 },  // 每行最多 3 个
+    fpro::RowLimit { 3 }, // 每行最多 3 个
     lnpro::AddWidget<FilledButton> {
-        button::pro::Text { "按钮1" }
+      button::pro::Text { "按钮1" },
     },
     lnpro::AddWidget<FilledButton> {
-        button::pro::Text { "按钮2" }
+      button::pro::Text { "按钮2" },
     },
 };
 
@@ -233,10 +232,11 @@ auto flow2 = new Flow {
     flow::pro::With { [](Flow& self) {
         for (int i = 0; i < 10; ++i) {
             self.addWidget(new FilledButton {
-                button::pro::Text { QString("按钮%1").arg(i) }
+              button::pro::Text { QString("按钮%1").arg(i) },
             });
         }
-    }}
+        ,
+    } },
 };
 ```
 
@@ -267,18 +267,18 @@ auto scroll_area = new ScrollArea {
     scroll::pro::HorizontalScrollBarPolicy { Qt::ScrollBarAlwaysOff },
     scroll::pro::VerticalScrollBarPolicy { Qt::ScrollBarAsNeeded },
     scroll::pro::ScrollItem {
-        SomeContentWidget,  // 传入已有的 widget 指针
-    }
+      SomeContentWidget, // 传入已有的 widget 指针,
+    },
 };
 
 // 或者直接构造内容组件
 auto scroll_area2 = new ScrollArea {
     manager,
     scroll::pro::ScrollBarPolicy {
-        Qt::ScrollBarAlwaysOff,
-        Qt::ScrollBarAlwaysOff,
+      Qt::ScrollBarAlwaysOff,
+      Qt::ScrollBarAlwaysOff,
     },
-    scroll::pro::ScrollItem { ButtonGroup },  // ButtonGroup 是已构造好的 widget*
+    scroll::pro::ScrollItem { ButtonGroup }, // ButtonGroup 是已构造好的 widget*,
 };
 ```
 

@@ -16,17 +16,17 @@
 - 优先使用局部命名空间别名，以提高可读性和 IDE 补全体验：
 
 ```cpp
-namespace cp = creeper::card::pro;
+namespace cp  = creeper::card::pro;
 namespace fbp = creeper::filled_button::pro;
 
 auto content = FilledCard {
     manager,
     cp::Layout<Col> {
-        new FilledButton {
-            manager,
-            fbp::Text { "OK" },
-            fbp::FixedWidth { 120 },
-        } + Col::Placement { 0 },
+      new FilledButton {
+        manager,
+        fbp::Text { "OK" },
+        fbp::FixedWidth { 120 },
+      } + Col::Placement { 0 },
     },
 };
 ```
@@ -108,8 +108,8 @@ namespace creeper::xxx::pro {
 
 using Token = creeper::Token<details::Xxx>;
 
-using LabelText = common::pro::String<Token,
-    [](auto& self, const auto& value) { self.set_label_text(value); }>;
+using LabelText =
+    common::pro::String<Token, [](auto& self, const auto& value) { self.set_label_text(value); }>;
 
 // 在导出的命名空间中间中组合适用的属性
 using namespace widget::pro;
@@ -119,8 +119,8 @@ using namespace theme::pro;
 // 最终导出类型，组合 Token 来源
 namespace creeper {
 
-using Xxx = Declarative<xxx::details::Xxx,
-    TokenOr<xxx::pro::Token, widget::pro::Token, theme::pro::Token>>;
+using Xxx =
+    Declarative<xxx::details::Xxx, TokenOr<xxx::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 }
 ```
@@ -149,8 +149,8 @@ auto paint_xxx(QPaintEvent*) -> void {
     Paint::Box {
         BoxImpl { self.size(), Qt::AlignCenter },
         Paint::Surface {
-            SurfaceImpl { container_size },
-            // 绘制节点树
+          SurfaceImpl { container_size },
+          // 绘制节点树
         },
     }(painter);
 }

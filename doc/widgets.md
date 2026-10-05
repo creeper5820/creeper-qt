@@ -34,7 +34,7 @@ auto widget = new Widget {
 ### 等价的传统写法
 
 ```cpp
-auto qwidget = new QWidget {};
+auto qwidget = new QWidget { };
 qwidget->setMaximumSize(200, 100);
 qwidget->setMinimumSize(100, 050);
 ```
@@ -100,9 +100,7 @@ auto button = new FilledButton {
     button::pro::Text { "提交" },
     button::pro::Radius { 8.0 },
     button::pro::Background { QColor("#2196F3") },
-    button::pro::Clickable { [](auto& self) {
-        qDebug() << "按钮被点击";
-    }}
+    button::pro::Clickable { [](auto& self) { qDebug() << "按钮被点击"; } },
 };
 ```
 
@@ -171,9 +169,9 @@ const auto properties = std::tuple {
     fbp::Radius { 25 },
 };
 
-auto filled_button = FilledButton { properties };
+auto filled_button   = FilledButton { properties };
 auto outlined_button = OutlinedButton { properties };
-auto text_button = TextButton { properties };
+auto text_button     = TextButton { properties };
 ```
 
 ---
@@ -207,9 +205,7 @@ using namespace creeper;
 auto switch_widget = new Switch {
     _switch::pro::TrackColorChecked { QColor("#2196F3") },
     _switch::pro::HandleColorChecked { QColor("#FFFFFF") },
-    _switch::pro::Clickable { [](auto& self) {
-        qDebug() << "开关状态:" << self.isChecked();
-    }}
+    _switch::pro::Clickable { [](auto& self) { qDebug() << "开关状态:" << self.isChecked(); } },
 };
 ```
 
@@ -244,20 +240,18 @@ auto text_field = new FilledTextField {
     manager,
     text_field::pro::LabelText { "用户名" },
     text_field::pro::FixedSize { 250, 56 },
-    text_field::pro::OnTextChanged { [](const QString& text) {
-        qDebug() << "输入内容:" << text;
-    }}
+    text_field::pro::OnTextChanged { [](const QString& text) { qDebug() << "输入内容:" << text; } },
 };
 
 // 带前置图标
 auto search_field = new FilledTextField {
     manager,
     text_field::pro::LeadingIcon {
-        material::icon::kSearch,
-        material::round::font
+      material::icon::kSearch,
+      material::round::font,
     },
     text_field::pro::LabelText { "搜索" },
-    text_field::pro::ClearButton { true }
+    text_field::pro::ClearButton { true },
 };
 
 // 与 MutableValue 绑定
@@ -268,9 +262,9 @@ auto bound_field = new FilledTextField {
     manager,
     text_field::pro::LabelText { "输入框" },
     MutableForward {
-        text_field::pro::LabelText {},
-        text_value
-    }
+      text_field::pro::LabelText { },
+      text_value,
+    },
 };
 ```
 
@@ -291,9 +285,9 @@ auto outlined_field = new OutlinedTextField {
     manager,
     text_field::pro::LabelText { "密码" },
     text_field::pro::LeadingIcon {
-        "lock",
-        material::round::font
-    }
+      "lock",
+      material::round::font,
+    },
 };
 ```
 
@@ -321,9 +315,7 @@ auto slider = new Slider {
     slider::pro::FixedHeight { 52 },
     slider::pro::FixedWidth { 300 },
     slider::pro::Progress { 0.5 },
-    slider::pro::OnValueChange { [](double progress) {
-        qDebug() << "进度:" << progress;
-    }}
+    slider::pro::OnValueChange { [](double progress) { qDebug() << "进度:" << progress; } },
 };
 
 // 与 MutableValue 绑定
@@ -334,14 +326,12 @@ auto bound_slider = new Slider {
     manager,
     Slider::Measurements::S(),
     MutableForward {
-        slider::pro::Progress { 0. },
-        progress_value
+      slider::pro::Progress { 0. },
+      progress_value,
     },
     slider::pro::OnValueChange {
-        [=](double progress) {
-            *progress_value = progress;
-        }
-    }
+      [=](double progress) { *progress_value = progress; },
+    },
 };
 ```
 
@@ -380,21 +370,21 @@ auto expanded = std::make_shared<MutableBool>(false);
 auto button = new FilledButton {
     manager,
     fbp::Text { "打开菜单" },
-    fbp::Clickable { [expanded] { *expanded = true; } },
+    fbp::Clickable { [expanded] { *expanded          = true; } },
     fbp::Child<DropdownMenu> {
+      manager,
+      MutableForward { dmp::Expanded { false }, expanded },
+      dmp::OnDismissRequest { [expanded] { *expanded = false; } },
+      dmp::MenuWidget<DropdownMenuItem> {
         manager,
-        MutableForward { dmp::Expanded { false }, expanded },
-        dmp::OnDismissRequest { [expanded] { *expanded = false; } },
-        dmp::MenuWidget<DropdownMenuItem> {
-            manager,
-            dmip::Text { "选项1" },
-            dmip::OnClicked { [expanded] { *expanded = false; } },
-        },
-        dmp::MenuWidget<DropdownMenuItem> {
-            manager,
-            dmip::Text { "选项2" },
-            dmip::OnClicked { [expanded] { *expanded = false; } },
-        },
+        dmip::Text { "选项1" },
+        dmip::OnClicked { [expanded] { *expanded     = false; } },
+      },
+      dmp::MenuWidget<DropdownMenuItem> {
+        manager,
+        dmip::Text { "选项2" },
+        dmip::OnClicked { [expanded] { *expanded = false; } },
+      },
     },
 };
 ```
@@ -461,13 +451,13 @@ auto image = new Image {
     image::pro::FixedSize { 200, 200 },
     image::pro::Radius { 10 },
     image::pro::BorderWidth { 2 },
-    image::pro::BorderColor { QColor("#000000") }
+    image::pro::BorderColor { QColor("#000000") },
 };
 
 auto scaled_image = new Image {
     image::pro::Pixmap { QPixmap("path/to/image.png") },
     image::pro::ContentScale { ContentScale::Fit },
-    image::pro::FixedSize { 300, 300 }
+    image::pro::FixedSize { 300, 300 },
 };
 ```
 
@@ -494,7 +484,7 @@ using namespace creeper;
 auto text = new Text {
     manager,
     text::pro::Text { "Hello World" },
-    text::pro::Alignment { Qt::AlignCenter }
+    text::pro::Alignment { Qt::AlignCenter },
 };
 
 // 可选择的文本
@@ -503,8 +493,8 @@ auto selectable_text = new Text {
     text::pro::Text { "可选择的文本内容" },
     text::pro::WordWrap { true },
     text::pro::TextInteractionFlags {
-        Qt::TextInteractionFlag::TextSelectableByMouse
-    }
+      Qt::TextInteractionFlag::TextSelectableByMouse,
+    },
 };
 
 // 与 MutableValue 绑定
@@ -514,9 +504,9 @@ text_value->set_silent("初始文本");
 auto bound_text = new Text {
     manager,
     MutableForward {
-        text::pro::Text {},
-        text_value
-    }
+      text::pro::Text { },
+      text_value,
+    },
 };
 ```
 
@@ -549,8 +539,8 @@ auto filled_card = new FilledCard {
     capro::Radius { 12 },
     capro::FixedSize { 200, 150 },
     new Col {
-        // 卡片内容
-    }
+      // 卡片内容
+    },
 };
 
 auto outlined_card = new OutlinedCard {
@@ -558,16 +548,16 @@ auto outlined_card = new OutlinedCard {
     capro::LevelLowest,
     capro::Radius { 8 },
     new Row {
-        // 卡片内容
-    }
+      // 卡片内容
+    },
 };
 
 auto elevated_card = new ElevatedCard {
     manager,
     capro::LevelHigh,
     new Col {
-        // 卡片内容
-    }
+      // 卡片内容
+    },
 };
 ```
 
@@ -600,16 +590,14 @@ auto icon_button = new IconButton {
     ibpro::FixedSize { 40, 40 },
     ibpro::Color { IconButton::Color::TONAL },
     ibpro::FontIcon { "search" },
-    ibpro::Clickable { [] {
-        qDebug() << "图标按钮被点击";
-    }}
+    ibpro::Clickable { [] { qDebug() << "图标按钮被点击"; } },
 };
 
 // 切换按钮
 auto toggle_button = new IconButton {
     manager,
     ibpro::Types { IconButton::Types::TOGGLE_UNSELECTED },
-    ibpro::FontIcon { "favorite" }
+    ibpro::FontIcon { "favorite" },
 };
 ```
 
@@ -633,11 +621,11 @@ namespace mwpro = main_window::pro;
 creeper::ShowWindow<MainWindow> {
     mwpro::MinimumSize { 1080, 720 },
     mwpro::Central<FilledCard> {
-        manager,
-        new Col {
-            // 窗口内容
-        }
-    }
+      manager,
+      new Col {
+        // 窗口内容
+      },
+    },
 };
 ```
 
@@ -671,7 +659,7 @@ auto wave_circle = new WaveCircle {
     wcpro::ProtrudingRatio { 0.8 },
     wcpro::Background { QColor("#2196F3") },
     wcpro::BorderWidth { 2 },
-    wcpro::BorderColor { QColor("#FFFFFF") }
+    wcpro::BorderColor { QColor("#FFFFFF") },
 };
 ```
 
@@ -685,7 +673,7 @@ auto wave_circle = new WaveCircle {
 
 ```cpp
 auto button = new FilledButton {
-    button::pro::Text { "初始文本" }
+    button::pro::Text { "初始文本" },
 };
 
 button->setText("新文本");
