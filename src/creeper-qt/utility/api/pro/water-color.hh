@@ -1,6 +1,7 @@
 #pragma once
 
 #include <qcolor.h>
+
 #include <utility>
 
 namespace creeper::api::pro {

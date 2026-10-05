@@ -5,11 +5,12 @@
 ///     如果使用 Arch Linux，则可以通过 AUR 安装：ttf-material-icons-git，
 ///     使用其他 Nerd Font 也是可以的
 
-#include "components/component.hh"
-#include "components/display-board.hh"
+#include <creeper-qt/creeper-qt.hh>
 
 #include <QtWidgets>
-#include <creeper-qt/creeper-qt.hh>
+
+#include "components/component.hh"
+#include "components/display-board.hh"
 
 using namespace creeper;
 

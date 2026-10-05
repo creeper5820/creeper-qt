@@ -1,14 +1,15 @@
 #pragma once
-#include "circular-progress-indicator.hh"
-
 #include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/animation/state/cyclic.hh"
 #include "creeper-qt/utility/animation/state/pid.hh"
 #include "creeper-qt/utility/animation/transition.hh"
 
+#include <qpainter.h>
+
 #include <cmath>
 #include <numbers>
-#include <qpainter.h>
+
+#include "circular-progress-indicator.hh"
 
 using namespace creeper;
 

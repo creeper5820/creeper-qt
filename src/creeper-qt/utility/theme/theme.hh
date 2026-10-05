@@ -1,15 +1,15 @@
 #pragma once
 
-#include <qwidget.h>
-
 #include "creeper-qt/utility/theme/color-scheme.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
+
+#include <qwidget.h>
 
 namespace creeper::theme {
 
 template <class T>
 concept color_scheme_setter_trait = requires(T t) {
-    { t.loadColorScheme(ColorScheme {}) };
+    { t.loadColorScheme(ColorScheme { }) };
 };
 
 struct ThemePack {

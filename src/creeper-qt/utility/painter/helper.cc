@@ -1,4 +1,5 @@
 #include "creeper-qt/utility/painter/helper.hh"
+
 #include <qdebug.h>
 
 namespace creeper::util {

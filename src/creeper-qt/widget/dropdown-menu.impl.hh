@@ -1,14 +1,9 @@
 #pragma once
-#include "dropdown-menu.hh"
-
 #include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/animation/state/spring.hh"
 #include "creeper-qt/utility/animation/transition.hh"
 #include "creeper-qt/utility/painter/helper.hh"
 #include "creeper-qt/widget/dropdown-menu-item.hh"
-
-#include <algorithm>
-#include <array>
 
 #include <qboxlayout.h>
 #include <qcoreapplication.h>
@@ -19,6 +14,11 @@
 #include <qpainter.h>
 #include <qscreen.h>
 #include <qtimer.h>
+
+#include <algorithm>
+#include <array>
+
+#include "dropdown-menu.hh"
 
 using namespace creeper;
 

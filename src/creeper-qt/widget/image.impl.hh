@@ -1,11 +1,12 @@
 #include "creeper-qt/utility/painter/helper.hh"
-#include "image.hh"
 
 #include <qevent.h>
 #include <qpainter.h>
 #include <qpainterpath.h>
 #include <qpicture.h>
 #include <qwidget.h>
+
+#include "image.hh"
 
 using namespace creeper;
 

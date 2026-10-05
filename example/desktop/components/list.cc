@@ -1,5 +1,3 @@
-#include "component.hh"
-
 #include <creeper-qt/core/application.hh>
 #include <creeper-qt/layout/group.hh>
 #include <creeper-qt/layout/linear.hh>
@@ -9,7 +7,10 @@
 #include <creeper-qt/widget/cards/filled-card.hh>
 
 #include <qdebug.h>
+
 #include <ranges>
+
+#include "component.hh"
 
 using namespace creeper;
 namespace lnpro = linear::pro;

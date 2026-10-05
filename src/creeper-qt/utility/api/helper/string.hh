@@ -1,7 +1,8 @@
 #pragma once
 
-#include <concepts>
 #include <qstring.h>
+
+#include <concepts>
 #include <string>
 #include <type_traits>
 #include <utility>

@@ -1,15 +1,13 @@
 #pragma once
 
-#include "creeper-qt/utility/api/scope/theme.hh" // IWYU pragma: keep
-
-#include "creeper-qt/utility/api/pro/clickable.hh" // IWYU pragma: keep
-#include "creeper-qt/utility/api/pro/text-color.hh" // IWYU pragma: keep
-#include "creeper-qt/utility/api/pro/text.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/clickable.hh"   // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/text-color.hh"  // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/text.hh"        // IWYU pragma: keep
 #include "creeper-qt/utility/api/pro/water-color.hh" // IWYU pragma: keep
-#include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
-#include "creeper-qt/utility/api/scope/shape.hh" // IWYU pragma: keep
-
-#include "creeper-qt/utility/api/scope/widget.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/common.hh"    // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/shape.hh"     // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/theme.hh"     // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/widget.hh"    // IWYU pragma: keep
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
@@ -25,7 +23,7 @@ class FilledButton : public QAbstractButton, public DSL {
 
 public:
     explicit FilledButton(auto&&... props)
-        : FilledButton {} {
+        : FilledButton { } {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 

@@ -1,5 +1,3 @@
-#include "text-fields.hh"
-
 #include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/animation/state/pid.hh"
 #include "creeper-qt/utility/animation/transition.hh"
@@ -9,6 +7,8 @@
 
 #include <qpainter.h>
 #include <qpainterpath.h>
+
+#include "text-fields.hh"
 
 using namespace creeper;
 

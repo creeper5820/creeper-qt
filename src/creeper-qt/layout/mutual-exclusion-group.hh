@@ -3,6 +3,7 @@
 #include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
 #include "creeper-qt/utility/api/scope/layout.hh" // IWYU pragma: keep
 #include <creeper-qt/layout/group.hh>
+
 #include <ranges>
 
 namespace creeper::mutual_exclusion_group {

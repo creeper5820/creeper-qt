@@ -1,8 +1,9 @@
 #pragma once
 
-#include <Eigen/Dense>
 #include <qcolor.h>
 #include <qrect.h>
+
+#include <Eigen/Dense>
 
 namespace creeper::animate {
 

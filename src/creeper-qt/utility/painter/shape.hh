@@ -1,5 +1,6 @@
 #pragma once
 #include "creeper-qt/utility/painter/common.hh"
+
 #include <qicon.h>
 #include <qpainterpath.h>
 

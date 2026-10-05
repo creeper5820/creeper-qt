@@ -1,15 +1,14 @@
 #pragma once
 
-#include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
-
-#include <qpainter.h>
-#include <qpainterpath.h>
-
 #include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/animation/state/pid.hh"
 #include "creeper-qt/utility/animation/transition.hh"
+#include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
 #include "creeper-qt/utility/api/scope/widget.hh" // IWYU pragma: keep
 #include "creeper-qt/utility/wrapper/dsl.hh"
+
+#include <qpainter.h>
+#include <qpainterpath.h>
 
 namespace creeper {
 

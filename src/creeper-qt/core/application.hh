@@ -2,6 +2,7 @@
 
 #include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
 #include "creeper-qt/utility/wrapper/dsl.hh"
+
 #include <qapplication.h>
 #include <qcoreapplication.h>
 

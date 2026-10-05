@@ -3,10 +3,6 @@
 /// 页面自上而下为顶栏、内容区（可滚动卡片墙 + 悬浮工具条）与底部导航。
 /// 导航选中态由 MutableValue 驱动，悬浮工具条最右侧按钮轮切主题。
 
-#include "theme.hh"
-
-#include <QFontDatabase>
-
 #include <creeper-qt/core/application.hh>
 #include <creeper-qt/layout/grid.hh>
 #include <creeper-qt/layout/linear.hh>
@@ -27,8 +23,12 @@
 #include <creeper-qt/widget/text.hh>
 #include <creeper-qt/widget/widget.hh>
 
+#include <QFontDatabase>
+
 #include <array>
 #include <ranges>
+
+#include "theme.hh"
 
 using namespace creeper;
 

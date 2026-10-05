@@ -1,11 +1,11 @@
 #pragma once
-#include "components/control-panel.hh"
-
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/layout/stacked.hh>
 #include <creeper-qt/utility/theme/theme.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/widget.hh>
+
+#include "components/control-panel.hh"
 
 namespace details::display_board {
 

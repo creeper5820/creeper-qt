@@ -1,5 +1,6 @@
 #include <creeper-qt/core/application.hh>
 #include <creeper-qt/utility/mini-bus.hh>
+
 #include <print>
 
 struct ReceiverMock : QObject {

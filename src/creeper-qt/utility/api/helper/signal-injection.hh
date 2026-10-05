@@ -1,7 +1,8 @@
 #pragma once
 
-#include <concepts>
 #include <qobject.h>
+
+#include <concepts>
 #include <tuple>
 #include <type_traits>
 #include <utility>

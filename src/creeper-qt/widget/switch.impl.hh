@@ -1,13 +1,13 @@
 #pragma once
-#include "switch.hh"
-
-#include <qpainter.h>
-
 #include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/animation/state/pid.hh"
 #include "creeper-qt/utility/animation/state/spring.hh"
 #include "creeper-qt/utility/animation/transition.hh"
 #include "creeper-qt/utility/painter/helper.hh"
+
+#include <qpainter.h>
+
+#include "switch.hh"
 
 using namespace creeper;
 

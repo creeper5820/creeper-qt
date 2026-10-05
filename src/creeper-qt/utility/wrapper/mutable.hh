@@ -1,8 +1,10 @@
 #pragma once
 
 #include "creeper-qt/utility/wrapper/dsl.hh"
-#include <functional>
+
 #include <qwidget.h>
+
+#include <functional>
 #include <unordered_map>
 
 namespace creeper {

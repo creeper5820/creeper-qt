@@ -1,8 +1,9 @@
 #pragma once
 
-#include <concepts>
 #include <qlayout.h>
 #include <qwidget.h>
+
+#include <concepts>
 #include <utility>
 
 namespace creeper::api::pro {

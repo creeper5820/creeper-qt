@@ -1,7 +1,8 @@
 #pragma once
 
-#include "function_traits.hh"
 #include <utility>
+
+#include "function_traits.hh"
 
 namespace creeper {
 

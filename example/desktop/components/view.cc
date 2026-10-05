@@ -1,6 +1,3 @@
-#include "component.hh"
-#include "components/asset-center.hh"
-
 #include <creeper-qt/layout/flow.hh>
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/layout/stacked.hh>
@@ -23,10 +20,14 @@
 #include <creeper-qt/widget/text-fields.hh>
 #include <creeper-qt/widget/text.hh>
 
-#include <chrono>
 #include <qfontdatabase.h>
 #include <qtimer.h>
+
+#include <chrono>
 #include <random>
+
+#include "component.hh"
+#include "components/asset-center.hh"
 
 using namespace creeper;
 
