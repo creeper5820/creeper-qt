@@ -24,6 +24,7 @@ Checks: >
   -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-avoid-non-const-global-variables,
   -cppcoreguidelines-pro-type-const-cast,
+  -cppcoreguidelines-pro-bounds-constant-array-index,
 
   -modernize-use-nodiscard,
   -modernize-use-designated-initializers,
@@ -40,6 +41,7 @@ Checks: >
   -misc-non-private-member-variables-in-classes,
   -misc-no-recursion,
   -misc-unused-parameters,
+  -misc-use-anonymous-namespace,
   -cppcoreguidelines-macro-usage,
   -cppcoreguidelines-non-private-member-variables-in-classes,
   -portability-avoid-pragma-once,
@@ -49,6 +51,7 @@ Checks: >
   -readability-qualified-auto,
   -readability-redundant-inline-specifier,
   -readability-redundant-access-specifiers,
+  -readability-redundant-member-init,
   -cppcoreguidelines-avoid-const-or-ref-data-members,
   -cppcoreguidelines-special-member-functions,
   -cppcoreguidelines-rvalue-reference-param-not-moved,
@@ -58,9 +61,9 @@ Checks: >
   -bugprone-unhandled-exception-at-new,
   -performance-enum-size
 
-WarningsAsErrors: ''
+WarningsAsErrors: ""
 
-HeaderFilterRegex: '.*/(src|example|test)/.*'
+HeaderFilterRegex: ".*/(src|example|test)/.*"
 
 FormatStyle: file
 SystemHeaders: false
@@ -79,11 +82,11 @@ CheckOptions:
   readability-identifier-naming.ScopedEnumConstantCase: UPPER_CASE
 
   readability-identifier-naming.ConstexprVariableCase: CamelCase
-  readability-identifier-naming.ConstexprVariablePrefix: 'k'
+  readability-identifier-naming.ConstexprVariablePrefix: "k"
   readability-identifier-naming.GlobalConstantCase: CamelCase
-  readability-identifier-naming.GlobalConstantPrefix: 'k'
+  readability-identifier-naming.GlobalConstantPrefix: "k"
   readability-identifier-naming.StaticConstantCase: CamelCase
-  readability-identifier-naming.StaticConstantPrefix: 'k'
+  readability-identifier-naming.StaticConstantPrefix: "k"
 
   readability-identifier-naming.MacroDefinitionCase: UPPER_CASE
-  readability-identifier-naming.MacroDefinitionIgnoredRegexp: '^QT_|^Q_|^CREEPER_|^SIGNAL$|^SLOT$'
+  readability-identifier-naming.MacroDefinitionIgnoredRegexp: "^QT_|^Q_|^CREEPER_|^SIGNAL$|^SLOT$"
