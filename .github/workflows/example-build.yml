@@ -178,12 +178,18 @@ jobs:
         name: android-artifacts
         path: build
 
+    - name: Release metadata
+      id: meta
+      run: echo "date=$(date -u '+%Y-%m-%d %H:%M UTC')" >> "$GITHUB_OUTPUT"
+
     - name: Publish Nightly Build Example
       uses: softprops/action-gh-release@v2
       with:
         tag_name: nightly-example
         name: "🚀 Example App — Nightly Build"
         body: |
+          > 🕒 最后更新：${{ steps.meta.outputs.date }}（${{ github.sha }}）
+
           自动生成的 **示例程序** 完整包（Linux + Windows + Android）。
           每次推送 main 分支即更新，方便快速体验功能。
 
@@ -204,5 +210,6 @@ jobs:
           build/widgets-windows-x86_64.zip
           build/widgets-android-arm64-v8a-signed.apk
         fail_on_unmatched_files: true
+        update_release_body: true
       env:
         GITHUB_TOKEN: ${{ secrets.TOKEN }}

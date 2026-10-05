@@ -1,6 +1,8 @@
 name: 📦 Nightly Build Library
 
 on:
+  push:
+    branches: [ main ]
   schedule:
   - cron: '0 0 * * *'
   workflow_dispatch:
@@ -78,12 +80,18 @@ jobs:
         name: linux-artifacts
         path: release/
 
+    - name: Release metadata
+      id: meta
+      run: echo "date=$(date -u '+%Y-%m-%d %H:%M UTC')" >> "$GITHUB_OUTPUT"
+
     - name: Upload to GitHub Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: nightly-library
         name: "🛠️ creeper-qt — Nightly Build"
         body: |
+          > 🕒 最后更新：${{ steps.meta.outputs.date }}（${{ github.sha }}）
+
           🛠️ 自动构建的 **creeper-qt** 库包，适用于 Linux 系统。
 
           每日自动更新，便于测试和集成最新功能。包含两种格式：
