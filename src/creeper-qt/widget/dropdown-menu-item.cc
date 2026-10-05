@@ -3,10 +3,10 @@
 #include "creeper-qt/utility/animation/water-ripple.hh"
 #include "creeper-qt/utility/painter/helper.hh"
 
-#include <cmath>
-
 #include <qevent.h>
 #include <qpainter.h>
+
+#include <cmath>
 
 using namespace creeper;
 

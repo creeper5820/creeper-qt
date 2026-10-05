@@ -1,4 +1,9 @@
 #pragma once
+
+#include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/theme.hh"  // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/widget.hh" // IWYU pragma: keep
+
 #include "filled-button.hh"
 
 namespace creeper {
@@ -39,10 +44,10 @@ public:
 };
 
 namespace outlined_button::pro {
-    using namespace common::pro;
-    using namespace widget::pro;
-    using namespace theme::pro;
+    using namespace api::scope::common;
     using namespace filled_button::pro;
+    using namespace api::scope::theme;
+    using namespace api::scope::widget;
 }
 
 }

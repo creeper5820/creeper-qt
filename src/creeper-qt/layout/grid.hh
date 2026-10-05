@@ -1,9 +1,10 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/layout.hh" // IWYU pragma: keep
 #include "creeper-qt/utility/trait/widget.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
-#include "creeper-qt/utility/wrapper/layout.hh"
 
 #include <qgridlayout.h>
 
@@ -17,13 +18,10 @@ public:
 };
 
 namespace grid::pro {
-
     /// 行间距：行沿垂直方向堆叠，对应 setVerticalSpacing
     using RowSpacing = ForwardProp<&QGridLayout::setVerticalSpacing>;
-
     /// 列间距：列沿水平方向排列，对应 setHorizontalSpacing
     using ColSpacing = ForwardProp<&QGridLayout::setHorizontalSpacing>;
-
     template <item_trait T>
     struct Item {
         using Align = Qt::Alignment;
@@ -76,14 +74,14 @@ namespace grid::pro {
             }
         }
     };
-
     struct Items {
         explicit Items() { }
 
         friend auto dsl_invoke(QGridLayout&, const Items&) -> void { }
     };
 
-    using namespace layout::pro;
+    using namespace api::scope::common;
+    using namespace api::scope::layout;
 }
 
 }

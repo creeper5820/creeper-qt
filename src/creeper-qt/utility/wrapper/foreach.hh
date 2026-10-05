@@ -1,5 +1,6 @@
 #pragma once
 #include "creeper-qt/utility/wrapper/dsl.hh"
+
 #include <vector>
 
 namespace creeper::Util {

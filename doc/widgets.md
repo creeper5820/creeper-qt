@@ -6,7 +6,7 @@
 
 ## 通用组件属性
 
-命名空间：`creeper::widget::pro`
+命名空间：`creeper::api::scope::widget`
 
 | 属性 | 类型 | 方法 |
 | --- | --- | --- |
@@ -22,7 +22,7 @@
 ### 声明式配置（推荐）
 
 ```cpp
-namespace pro = creeper::widget::pro;
+namespace pro = creeper::api::scope::widget;
 using creeper::Widget;
 
 auto widget = new Widget {
@@ -42,7 +42,7 @@ qwidget->setMinimumSize(100, 050);
 ### 属性复用
 
 ```cpp
-namespace pro = creeper::widget::pro;
+namespace pro = creeper::api::scope::widget;
 using creeper::Widget;
 
 const auto props = std::tuple {
@@ -91,7 +91,7 @@ auto widget_b = new Widget {
 
 命名空间：`creeper::filled_button::pro`
 
-继承属性：`creeper::util::theme::pro`、`creeper::widget::pro`、`creeper::button::pro`
+继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`、`creeper::button::pro`
 
 ```cpp
 using namespace creeper;
@@ -114,7 +114,7 @@ auto button = new FilledButton {
 
 与 `FilledButton` 相同的 API，仅配色方案不同。
 
-继承属性：`creeper::util::theme::pro`、`creeper::widget::pro`、`creeper::button::pro`
+继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`、`creeper::button::pro`
 
 ---
 
@@ -124,7 +124,7 @@ auto button = new FilledButton {
 
 与 `FilledButton` 相同的 API，仅配色方案不同。
 
-继承属性：`creeper::util::theme::pro`、`creeper::widget::pro`、`creeper::button::pro`
+继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`、`creeper::button::pro`
 
 ---
 
@@ -134,7 +134,7 @@ auto button = new FilledButton {
 
 与 `FilledButton` 相同的 API，仅配色方案不同。
 
-继承属性：`creeper::util::theme::pro`、`creeper::widget::pro`、`creeper::button::pro`
+继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`、`creeper::button::pro`
 
 ---
 
@@ -190,7 +190,7 @@ auto text_button = TextButton { properties };
 
 实现此组件时经过多次权衡。原 Material Design 3 的 Switch 规则过于复杂，一些参数（如 Handle 的膨胀拉伸形变系数）未给出明确定义。基于曲线函数的动画在打断时表现不自然。最终决定大体复现 MD3 外观设计，使用弹簧物理模拟替代曲线动画，简化了按压和拉伸动画。
 
-继承属性：`creeper::util::theme::pro`、`creeper::widget::pro`
+继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`
 
 完整属性列表参考[源代码](../creeper-qt/widget/switch.hh#L60-L106)，主要属性包括：
 
@@ -223,7 +223,7 @@ auto switch_widget = new Switch {
 
 命名空间：`creeper::text_field::pro`
 
-继承属性：`creeper::util::theme::pro`、`creeper::widget::pro`
+继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
@@ -282,7 +282,7 @@ auto bound_field = new FilledTextField {
 
 与 `FilledTextField` 相同的 API，仅外观样式不同（带边框）。
 
-继承属性：`creeper::util::theme::pro`、`creeper::widget::pro`
+继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`
 
 ```cpp
 using namespace creeper;
@@ -303,12 +303,12 @@ auto outlined_field = new OutlinedTextField {
 
 命名空间：`creeper::slider::pro`
 
-继承属性：`creeper::util::theme::pro`、`creeper::widget::pro`
+继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
 | `Progress` | `double` | 进度值（0.0 - 1.0） |
-| `Measurements` | `Measurements` | 尺寸配置（支持 Xs, S, M, L, SL 预设） |
+| `Slider::Measurements` | 结构体 | 尺寸配置（直接作为属性传入，支持 Xs, S, M, L, SL 预设） |
 | `OnValueChange` | `[](double){}` | 值改变时的回调函数 |
 | `OnValueChangeFinished` | `[](double){}` | 值改变完成时的回调函数 |
 
@@ -317,7 +317,7 @@ using namespace creeper;
 
 auto slider = new Slider {
     slider::pro::ThemeManager { manager },
-    slider::pro::Measurements { Slider::Measurements::M() },
+    Slider::Measurements::M(),
     slider::pro::FixedHeight { 52 },
     slider::pro::FixedWidth { 300 },
     slider::pro::Progress { 0.5 },
@@ -332,7 +332,7 @@ progress_value->set_silent(0.2);
 
 auto bound_slider = new Slider {
     slider::pro::ThemeManager { manager },
-    slider::pro::Measurements { Slider::Measurements::S() },
+    Slider::Measurements::S(),
     MutableForward {
         slider::pro::Progress { 0. },
         progress_value
@@ -353,7 +353,7 @@ auto bound_slider = new Slider {
 
 对应 Material 3 的 DropdownMenu：在独立弹出窗口中显示的选择列表，自身不占据布局空间，通过 `Anchor` 锚定到其他组件上定位。
 
-继承属性：`creeper::util::theme::pro`、`creeper::widget::pro`
+继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
@@ -367,7 +367,7 @@ auto bound_slider = new Slider {
 
 菜单是**受控组件**：点击菜单外部或 Esc 时菜单自行收起并发出 `OnDismissRequest`，应用应在其中把绑定状态置回 `false`；点击菜单项**不会**自动关闭菜单，需要在 `OnClicked` 中显式收起。内容超出可用高度时自动滚动，支持方向键导航。与标准的差异：`scrollState`、`properties`、`tonalElevation`、`shadowElevation`、`border` 未暴露，阴影取自主题。
 
-推荐用 `widget::pro::Child<T>` 把菜单声明式地挂进锚组件：菜单以锚组件为 parent（缺省锚），不占布局空间，随锚组件自动销毁。
+推荐用 `api::scope::widget::Child<T>` 把菜单声明式地挂进锚组件：菜单以锚组件为 parent（缺省锚），不占布局空间，随锚组件自动销毁。
 
 ```cpp
 using namespace creeper;
@@ -415,7 +415,7 @@ auto menu = new DropdownMenu {
 
 命名空间：`creeper::dropdown_menu_item::pro`
 
-继承属性：`creeper::util::theme::pro`、`creeper::widget::pro`
+继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
@@ -441,7 +441,7 @@ auto item = new DropdownMenuItem {
 
 命名空间：`creeper::image::pro`
 
-继承属性：`creeper::widget::pro`
+继承属性：`creeper::api::scope::widget`
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
@@ -477,7 +477,7 @@ auto scaled_image = new Image {
 
 命名空间：`creeper::text::pro`
 
-继承属性：`creeper::util::theme::pro`、`creeper::widget::pro`
+继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
@@ -528,7 +528,7 @@ auto bound_text = new Text {
 
 提供多种样式：`FilledCard`、`OutlinedCard`、`ElevatedCard`、`BasicCard`。
 
-继承属性：`creeper::util::theme::pro`、`creeper::widget::pro`、`creeper::rounded_rect::pro`
+继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`、`creeper::rounded_rect::pro`
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
@@ -548,7 +548,7 @@ auto filled_card = new FilledCard {
     capro::Level { CardLevel::HIGHEST },
     capro::Radius { 12 },
     capro::FixedSize { 200, 150 },
-    capro::Layout<Col> {
+    new Col {
         // 卡片内容
     }
 };
@@ -557,7 +557,7 @@ auto outlined_card = new OutlinedCard {
     capro::ThemeManager { manager },
     capro::LevelLowest,
     capro::Radius { 8 },
-    capro::Layout<Row> {
+    new Row {
         // 卡片内容
     }
 };
@@ -565,7 +565,7 @@ auto outlined_card = new OutlinedCard {
 auto elevated_card = new ElevatedCard {
     capro::ThemeManager { manager },
     capro::LevelHigh,
-    capro::Layout<Col> {
+    new Col {
         // 卡片内容
     }
 };
@@ -577,7 +577,7 @@ auto elevated_card = new ElevatedCard {
 
 命名空间：`creeper::icon_button::pro`
 
-继承属性：`creeper::util::theme::pro`、`creeper::widget::pro`
+继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
@@ -619,7 +619,7 @@ auto toggle_button = new IconButton {
 
 命名空间：`creeper::main_window::pro`
 
-继承属性：`creeper::widget::pro`
+继承属性：`creeper::api::scope::widget`
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
@@ -634,7 +634,7 @@ creeper::ShowWindow<MainWindow> {
     mwpro::MinimumSize { 1080, 720 },
     mwpro::Central<FilledCard> {
         card::pro::ThemeManager { manager },
-        card::pro::Layout<Col> {
+        new Col {
             // 窗口内容
         }
     }
@@ -647,7 +647,7 @@ creeper::ShowWindow<MainWindow> {
 
 命名空间：`creeper::wave_circle::pro`
 
-继承属性：`creeper::widget::pro`
+继承属性：`creeper::api::scope::widget`
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |

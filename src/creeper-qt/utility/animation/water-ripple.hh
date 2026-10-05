@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QPointF>
+
 #include <memory>
 #include <vector>
 

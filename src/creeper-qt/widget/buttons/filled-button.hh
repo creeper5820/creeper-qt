@@ -1,12 +1,18 @@
 #pragma once
 
+#include "creeper-qt/utility/api/pro/clickable.hh"   // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/text-color.hh"  // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/text.hh"        // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/water-color.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/common.hh"    // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/shape.hh"     // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/theme.hh"     // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/widget.hh"    // IWYU pragma: keep
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 
 #include <qabstractbutton.h>
 
@@ -47,13 +53,17 @@ protected:
 
 }
 namespace creeper::filled_button::pro {
-
-using namespace common::pro;
-using namespace widget::pro;
-using namespace theme::pro;
-
 using HoverColor        = ForwardProp<&FilledButton::setHoverColor>;
 using WaterRippleStatus = ForwardProp<&FilledButton::setWaterRippleStatus>;
 using WaterRippleStep   = ForwardProp<&FilledButton::setWaterRippleStep>;
 
+using api::pro::Clickable;
+using api::pro::Text;
+using api::pro::TextColor;
+using api::pro::WaterColor;
+
+using namespace api::scope::common;
+using namespace api::scope::shape;
+using namespace api::scope::theme;
+using namespace api::scope::widget;
 }

@@ -22,11 +22,11 @@ FilledCard* ControlPanel(ThemeManager& manager) noexcept {
     return new FilledCard {
         fcp::ThemeManager { manager },
 
-        fcp::Layout<Row> {
+        new Row {
             rp::Spacing { 5 },
             rp::Alignment { Qt::AlignVCenter | Qt::AlignLeft },
 
-            rp::Item<Col> {
+            new Col {
                 Util::ForEach(
                     std::array {
                         "按钮一",
@@ -34,7 +34,7 @@ FilledCard* ControlPanel(ThemeManager& manager) noexcept {
                         "按钮三",
                     },
                     [&](std::size_t index, std::string_view text) {
-                        return cp::Item<OutlinedButton> {
+                        return new OutlinedButton {
                             obp::ThemeManager { manager },
                             obp::FixedSize { 80, 30 },
                             obp::Text { text.data() },

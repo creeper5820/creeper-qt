@@ -1,11 +1,13 @@
 #pragma once
 
+#include "creeper-qt/utility/api/helper/signal-injection.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/common.hh"            // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/theme.hh"             // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/widget.hh"            // IWYU pragma: keep
 #include "creeper-qt/utility/theme/theme.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 
 namespace creeper {
 
@@ -86,11 +88,15 @@ public:
                 .inset_icon_size = 32,
             };
         }
+
+        friend auto dsl_invoke(Slider& self, const Measurements& measurements) -> void {
+            self.setMeasurements(measurements);
+        }
     };
 
 public:
     explicit Slider(auto&&... props)
-        : Slider { } {
+        : Slider {} {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 
@@ -115,21 +121,16 @@ protected:
 };
 
 namespace slider::pro {
-
-    using namespace common::pro;
-    using namespace widget::pro;
-    using namespace theme::pro;
-
     template <typename F>
-    using OnValueChange = common::pro::SignalInjection<F, &Slider::valueChanged>;
-
+    using OnValueChange = api::helper::SignalInjection<F, &Slider::valueChanged>;
     template <typename F>
-    using OnValueChangeFinished = common::pro::SignalInjection<F, &Slider::valueChangedFinished>;
-
-    using Measurements = ForwardProp<&Slider::setMeasurements>;
+    using OnValueChangeFinished = api::helper::SignalInjection<F, &Slider::valueChangedFinished>;
 
     using Progress = ForwardProp<&Slider::setProgress>;
 
+    using namespace api::scope::common;
+    using namespace api::scope::theme;
+    using namespace api::scope::widget;
 }
 
 }

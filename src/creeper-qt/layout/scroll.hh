@@ -1,11 +1,14 @@
 #pragma once
+
+#include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/theme.hh"  // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/widget.hh" // IWYU pragma: keep
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/trait/widget.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 #include "creeper-qt/widget/widget.hh"
+
 #include <qscrollarea.h>
 #include <qscrollbar.h>
 
@@ -62,14 +65,8 @@ public:
 }
 
 namespace creeper::scroll::pro {
-
-using namespace common::pro;
-using namespace widget::pro;
-using namespace theme::pro;
-
 using VerticalScrollBarPolicy   = ForwardProp<&QScrollArea::setVerticalScrollBarPolicy>;
 using HorizontalScrollBarPolicy = ForwardProp<&QScrollArea::setHorizontalScrollBarPolicy>;
-
 struct ScrollBarPolicy {
     Qt::ScrollBarPolicy v;
     Qt::ScrollBarPolicy h;
@@ -83,7 +80,6 @@ struct ScrollBarPolicy {
         self.setHorizontalScrollBarPolicy(prop.h);
     }
 };
-
 template <item_trait T>
 struct Item {
     T* item_pointer = nullptr;
@@ -102,14 +98,16 @@ struct Item {
         // NOTE: 这里可能有调整的空间，直接设置 Layout，
         //       布局 Size 行为是不正确的
         else if constexpr (layout_trait<T>) {
-            const auto content = new creeper::Widget {
-                widget::pro::Layout { prop.item_pointer },
-            };
+            const auto content = new creeper::Widget { };
+            content->setLayout(prop.item_pointer);
             self.setWidget(content);
         }
     }
 };
 
+using namespace api::scope::common;
+using namespace api::scope::theme;
+using namespace api::scope::widget;
 }
 
 namespace creeper::scrollable::details {

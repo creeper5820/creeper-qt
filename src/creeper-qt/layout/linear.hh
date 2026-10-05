@@ -1,22 +1,42 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/layout.hh" // IWYU pragma: keep
 #include "creeper-qt/utility/trait/widget.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
-#include "creeper-qt/utility/wrapper/layout.hh"
 
 #include <qboxlayout.h>
 #include <qstackedlayout.h>
 
+#include <type_traits>
+
+namespace creeper {
+
+template <layout_trait T>
+class BoxLayout : public T, public DSL {
+public:
+    using T::T;
+
+    explicit BoxLayout(auto&&... args) { construct_with(std::forward<decltype(args)>(args)...); }
+
+private:
+    template <widget_pointer_trait W>
+    friend auto dsl_invoke(BoxLayout& self, W widget) {
+        self.addWidget(widget, 0, { });
+    }
+    template <layout_pointer_trait L>
+    friend auto dsl_invoke(BoxLayout& self, L layout) {
+        self.addLayout(layout, 0);
+    }
+};
+
+}
+
 namespace creeper::linear::pro {
-
 using SpacingItem = ForwardProp<&QBoxLayout::addSpacing>;
-
-using Stretch = ForwardProp<&QBoxLayout::addStretch>;
-
-using SpacerItem = ForwardProp<&QBoxLayout::addSpacerItem>;
-
+using Stretch     = ForwardProp<&QBoxLayout::addStretch>;
+using SpacerItem  = ForwardProp<&QBoxLayout::addSpacerItem>;
 /// @brief
 /// 布局项包装器，用于声明式地将 Widget 或 Layout 添加到布局中
 ///
@@ -70,19 +90,10 @@ struct Item {
     }
 };
 
-using namespace common::pro;
-using namespace layout::pro;
+using namespace api::scope::common;
+using namespace api::scope::layout;
 }
-
 namespace creeper {
-
-template <layout_trait T>
-class BoxLayout : public T, public DSL {
-public:
-    using T::T;
-
-    explicit BoxLayout(auto&&... args) { construct_with(std::forward<decltype(args)>(args)...); }
-};
 
 using Row = BoxLayout<QHBoxLayout>;
 using Col = BoxLayout<QVBoxLayout>;
@@ -95,5 +106,4 @@ using VBoxLayout = Col;
 
 namespace h_box_layout = linear;
 namespace v_box_layout = linear;
-
 }

@@ -1,5 +1,3 @@
-#include "sliders.hh"
-
 #include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/animation/state/pid.hh"
 #include "creeper-qt/utility/animation/transition.hh"
@@ -8,6 +6,8 @@
 #include <qevent.h>
 #include <qnamespace.h>
 #include <qpainter.h>
+
+#include "sliders.hh"
 
 /// TODO:
 /// [ ] Adapt other directions

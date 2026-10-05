@@ -1,4 +1,5 @@
 #include "flow.hh"
+
 #include <qstyle.h>
 
 using namespace creeper;

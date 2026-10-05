@@ -1,21 +1,16 @@
 #pragma once
 
-#include <qwidget.h>
-
 #include "creeper-qt/utility/theme/color-scheme.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 
-namespace creeper::theme {
+#include <qwidget.h>
 
-class ThemeManager;
+namespace creeper::theme {
 
 template <class T>
 concept color_scheme_setter_trait = requires(T t) {
     { t.loadColorScheme(ColorScheme { }) };
 };
-template <class T>
-concept theme_manager_loader_trait =
-    requires(T t, ThemeManager& manager) { t.bindThemeManager(manager); };
 
 struct ThemePack {
     ColorScheme light, dark;
@@ -69,30 +64,6 @@ public:
     ColorMode colorMode() const;
 
     ColorScheme colorScheme() const;
-};
-
-}
-namespace creeper::theme::pro {
-
-struct ColorScheme : public theme::ColorScheme {
-    using theme::ColorScheme::ColorScheme;
-    explicit ColorScheme(const theme::ColorScheme& p)
-        : theme::ColorScheme(p) { }
-
-    friend auto dsl_invoke(color_scheme_setter_trait auto& self, const ColorScheme& prop) -> void {
-        self.loadColorScheme(prop);
-    }
-};
-
-struct ThemeManager {
-    theme::ThemeManager& manager;
-    explicit ThemeManager(theme::ThemeManager& p)
-        : manager(p) { }
-
-    friend auto dsl_invoke(theme_manager_loader_trait auto& self, const ThemeManager& prop)
-        -> void {
-        self.bindThemeManager(prop.manager);
-    }
 };
 
 }

@@ -5,11 +5,12 @@
 ///     如果使用 Arch Linux，则可以通过 AUR 安装：ttf-material-icons-git，
 ///     使用其他 Nerd Font 也是可以的
 
-#include "components/component.hh"
-#include "components/display-board.hh"
+#include <creeper-qt/creeper-qt.hh>
 
 #include <QtWidgets>
-#include <creeper-qt/creeper-qt.hh>
+
+#include "components/component.hh"
+#include "components/display-board.hh"
 
 using namespace creeper;
 
@@ -105,16 +106,14 @@ auto main(int argc, char** argv) -> int {
             capro::Radius { 0 },
             capro::Level { CardLevel::HIGHEST },
 
-            capro::Layout<Row> {
+            new Row {
                 lnpro::Margin { 0 },
                 lnpro::Spacing { 0 },
 
-                lnpro::Item {
-                    NavComponent(nav_component_state),
-                },
-                lnpro::Item<Col> {
+                NavComponent(nav_component_state),
+                new Col {
                     lnpro::ContentsMargin { 15, 15, 5, 15 },
-                    lnpro::Item { ListComponent(list_component_state) },
+                    ListComponent(list_component_state),
                 },
                 lnpro::Item<Stacked> {
                     { 1 },
@@ -123,9 +122,9 @@ auto main(int argc, char** argv) -> int {
                         stack_index,
                     },
                     stpro::Item<Widget> {
-                        capro::Layout<Col> {
+                        new Col {
                             lnpro::ContentsMargin { 5, 15, 15, 15 },
-                            lnpro::Item<ScrollArea> {
+                            new ScrollArea {
                                 scroll::pro::ThemeManager { manager },
                                 scroll::pro::HorizontalScrollBarPolicy {
                                     Qt::ScrollBarAlwaysOff,
@@ -137,9 +136,9 @@ auto main(int argc, char** argv) -> int {
                         },
                     },
                     stpro::Item<Widget> {
-                        capro::Layout<Col> {
+                        new Col {
                             lnpro::ContentsMargin { { 5, 15, 15, 15 } },
-                            lnpro::Item<DisplayBoard> { manager },
+                            new DisplayBoard { manager },
                         },
                     },
                 },

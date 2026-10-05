@@ -1,5 +1,3 @@
-#include "component.hh"
-
 #include <creeper-qt/core/application.hh>
 #include <creeper-qt/layout/group.hh>
 #include <creeper-qt/layout/linear.hh>
@@ -9,6 +7,8 @@
 #include <creeper-qt/widget/buttons/icon-button.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
 #include <creeper-qt/widget/image.hh>
+
+#include "component.hh"
 
 using namespace creeper;
 namespace fc = filled_card::pro;
@@ -41,8 +41,8 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
         ic::ShapeRound,
         ic::TypesToggleUnselected,
         ic::WidthDefault,
-        widget::pro::Font(material::round::font_1),
-        widget::pro::FixedSize(IconButton::kSmallContainerSize),
+        ic::Font(material::round::font_1),
+        ic::FixedSize(IconButton::kSmallContainerSize),
     };
 
     return new FilledCard {
@@ -50,7 +50,7 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
         fc::Radius { 0 },
         fc::Level { CardLevel::HIGHEST },
 
-        fc::Layout<Col> {
+        new Col {
             ln::Spacing { 10 },
             ln::Margin { 15 },
 

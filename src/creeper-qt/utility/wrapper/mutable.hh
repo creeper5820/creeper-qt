@@ -1,8 +1,10 @@
 #pragma once
 
 #include "creeper-qt/utility/wrapper/dsl.hh"
-#include <functional>
+
 #include <qwidget.h>
+
+#include <functional>
 #include <unordered_map>
 
 namespace creeper {
@@ -15,7 +17,7 @@ namespace creeper {
 /// 达到类似“全局属性联动”的效果。
 ///
 /// Usage：
-///   auto mutable_size = Mutable{widget::pro::FixedSize{100, 100}};
+///   auto mutable_size = Mutable{api::scope::widget::FixedSize{100, 100}};
 ///   auto card_1 = OutlinedCard{mutable_size};
 ///   auto card_2 = OutlinedCard{mutable_size};
 ///   // 修改 mutable_size，card1/card2 会同步变化

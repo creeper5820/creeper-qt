@@ -1,13 +1,13 @@
 #pragma once
+#include <qpixmap.h>
+#include <qurl.h>
+
 #include <concepts>
 #include <functional>
 #include <memory>
 #include <optional>
 #include <string_view>
 #include <utility>
-
-#include <qpixmap.h>
-#include <qurl.h>
 
 namespace creeper {
 

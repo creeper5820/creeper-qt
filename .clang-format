@@ -34,3 +34,21 @@ PenaltyBreakAssignment: 2
 PenaltyBreakString: 2
 AlignConsecutiveAssignments:
   Enabled: true
+
+# 头文件排序与分组
+SortIncludes: true
+IncludeBlocks: Regroup
+IncludeCategories:
+  # 项目头（含 .impl.hh）
+  - Regex: '^"(creeper-qt/|.*\.impl\.hh")'
+    Priority: 1
+  - Regex: '^<(creeper-qt/)'
+    Priority: 1
+  # Qt
+  - Regex: '^<Q'
+    Priority: 2
+  # 标准库
+  - Regex: '^<[a-z_]+>'
+    Priority: 3
+  - Regex: '.*'
+    Priority: 4

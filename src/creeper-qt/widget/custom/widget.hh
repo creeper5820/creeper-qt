@@ -1,8 +1,8 @@
 #pragma once
 
-#include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/widget.hh" // IWYU pragma: keep
 #include "creeper-qt/utility/wrapper/dsl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 
 #include <concepts>
 #include <memory>
@@ -38,10 +38,6 @@ public:
 };
 
 namespace custom::pro {
-
-    using namespace common::pro;
-    using namespace widget::pro;
-
     /// @note:
     /// - std::invocable<F, CustomWidget&>
     /// - std::invocable<F, CustomWidget&, State&>
@@ -99,6 +95,8 @@ namespace custom::pro {
         }
     };
 
+    using namespace api::scope::common;
+    using namespace api::scope::widget;
 }
 
 }

@@ -1,12 +1,16 @@
 #pragma once
 
+#include "creeper-qt/utility/api/helper/signal-injection.hh" // IWYU pragma: keep
+#include "creeper-qt/utility/api/helper/string.hh"           // IWYU pragma: keep
+#include "creeper-qt/utility/api/pro/text.hh"                // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/common.hh"            // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/theme.hh"             // IWYU pragma: keep
+#include "creeper-qt/utility/api/scope/widget.hh"            // IWYU pragma: keep
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 
 #include <qlineedit.h>
 
@@ -68,6 +72,10 @@ public:
         int supporting_text_and_character_counter_row_padding = 16;
 
         auto iconSize() const { return QSize { icon_rect_size, icon_rect_size }; }
+
+        friend auto dsl_invoke(BasicTextField& self, const Measurements& measurements) -> void {
+            self.setMeasurements(measurements);
+        }
     };
 
     explicit BasicTextField(auto&&... props)
@@ -134,22 +142,11 @@ protected:
 
 }
 namespace creeper::text_field::pro {
-
-using namespace common::pro;
-using namespace widget::pro;
-using namespace theme::pro;
-
 using ClearButton = ForwardProp<&QLineEdit::setClearButtonEnabled>;
-
-using Measurements = ForwardProp<&BasicTextField::setMeasurements>;
-
 using LabelText =
-    common::pro::String<[](auto& self, const auto& text) { self.setLabelText(text); }>;
-
-using Text = common::pro::Text;
-
+    api::helper::String<[](auto& self, const auto& text) { self.setLabelText(text); }>;
+using api::pro::Text;
 using ReadOnly = ForwardProp<&QLineEdit::setReadOnly>;
-
 struct LeadingIcon {
     QString code;
     QString font;
@@ -160,17 +157,16 @@ struct LeadingIcon {
         self.setLeadingIcon(prop.code, prop.font);
     }
 };
-
 template <typename F>
-using OnTextChanged = common::pro::SignalInjection<F, &BasicTextField::textChanged>;
-
+using OnTextChanged = api::helper::SignalInjection<F, &BasicTextField::textChanged>;
 template <typename F>
-using OnEditingFinished = common::pro::SignalInjection<F, &BasicTextField::editingFinished>;
-
+using OnEditingFinished = api::helper::SignalInjection<F, &BasicTextField::editingFinished>;
 template <typename F>
 using OnChanged = OnTextChanged<F>;
-
 template <typename F>
-using OnPressed = common::pro::SignalInjection<F, &BasicTextField::pressed>;
+using OnPressed = api::helper::SignalInjection<F, &BasicTextField::pressed>;
 
+using namespace api::scope::common;
+using namespace api::scope::theme;
+using namespace api::scope::widget;
 }
