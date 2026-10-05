@@ -24,7 +24,7 @@ class DropdownMenu : public QWidget, public DSL {
 
 public:
     explicit DropdownMenu(auto&&... props)
-        : DropdownMenu { } {
+        : DropdownMenu {} {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 
@@ -64,6 +64,12 @@ protected:
     auto eventFilter(QObject*, QEvent*) -> bool override;
     auto wheelEvent(QWheelEvent*) -> void override;
     auto keyPressEvent(QKeyEvent*) -> void override;
+
+private:
+    template <widget_pointer_trait W>
+    friend auto dsl_invoke(DropdownMenu& self, W widget) {
+        self.addItem(widget);
+    }
 };
 
 namespace dropdown_menu::pro {
@@ -80,6 +86,7 @@ namespace dropdown_menu::pro {
     /// 用户请求关闭（外部点击 / Esc）时的回调
     template <typename F>
     using OnDismissRequest = api::helper::SignalInjection<F, &DropdownMenu::dismissRequested>;
+
     /// 向菜单内容列追加内容项，通常为 DropdownMenuItem
     template <item_trait T>
     struct MenuWidget {
