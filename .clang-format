@@ -9,6 +9,9 @@ UseTab: Never
 IndentWidth: 4
 TabWidth: 4
 
+# 花括号初始化列表（声明式构造）嵌套每层 2 字符
+BracedInitializerIndentWidth: 2
+
 # 访问修饰符（public）等靠左对齐
 AccessModifierOffset: -4
 AlignTrailingComments:

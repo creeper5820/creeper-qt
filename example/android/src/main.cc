@@ -131,45 +131,45 @@ auto TopBar(ThemeManager& manager) noexcept {
         ln::Spacing { 4 },
 
         new IconButton {
-            // IconButton 按当前尺寸计算圆角，FixedSize 须先于形状类 prop
-            ibp::FixedSize { 48, 48 },
-            manager,
-            ibp::ColorStandard,
-            ibp::ShapeRound,
-            ibp::Font { icon_font(20) },
-            ibp::FontIcon { material::icon::kMenu },
+          // IconButton 按当前尺寸计算圆角，FixedSize 须先于形状类 prop
+          ibp::FixedSize { 48, 48 },
+          manager,
+          ibp::ColorStandard,
+          ibp::ShapeRound,
+          ibp::Font { icon_font(20) },
+          ibp::FontIcon { material::icon::kMenu },
         } + Row::Placement { 0, Qt::AlignVCenter },
 
         new OutlinedButton {
-            obp::FixedHeight { 48 },
-            obp::Radius { 24 },
-            obp::Font { text_font(16) },
-            obp::Text { "Label" },
-            obp::With { [&manager](OutlinedButton& self) {
-                manager.appendHandler(&self, [&self](const ThemeManager& manager) {
-                    const auto& scheme = manager.colorScheme();
-                    self.loadColorScheme(scheme);
-                    self.setBorderWidth(1);
-                    self.setBorderColor(scheme.outline);
-                    self.setTextColor(scheme.on_surface_variant);
-                });
-            } },
+          obp::FixedHeight { 48 },
+          obp::Radius { 24 },
+          obp::Font { text_font(16) },
+          obp::Text { "Label" },
+          obp::With { [&manager](OutlinedButton& self) {
+              manager.appendHandler(&self, [&self](const ThemeManager& manager) {
+                  const auto& scheme = manager.colorScheme();
+                  self.loadColorScheme(scheme);
+                  self.setBorderWidth(1);
+                  self.setBorderColor(scheme.outline);
+                  self.setTextColor(scheme.on_surface_variant);
+              });
+          } },
         } + Row::Placement { 1, Qt::AlignVCenter },
 
         new RoundedRect {
-            rrp::FixedSize { 32, 32 },
-            rrp::Radius { 16 },
-            rrp::Background { Qt::transparent },
-            rrp::BorderWidth { 1 },
-            rrp::With { [&manager](RoundedRect& self) {
-                manager.appendHandler(&self, [&self](const ThemeManager& manager) {
-                    const auto& scheme = manager.colorScheme();
-                    // RoundedRect 继承自 Shape，setter 不触发重绘，须显式 update
-                    self.setBackground(Qt::transparent);
-                    self.setBorderColor(scheme.outline);
-                    self.update();
-                });
-            } },
+          rrp::FixedSize { 32, 32 },
+          rrp::Radius { 16 },
+          rrp::Background { Qt::transparent },
+          rrp::BorderWidth { 1 },
+          rrp::With { [&manager](RoundedRect& self) {
+              manager.appendHandler(&self, [&self](const ThemeManager& manager) {
+                  const auto& scheme = manager.colorScheme();
+                  // RoundedRect 继承自 Shape，setter 不触发重绘，须显式 update
+                  self.setBackground(Qt::transparent);
+                  self.setBorderColor(scheme.outline);
+                  self.update();
+              });
+          } },
         } + Row::Placement { 0, Qt::AlignVCenter },
     }
     + Col::Placement { 0, Qt::Alignment { } };
@@ -192,21 +192,21 @@ auto CardWall(ThemeManager& manager) noexcept {
         // 必须显式 Expanding 才能铺满视口，并让内层 Grid 拿到完整高度
         wgp::SizePolicy { QSizePolicy::Expanding, QSizePolicy::Expanding },
         new Grid {
-            gp::With { std::move(grid_metrics) },
-            each(kTiles,
-                [&](const Tile& tile) {
-                    return gp::GridItem<OutlinedCard> {
-                        GridCell { tile.row, tile.column, tile.row_span, tile.column_span },
-                        // 卡片自身也要 Expanding，行/列 stretch 才有可分配的余量
-                        ocp::SizePolicy { QSizePolicy::Expanding, QSizePolicy::Expanding },
-                        // 最小尺寸兜底：空卡片 size hint 接近 0，防止行被压扁成横条
-                        ocp::MinimumSize { 64, 64 },
-                        ocp::Level { CardLevel::LOWEST },
-                        manager,
-                        ocp::Radius { 4 },
-                        ocp::BorderWidth { 1 },
-                    };
-                }),
+          gp::With { std::move(grid_metrics) },
+          each(kTiles,
+              [&](const Tile& tile) {
+                  return gp::GridItem<OutlinedCard> {
+                      GridCell { tile.row, tile.column, tile.row_span, tile.column_span },
+                      // 卡片自身也要 Expanding，行/列 stretch 才有可分配的余量
+                      ocp::SizePolicy { QSizePolicy::Expanding, QSizePolicy::Expanding },
+                      // 最小尺寸兜底：空卡片 size hint 接近 0，防止行被压扁成横条
+                      ocp::MinimumSize { 64, 64 },
+                      ocp::Level { CardLevel::LOWEST },
+                      manager,
+                      ocp::Radius { 4 },
+                      ocp::BorderWidth { 1 },
+                  };
+              }),
         },
     };
 }
@@ -238,33 +238,33 @@ auto FloatingToolbar(ThemeManager& manager, ThemeCycle& cycle) noexcept {
         ln::Spacing { 14 },
 
         new ElevatedCard {
-            ecp::FixedHeight { 52 },
-            ecp::Radius { 26 },
-            ecp::BorderWidth { 1.5 },
-            ecp::With { std::move(tint) },
-            new Row {
-                ln::ContentsMargin { { 8, 6, 8, 6 } },
-                ln::Spacing { 4 },
-                each(std::array { "stars", "stars", "stars" },
-                    [&](const char* icon) {
-                        return new IconButton { button, ibp::FontIcon { icon } };
-                    }),
-            },
+          ecp::FixedHeight { 52 },
+          ecp::Radius { 26 },
+          ecp::BorderWidth { 1.5 },
+          ecp::With { std::move(tint) },
+          new Row {
+            ln::ContentsMargin { { 8, 6, 8, 6 } },
+            ln::Spacing { 4 },
+            each(std::array { "stars", "stars", "stars" },
+                [&](const char* icon) {
+                    return new IconButton { button, ibp::FontIcon { icon } };
+                }),
+          },
         } + Row::Placement { 0, Qt::AlignVCenter },
         new ElevatedCard {
-            ecp::FixedSize { 46, 46 },
-            ecp::Radius { 12 },
-            ecp::BorderWidth { 1.5 },
-            ecp::With { std::move(tint) },
-            new Row {
-                ln::Margin { 0 },
-                ln::Alignment { Qt::AlignCenter },
-                new IconButton {
-                    button,
-                    ibp::FontIcon { "palette" },
-                    ibp::Clickable { [&cycle] { cycle.next(); } },
-                },
+          ecp::FixedSize { 46, 46 },
+          ecp::Radius { 12 },
+          ecp::BorderWidth { 1.5 },
+          ecp::With { std::move(tint) },
+          new Row {
+            ln::Margin { 0 },
+            ln::Alignment { Qt::AlignCenter },
+            new IconButton {
+              button,
+              ibp::FontIcon { "palette" },
+              ibp::Clickable { [&cycle] { cycle.next(); } },
             },
+          },
         } + Row::Placement { 0, Qt::AlignVCenter },
     };
 }
@@ -292,25 +292,25 @@ auto NavigationBar(ThemeManager& manager, MutableValue<int>& selected) noexcept 
                     ln::Spacing { 4 },
 
                     new IconButton {
-                        ibp::FixedSize { 40, 32 },
-                        manager,
-                        ibp::TypesDefault,
-                        ibp::ShapeRound,
-                        ibp::WidthWide,
-                        MutableTransform { indicate, selected },
-                        ibp::Font { icon_font(22) },
-                        ibp::FontIcon { destination.icon },
-                        ibp::Clickable { [&selected, index] { selected = index; } },
+                      ibp::FixedSize { 40, 32 },
+                      manager,
+                      ibp::TypesDefault,
+                      ibp::ShapeRound,
+                      ibp::WidthWide,
+                      MutableTransform { indicate, selected },
+                      ibp::Font { icon_font(22) },
+                      ibp::FontIcon { destination.icon },
+                      ibp::Clickable { [&selected, index] { selected = index; } },
                     } + Row::Placement { 0, Qt::AlignHCenter },
                     new Text {
-                        MutableTransform { emphasize, selected },
-                        txp::Alignment { Qt::AlignCenter },
-                        txp::Text { destination.label },
-                        txp::With { [&manager](Text& self) {
-                            manager.appendHandler(&self, [&self](const ThemeManager& manager) {
-                                self.setColor(manager.colorScheme().on_surface_variant);
-                            });
-                        } },
+                      MutableTransform { emphasize, selected },
+                      txp::Alignment { Qt::AlignCenter },
+                      txp::Text { destination.label },
+                      txp::With { [&manager](Text& self) {
+                          manager.appendHandler(&self, [&self](const ThemeManager& manager) {
+                              self.setColor(manager.colorScheme().on_surface_variant);
+                          });
+                      } },
                     } + Row::Placement { 0, Qt::AlignHCenter },
                 }
                 + Col::Placement { 1, Qt::AlignVCenter };
@@ -338,32 +338,32 @@ auto main(int argc, char** argv) -> int {
     ShowWindow<MainWindow> {
         [](MainWindow& window) { window.setWindowTitle("creeper-qt | Material 3"); },
         mwp::Central<FilledCard> {
-            fcp::Radius { 0 },
-            fcp::With { [&manager](FilledCard& self) {
-                manager.appendHandler(&self, [&self](const ThemeManager& manager) {
-                    self.setBackground(manager.colorScheme().surface);
-                    self.update();
-                });
-            } },
-            new Col {
-                ln::Margin { 0 },
-                ln::Spacing { 0 },
+          fcp::Radius { 0 },
+          fcp::With { [&manager](FilledCard& self) {
+              manager.appendHandler(&self, [&self](const ThemeManager& manager) {
+                  self.setBackground(manager.colorScheme().surface);
+                  self.update();
+              });
+          } },
+          new Col {
+            ln::Margin { 0 },
+            ln::Spacing { 0 },
 
-                TopBar(manager),
-                new Grid {
-                    gp::GridItem<ScrollArea> {
-                        GridCell { 0, 0 },
-                        manager,
-                        // ScrollArea 在 Grid 中纵向撑满，内容区才能拿到完整高度
-                        scp::SizePolicy { QSizePolicy::Expanding, QSizePolicy::Expanding },
-                        scp::VerticalScrollBarPolicy { Qt::ScrollBarAlwaysOff },
-                        scp::HorizontalScrollBarPolicy { Qt::ScrollBarAlwaysOff },
-                        CardWall(manager),
-                    },
-                    FloatingToolbar(manager, cycle),
-                } + Col::Placement { 1, Qt::Alignment { } },
-                NavigationBar(manager, selected),
-            },
+            TopBar(manager),
+            new Grid {
+              gp::GridItem<ScrollArea> {
+                GridCell { 0, 0 },
+                manager,
+                // ScrollArea 在 Grid 中纵向撑满，内容区才能拿到完整高度
+                scp::SizePolicy { QSizePolicy::Expanding, QSizePolicy::Expanding },
+                scp::VerticalScrollBarPolicy { Qt::ScrollBarAlwaysOff },
+                scp::HorizontalScrollBarPolicy { Qt::ScrollBarAlwaysOff },
+                CardWall(manager),
+              },
+              FloatingToolbar(manager, cycle),
+            } + Col::Placement { 1, Qt::Alignment { } },
+            NavigationBar(manager, selected),
+          },
         },
     };
 

@@ -48,10 +48,10 @@ protected:
         painter.setOpacity(1);
         painter.setBrush({ background_ });
         painter.setPen(QPen {
-            border_color_,
-            border_width_,
-            Qt::SolidLine,
-            Qt::RoundCap,
+          border_color_,
+          border_width_,
+          Qt::SolidLine,
+          Qt::RoundCap,
         });
         painter.drawPath(path_cache_);
     }

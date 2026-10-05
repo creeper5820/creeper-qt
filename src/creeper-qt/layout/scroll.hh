@@ -32,24 +32,24 @@ public:
         };
 
         verticalScrollBar()->setStyleSheet(QString {
-            "QScrollBar:vertical{background:transparent;width:8px;border-radius:4px;}"
-            "QScrollBar::handle:vertical{background:%1;min-height:20px;border-radius:4px;}"
-            "QScrollBar::handle:vertical:hover{background:%2;}"
-            "QScrollBar::handle:vertical:pressed{background:%3;}"
-            "QScrollBar::add-line:vertical,QScrollBar::sub-line:vertical,"
-            "QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical{height:0px;}",
+          "QScrollBar:vertical{background:transparent;width:8px;border-radius:4px;}"
+          "QScrollBar::handle:vertical{background:%1;min-height:20px;border-radius:4px;}"
+          "QScrollBar::handle:vertical:hover{background:%2;}"
+          "QScrollBar::handle:vertical:pressed{background:%3;}"
+          "QScrollBar::add-line:vertical,QScrollBar::sub-line:vertical,"
+          "QScrollBar::add-page:vertical,QScrollBar::sub-page:vertical{height:0px;}",
         }
                 .arg(q(scheme.primary, 235))
                 .arg(q(scheme.primary))
                 .arg(q(scheme.primary.darker(110))));
 
         horizontalScrollBar()->setStyleSheet(QString {
-            "QScrollBar:horizontal{background:transparent;height:8px;border-radius:4px;}"
-            "QScrollBar::handle:horizontal{background:%1;min-width:20px;border-radius:4px;}"
-            "QScrollBar::handle:horizontal:hover{background:%2;}"
-            "QScrollBar::handle:horizontal:pressed{background:%3;}"
-            "QScrollBar::add-line:horizontal,QScrollBar::sub-line:horizontal,"
-            "QScrollBar::add-page:horizontal,QScrollBar::sub-page:horizontal{width:0px;}",
+          "QScrollBar:horizontal{background:transparent;height:8px;border-radius:4px;}"
+          "QScrollBar::handle:horizontal{background:%1;min-width:20px;border-radius:4px;}"
+          "QScrollBar::handle:horizontal:hover{background:%2;}"
+          "QScrollBar::handle:horizontal:pressed{background:%3;}"
+          "QScrollBar::add-line:horizontal,QScrollBar::sub-line:horizontal,"
+          "QScrollBar::add-page:horizontal,QScrollBar::sub-page:horizontal{width:0px;}",
         }
                 .arg(q(scheme.primary, 235))
                 .arg(q(scheme.primary))

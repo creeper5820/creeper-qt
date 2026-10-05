@@ -105,46 +105,46 @@ auto main(int argc, char** argv) -> int {
         },
         MinimumSize { 1080, 720 },
         Central<FilledCard> {
-            manager,
-            Radius { 0 },
-            Level { CardLevel::HIGHEST },
+          manager,
+          Radius { 0 },
+          Level { CardLevel::HIGHEST },
 
-            new Row {
-                Margin { 0 },
-                Spacing { 0 },
+          new Row {
+            Margin { 0 },
+            Spacing { 0 },
 
-                NavComponent(nav_component_state),
-                new Col {
-                    ContentsMargin { 15, 15, 5, 15 },
-                    ListComponent(list_component_state),
-                },
-                new Stacked {
-                    MutableForward {
-                        CurrentIndex { },
-                        stack_index,
-                    },
-                    new Widget {
-                        new Col {
-                            ContentsMargin { 5, 15, 15, 15 },
-                            new ScrollArea {
-                                manager,
-                                HorizontalScrollBarPolicy {
-                                    Qt::ScrollBarAlwaysOff,
-                                },
-                                ScrollItem {
-                                    ViewComponent(view_component_state),
-                                },
-                            },
-                        },
-                    },
-                    new Widget {
-                        new Col {
-                            ContentsMargin { { 5, 15, 15, 15 } },
-                            new DisplayBoard { manager },
-                        },
-                    },
-                } + Row::Placement { 1 },
+            NavComponent(nav_component_state),
+            new Col {
+              ContentsMargin { 15, 15, 5, 15 },
+              ListComponent(list_component_state),
             },
+            new Stacked {
+              MutableForward {
+                CurrentIndex { },
+                stack_index,
+              },
+              new Widget {
+                new Col {
+                  ContentsMargin { 5, 15, 15, 15 },
+                  new ScrollArea {
+                    manager,
+                    HorizontalScrollBarPolicy {
+                      Qt::ScrollBarAlwaysOff,
+                    },
+                    ScrollItem {
+                      ViewComponent(view_component_state),
+                    },
+                  },
+                },
+              },
+              new Widget {
+                new Col {
+                  ContentsMargin { { 5, 15, 15, 15 } },
+                  new DisplayBoard { manager },
+                },
+              },
+            } + Row::Placement { 1 },
+          },
         },
         SetMixerMask { mask_window },
     };

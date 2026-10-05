@@ -23,24 +23,24 @@ FilledCard* ControlPanel(ThemeManager& manager) noexcept {
         manager,
 
         new Row {
-            rp::Spacing { 5 },
-            rp::Alignment { Qt::AlignVCenter | Qt::AlignLeft },
+          rp::Spacing { 5 },
+          rp::Alignment { Qt::AlignVCenter | Qt::AlignLeft },
 
-            new Col {
-                Util::ForEach(
-                    std::array {
-                        "按钮一",
-                        "按钮二",
-                        "按钮三",
-                    },
-                    [&](std::size_t index, std::string_view text) {
-                        return new OutlinedButton {
-                            manager,
-                            obp::FixedSize { 80, 30 },
-                            obp::Text { text.data() },
-                        };
-                    }),
-            },
+          new Col {
+            Util::ForEach(
+                std::array {
+                  "按钮一",
+                  "按钮二",
+                  "按钮三",
+                },
+                [&](std::size_t index, std::string_view text) {
+                    return new OutlinedButton {
+                        manager,
+                        obp::FixedSize { 80, 30 },
+                        obp::Text { text.data() },
+                    };
+                }),
+          },
         },
     };
 }

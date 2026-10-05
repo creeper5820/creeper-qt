@@ -163,64 +163,64 @@ struct AssetCenter : creeper::Widget {
         return new Row {
             row::pro::Margin { 0 },
             new OutlinedCard {
-                manager,
-                card::pro::LevelLowest,
-                card::pro::MinimumHeight { 200 },
-                new Row {
-                    new Group<Col, OutlinedButton> {
-                        col::pro::Margin { 15 },
-                        col::pro::Spacing { 10 },
-                        col::pro::Alignment { Qt::AlignTop },
-                        group::pro::Compose {
-                            std::vector<std::tuple<std::string, std::function<void()>>> { {
-                                { "下载字体", [this] { download_font(); } },
-                                { "应用代理", [this] { apply_proxy_configuration(); } },
-                                { "打开文件", [this] { open_download_location(); } },
-                            } },
-                            [this](const std::string& text, const auto& function) {
-                                return new OutlinedButton {
-                                    manager,
-                                    outlined_button::pro::FixedSize { 70, 40 },
-                                    outlined_button::pro::Text { text },
-                                    outlined_button::pro::Clickable { function },
-                                };
-                            },
-                        },
-                    },
-                    new Col {
-                        col::pro::Margin { 20 },
-                        col::pro::Spacing { 10 },
-                        new Text {
+              manager,
+              card::pro::LevelLowest,
+              card::pro::MinimumHeight { 200 },
+              new Row {
+                new Group<Col, OutlinedButton> {
+                  col::pro::Margin { 15 },
+                  col::pro::Spacing { 10 },
+                  col::pro::Alignment { Qt::AlignTop },
+                  group::pro::Compose {
+                    std::vector<std::tuple<std::string, std::function<void()>>> { {
+                      { "下载字体", [this] { download_font(); } },
+                      { "应用代理", [this] { apply_proxy_configuration(); } },
+                      { "打开文件", [this] { open_download_location(); } },
+                    } },
+                    [this](const std::string& text, const auto& function) {
+                        return new OutlinedButton {
                             manager,
-                            text::pro::Text {
-                                QString {
-                                    "示例中的所有 ICON 均为 Google Material Icons 字体提供，"
-                                    "需要下载并安装相应的字体文件才能正常显示\n"
-                                    "这里贴心做了下载按钮，点击即送，如果无法下载，"
-                                    "可以设置代理进行下载，字体链接：%1\n",
-                                }
-                                    .arg(font_url),
-                            },
-                            text::pro::WordWrap { true },
-                            text::pro::TextInteractionFlags {
-                                Qt::TextInteractionFlag::TextSelectableByMouse,
-                            },
-                        },
-                        new FilledTextField {
-                            manager,
-                            text_field::pro::LeadingIcon {
-                                "public",
-                                material::round::font,
-                            },
-                            text_field::pro::LabelText {
-                                "设置代理，像这样：localhost:5820",
-                            },
-                            text_field::pro::OnChanged {
-                                [this](const auto& s) { proxy_string = s.toStdString(); },
-                            },
-                        },
+                            outlined_button::pro::FixedSize { 70, 40 },
+                            outlined_button::pro::Text { text },
+                            outlined_button::pro::Clickable { function },
+                        };
                     },
+                  },
                 },
+                new Col {
+                  col::pro::Margin { 20 },
+                  col::pro::Spacing { 10 },
+                  new Text {
+                    manager,
+                    text::pro::Text {
+                      QString {
+                        "示例中的所有 ICON 均为 Google Material Icons 字体提供，"
+                        "需要下载并安装相应的字体文件才能正常显示\n"
+                        "这里贴心做了下载按钮，点击即送，如果无法下载，"
+                        "可以设置代理进行下载，字体链接：%1\n",
+                      }
+                          .arg(font_url),
+                    },
+                    text::pro::WordWrap { true },
+                    text::pro::TextInteractionFlags {
+                      Qt::TextInteractionFlag::TextSelectableByMouse,
+                    },
+                  },
+                  new FilledTextField {
+                    manager,
+                    text_field::pro::LeadingIcon {
+                      "public",
+                      material::round::font,
+                    },
+                    text_field::pro::LabelText {
+                      "设置代理，像这样：localhost:5820",
+                    },
+                    text_field::pro::OnChanged {
+                      [this](const auto& s) { proxy_string = s.toStdString(); },
+                    },
+                  },
+                },
+              },
             },
         };
     }

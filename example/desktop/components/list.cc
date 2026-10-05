@@ -27,35 +27,35 @@ auto ListComponent(ListComponentState& state) noexcept -> raw_pointer<QWidget> {
     const auto ButtonGroup = new Group<Col, TextButton> {
         lnpro::Alignment { Qt::AlignTop | Qt::AlignHCenter },
         grpro::Compose {
-            list_items | std::views::enumerate,
-            [&](auto&& i, auto&& c) {
-                return new TextButton {
-                    state.manager,
-                    tbpro::FixedWidth { 120 },
-                    tbpro::FixedHeight { 30 },
-                    tbpro::Radius { -1 },
-                    tbpro::Text { std::format("{}.{}", i, c) },
-                    tbpro::Font { "JetBrains Mono" },
-                    tbpro::Clickable {
-                        [c](TextButton& button) { qDebug() << "[main] Clicked" << c; },
-                    },
-                };
-            },
-            Qt::AlignTop | Qt::AlignHCenter,
+          list_items | std::views::enumerate,
+          [&](auto&& i, auto&& c) {
+              return new TextButton {
+                  state.manager,
+                  tbpro::FixedWidth { 120 },
+                  tbpro::FixedHeight { 30 },
+                  tbpro::Radius { -1 },
+                  tbpro::Text { std::format("{}.{}", i, c) },
+                  tbpro::Font { "JetBrains Mono" },
+                  tbpro::Clickable {
+                    [c](TextButton& button) { qDebug() << "[main] Clicked" << c; },
+                  },
+              };
+          },
+          Qt::AlignTop | Qt::AlignHCenter,
         },
     };
     return new FilledCard {
         state.manager,
         fcpro::Radius { 10 },
         new Col {
-            new ScrollArea {
-                state.manager,
-                scroll::pro::ScrollBarPolicy {
-                    Qt::ScrollBarAlwaysOff,
-                    Qt::ScrollBarAlwaysOff,
-                },
-                scroll::pro::ScrollItem { ButtonGroup },
+          new ScrollArea {
+            state.manager,
+            scroll::pro::ScrollBarPolicy {
+              Qt::ScrollBarAlwaysOff,
+              Qt::ScrollBarAlwaysOff,
             },
+            scroll::pro::ScrollItem { ButtonGroup },
+          },
         },
     };
 };

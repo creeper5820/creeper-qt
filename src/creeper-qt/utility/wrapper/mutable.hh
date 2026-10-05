@@ -55,11 +55,11 @@ public:
 
     auto bind(auto& self) const noexcept -> void {
         callbacks_.insert({
-            &self,
-            [&](const T& pro) {
-                dsl_invoke(self, pro);
-                self.update();
-            },
+          &self,
+          [&](const T& pro) {
+              dsl_invoke(self, pro);
+              self.update();
+          },
         });
         QObject::connect(&self, &QObject::destroyed, //
             [pointer = &self, this] { callbacks_.erase(pointer); });

@@ -173,44 +173,44 @@ public:
             Paint::Box {
                 BoxImpl { self.size(), Qt::AlignCenter },
                 Paint::Surface {
-                    SurfaceImpl { container_size },
-                    Paint::RoundedRectangle {
-                        Size { container_size },
-                        Fill { color_tokens.container },
-                        RadiusTL { container_radius },
-                        RadiusTR { container_radius },
+                  SurfaceImpl { container_size },
+                  Paint::RoundedRectangle {
+                    Size { container_size },
+                    Fill { color_tokens.container },
+                    RadiusTL { container_radius },
+                    RadiusTR { container_radius },
+                  },
+                  Paint::Rectangle {
+                    Origin { active_indicator_origin },
+                    Size { active_indicator_size },
+                    Fill { color_tokens.active_indicator },
+                  },
+                  Paint::Box {
+                    BoxImpl { leading_box_size, Qt::AlignCenter,
+                      { 1. * measurements.row_padding_with_icons, 0 } },
+                    Paint::Icon {
+                      Icon { leading_font_name, leading_icon_code },
+                      Size { leading_box_size },
+                      Color { color_tokens.leading_icon },
                     },
-                    Paint::Rectangle {
-                        Origin { active_indicator_origin },
-                        Size { active_indicator_size },
-                        Fill { color_tokens.active_indicator },
+                  },
+                  Paint::Box {
+                    BoxImpl { label_size, Qt::AlignLeft | Qt::AlignVCenter, label_origin },
+                    Paint::Text {
+                      TextOption { text_option },
+                      Font { standard_text_font },
+                      Size { label_size },
+                      Text { label_text },
+                      Color { color_tokens.label_text },
+                      Scale { text_scale },
                     },
-                    Paint::Box {
-                        BoxImpl { leading_box_size, Qt::AlignCenter,
-                            { 1. * measurements.row_padding_with_icons, 0 } },
-                        Paint::Icon {
-                            Icon { leading_font_name, leading_icon_code },
-                            Size { leading_box_size },
-                            Color { color_tokens.leading_icon },
-                        },
-                    },
-                    Paint::Box {
-                        BoxImpl { label_size, Qt::AlignLeft | Qt::AlignVCenter, label_origin },
-                        Paint::Text {
-                            TextOption { text_option },
-                            Font { standard_text_font },
-                            Size { label_size },
-                            Text { label_text },
-                            Color { color_tokens.label_text },
-                            Scale { text_scale },
-                        },
-                    },
-                    Paint::RoundedRectangle {
-                        Size { is_hovered ? container_size : qt::size(0, 0) },
-                        Fill { color_specs.state_layer },
-                        RadiusTL { container_radius },
-                        RadiusTR { container_radius },
-                    },
+                  },
+                  Paint::RoundedRectangle {
+                    Size { is_hovered ? container_size : qt::size(0, 0) },
+                    Fill { color_specs.state_layer },
+                    RadiusTL { container_radius },
+                    RadiusTR { container_radius },
+                  },
                 },
             }(painter);
         }
@@ -286,39 +286,39 @@ public:
             Paint::Box {
                 BoxImpl { self.size(), Qt::AlignCenter },
                 Paint::Surface {
-                    SurfaceImpl { container_size },
-                    Paint::Buffer {
-                        BufferImpl { container_size },
-                        Paint::RoundedRectangle {
-                            Size { container_size },
-                            Outline { color_tokens.outline, container_thickness },
-                            Radiuses { 5 },
-                        },
-                        Paint::EraseRectangle {
-                            Origin { label_origin },
-                            Size { label_background_size },
-                        },
+                  SurfaceImpl { container_size },
+                  Paint::Buffer {
+                    BufferImpl { container_size },
+                    Paint::RoundedRectangle {
+                      Size { container_size },
+                      Outline { color_tokens.outline, container_thickness },
+                      Radiuses { 5 },
                     },
-                    Paint::Box {
-                        BoxImpl { label_background_size, Qt::AlignHCenter, label_origin },
-                        Paint::Text {
-                            TextOption { text_option },
-                            Font { standard_text_font },
-                            Size { label_background_size },
-                            Text { label_text },
-                            Color { color_tokens.label_text },
-                            Scale { text_scale },
-                        },
+                    Paint::EraseRectangle {
+                      Origin { label_origin },
+                      Size { label_background_size },
                     },
-                    Paint::Box {
-                        BoxImpl { leading_box_size, Qt::AlignCenter,
-                            { 1. * measurements.row_padding_with_icons, 0 } },
-                        Paint::Icon {
-                            Icon { leading_font_name, leading_icon_code },
-                            Size { leading_box_size },
-                            Color { color_tokens.leading_icon },
-                        },
+                  },
+                  Paint::Box {
+                    BoxImpl { label_background_size, Qt::AlignHCenter, label_origin },
+                    Paint::Text {
+                      TextOption { text_option },
+                      Font { standard_text_font },
+                      Size { label_background_size },
+                      Text { label_text },
+                      Color { color_tokens.label_text },
+                      Scale { text_scale },
                     },
+                  },
+                  Paint::Box {
+                    BoxImpl { leading_box_size, Qt::AlignCenter,
+                      { 1. * measurements.row_padding_with_icons, 0 } },
+                    Paint::Icon {
+                      Icon { leading_font_name, leading_icon_code },
+                      Size { leading_box_size },
+                      Color { color_tokens.leading_icon },
+                    },
+                  },
                 },
             }(painter);
         }

@@ -26,8 +26,8 @@ public:
             static_cast<T*>(receiver)->receive(msg);
         };
         actions.emplace_back(Action {
-            .receiver = receiver,
-            .notify   = notify_function,
+          .receiver = receiver,
+          .notify   = notify_function,
         });
 
         QObject::connect(receiver, &QObject::destroyed, [key = receiver] {

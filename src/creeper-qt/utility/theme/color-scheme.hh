@@ -3,8 +3,6 @@
 #include <qcolor.h>
 #include <qfont.h>
 
-#include <concepts>
-
 namespace creeper {
 
 enum class ColorMode { LIGHT, DARK };
