@@ -31,3 +31,30 @@ target_link_libraries(
     ${QT_VERSION}::Widgets
 )
 add_test(NAME mini-bus COMMAND mini-bus)
+
+# 逐组件属性实例化测试（每个 props/*.cc 一个 OBJECT 目标，仅编译，不链接运行）
+file(GLOB CREEPER_QT_PROP_TESTS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/props/*.cc")
+foreach(prop_test IN LISTS CREEPER_QT_PROP_TESTS)
+    get_filename_component(prop_name "${prop_test}" NAME_WE)
+    add_library(
+        creeper-qt-prop-${prop_name}
+        OBJECT
+        "${prop_test}"
+    )
+    set_target_properties(
+        creeper-qt-prop-${prop_name} PROPERTIES
+        AUTOMOC ON
+        EXPORT_COMPILE_COMMANDS ON
+    )
+    target_compile_features(creeper-qt-prop-${prop_name} PRIVATE cxx_std_23)
+    target_include_directories(
+        creeper-qt-prop-${prop_name} PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../src
+        ${CMAKE_CURRENT_SOURCE_DIR}/props
+    )
+    target_link_libraries(
+        creeper-qt-prop-${prop_name}
+        ${QT_VERSION}::Widgets
+        Eigen3::Eigen
+    )
+endforeach()
