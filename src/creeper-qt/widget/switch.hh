@@ -1,14 +1,17 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/theme.hh"
+
+#include "creeper-qt/utility/api/pro/checked.hh"
+#include "creeper-qt/utility/api/pro/disabled.hh"
 #include "creeper-qt/utility/api/scope/common.hh"
 
+#include "creeper-qt/utility/api/scope/widget.hh"
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 
 #include <qabstractbutton.h>
 
@@ -60,35 +63,28 @@ protected:
 };
 
 namespace _switch::pro {
-
-    using namespace common::pro;
-    using namespace api::scope::common;
-    using namespace widget::pro;
-    using namespace theme::pro;
-
     /// @note 碎碎念，这么多颜色，真的会用得上么...
-
-    using TrackColorUnchecked = ForwardProp<&Switch::setTrackColorUnchecked>;
-    using TrackColorChecked   = ForwardProp<&Switch::setTrackColorChecked>;
-
-    using TrackColorUncheckedDisabled = ForwardProp<&Switch::setTrackColorUncheckedDisabled>;
-    using TrackColorCheckedDisabled   = ForwardProp<&Switch::setTrackColorCheckedDisabled>;
-
-    using HandleColorUnchecked = ForwardProp<&Switch::setHandleColorUnchecked>;
-    using HandleColorChecked   = ForwardProp<&Switch::setHandleColorChecked>;
-
-    using HandleColorUncheckedDisabled = ForwardProp<&Switch::setHandleColorUncheckedDisabled>;
-    using HandleColorCheckedDisabled   = ForwardProp<&Switch::setHandleColorCheckedDisabled>;
-
-    using OutlineColorUnchecked = ForwardProp<&Switch::setOutlineColorUnchecked>;
-    using OutlineColorChecked   = ForwardProp<&Switch::setOutlineColorChecked>;
-
+    using TrackColorUnchecked           = ForwardProp<&Switch::setTrackColorUnchecked>;
+    using TrackColorChecked             = ForwardProp<&Switch::setTrackColorChecked>;
+    using TrackColorUncheckedDisabled   = ForwardProp<&Switch::setTrackColorUncheckedDisabled>;
+    using TrackColorCheckedDisabled     = ForwardProp<&Switch::setTrackColorCheckedDisabled>;
+    using HandleColorUnchecked          = ForwardProp<&Switch::setHandleColorUnchecked>;
+    using HandleColorChecked            = ForwardProp<&Switch::setHandleColorChecked>;
+    using HandleColorUncheckedDisabled  = ForwardProp<&Switch::setHandleColorUncheckedDisabled>;
+    using HandleColorCheckedDisabled    = ForwardProp<&Switch::setHandleColorCheckedDisabled>;
+    using OutlineColorUnchecked         = ForwardProp<&Switch::setOutlineColorUnchecked>;
+    using OutlineColorChecked           = ForwardProp<&Switch::setOutlineColorChecked>;
     using OutlineColorUncheckedDisabled = ForwardProp<&Switch::setOutlineColorUncheckedDisabled>;
     using OutlineColorCheckedDisabled   = ForwardProp<&Switch::setOutlineColorCheckedDisabled>;
+    using HoverColorUnchecked           = ForwardProp<&Switch::setHoverColorUnchecked>;
+    using HoverColorChecked             = ForwardProp<&Switch::setHoverColorChecked>;
 
-    using HoverColorUnchecked = ForwardProp<&Switch::setHoverColorUnchecked>;
-    using HoverColorChecked   = ForwardProp<&Switch::setHoverColorChecked>;
+    using api::pro::Checked;
+    using api::pro::Disabled;
 
+    using namespace api::scope::common;
+    using namespace api::scope::theme;
+    using namespace api::scope::widget;
 }
 /// @note 使用时建议比例 w : h > 7 : 4 ，过冲动画会多占用一些宽度，倘若 w 过短，可能会出现 hover
 /// 层画面被截断的情况

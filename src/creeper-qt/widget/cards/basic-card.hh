@@ -1,5 +1,9 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/theme.hh"
+
+#include "creeper-qt/utility/api/scope/widget.hh"
+
 #include "creeper-qt/utility/api/scope/common.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
@@ -79,21 +83,17 @@ public:
 };
 
 namespace card::pro {
-
-    using namespace common::pro;
-    using namespace api::scope::common;
-    using namespace widget::pro;
-    using namespace theme::pro;
-    using namespace rounded_rect::pro;
-
-    using Level = ForwardProp<&Card::setLevel>;
-
+    using Level                 = ForwardProp<&Card::setLevel>;
     constexpr auto LevelDefault = Level { Card::Level::DEFAULT };
     constexpr auto LevelHigh    = Level { Card::Level::HIGH };
     constexpr auto LevelHighest = Level { Card::Level::HIGHEST };
     constexpr auto LevelLow     = Level { Card::Level::LOW };
     constexpr auto LevelLowest  = Level { Card::Level::LOWEST };
 
+    using namespace api::scope::common;
+    using namespace rounded_rect::pro;
+    using namespace api::scope::theme;
+    using namespace api::scope::widget;
 }
 
 using CardLevel = Card::Level;

@@ -1,11 +1,11 @@
 #pragma once
 
+#include "creeper-qt/utility/api/helper/signal-injection.hh"
 #include "creeper-qt/utility/api/scope/common.hh"
+#include "creeper-qt/utility/api/scope/layout.hh"
 #include "creeper-qt/utility/trait/widget.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
-#include "creeper-qt/utility/wrapper/layout.hh"
 
 #include <concepts>
 #include <qstackedlayout.h>
@@ -20,16 +20,10 @@ public:
 };
 
 namespace stacked::pro {
-    using namespace common::pro;
-    using namespace api::scope::common;
-    using namespace layout::pro;
-
     /// @note: currentChanged(int index)
     template <typename F>
-    using IndexChanged = common::pro::SignalInjection<F, &Stacked::currentChanged>;
-
+    using IndexChanged = api::helper::SignalInjection<F, &Stacked::currentChanged>;
     using CurrentIndex = ForwardProp<&Stacked::setCurrentIndex>;
-
     template <item_trait T>
     struct Item {
         T* item_pointer = nullptr;
@@ -47,6 +41,9 @@ namespace stacked::pro {
             }
         }
     };
+
+    using namespace api::scope::common;
+    using namespace api::scope::layout;
 }
 
 using NavHost = Stacked;

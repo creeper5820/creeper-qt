@@ -1,17 +1,19 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/theme.hh"
+
+#include "creeper-qt/utility/api/pro/clickable.hh"
 #include "creeper-qt/utility/api/scope/common.hh"
 
 #include <qabstractbutton.h>
 #include <qpainter.h>
 
+#include "creeper-qt/utility/api/scope/widget.hh"
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 
 namespace creeper {
 
@@ -92,39 +94,30 @@ protected:
 };
 
 namespace icon_button::pro {
-
-    using namespace common::pro;
-    using namespace api::scope::common;
-    using namespace widget::pro;
-    using namespace theme::pro;
-
-    using Icon     = ForwardProp<&IconButton::setIcon>;
-    using FontIcon = ForwardProp<&IconButton::setFontIcon>;
-
-    using Color = ForwardProp<&IconButton::setColor>;
-    using Shape = ForwardProp<&IconButton::setShape>;
-    using Types = ForwardProp<&IconButton::setTypes>;
-    using Width = ForwardProp<&IconButton::setWidth>;
-
-    constexpr auto ColorFilled   = Color { IconButton::Color::DEFAULT_FILLED };
-    constexpr auto ColorOutlined = Color { IconButton::Color::OUTLINED };
-    constexpr auto ColorStandard = Color { IconButton::Color::STANDARD };
-    constexpr auto ColorTonal    = Color { IconButton::Color::TONAL };
-
-    constexpr auto ShapeRound  = Shape { IconButton::Shape::DEFAULT_ROUND };
-    constexpr auto ShapeSquare = Shape { IconButton::Shape::SQUARE };
-
+    using Icon                           = ForwardProp<&IconButton::setIcon>;
+    using FontIcon                       = ForwardProp<&IconButton::setFontIcon>;
+    using Color                          = ForwardProp<&IconButton::setColor>;
+    using Shape                          = ForwardProp<&IconButton::setShape>;
+    using Types                          = ForwardProp<&IconButton::setTypes>;
+    using Width                          = ForwardProp<&IconButton::setWidth>;
+    constexpr auto ColorFilled           = Color { IconButton::Color::DEFAULT_FILLED };
+    constexpr auto ColorOutlined         = Color { IconButton::Color::OUTLINED };
+    constexpr auto ColorStandard         = Color { IconButton::Color::STANDARD };
+    constexpr auto ColorTonal            = Color { IconButton::Color::TONAL };
+    constexpr auto ShapeRound            = Shape { IconButton::Shape::DEFAULT_ROUND };
+    constexpr auto ShapeSquare           = Shape { IconButton::Shape::SQUARE };
     constexpr auto TypesDefault          = Types { IconButton::Types::DEFAULT };
     constexpr auto TypesToggleSelected   = Types { IconButton::Types::TOGGLE_SELECTED };
     constexpr auto TypesToggleUnselected = Types { IconButton::Types::TOGGLE_UNSELECTED };
-
-    constexpr auto WidthDefault = Width { IconButton::Width::DEFAULT };
-    constexpr auto WidthNarrow  = Width { IconButton::Width::NARROW };
-    constexpr auto WidthWide    = Width { IconButton::Width::WIDE };
-
+    constexpr auto WidthDefault          = Width { IconButton::Width::DEFAULT };
+    constexpr auto WidthNarrow           = Width { IconButton::Width::NARROW };
+    constexpr auto WidthWide             = Width { IconButton::Width::WIDE };
     template <typename Callback>
-    using Clickable = common::pro::Clickable<Callback>;
+    using Clickable = api::pro::Clickable<Callback>;
 
+    using namespace api::scope::common;
+    using namespace api::scope::theme;
+    using namespace api::scope::widget;
 } // namespace icon_button::pro
 
 } // namespace creeper

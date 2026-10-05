@@ -1,6 +1,5 @@
 #pragma once
 #include "creeper-qt/utility/wrapper/dsl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 #include <qobject.h>
 #include <unordered_map>
 

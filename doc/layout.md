@@ -6,7 +6,7 @@
 
 ## 通用布局属性
 
-命名空间：`creeper::layout::pro`
+命名空间：`creeper::api::scope::layout`
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
@@ -16,7 +16,7 @@
 | `Alignment` | `Qt::Alignment` | 设置布局对齐方式 |
 
 ```cpp
-namespace lnpro = creeper::layout::pro;
+namespace lnpro = creeper::api::scope::layout;
 
 auto layout = new Row {
     lnpro::Spacing { 10 },
@@ -176,12 +176,12 @@ auto stacked = new Stacked {
         qDebug() << "当前页面索引:" << index;
     }},
     stpro::Item<Widget> {
-        widget::pro::Layout<Col> {
+        api::scope::widget::Layout<Col> {
             // 第一页内容
         }
     },
     stpro::Item<Widget> {
-        widget::pro::Layout<Col> {
+        api::scope::widget::Layout<Col> {
             // 第二页内容
         }
     }
@@ -219,20 +219,20 @@ auto flow = new Flow {
     fpro::RowSpacing { 10 },
     fpro::ColSpacing { 10 },
     fpro::RowLimit { 3 },  // 每行最多 3 个
-    layout::pro::Widget<FilledButton> {
+    lnpro::AddWidget<FilledButton> {
         button::pro::Text { "按钮1" }
     },
-    layout::pro::Widget<FilledButton> {
+    lnpro::AddWidget<FilledButton> {
         button::pro::Text { "按钮2" }
     },
 };
 
-// 或者使用 Apply 属性批量添加
+// 或者使用 With 属性批量添加
 auto flow2 = new Flow {
     fpro::RowSpacing { 10 },
     fpro::ColSpacing { 10 },
     fpro::RowLimit { 3 },
-    flow::pro::Apply { [](Flow& self) {
+    flow::pro::With { [](Flow& self) {
         for (int i = 0; i < 10; ++i) {
             self.addWidget(new FilledButton {
                 button::pro::Text { QString("按钮%1").arg(i) }

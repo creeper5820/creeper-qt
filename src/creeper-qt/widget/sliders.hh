@@ -1,13 +1,15 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/theme.hh"
+
+#include "creeper-qt/utility/api/helper/signal-injection.hh"
 #include "creeper-qt/utility/api/scope/common.hh"
 
+#include "creeper-qt/utility/api/scope/widget.hh"
 #include "creeper-qt/utility/theme/theme.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 
 namespace creeper {
 
@@ -121,20 +123,15 @@ protected:
 };
 
 namespace slider::pro {
+    template <typename F>
+    using OnValueChange = api::helper::SignalInjection<F, &Slider::valueChanged>;
+    template <typename F>
+    using OnValueChangeFinished = api::helper::SignalInjection<F, &Slider::valueChangedFinished>;
+    using Progress              = ForwardProp<&Slider::setProgress>;
 
-    using namespace common::pro;
     using namespace api::scope::common;
-    using namespace widget::pro;
-    using namespace theme::pro;
-
-    template <typename F>
-    using OnValueChange = common::pro::SignalInjection<F, &Slider::valueChanged>;
-
-    template <typename F>
-    using OnValueChangeFinished = common::pro::SignalInjection<F, &Slider::valueChangedFinished>;
-
-    using Progress = ForwardProp<&Slider::setProgress>;
-
+    using namespace api::scope::theme;
+    using namespace api::scope::widget;
 }
 
 }

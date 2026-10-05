@@ -217,7 +217,7 @@ static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
                 wave_circle::pro::OverallRadius { 75 },
                 wave_circle::pro::ProtrudingRatio { 0.8 },
                 wave_circle::pro::BorderColor { Qt::transparent },
-                wave_circle::pro::Apply { [&manager](WaveCircle& self) {
+                wave_circle::pro::With { [&manager](WaveCircle& self) {
                     manager.appendHandler(&self, [&](const ThemeManager& manager) {
                         const auto colorscheme = manager.colorScheme();
                         const auto colorborder = colorscheme.surface_container_lowest;
@@ -232,7 +232,7 @@ static auto ItemComponent(ThemeManager& manager, int index = 0) noexcept {
                 card::pro::Layout<Row> {
                     new Text {
                         text::pro::Text { QString { "Item %1" }.arg(index) },
-                        text::pro::Apply { [&manager](Text& self) {
+                        text::pro::With { [&manager](Text& self) {
                             manager.appendHandler(&self, [&](const ThemeManager& manager) {
                                 const auto scheme = manager.colorScheme();
                                 self.setColor(scheme.primary);
@@ -314,7 +314,7 @@ static auto BannerComponent(ThemeManager& manager) noexcept {
         imp::BorderWidth { 3 },
         imp::FixedHeight { 300 },
         imp::PainterResource { sources.at(std::rand() % sources.size()) },
-        imp::Apply { [&manager](Image& self) {
+        imp::With { [&manager](Image& self) {
             manager.appendHandler(&self, [&](const ThemeManager& manager) {
                 const auto colorscheme = manager.colorScheme();
                 const auto colorborder = colorscheme.secondary_container;
@@ -469,7 +469,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                 flow::pro::RowSpacing { 10 },
                 flow::pro::ColSpacing { 10 },
                 flow::pro::RowLimit { 6 },
-                flow::pro::Apply { [&](Flow& self) {
+                flow::pro::With { [&](Flow& self) {
                     using namespace repeat_literals;
                     1'000 * [&](auto i) { self.addWidget(ItemComponent(state.manager, i)); };
                 } },

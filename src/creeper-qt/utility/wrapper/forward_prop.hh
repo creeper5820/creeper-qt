@@ -17,14 +17,14 @@ namespace creeper {
 ///
 /// 使用示例：
 /// @code
-///     namespace widget::pro {
+///     namespace api::scope::widget {
 ///         using Text = ForwardProp<&QWidget::setText>;
 ///         using FixedWidth = ForwardProp<&QWidget::setFixedWidth>;
 ///     }
 ///
 ///     MyWidget {
-///         widget::pro::Text { "Hello" },
-///         widget::pro::FixedWidth { 200 },
+///         api::scope::widget::Text { "Hello" },
+///         api::scope::widget::FixedWidth { 200 },
 ///     }
 /// @endcode
 ///

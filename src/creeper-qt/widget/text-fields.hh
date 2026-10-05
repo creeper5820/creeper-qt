@@ -1,14 +1,18 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/theme.hh"
+
+#include "creeper-qt/utility/api/helper/signal-injection.hh"
+#include "creeper-qt/utility/api/helper/string.hh"
+#include "creeper-qt/utility/api/pro/text.hh"
 #include "creeper-qt/utility/api/scope/common.hh"
 
+#include "creeper-qt/utility/api/scope/widget.hh"
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 
 #include <qlineedit.h>
 
@@ -77,7 +81,7 @@ public:
     };
 
     explicit BasicTextField(auto&&... props)
-        : BasicTextField {} {
+        : BasicTextField { } {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 
@@ -119,7 +123,7 @@ protected:
 class FilledTextField : public BasicTextField {
 public:
     explicit FilledTextField(auto&&... props)
-        : BasicTextField {} {
+        : BasicTextField { } {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 
@@ -130,7 +134,7 @@ protected:
 class OutlinedTextField : public BasicTextField {
 public:
     explicit OutlinedTextField(auto&&... props)
-        : BasicTextField {} {
+        : BasicTextField { } {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 
@@ -140,21 +144,11 @@ protected:
 
 }
 namespace creeper::text_field::pro {
-
-using namespace common::pro;
-using namespace api::scope::common;
-using namespace widget::pro;
-using namespace theme::pro;
-
 using ClearButton = ForwardProp<&QLineEdit::setClearButtonEnabled>;
-
 using LabelText =
-    common::pro::String<[](auto& self, const auto& text) { self.setLabelText(text); }>;
-
-using Text = common::pro::Text;
-
+    api::helper::String<[](auto& self, const auto& text) { self.setLabelText(text); }>;
+using api::pro::Text;
 using ReadOnly = ForwardProp<&QLineEdit::setReadOnly>;
-
 struct LeadingIcon {
     QString code;
     QString font;
@@ -165,17 +159,16 @@ struct LeadingIcon {
         self.setLeadingIcon(prop.code, prop.font);
     }
 };
-
 template <typename F>
-using OnTextChanged = common::pro::SignalInjection<F, &BasicTextField::textChanged>;
-
+using OnTextChanged = api::helper::SignalInjection<F, &BasicTextField::textChanged>;
 template <typename F>
-using OnEditingFinished = common::pro::SignalInjection<F, &BasicTextField::editingFinished>;
-
+using OnEditingFinished = api::helper::SignalInjection<F, &BasicTextField::editingFinished>;
 template <typename F>
 using OnChanged = OnTextChanged<F>;
-
 template <typename F>
-using OnPressed = common::pro::SignalInjection<F, &BasicTextField::pressed>;
+using OnPressed = api::helper::SignalInjection<F, &BasicTextField::pressed>;
 
+using namespace api::scope::common;
+using namespace api::scope::theme;
+using namespace api::scope::widget;
 }

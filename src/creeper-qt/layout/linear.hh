@@ -2,11 +2,10 @@
 
 #include "creeper-qt/utility/api/scope/common.hh"
 
+#include "creeper-qt/utility/api/scope/layout.hh"
 #include "creeper-qt/utility/trait/widget.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
-#include "creeper-qt/utility/wrapper/layout.hh"
 
 #include <qboxlayout.h>
 #include <qstackedlayout.h>
@@ -36,13 +35,9 @@ private:
 }
 
 namespace creeper::linear::pro {
-
 using SpacingItem = ForwardProp<&QBoxLayout::addSpacing>;
-
-using Stretch = ForwardProp<&QBoxLayout::addStretch>;
-
-using SpacerItem = ForwardProp<&QBoxLayout::addSpacerItem>;
-
+using Stretch     = ForwardProp<&QBoxLayout::addStretch>;
+using SpacerItem  = ForwardProp<&QBoxLayout::addSpacerItem>;
 /// @brief
 /// 布局项包装器，用于声明式地将 Widget 或 Layout 添加到布局中
 ///
@@ -96,9 +91,8 @@ struct Item {
     }
 };
 
-using namespace common::pro;
 using namespace api::scope::common;
-using namespace layout::pro;
+using namespace api::scope::layout;
 }
 namespace creeper {
 

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "creeper-qt/utility/api/scope/common.hh"
+#include "creeper-qt/utility/api/scope/layout.hh"
 #include <creeper-qt/layout/group.hh>
-#include <creeper-qt/utility/wrapper/layout.hh>
 #include <ranges>
 
 namespace creeper::mutual_exclusion_group {
@@ -51,11 +51,6 @@ public:
 }
 
 namespace creeper::mutual_exclusion_group::pro {
-
-using namespace common::pro;
-using namespace api::scope::common;
-using namespace group::pro;
-
 template <typename Signal>
 struct SignalInjection {
     Signal signal;
@@ -68,6 +63,8 @@ struct SignalInjection {
     }
 };
 
+using namespace api::scope::common;
+using namespace group::pro;
 }
 
 namespace creeper {

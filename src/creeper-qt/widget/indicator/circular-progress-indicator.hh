@@ -1,13 +1,14 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/theme.hh"
+
 #include "creeper-qt/utility/api/scope/common.hh"
 
+#include "creeper-qt/utility/api/scope/widget.hh"
 #include "creeper-qt/utility/theme/theme.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 
 #include <qwidget.h>
 
@@ -42,20 +43,15 @@ protected:
 };
 
 namespace circular_progress_indicator::pro {
-    using namespace common::pro;
-    using namespace api::scope::common;
-    using namespace widget::pro;
-    using namespace theme::pro;
-
-    using Progress = ForwardProp<&CircularProgressIndicator::setProgress>;
-
-    using Indeterminate = ForwardProp<&CircularProgressIndicator::setIndeterminate>;
-
+    using Progress       = ForwardProp<&CircularProgressIndicator::setProgress>;
+    using Indeterminate  = ForwardProp<&CircularProgressIndicator::setIndeterminate>;
     using IndicatorColor = ForwardProp<&CircularProgressIndicator::setIndicatorColor>;
+    using TrackColor     = ForwardProp<&CircularProgressIndicator::setTrackColor>;
+    using StrokeWidth    = ForwardProp<&CircularProgressIndicator::setStrokeWidth>;
 
-    using TrackColor = ForwardProp<&CircularProgressIndicator::setTrackColor>;
-
-    using StrokeWidth = ForwardProp<&CircularProgressIndicator::setStrokeWidth>;
+    using namespace api::scope::common;
+    using namespace api::scope::theme;
+    using namespace api::scope::widget;
 }
 
 }

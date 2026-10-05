@@ -47,17 +47,6 @@ namespace wgp = widget::pro;
 
 namespace {
 
-/// Grid 尚未提供 Apply，补一个与 widget::pro::Apply 同义的 prop
-template <typename F>
-struct GridApply {
-    F function;
-    explicit GridApply(F function) noexcept
-        : function { std::move(function) } { }
-    friend auto dsl_invoke(QGridLayout& layout, const GridApply& prop) noexcept -> void {
-        prop.function(layout);
-    }
-};
-
 /// props 列表直接接受 range：按数据逐项生成 prop
 /// （Util::ForEach 的带下标重载依赖 std::views::enumerate，NDK 的 libc++ 未提供）
 template <std::ranges::range R, typename Generator>
@@ -159,7 +148,7 @@ auto TopBar(ThemeManager& manager) noexcept {
             obp::Radius { 24 },
             obp::Font { text_font(16) },
             obp::Text { "Label" },
-            obp::Apply { [&manager](OutlinedButton& self) {
+            obp::With { [&manager](OutlinedButton& self) {
                 manager.appendHandler(&self, [&self](const ThemeManager& manager) {
                     const auto& scheme = manager.colorScheme();
                     self.loadColorScheme(scheme);
@@ -175,7 +164,7 @@ auto TopBar(ThemeManager& manager) noexcept {
             rrp::Radius { 16 },
             rrp::Background { Qt::transparent },
             rrp::BorderWidth { 1 },
-            rrp::Apply { [&manager](RoundedRect& self) {
+            rrp::With { [&manager](RoundedRect& self) {
                 manager.appendHandler(&self, [&self](const ThemeManager& manager) {
                     const auto& scheme = manager.colorScheme();
                     // RoundedRect 继承自 Shape，setter 不触发重绘，须显式 update
@@ -205,7 +194,7 @@ auto CardWall(ThemeManager& manager) noexcept {
         // 必须显式 Expanding 才能铺满视口，并让内层 Grid 拿到完整高度
         wgp::SizePolicy { QSizePolicy::Expanding, QSizePolicy::Expanding },
         wgp::Layout<Grid> {
-            GridApply { grid_metrics },
+            gp::With { std::move(grid_metrics) },
             each(kTiles,
                 [&](const Tile& tile) {
                     return gp::Item<OutlinedCard> {
@@ -256,7 +245,7 @@ auto FloatingToolbar(ThemeManager& manager, ThemeCycle& cycle) noexcept {
             ecp::FixedHeight { 52 },
             ecp::Radius { 26 },
             ecp::BorderWidth { 1.5 },
-            ecp::Apply { tint },
+            ecp::With { std::move(tint) },
             ecp::Layout<Row> {
                 ln::ContentsMargin { { 8, 6, 8, 6 } },
                 ln::Spacing { 4 },
@@ -271,7 +260,7 @@ auto FloatingToolbar(ThemeManager& manager, ThemeCycle& cycle) noexcept {
             ecp::FixedSize { 46, 46 },
             ecp::Radius { 12 },
             ecp::BorderWidth { 1.5 },
-            ecp::Apply { tint },
+            ecp::With { std::move(tint) },
             ecp::Layout<Row> {
                 ln::Margin { 0 },
                 ln::Alignment { Qt::AlignCenter },
@@ -326,7 +315,7 @@ auto NavigationBar(ThemeManager& manager, MutableValue<int>& selected) noexcept 
                         MutableTransform { emphasize, selected },
                         txp::Alignment { Qt::AlignCenter },
                         txp::Text { destination.label },
-                        txp::Apply { [&manager](Text& self) {
+                        txp::With { [&manager](Text& self) {
                             manager.appendHandler(&self, [&self](const ThemeManager& manager) {
                                 self.setColor(manager.colorScheme().on_surface_variant);
                             });
@@ -357,7 +346,7 @@ auto main(int argc, char** argv) -> int {
         [](MainWindow& window) { window.setWindowTitle("creeper-qt | Material 3"); },
         mwp::Central<FilledCard> {
             fcp::Radius { 0 },
-            fcp::Apply { [&manager](FilledCard& self) {
+            fcp::With { [&manager](FilledCard& self) {
                 manager.appendHandler(&self, [&self](const ThemeManager& manager) {
                     self.setBackground(manager.colorScheme().surface);
                     self.update();

@@ -1,9 +1,8 @@
 #pragma once
 
 #include "creeper-qt/utility/api/scope/common.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/api/scope/widget.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 
 namespace creeper {
 
@@ -20,7 +19,6 @@ public:
 }
 
 namespace creeper::widget::pro {
-using namespace common::pro;
 using namespace api::scope::common;
-using namespace widget::pro;
+using namespace api::scope::widget;
 }

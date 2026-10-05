@@ -2,7 +2,6 @@
 
 #include "creeper-qt/utility/api/scope/common.hh"
 #include "creeper-qt/utility/trait/widget.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 
 #include <concepts>
@@ -80,10 +79,6 @@ public:
 }
 
 namespace creeper::group::pro {
-
-using namespace common::pro;
-using namespace api::scope::common;
-
 /// @note
 /// 一种典型的用法，委托构造时，所传函数只能接受常量引用，
 /// 放心使用 auto，类型是可以被推导出来的
@@ -114,7 +109,6 @@ struct Compose {
         self.compose(prop.ranges, prop.method, prop.alignment);
     }
 };
-
 /// @note
 /// 函数参数是组件的引用:
 ///
@@ -134,4 +128,5 @@ struct Foreach {
     }
 };
 
+using namespace api::scope::common;
 }

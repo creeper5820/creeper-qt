@@ -1,12 +1,12 @@
 #pragma once
 
 #include "creeper-qt/utility/api/scope/common.hh"
+#include "creeper-qt/utility/api/scope/shape.hh"
 
+#include "creeper-qt/utility/api/scope/widget.hh"
 #include "creeper-qt/utility/solution/round-angle.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 #include "creeper-qt/widget/shape/shape.hh"
 
 #include <cmath>
@@ -103,19 +103,14 @@ private:
 };
 
 namespace wave_circle::pro {
-
-    using namespace common::pro;
-    using namespace api::scope::common;
-    using namespace widget::pro;
-
-    using FlangeNumber = ForwardProp<&WaveCircle::setFlangeNumber>;
-
-    using FlangeRadius = ForwardProp<&WaveCircle::setFlangeRadius>;
-
-    using OverallRadius = ForwardProp<&WaveCircle::setOverallRadius>;
-
+    using FlangeNumber    = ForwardProp<&WaveCircle::setFlangeNumber>;
+    using FlangeRadius    = ForwardProp<&WaveCircle::setFlangeRadius>;
+    using OverallRadius   = ForwardProp<&WaveCircle::setOverallRadius>;
     using ProtrudingRatio = ForwardProp<&WaveCircle::setProtrudingRatio>;
 
+    using namespace api::scope::common;
+    using namespace api::scope::shape;
+    using namespace api::scope::widget;
 }
 
 }

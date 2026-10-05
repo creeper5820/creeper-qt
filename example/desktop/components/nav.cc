@@ -41,8 +41,8 @@ auto NavComponent(NavComponentState& state) noexcept -> raw_pointer<QWidget> {
         ic::ShapeRound,
         ic::TypesToggleUnselected,
         ic::WidthDefault,
-        widget::pro::Font(material::round::font_1),
-        widget::pro::FixedSize(IconButton::kSmallContainerSize),
+        ic::Font(material::round::font_1),
+        ic::FixedSize(IconButton::kSmallContainerSize),
     };
 
     return new FilledCard {

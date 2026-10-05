@@ -1,11 +1,11 @@
 #pragma once
 
 #include "creeper-qt/utility/api/scope/common.hh"
+#include "creeper-qt/utility/api/scope/shape.hh"
 
+#include "creeper-qt/utility/api/scope/widget.hh"
 #include "creeper-qt/utility/painter/helper.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 #include "creeper-qt/widget/shape/shape.hh"
 
 namespace creeper {
@@ -26,11 +26,9 @@ protected:
 };
 
 namespace ellipse::pro {
-
-    using namespace common::pro;
     using namespace api::scope::common;
-    using namespace widget::pro;
-
+    using namespace api::scope::shape;
+    using namespace api::scope::widget;
 }
 
 }

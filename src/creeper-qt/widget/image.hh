@@ -1,13 +1,14 @@
 #pragma once
 
+#include "creeper-qt/utility/api/pro/opacity.hh"
 #include "creeper-qt/utility/api/scope/common.hh"
+#include "creeper-qt/utility/api/scope/shape.hh"
+#include "creeper-qt/utility/api/scope/widget.hh"
 #include "creeper-qt/utility/content-scale.hh"
 #include "creeper-qt/utility/painter-resource.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 
 namespace creeper {
 
@@ -39,13 +40,7 @@ protected:
 };
 
 namespace image::pro {
-
-    using namespace common::pro;
-    using namespace api::scope::common;
-    using namespace widget::pro;
-
     using ContentScale = ForwardProp<&Image::setContentScale>;
-
     struct PainterResource {
         using T = creeper::PainterResource;
         mutable std::shared_ptr<T> resource;
@@ -63,6 +58,11 @@ namespace image::pro {
     };
     using Pixmap = PainterResource;
 
+    using api::pro::Opacity;
+
+    using namespace api::scope::common;
+    using namespace api::scope::shape;
+    using namespace api::scope::widget;
 }
 
 }

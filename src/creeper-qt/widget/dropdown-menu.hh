@@ -1,14 +1,16 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/theme.hh"
+
+#include "creeper-qt/utility/api/helper/signal-injection.hh"
 #include "creeper-qt/utility/api/scope/common.hh"
 
+#include "creeper-qt/utility/api/scope/widget.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/trait/widget.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 
 namespace creeper {
 
@@ -67,30 +69,19 @@ protected:
 };
 
 namespace dropdown_menu::pro {
-    using namespace common::pro;
-    using namespace api::scope::common;
-    using namespace widget::pro;
-    using namespace theme::pro;
-
     /// 受控展开状态，可配合 MutableForward<MutableBool> 使用
     using Expanded = ForwardProp<&DropdownMenu::setExpanded>;
-
     /// 锚组件，菜单依据其全局位置定位
     using Anchor = ForwardProp<&DropdownMenu::setAnchor>;
-
     /// 定位偏移，RTL 布局下 x 方向取反
     using Offset = ForwardProp<&DropdownMenu::setOffset>;
-
     /// 覆盖容器颜色，默认取自主题 surface_container
     using ContainerColor = ForwardProp<&DropdownMenu::setContainerColor>;
-
     /// 容器圆角半径，默认 4
     using CornerRadius = ForwardProp<&DropdownMenu::setCornerRadius>;
-
     /// 用户请求关闭（外部点击 / Esc）时的回调
     template <typename F>
-    using OnDismissRequest = common::pro::SignalInjection<F, &DropdownMenu::dismissRequested>;
-
+    using OnDismissRequest = api::helper::SignalInjection<F, &DropdownMenu::dismissRequested>;
     /// 向菜单内容列追加内容项，通常为 DropdownMenuItem
     template <item_trait T>
     struct Item {
@@ -108,6 +99,9 @@ namespace dropdown_menu::pro {
         }
     };
 
+    using namespace api::scope::common;
+    using namespace api::scope::theme;
+    using namespace api::scope::widget;
 }
 
 }

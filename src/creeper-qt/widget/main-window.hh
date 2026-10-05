@@ -3,12 +3,11 @@
 #include "creeper-qt/utility/api/scope/common.hh"
 #include <qmainwindow.h>
 
+#include "creeper-qt/utility/api/scope/widget.hh"
 #include "creeper-qt/utility/trait/widget.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 
 namespace creeper {
 
@@ -26,10 +25,6 @@ public:
 
 }
 namespace creeper::main_window::pro {
-using namespace common::pro;
-using namespace api::scope::common;
-using namespace widget::pro;
-
 template <widget_trait T>
 struct Central {
     T* widget_pointer;
@@ -47,6 +42,8 @@ struct Central {
     }
 };
 
+using namespace api::scope::common;
+using namespace api::scope::widget;
 }
 namespace creeper {
 

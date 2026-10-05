@@ -1,11 +1,11 @@
 #pragma once
 
 #include "creeper-qt/utility/api/scope/common.hh"
+#include "creeper-qt/utility/api/scope/shape.hh"
 
+#include "creeper-qt/utility/api/scope/widget.hh"
 #include "creeper-qt/utility/painter/helper.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 #include "creeper-qt/widget/shape/shape.hh"
 
 namespace creeper {
@@ -50,7 +50,7 @@ public:
     auto setRadiusBottomRight(double radius) -> void { setRadiusPxPy(radius); }
 
 protected:
-    void paintEvent(QPaintEvent* event) override {
+    void paintEvent(QPaintEvent*) override {
         auto painter = QPainter { this };
 
         util::PainterHelper { painter }
@@ -73,14 +73,14 @@ private:
 };
 
 namespace rounded_rect::pro {
-    using namespace common::pro;
-    using namespace api::scope::common;
-    using namespace widget::pro;
+    using RadiusTopLeft     = api::pro::RadiusNxNy;
+    using RadiusTopRight    = api::pro::RadiusPxNy;
+    using RadiusBottomLeft  = api::pro::RadiusNxPy;
+    using RadiusBottomRight = api::pro::RadiusPxPy;
 
-    using RadiusTopLeft     = RadiusNxNy;
-    using RadiusTopRight    = RadiusPxNy;
-    using RadiusBottomLeft  = RadiusNxPy;
-    using RadiusBottomRight = RadiusPxPy;
+    using namespace api::scope::common;
+    using namespace api::scope::shape;
+    using namespace api::scope::widget;
 }
 
 }

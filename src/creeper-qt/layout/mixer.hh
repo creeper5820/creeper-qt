@@ -8,9 +8,8 @@
 #include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/animation/state/pid.hh"
 #include "creeper-qt/utility/animation/transition.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
+#include "creeper-qt/utility/api/scope/widget.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 
 namespace creeper {
 
@@ -103,11 +102,6 @@ private:
 }
 
 namespace creeper::mixer::pro {
-
-using namespace common::pro;
-using namespace api::scope::common;
-using namespace widget::pro;
-
 struct SetMixerMask {
     MixerMask*& mask;
 
@@ -115,8 +109,11 @@ struct SetMixerMask {
         : mask { mask } { }
 
     friend auto dsl_invoke(auto& self, const SetMixerMask& prop) -> void {
-        prop.mask = new MixerMask { Parent { &self } };
+        prop.mask = new MixerMask { };
+        prop.mask->setParent(&self);
     }
 };
 
+using namespace api::scope::common;
+using namespace api::scope::widget;
 }

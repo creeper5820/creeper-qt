@@ -1,8 +1,8 @@
 #pragma once
 
 #include "creeper-qt/utility/api/scope/common.hh"
+#include "creeper-qt/utility/api/scope/layout.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
-#include "creeper-qt/utility/wrapper/layout.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 #include <qlayout.h>
 
@@ -45,7 +45,6 @@ public:
 
 }
 namespace creeper::flow::pro {
-
 struct RowSpacing {
     std::int32_t value;
 
@@ -56,7 +55,6 @@ struct RowSpacing {
         self.setRowSpacing(prop.value);
     }
 };
-
 struct ColSpacing {
     std::int32_t value;
 
@@ -67,7 +65,6 @@ struct ColSpacing {
         self.setColSpacing(prop.value);
     }
 };
-
 struct RowLimit {
     std::int32_t value;
 
@@ -78,13 +75,10 @@ struct RowLimit {
         self.setRowLimit(prop.value);
     }
 };
-
 using MainAxisSpacing   = RowSpacing;
 using CrossAxisSpacing  = ColSpacing;
 using MaxItemsInEachRow = RowLimit;
 
-using namespace common::pro;
 using namespace api::scope::common;
-using namespace layout::pro;
-
+using namespace api::scope::layout;
 }

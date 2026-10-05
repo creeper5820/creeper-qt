@@ -1,13 +1,19 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/theme.hh"
+
+#include "creeper-qt/utility/api/helper/signal-injection.hh"
+#include "creeper-qt/utility/api/helper/string.hh"
+#include "creeper-qt/utility/api/pro/disabled.hh"
+#include "creeper-qt/utility/api/pro/text.hh"
+#include "creeper-qt/utility/api/pro/water-color.hh"
 #include "creeper-qt/utility/api/scope/common.hh"
 
+#include "creeper-qt/utility/api/scope/widget.hh"
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
-#include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
-#include "creeper-qt/utility/wrapper/widget.hh"
 
 namespace creeper {
 
@@ -84,15 +90,8 @@ protected:
 };
 
 namespace dropdown_menu_item::pro {
-
-    using namespace common::pro;
-    using namespace api::scope::common;
-    using namespace widget::pro;
-    using namespace theme::pro;
-
     using TrailingText =
-        common::pro::String<[](auto& self, const auto& string) { self.setTrailingText(string); }>;
-
+        api::helper::String<[](auto& self, const auto& string) { self.setTrailingText(string); }>;
     struct LeadingIcon {
         QString code;
         QString font;
@@ -103,7 +102,6 @@ namespace dropdown_menu_item::pro {
             self.setLeadingIcon(prop.code, prop.font);
         }
     };
-
     struct TrailingIcon {
         QString code;
         QString font;
@@ -114,9 +112,16 @@ namespace dropdown_menu_item::pro {
             self.setTrailingIcon(prop.code, prop.font);
         }
     };
-
     template <typename F>
-    using OnClicked = common::pro::SignalInjection<F, &DropdownMenuItem::clicked>;
+    using OnClicked = api::helper::SignalInjection<F, &DropdownMenuItem::clicked>;
+
+    using api::pro::Disabled;
+    using api::pro::Text;
+    using api::pro::WaterColor;
+
+    using namespace api::scope::common;
+    using namespace api::scope::theme;
+    using namespace api::scope::widget;
 }
 
 }
