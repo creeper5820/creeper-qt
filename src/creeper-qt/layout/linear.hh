@@ -1,5 +1,7 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/common.hh"
+
 #include "creeper-qt/utility/trait/widget.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
@@ -23,7 +25,7 @@ public:
 private:
     template <widget_pointer_trait W>
     friend auto dsl_invoke(BoxLayout& self, W widget) {
-        self.addWidget(widget, 0, {});
+        self.addWidget(widget, 0, { });
     }
     template <layout_pointer_trait L>
     friend auto dsl_invoke(BoxLayout& self, L layout) {
@@ -65,7 +67,7 @@ template <item_trait T>
 struct Item {
     struct LayoutMethod {
         int stretch         = 0;
-        Qt::Alignment align = {};
+        Qt::Alignment align = { };
     } method;
 
     T* item_pointer = nullptr;
@@ -95,6 +97,7 @@ struct Item {
 };
 
 using namespace common::pro;
+using namespace api::scope::common;
 using namespace layout::pro;
 }
 namespace creeper {

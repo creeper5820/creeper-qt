@@ -1,4 +1,6 @@
 #pragma once
+
+#include "creeper-qt/utility/api/scope/common.hh"
 #include "filled-button.hh"
 
 namespace creeper {
@@ -36,6 +38,7 @@ public:
 
 namespace filled_tonal_button::pro {
     using namespace common::pro;
+    using namespace api::scope::common;
     using namespace widget::pro;
     using namespace theme::pro;
     using namespace filled_button::pro;

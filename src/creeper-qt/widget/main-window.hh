@@ -1,4 +1,6 @@
 #pragma once
+
+#include "creeper-qt/utility/api/scope/common.hh"
 #include <qmainwindow.h>
 
 #include "creeper-qt/utility/trait/widget.hh"
@@ -25,6 +27,7 @@ public:
 }
 namespace creeper::main_window::pro {
 using namespace common::pro;
+using namespace api::scope::common;
 using namespace widget::pro;
 
 template <widget_trait T>

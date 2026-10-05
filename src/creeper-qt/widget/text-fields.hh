@@ -1,5 +1,7 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/common.hh"
+
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
@@ -140,12 +142,11 @@ protected:
 namespace creeper::text_field::pro {
 
 using namespace common::pro;
+using namespace api::scope::common;
 using namespace widget::pro;
 using namespace theme::pro;
 
 using ClearButton = ForwardProp<&QLineEdit::setClearButtonEnabled>;
-
-using Measurements = ForwardProp<&BasicTextField::setMeasurements>;
 
 using LabelText =
     common::pro::String<[](auto& self, const auto& text) { self.setLabelText(text); }>;

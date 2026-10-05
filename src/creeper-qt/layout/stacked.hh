@@ -1,4 +1,6 @@
 #pragma once
+
+#include "creeper-qt/utility/api/scope/common.hh"
 #include "creeper-qt/utility/trait/widget.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
@@ -19,6 +21,7 @@ public:
 
 namespace stacked::pro {
     using namespace common::pro;
+    using namespace api::scope::common;
     using namespace layout::pro;
 
     /// @note: currentChanged(int index)

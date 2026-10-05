@@ -1,5 +1,7 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/common.hh"
+
 #include "creeper-qt/utility/solution/round-angle.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
@@ -103,6 +105,7 @@ private:
 namespace wave_circle::pro {
 
     using namespace common::pro;
+    using namespace api::scope::common;
     using namespace widget::pro;
 
     using FlangeNumber = ForwardProp<&WaveCircle::setFlangeNumber>;

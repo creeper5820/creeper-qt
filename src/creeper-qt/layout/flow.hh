@@ -1,4 +1,6 @@
 #pragma once
+
+#include "creeper-qt/utility/api/scope/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/layout.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
@@ -82,6 +84,7 @@ using CrossAxisSpacing  = ColSpacing;
 using MaxItemsInEachRow = RowLimit;
 
 using namespace common::pro;
+using namespace api::scope::common;
 using namespace layout::pro;
 
 }

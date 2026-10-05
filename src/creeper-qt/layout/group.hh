@@ -1,4 +1,6 @@
 #pragma once
+
+#include "creeper-qt/utility/api/scope/common.hh"
 #include "creeper-qt/utility/trait/widget.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
@@ -80,6 +82,7 @@ public:
 namespace creeper::group::pro {
 
 using namespace common::pro;
+using namespace api::scope::common;
 
 /// @note
 /// 一种典型的用法，委托构造时，所传函数只能接受常量引用，

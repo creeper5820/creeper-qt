@@ -1,5 +1,7 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/common.hh"
+
 // TODO: 尚未实现。LazyColumn/LazyRow 构造函数与 Item/Items 属性均为占位，
 //       惰性布局逻辑待补全。
 #include "creeper-qt/utility/trait/widget.hh"
@@ -40,6 +42,7 @@ public:
 namespace creeper::lazy::pro {
 
 using namespace common::pro;
+using namespace api::scope::common;
 using namespace widget::pro;
 
 /// @note 占位属性，惰性布局逻辑待补全

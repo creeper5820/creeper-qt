@@ -1,4 +1,6 @@
 #pragma once
+
+#include "creeper-qt/utility/api/scope/common.hh"
 #include <creeper-qt/layout/group.hh>
 #include <creeper-qt/utility/wrapper/layout.hh>
 #include <ranges>
@@ -51,6 +53,7 @@ public:
 namespace creeper::mutual_exclusion_group::pro {
 
 using namespace common::pro;
+using namespace api::scope::common;
 using namespace group::pro;
 
 template <typename Signal>

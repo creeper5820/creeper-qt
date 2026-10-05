@@ -1,5 +1,7 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/common.hh"
+
 // TODO: 尚未实现。当前仅有占位类型 Snackbar 与 Message 结构，
 //       绘制与交互待补全。
 #include "creeper-qt/utility/theme/theme.hh"
@@ -26,6 +28,7 @@ public:
 namespace snackbar::pro {
 
     using namespace common::pro;
+    using namespace api::scope::common;
     using namespace widget::pro;
     using namespace theme::pro;
 

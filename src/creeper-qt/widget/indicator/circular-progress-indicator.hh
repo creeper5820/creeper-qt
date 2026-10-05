@@ -1,5 +1,7 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/common.hh"
+
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
@@ -41,6 +43,7 @@ protected:
 
 namespace circular_progress_indicator::pro {
     using namespace common::pro;
+    using namespace api::scope::common;
     using namespace widget::pro;
     using namespace theme::pro;
 

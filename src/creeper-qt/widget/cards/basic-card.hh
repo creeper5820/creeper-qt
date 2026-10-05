@@ -1,4 +1,6 @@
 #pragma once
+
+#include "creeper-qt/utility/api/scope/common.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
@@ -79,6 +81,7 @@ public:
 namespace card::pro {
 
     using namespace common::pro;
+    using namespace api::scope::common;
     using namespace widget::pro;
     using namespace theme::pro;
     using namespace rounded_rect::pro;

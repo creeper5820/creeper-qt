@@ -1,5 +1,7 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/common.hh"
+
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
@@ -84,6 +86,7 @@ protected:
 namespace dropdown_menu_item::pro {
 
     using namespace common::pro;
+    using namespace api::scope::common;
     using namespace widget::pro;
     using namespace theme::pro;
 

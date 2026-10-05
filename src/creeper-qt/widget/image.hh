@@ -1,4 +1,6 @@
 #pragma once
+
+#include "creeper-qt/utility/api/scope/common.hh"
 #include "creeper-qt/utility/content-scale.hh"
 #include "creeper-qt/utility/painter-resource.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
@@ -39,6 +41,7 @@ protected:
 namespace image::pro {
 
     using namespace common::pro;
+    using namespace api::scope::common;
     using namespace widget::pro;
 
     using ContentScale = ForwardProp<&Image::setContentScale>;

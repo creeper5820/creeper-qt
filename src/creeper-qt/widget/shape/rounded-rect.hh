@@ -1,5 +1,7 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/common.hh"
+
 #include "creeper-qt/utility/painter/helper.hh"
 #include "creeper-qt/utility/wrapper/common.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
@@ -72,6 +74,7 @@ private:
 
 namespace rounded_rect::pro {
     using namespace common::pro;
+    using namespace api::scope::common;
     using namespace widget::pro;
 
     using RadiusTopLeft     = RadiusNxNy;

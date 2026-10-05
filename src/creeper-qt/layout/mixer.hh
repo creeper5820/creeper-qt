@@ -1,5 +1,7 @@
 #pragma once
 
+#include "creeper-qt/utility/api/scope/common.hh"
+
 #include <qpainter.h>
 #include <qpainterpath.h>
 
@@ -103,6 +105,7 @@ private:
 namespace creeper::mixer::pro {
 
 using namespace common::pro;
+using namespace api::scope::common;
 using namespace widget::pro;
 
 struct SetMixerMask {
