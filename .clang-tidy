@@ -48,6 +48,7 @@ Checks: >
   -readability-math-missing-parentheses,
   -readability-qualified-auto,
   -readability-redundant-inline-specifier,
+  -readability-redundant-access-specifiers,
   -cppcoreguidelines-avoid-const-or-ref-data-members,
   -cppcoreguidelines-special-member-functions,
   -cppcoreguidelines-rvalue-reference-param-not-moved,
