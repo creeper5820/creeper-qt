@@ -1,0 +1,88 @@
+Checks: >
+  -*,
+  clang-analyzer-*,
+  bugprone-*,
+  performance-*,
+  modernize-*,
+  portability-*,
+  readability-*,
+  cppcoreguidelines-*,
+  misc-*,
+
+  -bugprone-easily-swappable-parameters,
+  -bugprone-unused-return-value,
+  -bugprone-macro-parentheses,
+
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-no-malloc,
+  -cppcoreguidelines-pro-bounds-array-to-pointer-decay,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-pro-type-reinterpret-cast,
+  -cppcoreguidelines-pro-type-vararg,
+  -cppcoreguidelines-pro-type-union-access,
+  -cppcoreguidelines-avoid-c-arrays,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -cppcoreguidelines-avoid-non-const-global-variables,
+  -cppcoreguidelines-pro-type-const-cast,
+
+  -modernize-use-nodiscard,
+  -modernize-use-designated-initializers,
+  -modernize-use-trailing-return-type,
+
+  -readability-magic-numbers,
+  -readability-identifier-length,
+  -readability-function-cognitive-complexity,
+  -readability-convert-member-functions-to-static,
+  -readability-implicit-bool-conversion,
+  -readability-use-anyofallof,
+
+  -misc-include-cleaner,
+  -misc-non-private-member-variables-in-classes,
+  -misc-no-recursion,
+  -misc-unused-parameters,
+  -cppcoreguidelines-macro-usage,
+  -cppcoreguidelines-non-private-member-variables-in-classes,
+  -portability-avoid-pragma-once,
+  -readability-named-parameter,
+  -readability-braces-around-statements,
+  -readability-math-missing-parentheses,
+  -readability-qualified-auto,
+  -readability-redundant-inline-specifier,
+  -cppcoreguidelines-avoid-const-or-ref-data-members,
+  -cppcoreguidelines-special-member-functions,
+  -cppcoreguidelines-rvalue-reference-param-not-moved,
+  -cppcoreguidelines-pro-bounds-avoid-unchecked-container-access,
+  -bugprone-derived-method-shadowing-base-method,
+  -bugprone-throwing-static-initialization,
+  -bugprone-unhandled-exception-at-new,
+  -performance-enum-size
+
+WarningsAsErrors: ''
+
+HeaderFilterRegex: '.*/(src|example|test)/.*'
+
+FormatStyle: file
+SystemHeaders: false
+UseColor: true
+
+CheckOptions:
+  # 命名规则：仅约束能机械判定的标识符种类。
+  # 函数/方法、类型别名、模板参数、成员在 widget 与非 widget 之间混用，
+  # clang-tidy 无法按“是否与 widget 相关”区分，故不作约束。
+  readability-identifier-naming.NamespaceCase: lower_case
+  readability-identifier-naming.ClassCase: CamelCase
+  readability-identifier-naming.StructCase: CamelCase
+  readability-identifier-naming.UnionCase: CamelCase
+  readability-identifier-naming.EnumCase: CamelCase
+  readability-identifier-naming.EnumConstantCase: UPPER_CASE
+  readability-identifier-naming.ScopedEnumConstantCase: UPPER_CASE
+
+  readability-identifier-naming.ConstexprVariableCase: CamelCase
+  readability-identifier-naming.ConstexprVariablePrefix: 'k'
+  readability-identifier-naming.GlobalConstantCase: CamelCase
+  readability-identifier-naming.GlobalConstantPrefix: 'k'
+  readability-identifier-naming.StaticConstantCase: CamelCase
+  readability-identifier-naming.StaticConstantPrefix: 'k'
+
+  readability-identifier-naming.MacroDefinitionCase: UPPER_CASE
+  readability-identifier-naming.MacroDefinitionIgnoredRegexp: '^QT_|^Q_|^CREEPER_|^SIGNAL$|^SLOT$'

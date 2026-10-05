@@ -44,6 +44,7 @@ target_link_libraries(
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 if(PROJECT_IS_TOP_LEVEL)
+    include(cmake/command.cmake)
     include(cmake/install.cmake)
     include(cmake/package.cmake)
 
