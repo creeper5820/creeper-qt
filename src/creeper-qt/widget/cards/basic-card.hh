@@ -81,7 +81,8 @@ public:
 };
 
 namespace card::pro {
-    using Level                 = ForwardProp<&Card::setLevel>;
+    using Level = ForwardProp<&Card::setLevel>;
+
     constexpr auto LevelDefault = Level { Card::Level::DEFAULT };
     constexpr auto LevelHigh    = Level { Card::Level::HIGH };
     constexpr auto LevelHighest = Level { Card::Level::HIGHEST };

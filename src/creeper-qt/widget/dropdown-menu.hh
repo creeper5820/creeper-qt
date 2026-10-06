@@ -24,7 +24,7 @@ class DropdownMenu : public QWidget, public DSL {
 
 public:
     explicit DropdownMenu(auto&&... props)
-        : DropdownMenu {} {
+        : DropdownMenu { } {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 

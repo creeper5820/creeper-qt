@@ -41,10 +41,10 @@ namespace dmip = dropdown_menu_item::pro;
 namespace tfp  = text_field::pro;
 
 namespace repeat_literals {
-auto operator*(std::invocable<std::size_t> auto&& f, std::size_t n) {
+static auto operator*(std::invocable<std::size_t> auto&& f, std::size_t n) {
     std::ranges::for_each(std::views::iota(std::size_t { 0 }, n), std::forward<decltype(f)>(f));
 }
-auto operator*(std::size_t n, std::invocable<std::size_t> auto&& f) {
+static auto operator*(std::size_t n, std::invocable<std::size_t> auto&& f) {
     std::ranges::for_each(std::views::iota(std::size_t { 0 }, n), std::forward<decltype(f)>(f));
 }
 } // namespace repeat_literals
@@ -132,7 +132,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
 
             Util::ForEach(std::array { "高松灯", "千早爱音", "要乐奈", "长崎爽世", "椎名立希" },
                 [&](auto index, auto name) {
-                    return dmp::MenuWidget<DropdownMenuItem> {
+                    return new DropdownMenuItem {
                         manager,
                         dmip::Text { std::format("{}. {}", index + 1, name) },
                         dmip::OnClicked { [=] {
@@ -164,8 +164,8 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
           ibp::Font { material::kRoundSmallFont },
           ibp::FontIcon { material::icon::kFavorite },
           ibp::Clickable { [context] {
-              constexpr auto random_slogen = [] {
-                  constexpr auto slogens = std::array {
+              constexpr auto kRandomSlogen = [] {
+                  constexpr auto kSlogens = std::array {
                       "为什么要演奏《春日影》！",
                       "我从来不觉得玩乐队开心过。",
                       "我好想…成为人啊！",
@@ -175,10 +175,10 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                   static auto rd  = std::random_device {};
                   static auto gen = std::mt19937 { rd() };
 
-                  auto dist = std::uniform_int_distribution<> { 0, slogens.size() - 1 };
-                  return QString::fromUtf8(slogens[dist(gen)]);
+                  auto dist = std::uniform_int_distribution<> { 0, kSlogens.size() - 1 };
+                  return QString::fromUtf8(kSlogens[dist(gen)]);
               };
-              context->slogen = random_slogen();
+              context->slogen = kRandomSlogen();
           } },
         },
         new IconButton {
