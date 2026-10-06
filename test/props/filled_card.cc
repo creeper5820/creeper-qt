@@ -14,8 +14,8 @@ static FilledCard TestFilledCard {
     cp::RadiusTopRight { 4.0 },
     cp::RadiusBottomLeft { 4.0 },
     cp::RadiusBottomRight { 4.0 },
-    api::pro::RadiusNxNy { 4.0 },
-    api::pro::RadiusPxPy { 4.0 },
-    api::pro::RadiusNxPy { 4.0 },
-    api::pro::RadiusPxNy { 4.0 },
+    cp::RadiusNxNy { 4.0 },
+    cp::RadiusPxPy { 4.0 },
+    cp::RadiusNxPy { 4.0 },
+    cp::RadiusPxNy { 4.0 },
 };

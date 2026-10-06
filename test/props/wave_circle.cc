@@ -7,9 +7,9 @@ namespace wp = wave_circle::pro;
 
 static WaveCircle TestWaveCircle {
     test::kWidgetProps,
-    api::pro::Background { Qt::red },
-    api::pro::BorderColor { Qt::black },
-    api::pro::BorderWidth { 1.0 },
+    wp::Background { Qt::red },
+    wp::BorderColor { Qt::black },
+    wp::BorderWidth { 1.0 },
     wp::FlangeNumber { 8 },
     wp::FlangeRadius { 10.0 },
     wp::OverallRadius { 20.0 },

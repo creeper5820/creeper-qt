@@ -3,10 +3,11 @@
 #include "bundles.hh"
 
 using namespace creeper;
+namespace ep = ellipse::pro;
 
 static Ellipse TestEllipse {
     test::kWidgetProps,
-    api::pro::Background { Qt::red },
-    api::pro::BorderColor { Qt::black },
-    api::pro::BorderWidth { 1.0 },
+    ep::Background { Qt::red },
+    ep::BorderColor { Qt::black },
+    ep::BorderWidth { 1.0 },
 };

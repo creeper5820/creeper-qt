@@ -6,7 +6,7 @@
 
 ## 通用组件属性
 
-命名空间：`creeper::api::scope::widget`
+命名空间：由各组件的 `pro` 导出（如 `creeper::widget::pro`）
 
 | 属性 | 类型 | 方法 |
 | --- | --- | --- |
@@ -22,7 +22,7 @@
 ### 声明式配置（推荐）
 
 ```cpp
-namespace pro = creeper::api::scope::widget;
+namespace pro = creeper::widget::pro;
 using creeper::Widget;
 
 auto widget = new Widget {
@@ -42,7 +42,7 @@ qwidget->setMinimumSize(100, 050);
 ### 属性复用
 
 ```cpp
-namespace pro = creeper::api::scope::widget;
+namespace pro = creeper::widget::pro;
 using creeper::Widget;
 
 const auto props = std::tuple {
@@ -70,9 +70,7 @@ auto widget_b = new Widget {
 
 ### 通用按钮属性
 
-命名空间：`creeper::button::pro`
-
-按钮组件通过 `using namespace common::pro;` 导入通用属性，无需显式指定模板参数。
+各按钮组件的 `pro` 命名空间（如 `creeper::filled_button::pro`）通过 `using namespace api::scope::*` 组合下列通用属性，无需显式指定模板参数。
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
@@ -91,16 +89,16 @@ auto widget_b = new Widget {
 
 命名空间：`creeper::filled_button::pro`
 
-继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`、`creeper::button::pro`
+组合属性：`creeper::api::scope::shape`、`creeper::api::scope::theme`、`creeper::api::scope::widget`
 
 ```cpp
 using namespace creeper;
 
 auto button = new FilledButton {
-    button::pro::Text { "提交" },
-    button::pro::Radius { 8.0 },
-    button::pro::Background { QColor("#2196F3") },
-    button::pro::Clickable { [](auto& self) { qDebug() << "按钮被点击"; } },
+    filled_button::pro::Text { "提交" },
+    filled_button::pro::Radius { 8.0 },
+    filled_button::pro::Background { QColor("#2196F3") },
+    filled_button::pro::Clickable { [](auto& self) { qDebug() << "按钮被点击"; } },
 };
 ```
 
@@ -112,7 +110,7 @@ auto button = new FilledButton {
 
 与 `FilledButton` 相同的 API，仅配色方案不同。
 
-继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`、`creeper::button::pro`
+继承属性：`creeper::api::scope::shape`、`creeper::api::scope::theme`、`creeper::api::scope::widget`、`creeper::filled_button::pro`
 
 ---
 
@@ -122,7 +120,7 @@ auto button = new FilledButton {
 
 与 `FilledButton` 相同的 API，仅配色方案不同。
 
-继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`、`creeper::button::pro`
+继承属性：`creeper::api::scope::shape`、`creeper::api::scope::theme`、`creeper::api::scope::widget`、`creeper::filled_button::pro`
 
 ---
 
@@ -132,7 +130,7 @@ auto button = new FilledButton {
 
 与 `FilledButton` 相同的 API，仅配色方案不同。
 
-继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`、`creeper::button::pro`
+继承属性：`creeper::api::scope::shape`、`creeper::api::scope::theme`、`creeper::api::scope::widget`、`creeper::filled_button::pro`
 
 ---
 
@@ -357,7 +355,7 @@ auto bound_slider = new Slider {
 
 菜单是**受控组件**：点击菜单外部或 Esc 时菜单自行收起并发出 `OnDismissRequest`，应用应在其中把绑定状态置回 `false`；点击菜单项**不会**自动关闭菜单，需要在 `OnClicked` 中显式收起。内容超出可用高度时自动滚动，支持方向键导航。与标准的差异：`scrollState`、`properties`、`tonalElevation`、`shadowElevation`、`border` 未暴露，阴影取自主题。
 
-推荐用 `api::scope::widget::Child<T>` 把菜单声明式地挂进锚组件：菜单以锚组件为 parent（缺省锚），不占布局空间，随锚组件自动销毁。
+推荐用 `Child<T>`（由组件自己的 `pro` 导出，如 `dmp::Child<T>`）把菜单声明式地挂进锚组件：菜单以锚组件为 parent（缺省锚），不占布局空间，随锚组件自动销毁。
 
 ```cpp
 using namespace creeper;
@@ -673,7 +671,7 @@ auto wave_circle = new WaveCircle {
 
 ```cpp
 auto button = new FilledButton {
-    button::pro::Text { "初始文本" },
+    filled_button::pro::Text { "初始文本" },
 };
 
 button->setText("新文本");

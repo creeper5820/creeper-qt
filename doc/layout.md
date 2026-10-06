@@ -6,7 +6,7 @@
 
 ## 通用布局属性
 
-命名空间：`creeper::api::scope::layout`
+命名空间：由各布局组件的 `pro` 导出（如 `creeper::linear::pro`、`creeper::flow::pro`）
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
@@ -16,7 +16,7 @@
 | `Alignment` | `Qt::Alignment` | 设置布局对齐方式 |
 
 ```cpp
-namespace lnpro = creeper::api::scope::layout;
+namespace lnpro = creeper::linear::pro;
 
 auto layout = new Row {
     lnpro::Spacing { 10 },
@@ -48,7 +48,7 @@ auto layout = new Row {
 
 | 属性名 | 类型 | 说明 |
 | --- | --- | --- |
-| `LinearItem<T>` | `T*` 或构造参数 | 添加子项（组件或布局），可由 `Placement + 指针` 得到 |
+| `LinearItem<T>` | `T*` 或构造参数 | 添加子项（组件或布局），可由 `指针 + Placement` 得到 |
 | `SpacingItem` | `int` | 添加固定大小的间距 |
 | `Stretch` | `int` | 添加弹性空间（拉伸因子） |
 | `SpacerItem` | `QSpacerItem*` | 添加自定义间距项 |
@@ -57,19 +57,19 @@ auto layout = new Row {
 using namespace creeper;
 namespace lnpro = linear::pro;
 
-// 水平布局示例：Row::Placement 指定拉伸因子与对齐方式，再与指针相加
+// 水平布局示例：指针与 Row::Placement 相加，指定拉伸因子与对齐方式
 auto row = new Row {
     lnpro::Spacing { 10 },
     new FilledButton {
-      button::pro::Text { "按钮1" },
+      filled_button::pro::Text { "按钮1" },
     } + Row::Placement { 1, Qt::AlignLeft },
     lnpro::Stretch { 1 }, // 弹性空间
     new FilledButton {
-      button::pro::Text { "按钮2" },
+      filled_button::pro::Text { "按钮2" },
     } + Row::Placement { 0 },
     lnpro::SpacingItem { 20 }, // 固定间距
     new FilledButton {
-      button::pro::Text { "按钮3" },
+      filled_button::pro::Text { "按钮3" },
     } + Row::Placement { 0 },
 };
 
@@ -86,14 +86,14 @@ auto col = new Col {
     } + Col::Placement { 0 },
     lnpro::Stretch { 1 },
     new FilledButton {
-      button::pro::Text { "提交" },
+      filled_button::pro::Text { "提交" },
     } + Col::Placement { 0 },
 };
 
 // 已有指针时直接与 Placement 相加
 auto createButton = [](const QString& text) {
     return new FilledButton {
-        button::pro::Text { text },
+        filled_button::pro::Text { text },
     };
 };
 
@@ -132,15 +132,15 @@ auto grid = new Grid {
     gpro::ColSpacing { 10 },
     gpro::GridItem<FilledButton> {
       Grid::Placement { 0, 0, Qt::AlignCenter }, // row=0, col=0
-      button::pro::Text { "左上" },
+      filled_button::pro::Text { "左上" },
     },
     gpro::GridItem<FilledButton> {
       Grid::Placement { 0, 1 }, // row=0, col=1
-      button::pro::Text { "右上" },
+      filled_button::pro::Text { "右上" },
     },
     gpro::GridItem<FilledButton> {
       Grid::Placement { 1, 1, 0, 2, Qt::AlignCenter }, // row=1, row_span=1, col=0, col_span=2
-      button::pro::Text { "跨列按钮" },
+      filled_button::pro::Text { "跨列按钮" },
     },
 };
 ```
@@ -216,11 +216,11 @@ auto flow = new Flow {
     fpro::RowSpacing { 10 },
     fpro::ColSpacing { 10 },
     fpro::RowLimit { 3 }, // 每行最多 3 个
-    lnpro::AddWidget<FilledButton> {
-      button::pro::Text { "按钮1" },
+    fpro::AddWidget<FilledButton> {
+      filled_button::pro::Text { "按钮1" },
     },
-    lnpro::AddWidget<FilledButton> {
-      button::pro::Text { "按钮2" },
+    fpro::AddWidget<FilledButton> {
+      filled_button::pro::Text { "按钮2" },
     },
 };
 
@@ -232,7 +232,7 @@ auto flow2 = new Flow {
     flow::pro::With { [](Flow& self) {
         for (int i = 0; i < 10; ++i) {
             self.addWidget(new FilledButton {
-              button::pro::Text { QString("按钮%1").arg(i) },
+              filled_button::pro::Text { QString("按钮%1").arg(i) },
             });
         }
         ,

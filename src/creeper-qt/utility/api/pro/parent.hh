@@ -30,11 +30,11 @@ struct Parent {
  * 但不进入布局的组件，例如把 DropdownMenu 声明式地锚定到按钮：
  *
  * @code
- *     Row::Placement { 0 } + new FilledButton {
+ *     new FilledButton {
  *         fbp::Child<DropdownMenu> {
  *             dmp::MenuWidget<DropdownMenuItem> { ... },
  *         },
- *     }
+ *     } + Row::Placement { 0 }
  * @endcode
  *
  * @note 该属性本质是转发构造，有 new 的行为

@@ -155,7 +155,7 @@ auto main(int argc, char* argv[]) -> int {
                   ViewComponent(view_component_state),
                 },
               },
-            } + Row::Placement { 255 },
+            } + Col::Placement { 255 },
           },
           // More Widgets
           // ......

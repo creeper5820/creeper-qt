@@ -98,7 +98,7 @@ auto manager = ThemeManager { kBlueMikuThemePack };
 // 创建组件并注册主题
 auto button = new FilledButton {
     manager,
-    button::pro::Text { "按钮" },
+    filled_button::pro::Text { "按钮" },
 };
 
 // 应用主题到所有注册的组件
@@ -112,7 +112,7 @@ manager.applyTheme();
 ```cpp
 auto button = new FilledButton {
     manager,
-    button::pro::Text { "按钮" },
+    filled_button::pro::Text { "按钮" },
 };
 ```
 
@@ -120,7 +120,7 @@ auto button = new FilledButton {
 
 ```cpp
 auto button = new FilledButton {
-    button::pro::Text { "按钮" },
+    filled_button::pro::Text { "按钮" },
 };
 
 manager.appendHandler(button,
@@ -208,7 +208,7 @@ auto manager = ThemeManager { kMyCustomThemePack, ColorMode::LIGHT };
 
 auto button = new FilledButton {
     manager,
-    button::pro::Text { "自定义主题按钮" },
+    filled_button::pro::Text { "自定义主题按钮" },
 };
 
 manager.applyTheme();

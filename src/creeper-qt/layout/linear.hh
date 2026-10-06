@@ -53,11 +53,11 @@ using SpacerItem  = ForwardProp<&QBoxLayout::addSpacerItem>;
 /// LinearItem 提供统一的接口用于在布局中插入控件或子布局，
 /// 支持多种构造方式，包括直接传入指针或通过参数构造新对象。
 /// 通过 BoxLayout::Placement（一般写作 Row::Placement / Col::Placement）
-/// 可指定拉伸因子和对齐方式，并可由 Placement + 指针隐式得到。
+/// 可指定拉伸因子和对齐方式，并可由 指针 + Placement 组合得到。
 ///
 /// 示例用途：
 /// Row {
-///     Row::Placement { 0, Qt::AlignHCenter } + new FilledButton { ... },
+///     new FilledButton { ... } + Row::Placement { 0, Qt::AlignHCenter },
 /// }
 ///
 template <item_trait T>

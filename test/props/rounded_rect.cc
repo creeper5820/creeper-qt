@@ -12,8 +12,8 @@ static RoundedRect TestRoundedRect {
     rrp::RadiusTopRight { 4.0 },
     rrp::RadiusBottomLeft { 4.0 },
     rrp::RadiusBottomRight { 4.0 },
-    api::pro::RadiusNxNy { 4.0 },
-    api::pro::RadiusPxPy { 4.0 },
-    api::pro::RadiusNxPy { 4.0 },
-    api::pro::RadiusPxNy { 4.0 },
+    rrp::RadiusNxNy { 4.0 },
+    rrp::RadiusPxPy { 4.0 },
+    rrp::RadiusNxPy { 4.0 },
+    rrp::RadiusPxNy { 4.0 },
 };

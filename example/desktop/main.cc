@@ -151,7 +151,7 @@ auto main(int argc, char** argv) -> int {
 
     manager.applyTheme();
     manager.appendBeginCallback([mask_window](const ThemeManager&) {
-        // 未 Apply 前，Mask 会呈现灰色
+        // 未 applyTheme() 前，Mask 会呈现灰色
         auto const point = mask_window->mapFromGlobal(QCursor::pos());
         mask_window->initiateAnimation(point);
     });
