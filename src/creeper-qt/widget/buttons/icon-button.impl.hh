@@ -22,7 +22,6 @@ constexpr auto kSpringK = double { 400.0 };
 constexpr auto kSpringD = double { 15.0 };
 
 constexpr auto kThreshold1D = double { 1e-1 };
-constexpr auto kWaterSpeed  = double { 5.0 };
 
 struct IconButton::Impl {
 
@@ -63,7 +62,7 @@ struct IconButton::Impl {
 
     explicit Impl(IconButton& self) noexcept
         : animatable { self }
-        , water_ripple { animatable, kWaterSpeed } {
+        , water_ripple { animatable } {
 
         {
             auto state = std::make_shared<SpringState<double>>();
@@ -90,13 +89,18 @@ struct IconButton::Impl {
             now_color_outline   = make_transition(animatable, make_state());
         }
 
-        QObject::connect(&self, &IconButton::clicked, [this, &self] {
+        QObject::connect(&self, &IconButton::pressed, [this, &self] {
             if (types == Types::DEFAULT) {
                 const auto center_point = self.mapFromGlobal(QCursor::pos());
                 const auto max_distance = std::max(self.width(), self.height());
-                water_ripple.clicked(center_point, max_distance);
+                water_ripple.press(center_point, max_distance);
             }
+        });
+        QObject::connect(&self, &IconButton::released, [this] {
+            if (types == Types::DEFAULT) water_ripple.release();
+        });
 
+        QObject::connect(&self, &IconButton::clicked, [this, &self] {
             // Toggle if not be default type
             toggle_status();
             update_animation_status(self);

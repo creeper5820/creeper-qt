@@ -11,7 +11,6 @@ static TextButton TestTextButton {
     test::kThemeManager,
     tbp::HoverColor { Qt::red },
     tbp::WaterRippleStatus { true },
-    tbp::WaterRippleStep { 0.5 },
     tbp::Text { "OK" },
     tbp::TextColor { Qt::white },
     tbp::WaterColor { Qt::blue },

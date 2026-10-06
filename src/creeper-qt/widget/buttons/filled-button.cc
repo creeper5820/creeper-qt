@@ -11,12 +11,9 @@
 
 namespace creeper {
 
-constexpr auto kWaterSpeed = double { 5.0 };
-
 struct FilledButton::Impl {
 public:
     bool enable_water_ripple = true;
-    double water_ripple_step = 5.;
 
     double radius     = -1;
     QColor text_color = Qt::black;
@@ -38,7 +35,7 @@ public:
 public:
     explicit Impl(QAbstractButton& self)
         : animatable { self }
-        , water_ripple { animatable, kWaterSpeed } {
+        , water_ripple { animatable } {
         {
             auto state = std::make_shared<PidState<Eigen::Vector4d>>();
 
@@ -72,13 +69,15 @@ public:
             .done();
     }
 
-    void mouse_release_event(QAbstractButton& self, QMouseEvent* event) {
+    void mouse_press_event(QAbstractButton& self, QMouseEvent* event) {
         if (enable_water_ripple) {
             const auto center_point = event->pos();
             const auto max_distance = std::max<double>(self.width(), self.height());
-            water_ripple.clicked(center_point, max_distance);
+            water_ripple.press(center_point, max_distance);
         }
     }
+
+    void mouse_release_event() { water_ripple.release(); }
 
     void enter_event(QAbstractButton& self, qt::EnterEvent* event) {
         hover_color->transition_to(from_color(kHoverColor));
@@ -103,15 +102,15 @@ FilledButton::FilledButton()
 
 FilledButton::~FilledButton() = default;
 
-void FilledButton::loadColorScheme(const ColorScheme& color_scheme) {
-    pimpl->background = color_scheme.primary;
-    pimpl->text_color = color_scheme.on_primary;
+void FilledButton::loadColorScheme(const ColorScheme& pack) {
+    pimpl->background = pack.primary;
+    pimpl->text_color = pack.on_primary;
 
-    if (color_scheme.primary.lightness() > 128) {
-        pimpl->water_color = color_scheme.primary.darker(130);
+    if (pack.primary.lightness() > 128) {
+        pimpl->water_color = pack.primary.darker(130);
         pimpl->kHoverColor = QColor { 000, 000, 000, 30 };
     } else {
-        pimpl->water_color = color_scheme.primary.lighter(130);
+        pimpl->water_color = pack.primary.lighter(130);
         pimpl->kHoverColor = QColor { 255, 255, 255, 30 };
     }
     pimpl->water_color.setAlphaF(0.4);
@@ -148,12 +147,14 @@ void FilledButton::setHoverColor(const QColor& color) { pimpl->kHoverColor = col
 
 void FilledButton::setWaterRippleStatus(bool enable) { pimpl->enable_water_ripple = enable; }
 
-void FilledButton::setWaterRippleStep(double step) { pimpl->water_ripple_step = step; }
-
 // Qt 接口重载
 
+void FilledButton::mousePressEvent(QMouseEvent* event) {
+    pimpl->mouse_press_event(*this, event);
+    QAbstractButton::mousePressEvent(event);
+}
 void FilledButton::mouseReleaseEvent(QMouseEvent* event) {
-    pimpl->mouse_release_event(*this, event);
+    pimpl->mouse_release_event();
     QAbstractButton::mouseReleaseEvent(event);
 }
 void FilledButton::paintEvent(QPaintEvent* event) {

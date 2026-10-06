@@ -75,6 +75,9 @@ public:
         auto task = std::make_unique<TransitionTask<State>>(state, running);
         animatable.push_transition_task(std::move(task));
     }
+    auto cancel() noexcept -> void {
+        if (running) *running = false;
+    }
     auto snap_to(T to) noexcept -> void {
         state->set_value(std::move(to));
         state->set_target(std::move(to));

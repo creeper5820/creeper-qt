@@ -40,9 +40,9 @@ public:
     void setHoverColor(const QColor& color);
 
     void setWaterRippleStatus(bool enable);
-    void setWaterRippleStep(double step);
 
 protected:
+    void mousePressEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
 
     void enterEvent(qt::EnterEvent* event) override;
@@ -55,7 +55,6 @@ protected:
 namespace creeper::filled_button::pro {
 using HoverColor        = ForwardProp<&FilledButton::setHoverColor>;
 using WaterRippleStatus = ForwardProp<&FilledButton::setWaterRippleStatus>;
-using WaterRippleStep   = ForwardProp<&FilledButton::setWaterRippleStep>;
 
 using api::pro::Clickable;
 using api::pro::Text;

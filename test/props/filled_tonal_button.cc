@@ -11,7 +11,6 @@ static FilledTonalButton TestFilledTonalButton {
     test::kThemeManager,
     ftp::HoverColor { Qt::red },
     ftp::WaterRippleStatus { true },
-    ftp::WaterRippleStep { 0.5 },
     ftp::Text { "OK" },
     ftp::TextColor { Qt::white },
     ftp::WaterColor { Qt::blue },

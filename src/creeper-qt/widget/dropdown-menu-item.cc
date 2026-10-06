@@ -41,7 +41,7 @@ struct DropdownMenuItem::Impl {
 
     explicit Impl(DropdownMenuItem& self) noexcept
         : animatable { self }
-        , water_ripple { animatable, 5.0 }
+        , water_ripple { animatable }
         , self { self } {
         self.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         set_measurements(Measurements { });
@@ -229,6 +229,8 @@ struct DropdownMenuItem::Impl {
     auto mouse_press_event(QMouseEvent* event) -> void {
         if (event->button() == Qt::LeftButton && !is_disabled) {
             is_pressed = true;
+            if (enable_water_ripple)
+                water_ripple.press(event->pos(), std::max(self.width(), self.height()));
             self.update();
         }
     }
@@ -237,12 +239,10 @@ struct DropdownMenuItem::Impl {
         if (!is_pressed) return;
 
         is_pressed = false;
+        water_ripple.release();
         self.update();
 
         if (is_disabled || !self.rect().contains(event->pos())) return;
-
-        if (enable_water_ripple)
-            water_ripple.clicked(event->pos(), std::max(self.width(), self.height()));
 
         Q_EMIT self.clicked();
     }

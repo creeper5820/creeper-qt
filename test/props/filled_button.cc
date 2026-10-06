@@ -11,7 +11,6 @@ static FilledButton TestFilledButton {
     test::kThemeManager,
     fbp::HoverColor { Qt::red },
     fbp::WaterRippleStatus { true },
-    fbp::WaterRippleStep { 0.5 },
     fbp::Text { "OK" },
     fbp::TextColor { Qt::white },
     fbp::WaterColor { Qt::blue },
