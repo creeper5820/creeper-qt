@@ -102,12 +102,12 @@ auto button = new FilledButton {
 };
 
 // 应用主题到所有注册的组件
-manager.apply_theme();
+manager.applyTheme();
 ```
 
 ### 注册组件
 
-#### 方式一：使用 ThemeManager 属性（推荐）
+#### 方式一：直接传 `manager`（等价 `BindTheme`）（推荐）
 
 ```cpp
 auto button = new FilledButton {
@@ -123,25 +123,25 @@ auto button = new FilledButton {
     button::pro::Text { "按钮" },
 };
 
-manager.append_handler(button,
-    [button](const ThemeManager& manager) { button->set_color_scheme(manager.color_scheme()); });
+manager.appendHandler(button,
+    [button](const ThemeManager& manager) { button->loadColorScheme(manager.colorScheme()); });
 ```
 
 ### 切换主题
 
 ```cpp
-manager.set_theme_pack(kGreenThemePack);
-manager.apply_theme();
+manager.setThemePack(kGreenThemePack);
+manager.applyTheme();
 ```
 
 ### 切换颜色模式
 
 ```cpp
-manager.set_color_mode(ColorMode::DARK);
+manager.setColorMode(ColorMode::DARK);
 // 或
-manager.toggle_color_mode();
+manager.toggleColorMode();
 
-manager.apply_theme();
+manager.applyTheme();
 ```
 
 ---
@@ -211,7 +211,7 @@ auto button = new FilledButton {
     button::pro::Text { "自定义主题按钮" },
 };
 
-manager.apply_theme();
+manager.applyTheme();
 ```
 
 ---

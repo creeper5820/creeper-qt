@@ -10,7 +10,7 @@
 ## Prop 命名空间使用
 
 - 始终从正在构造的组件对应命名空间中取 prop。
-- 对 `FilledButton`，使用 `creeper::filled_button::pro::*`，即使某个 prop 内部来自 `button::pro`、`widget::pro` 或 `theme::pro`。
+- 对 `FilledButton`，使用 `creeper::filled_button::pro::*`，即使某个 prop 内部来自 `api::scope::widget`、`api::scope::theme` 或其它共享 scope。
 - 组件的 `pro` 命名空间是有意设计的聚合入口，应暴露用户构造该组件所需的完整 prop 表面。
 - 在 `.cc` 文件中，`using namespace creeper;` 很常见。当该命名空间已在作用域内时，不要给组件类型添加冗余的 `creeper::` 前缀。
 - 优先使用局部命名空间别名，以提高可读性和 IDE 补全体验：
@@ -38,10 +38,10 @@ auto content = FilledCard {
 - 声明式 prop 列表应聚焦于 UI 结构和配置。
 - 优先通过布局/条目 prop 进行组件嵌套，这是主要构造方式。
 - 当嵌套变得难以阅读时，将大型 UI 树拆分为具名组件或辅助函数。
-- 按可预测的顺序组织 prop：主题/状态、尺寸/布局、内容、回调，最后是 `Apply` 等兜底式自定义。
-- 优先使用专用 prop，而不是 `Apply`。仅当封装层尚未暴露所需 Qt 操作时再使用 `Apply`。
+- 按可预测的顺序组织 prop：主题/状态、尺寸/布局、内容、回调，最后是 `With` 等兜底式自定义。
+- 优先使用专用 prop，而不是 `With`。仅当封装层尚未暴露所需 Qt 操作时再用 `With` 自定义。
 - 将复杂业务逻辑放在 prop 列表之外。先命名 lambda、状态对象和回调，再传入 UI 声明。
-- 避免接触 `details::` 等内部命名空间下的实现，也不要直接调用 `prop.apply()`。prop 是内部机制，UI 代码应仅通过声明式嵌套使用。缺 prop 时使用 `Apply` 进行自定义。
+- prop 通过隐藏友元 `dsl_invoke` 作用于组件；UI 代码只做声明式嵌套，不要直接调用内部机制。缺 prop 时用 `With`。
 - 保持现有模式：声明式 prop 最终应调用用户手写时也会调用的同一个 Qt setter 或组件 setter。
 
 ## Qt 生命周期和指针
@@ -56,10 +56,10 @@ auto content = FilledCard {
 ## 错误诊断
 
 - 优先通过 LSP 报错定位问题，而非完整编译。模板实例化导致编译开销很大、报错数量多且难以阅读，LSP 的单文件诊断更精准友好。
-- `Declarative` token 和 fallback `static_assert` 是用户体验的一部分，不要随意移除。
-- `props_trait<int &>` 这样的诊断是有价值的，因为它能指出确切的非法参数类型，包括嵌套在 tuple 内部的非法值。
+- `dsl_invocable` 与 `DSL::construct_with` 的 fallback `static_assert` 是用户体验的一部分，不要随意移除。
+- 指向确切非法 prop 类型（包括嵌套在 tuple 内的值）的诊断是有价值的。
 - 如果改进诊断，应保留尽早报告真实错误 prop 类型的能力，不要让模板展开退化成长篇构造函数错误。
-- 在可行时，优先区分这些情况：不是 prop、是另一个组件的合法 prop、prop 的 apply 目标不兼容。
+- 在可行时，优先区分这些情况：不是 prop、是另一个组件的合法 prop、prop 的 `dsl_invoke` 目标不兼容。
 
 ## 性能预期
 
@@ -70,66 +70,59 @@ auto content = FilledCard {
 
 ## API 和文档
 
-- 按每个组件自己的 `xxx::pro` 命名空间编写文档，不要要求用户去 `widget::pro`、`theme::pro` 或基础组件命名空间中搜索。
+- 按每个组件自己的 `xxx::pro` 命名空间编写文档，不要要求用户去共享 scope（`api::scope::*`）命名空间中搜索。
 - 添加组件时，让它的 `pro` 命名空间成为完整的用户入口，导入该组件支持的共享 prop 命名空间。
 - 尽可能让 prop 名称贴近对应 Qt setter：`setFixedWidth()` 变为 `FixedWidth`，`setText()` 变为 `Text`，以此类推。
 - 添加新 prop 时，确保它可以通过用户预期用于 IDE 补全的组件命名空间发现。
 
 ## 组件开发模式
 
-- 开发新组件时，优先遵循 `text-fields.hh` / `text-fields.impl.hh` 展示的三层结构：`details` 实现类负责 Qt 行为，组件自己的 `xxx::pro` 命名空间负责声明式属性入口，公开 `using Xxx = Declarative<...>` 负责把两者连接起来。
-- `details` 类应继承最贴近语义的 Qt 基类，而不是重新发明行为；例如文本输入继续继承 `QLineEdit`，按钮继续基于 Qt 按钮能力，绘制和交互只补足本组件的样式差异。
-- `details` 类中集中保存组件运行状态，例如 hover、focus、disabled、error、checked、动画值、颜色 token、尺寸 token、缓存字体等；这些状态应最终驱动 Qt setter、绘制树或主题响应。
-- 对外暴露给 prop 使用的接口应是清晰的 setter，例如 `set_label_text()`、`set_measurements()`、`set_color_scheme()`、`load_theme_manager()`；不要让 prop 直接改内部字段。
+- 开发新组件时，优先遵循 `text-fields.hh` / `text-fields.impl.hh` 的结构：组件类继承最贴近语义的 Qt 基类并继承 `DSL`（构造时调用 `construct_with`），组件自己的 `xxx::pro` 命名空间是声明式属性入口，绘制/事件细节放在 `.impl.hh` 或 `.cc`。
+- 组件类应继承最贴近语义的 Qt 基类（实现细节可放在 `details` 命名空间），而不是重新发明行为；例如文本输入继续继承 `QLineEdit`，按钮继续基于 Qt 按钮能力，绘制和交互只补足本组件的样式差异。
+- 组件类中集中保存组件运行状态，例如 hover、focus、disabled、error、checked、动画值、颜色 token、尺寸 token、缓存字体等；这些状态应最终驱动 Qt setter、绘制树或主题响应。
+- 对外暴露给 prop 使用的接口应是清晰的 setter，例如 `setLabelText()`、`setMeasurements()`、`loadColorScheme()`、`bindThemeManager()`；不要让 prop 直接改内部字段。
 - `.hh` 文件声明组件形状、状态结构和 prop 表面；`.impl.hh` 或 `.cc` 文件承载绘制、动画、主题映射和事件处理细节，避免把实现逻辑塞进公开头文件的声明式入口。
 
 典型组件骨架：
 
 ```cpp
-// 原始实现，不包含声明式封装
-namespace creeper::xxx::details {
+// 组件：继承最贴近语义的 Qt 基类，并继承 DSL
+namespace creeper {
 
-class Xxx : public QWidget {
+class Xxx : public QWidget, public DSL {
     CREEPER_PIMPL_DEFINITION(Xxx);
 
 public:
-    void set_color_scheme(const ColorScheme&);
-    void load_theme_manager(ThemeManager&);
-    void set_label_text(const QString&);
+    explicit Xxx(auto&&... props)
+        : Xxx { } {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
+
+    void loadColorScheme(const ColorScheme&);
+    void bindThemeManager(ThemeManager&);
+    void setLabelText(const QString&);
 
 protected:
     void paintEvent(QPaintEvent*) override;
 };
 
+// 声明式属性入口：本组件新增 prop + 适用的共享 scope
+namespace xxx::pro {
+
+using LabelText = ForwardProp<&Xxx::setLabelText>;
+
+using namespace api::scope::common;
+using namespace api::scope::theme;
+using namespace api::scope::widget;
 }
-
-// 声明式属性的包装，优先复用已有的 Wrapper
-namespace creeper::xxx::pro {
-
-using Token = creeper::Token<details::Xxx>;
-
-using LabelText =
-    common::pro::String<Token, [](auto& self, const auto& value) { self.set_label_text(value); }>;
-
-// 在导出的命名空间中间中组合适用的属性
-using namespace widget::pro;
-using namespace theme::pro;
-}
-
-// 最终导出类型，组合 Token 来源
-namespace creeper {
-
-using Xxx =
-    Declarative<xxx::details::Xxx, TokenOr<xxx::pro::Token, widget::pro::Token, theme::pro::Token>>;
 
 }
 ```
 
-- 组件自己的 `xxx::pro` 命名空间必须是用户入口，而不是只放本组件新增 prop；如果组件支持 `widget::pro` 或 `theme::pro`，就在本组件 `pro` 中导入它们，让 IDE 补全从一个命名空间开始。
-- `TokenOr<...>` 必须覆盖 `xxx::pro` 命名空间导入的所有 prop 来源；如果 `xxx::pro` 导入了 `widget::pro`、`theme::pro`、`button::pro`，公开别名中也应包含对应 token。
-- 简单 prop 优先用 `SetterProp` 或 `DerivedProp` 转发到 setter，保持运行时成本接近手写 setter；只有需要设置多个字段、支持多种构造来源或包含额外逻辑时，才手写继承 `Token` 的 prop 和 `apply()`。
-- 从通用 prop 模板实例化本组件 prop 时，始终绑定本组件的 `Token`；不要直接要求用户混用基础组件命名空间中的 prop 名称。
-- prop 的 `apply()` 只做声明式配置，不应启动复杂业务流程；复杂状态应先被封装成组件 setter 或内部方法，再由 prop 调用。
+- 组件自己的 `xxx::pro` 命名空间必须是用户入口，而不是只放本组件新增 prop；如果组件支持 `api::scope::widget` 或 `api::scope::theme`，就在本组件 `pro` 中导入它们，让 IDE 补全从一个命名空间开始。
+- 简单 prop 优先用 `ForwardProp` 转发到 setter，保持运行时成本接近手写 setter；只有需要设置多个字段、支持多种构造来源或包含额外逻辑时，才手写带隐藏友元 `dsl_invoke` 的 prop。
+- 从通用 prop 模板实例化本组件 prop 时，让 prop 的 `dsl_invoke` 作用于本组件类型；不要直接要求用户混用基础组件命名空间中的 prop 名称。
+- prop 的 `dsl_invoke` 只做声明式配置，不应启动复杂业务流程；复杂状态应先被封装成组件 setter 或内部方法，再由 prop 调用。
 
 绘制函数建议按固定顺序组织：
 
@@ -182,7 +175,7 @@ auto paint_xxx(QPaintEvent*) -> void {
 开发组件时的检查清单：
 
 - 公开 prop 是否都能从组件自己的 `xxx::pro` 命名空间补全到。
-- `TokenOr` 是否覆盖了 `xxx::pro` 中导入的所有 token。
+- 组件 `pro` 是否导入了它支持的全部共享 scope（`api::scope::*`）。
 - prop 是否最终调用明确 setter，而不是直接接触内部字段。
 - 主题色是否按 enabled/focused/error/disabled 等状态归档，而不是散落在绘制逻辑中。
 - 绘制树是否只表达结构，复杂计算是否已提前命名。
