@@ -209,6 +209,67 @@ auto switch_widget = new Switch {
 
 ---
 
+### Checkbox 复选框
+
+命名空间：`creeper::checkbox::pro`
+
+继承属性：`creeper::api::scope::common`、`creeper::api::scope::theme`、`creeper::api::scope::widget`
+
+| 属性名 | 类型 | 说明 |
+| --- | --- | --- |
+| `Checked` | `bool` | 是否选中（映射到 `setChecked`） |
+| `Disabled` | `bool` | 是否禁用 |
+| `Error` | `bool` | 错误态（容器/描边用 `error`、图标用 `on_error`） |
+| `CheckState` | `Checkbox::CheckState` | 三态：`UNSELECTED` / `SELECTED` / `INDETERMINATE` |
+| `Measurements` | `Checkbox::Measurements` | 尺寸度量 |
+| `Colors` | `Checkbox::Colors` | 颜色规格 |
+| `Clickable` | `[](self){}` | 点击回调 |
+| `OnCheckStateChanged` | `[](CheckState){}` | 勾选状态变化回调 |
+
+`Colors` 按状态分组，对应 Compose `CheckboxColors`：
+
+- 外层三状态：`enabled` / `disabled` / `error`；
+- 每状态含三种勾选态：`checked` / `unchecked` / `indeterminate`；
+- 每态含四个 token：`checkmark` / `box` / `border` / `state_layer`；
+- 顶层另有一份 `focus_ring`（焦点环颜色）。
+
+```cpp
+using namespace creeper;
+
+auto checkbox = new Checkbox {
+    manager,
+    checkbox::pro::Checked { true },
+    checkbox::pro::OnCheckStateChanged {
+      [](Checkbox::CheckState state) { qDebug() << "状态:" << int(state); },
+    },
+};
+
+// 三态
+auto tri = new Checkbox {
+    manager,
+    checkbox::pro::CheckState { Checkbox::CheckState::INDETERMINATE },
+};
+
+// 错误配色
+const auto& scheme = manager.colorScheme();
+auto error = new Checkbox {
+    manager,
+    checkbox::pro::Colors {
+      .error = {
+        .checked       = { .checkmark = scheme.on_error, .box = scheme.error, .border = scheme.error,
+                           .state_layer = scheme.error },
+        .unchecked     = { .checkmark = Qt::transparent, .box = Qt::transparent,
+                           .border = scheme.error, .state_layer = scheme.error },
+        .indeterminate = { .checkmark = scheme.on_error, .box = scheme.error, .border = scheme.error,
+                           .state_layer = scheme.error },
+      },
+      .focus_ring = scheme.secondary,
+    },
+};
+```
+
+---
+
 ### FilledTextField 文本框
 
 <div align="center">
