@@ -60,7 +60,7 @@ namespace {
                         break;
                     }
                     case CheckboxColumnKind::FOCUSED: {
-                        auto event = QFocusEvent { QEvent::FocusIn, Qt::OtherFocusReason };
+                        auto event = QFocusEvent { QEvent::FocusIn, Qt::TabFocusReason };
                         QApplication::sendEvent(&self, &event);
                         break;
                     }
