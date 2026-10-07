@@ -7,6 +7,7 @@
 #include "creeper-qt/utility/api/scope/common.hh"            // IWYU pragma: keep
 #include "creeper-qt/utility/api/scope/theme.hh"             // IWYU pragma: keep
 #include "creeper-qt/utility/api/scope/widget.hh"            // IWYU pragma: keep
+#include "creeper-qt/utility/math/cubic-bezier.hh"
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
 #include "creeper-qt/utility/wrapper/dsl.hh"
@@ -14,6 +15,8 @@
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 
 #include <qabstractbutton.h>
+
+#include <chrono>
 
 namespace creeper {
 
@@ -30,7 +33,6 @@ class Checkbox : public QAbstractButton, public DSL {
     CREEPER_PIMPL_DEFINITION(Checkbox)
 
 public:
-    /// @brief 勾选状态
     enum class CheckState {
         UNSELECTED,    ///< 未选中
         SELECTED,      ///< 已选中
@@ -41,12 +43,12 @@ public:
     /// @note 规格来源：
     ///   https://github.com/material-components/material-components-android/blob/master/lib/java/com/google/android/material/checkbox/res/values/styles.xml
     struct Measurements {
-        double container_size    = 18; ///< Checkbox container size
-        double container_shape   = 2;  ///< Checkbox container shape
-        double icon_size         = 18; ///< Checkbox icon size
-        double state_layer_size  = 40; ///< State layer size
-        double stroke_width      = 2;  ///< CheckboxDefaults.StrokeWidth
-        double touch_target_size = 48; ///< 最小可交互尺寸
+        int container_size    = Defaults::kContainerSize;
+        int container_shape   = Defaults::kContainerShape;
+        int icon_size         = Defaults::kIconSize;
+        int state_layer_size  = Defaults::kStateLayerSize;
+        int stroke_width      = Defaults::kStrokeWidth;
+        int touch_target_size = Defaults::kTouchTargetSize;
 
         friend auto dsl_invoke(Checkbox& self, const Measurements& m) -> void {
             self.setMeasurements(m);
@@ -60,6 +62,7 @@ public:
             QColor checkmark;
             QColor box;
             QColor border;
+            QColor state_layer;
         };
         struct CheckStateTokens {
             Tokens checked;
@@ -70,25 +73,50 @@ public:
         CheckStateTokens enabled;
         CheckStateTokens disabled;
         CheckStateTokens error;
+
+        QColor focus_ring;
+
+        friend auto dsl_invoke(Checkbox& self, const Colors& colors) -> void {
+            self.setColors(colors);
+        }
     };
 
     struct Defaults {
-        constexpr static int kMinHeight = 40;
+        constexpr static auto kContainerSize   = 18;
+        constexpr static auto kContainerShape  = 2;
+        constexpr static auto kIconSize        = 18;
+        constexpr static auto kStateLayerSize  = 40;
+        constexpr static auto kStrokeWidth     = 2;
+        constexpr static auto kTouchTargetSize = 48;
+
+        constexpr static auto kSplashRadius   = 20;
+        constexpr static auto kFocusRingWidth = 3;
+
+        constexpr static auto kToggleDuration   = std::chrono::milliseconds { 200 };
+        constexpr static auto kReactionDuration = std::chrono::milliseconds { 200 };
+        constexpr static auto kReactionFade     = std::chrono::milliseconds { 50 };
+
+        constexpr static auto kRadialReactionAlpha = 0x1F / 255.0;
+
+        constexpr static auto kEaseIn        = CubicBezierSolution { 0.42, 0.0, 1.00, 1.0 };
+        constexpr static auto kEaseOut       = CubicBezierSolution { 0.00, 0.0, 0.58, 1.0 };
+        constexpr static auto kFastOutSlowIn = CubicBezierSolution { 0.40, 0.0, 0.20, 1.0 };
 
         static auto mapColors(const ColorScheme&, Colors&) -> void;
     };
 
-    /// @brief 声明式构造
     explicit Checkbox(auto&&... props)
-        : Checkbox {} {
+        : Checkbox { } {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 
     auto loadColorScheme(const ColorScheme& scheme) -> void;
     auto bindThemeManager(ThemeManager& manager) -> void;
 
-    auto setMeasurements(const Measurements& measurements) -> void;
-    auto setColorTokens(const Colors& specs) -> void;
+    auto setMeasurements(const Measurements&) -> void;
+    auto setColors(const Colors&) -> void;
+
+    auto sizeHint() const -> QSize override;
 
     auto checkState() const -> CheckState;
     auto setCheckState(CheckState state) -> void;
@@ -103,8 +131,6 @@ public:
     auto error() const -> bool;
 
 Q_SIGNALS:
-    /// @brief 勾选状态变化
-    /// @param state 变化后的状态
     auto checkStateChanged(CheckState state) -> void;
 
 protected:
@@ -120,14 +146,13 @@ protected:
     auto paintEvent(QPaintEvent* event) -> void override;
 };
 
-/// @brief Checkbox 的声明式属性入口
 namespace checkbox::pro {
     template <typename F>
     using OnCheckStateChanged = api::helper::SignalInjection<F, &Checkbox::checkStateChanged>;
 
     using CheckState   = ForwardProp<&Checkbox::setCheckState>;
     using Measurements = Checkbox::Measurements;
-    using ColorSpecs   = Checkbox::Colors;
+    using Colors       = Checkbox::Colors;
 
     using Error = ForwardProp<&Checkbox::setError>;
 

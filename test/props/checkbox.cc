@@ -17,22 +17,23 @@ static Checkbox TestCheckbox {
 static Checkbox TestCheckboxColorSpecs {
     test::kWidgetProps,
     test::kThemeManager,
-    cbp::ColorSpecs {
+    cbp::Colors {
       .enabled = {
-        .checked       = { Qt::white, Qt::blue, Qt::blue },
-        .unchecked     = { Qt::transparent, Qt::transparent, Qt::gray },
-        .indeterminate = { Qt::white, Qt::blue, Qt::blue },
+        .checked       = { Qt::white, Qt::blue, Qt::blue, Qt::blue },
+        .unchecked     = { Qt::transparent, Qt::transparent, Qt::gray, Qt::gray },
+        .indeterminate = { Qt::white, Qt::blue, Qt::blue, Qt::blue },
       },
       .disabled = {
-        .checked       = { Qt::white, Qt::darkGray, Qt::darkGray },
-        .unchecked     = { Qt::transparent, Qt::transparent, Qt::darkGray },
-        .indeterminate = { Qt::white, Qt::darkGray, Qt::darkGray },
+        .checked       = { Qt::white, Qt::darkGray, Qt::darkGray, Qt::darkGray },
+        .unchecked     = { Qt::transparent, Qt::transparent, Qt::darkGray, Qt::darkGray },
+        .indeterminate = { Qt::white, Qt::darkGray, Qt::darkGray, Qt::darkGray },
       },
       .error = {
-        .checked       = { Qt::white, Qt::red, Qt::red },
-        .unchecked     = { Qt::transparent, Qt::transparent, Qt::red },
-        .indeterminate = { Qt::white, Qt::red, Qt::red },
+        .checked       = { Qt::white, Qt::red, Qt::red, Qt::red },
+        .unchecked     = { Qt::transparent, Qt::transparent, Qt::red, Qt::red },
+        .indeterminate = { Qt::white, Qt::red, Qt::red, Qt::red },
       },
+      .focus_ring = Qt::black,
     },
 };
 
