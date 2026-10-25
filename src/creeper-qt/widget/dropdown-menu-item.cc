@@ -11,7 +11,7 @@
 using namespace creeper;
 
 struct DropdownMenuItem::Impl {
-    enum class Trailing { None, Icon, Text };
+    enum class Trailing { NONE, ICON, TEXT };
 
     Measurements measurements;
     ColorSpace color_space;
@@ -21,7 +21,7 @@ struct DropdownMenuItem::Impl {
     QString leading_icon_code;
     QFont leading_icon_font;
 
-    Trailing trailing_kind = Trailing::None;
+    Trailing trailing_kind = Trailing::NONE;
     QString trailing_icon_code;
     QFont trailing_icon_font;
     QString trailing_text;
@@ -44,7 +44,7 @@ struct DropdownMenuItem::Impl {
         , water_ripple { animatable }
         , self { self } {
         self.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        set_measurements(Measurements { });
+        set_measurements(Measurements {});
     }
 
     auto loadColorScheme(const ColorScheme& scheme) -> void {
@@ -92,9 +92,9 @@ struct DropdownMenuItem::Impl {
         if (!leading_icon_code.isEmpty())
             width += measurements.icon_size + measurements.icon_text_spacing;
         width += fm.horizontalAdvance(text);
-        if (trailing_kind == Trailing::Icon)
+        if (trailing_kind == Trailing::ICON)
             width += measurements.icon_text_spacing + measurements.icon_size;
-        if (trailing_kind == Trailing::Text)
+        if (trailing_kind == Trailing::TEXT)
             width += measurements.icon_text_spacing + fm.horizontalAdvance(trailing_text);
         width += measurements.horizontal_padding;
 
@@ -116,7 +116,7 @@ struct DropdownMenuItem::Impl {
     }
 
     auto set_trailing_icon(const QString& code, const QString& font) -> void {
-        trailing_kind      = Trailing::Icon;
+        trailing_kind      = Trailing::ICON;
         trailing_icon_code = code;
         if (!font.isEmpty()) trailing_icon_font = QFont { font };
         trailing_icon_font.setPixelSize(measurements.icon_size);
@@ -125,7 +125,7 @@ struct DropdownMenuItem::Impl {
     }
 
     auto set_trailing_text(const QString& value) -> void {
-        trailing_kind = Trailing::Text;
+        trailing_kind = Trailing::TEXT;
         trailing_text = value;
         self.updateGeometry();
         self.update();
@@ -155,7 +155,7 @@ struct DropdownMenuItem::Impl {
         }
 
         if (!is_disabled) {
-            auto clip = QPainterPath { };
+            auto clip = QPainterPath {};
             clip.addRect(self.rect());
             util::PainterHelper { painter }.apply(water_ripple.renderer(clip, water_color));
         }
@@ -167,8 +167,8 @@ struct DropdownMenuItem::Impl {
         const auto has_leading = !leading_icon_code.isEmpty();
 
         auto trailing_width = double { 0 };
-        if (trailing_kind == Trailing::Icon) trailing_width = measurements.icon_size;
-        if (trailing_kind == Trailing::Text)
+        if (trailing_kind == Trailing::ICON) trailing_width = measurements.icon_size;
+        if (trailing_kind == Trailing::TEXT)
             trailing_width = QFontMetricsF { label_font }.horizontalAdvance(trailing_text);
 
         const auto leading_rect = QRectF {
@@ -185,8 +185,8 @@ struct DropdownMenuItem::Impl {
         };
 
         const auto text_left  = has_leading
-            ? leading_rect.right() + 1 + measurements.icon_text_spacing
-            : measurements.horizontal_padding * 1.;
+             ? leading_rect.right() + 1 + measurements.icon_text_spacing
+             : measurements.horizontal_padding * 1.;
         const auto text_right = trailing_width > 0
             ? trailing_rect.left() - measurements.icon_text_spacing
             : w - measurements.horizontal_padding;
@@ -206,10 +206,10 @@ struct DropdownMenuItem::Impl {
                 elided, label_font, tokens.label_text, text_rect, Qt::AlignVCenter | Qt::AlignLeft);
         }
 
-        if (trailing_kind == Trailing::Icon) {
+        if (trailing_kind == Trailing::ICON) {
             helper.simple_text(trailing_icon_code, trailing_icon_font, tokens.trailing_icon,
                 trailing_rect, Qt::AlignCenter);
-        } else if (trailing_kind == Trailing::Text) {
+        } else if (trailing_kind == Trailing::TEXT) {
             helper.simple_text(trailing_text, label_font, tokens.trailing_icon, trailing_rect,
                 Qt::AlignVCenter | Qt::AlignLeft);
         }

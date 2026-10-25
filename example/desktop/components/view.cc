@@ -68,7 +68,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
         std::chrono::steady_clock::time_point timeline = std::chrono::steady_clock::now();
 
         MutableQString slogen { "BanG Dream! It’s MyGO!!!!!" };
-        MutableQString selected {};
+        MutableQString selected { };
         MutableBool menu_expanded { false };
         MutableBool loading { false };
         MutableDouble progress { 0.0 };
@@ -79,14 +79,14 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
         new OutlinedTextField {
           manager,
           MutableForward {
-            tfp::LabelText {},
+            tfp::LabelText { },
             context->slogen,
           },
           tfp::LeadingIcon {
             material::icon::kSearch,
             material::round::font,
           },
-          OutlinedTextField::Measurements {},
+          OutlinedTextField::Measurements { },
           tfp::OnChanged {
             [context](const QString& text) {
                 const auto count = text.size();
@@ -108,7 +108,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
         lnp::SpacingItem { 10 },
 
         new OutlinedTextField {
-          MutableForward { tfp::Text {}, context->selected },
+          MutableForward { tfp::Text { }, context->selected },
 
           manager,
           tfp::ReadOnly { true },
@@ -172,7 +172,7 @@ static auto SearchComponent(ThemeManager& manager, auto&& refresh_callback) noex
                       "那你愿意……跟我组一辈子的乐队吗？",
                       "过去软弱的我…已经死了。",
                   };
-                  static auto rd  = std::random_device {};
+                  static auto rd  = std::random_device { };
                   static auto gen = std::mt19937 { rd() };
 
                   auto dist = std::uniform_int_distribution<> { 0, kSlogens.size() - 1 };
@@ -369,7 +369,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
                   state.manager,
                   text::pro::Alignment { Qt::AlignCenter },
                   text::pro::FixedWidth { 100 },
-                  MutableForward { text::pro::Text {}, s },
+                  MutableForward { text::pro::Text { }, s },
                 },
               },
             },

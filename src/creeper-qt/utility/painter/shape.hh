@@ -4,6 +4,8 @@
 #include <qicon.h>
 #include <qpainterpath.h>
 
+#include <utility>
+
 namespace creeper::painter::internal {
 
 struct EraseRectangle : public CommonProps, public DSL {
@@ -98,7 +100,7 @@ struct RoundedRectangle : public CommonProps, public ShapeProps, public DSL {
     static constexpr auto make_rounded_rect_path(
         const qt::rect& rect, qreal tl, qreal tr, qreal br, qreal bl) noexcept -> QPainterPath {
 
-        auto path = QPainterPath { };
+        auto path = QPainterPath {};
 
         const auto max_radius = std::min(rect.width(), rect.height()) / 2.0;
         const auto clamp      = [&](qreal r) -> qreal {
@@ -202,7 +204,7 @@ struct Icon : public CommonProps, public DSL {
                     auto font = qt::font { font_family };
                     font.setPointSizeF(std::min(size.height(), size.width()));
 
-                    auto option = qt::text_option { };
+                    auto option = qt::text_option {};
                     option.setAlignment(Qt::AlignCenter);
 
                     painter.setFont(font);
@@ -270,8 +272,8 @@ struct Radiuses {
 
 struct Text {
     qt::string value;
-    explicit Text(const qt::string& v)
-        : value { v } { }
+    explicit Text(qt::string v)
+        : value { std::move(v) } { }
     friend auto dsl_invoke(auto& self, const Text& prop) -> void { self.text = prop.value; }
 };
 
@@ -320,12 +322,14 @@ struct Icon {
     }
 };
 
-namespace Paint {
+namespace Paint { // NOLINT
+
     using EraseRectangle   = internal::EraseRectangle;
     using Rectangle        = internal::Rectangle;
     using RoundedRectangle = internal::RoundedRectangle;
     using Text             = internal::Text;
     using Icon             = internal::Icon;
+
 }
 
 }

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "creeper-qt/utility/wrapper/dsl.hh"
-
 #include <qwidget.h>
 
 #include <functional>
@@ -77,7 +75,8 @@ public:
     auto operator=(U&& u) noexcept -> Mutable<T>&
         requires requires(T& t, U&& u) { t = std::forward<U>(u); }
     {
-        return set(std::forward<U>(u));
+        set(std::forward<U>(u));
+        return *this;
     }
 
 private:

@@ -25,6 +25,7 @@ Checks: >
   -cppcoreguidelines-avoid-non-const-global-variables,
   -cppcoreguidelines-pro-type-const-cast,
   -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-narrowing-conversions,
 
   -modernize-use-nodiscard,
   -modernize-use-designated-initializers,
@@ -59,6 +60,7 @@ Checks: >
   -bugprone-derived-method-shadowing-base-method,
   -bugprone-throwing-static-initialization,
   -bugprone-unhandled-exception-at-new,
+  -bugprone-narrowing-conversions,
   -performance-enum-size
 
 WarningsAsErrors: ""

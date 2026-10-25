@@ -23,6 +23,7 @@ public:
         : QWidget { }
         , animatable { *this } {
 
+        animatable.set_frame_rate(120);
         QWidget::setAttribute(Qt::WA_TransparentForMouseEvents);
 
         mask_frame.fill(Qt::transparent);

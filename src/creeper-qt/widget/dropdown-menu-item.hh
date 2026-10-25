@@ -13,6 +13,8 @@
 #include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 
+#include <utility>
+
 namespace creeper {
 
 class DropdownMenuItem : public QWidget, public DSL {
@@ -47,7 +49,7 @@ public:
     };
 
     explicit DropdownMenuItem(auto&&... props)
-        : DropdownMenuItem { } {
+        : DropdownMenuItem {} {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 
@@ -90,12 +92,15 @@ protected:
 namespace dropdown_menu_item::pro {
     using TrailingText =
         api::helper::String<[](auto& self, const auto& string) { self.setTrailingText(string); }>;
+    template <typename F>
+    using OnClicked = api::helper::SignalInjection<F, &DropdownMenuItem::clicked>;
+
     struct LeadingIcon {
         QString code;
         QString font;
-        explicit LeadingIcon(const QString& code, const QString& font)
-            : code { code }
-            , font { font } { }
+        explicit LeadingIcon(QString code, QString font)
+            : code { std::move(code) }
+            , font { std::move(font) } { }
         friend auto dsl_invoke(DropdownMenuItem& self, const LeadingIcon& prop) -> void {
             self.setLeadingIcon(prop.code, prop.font);
         }
@@ -103,15 +108,13 @@ namespace dropdown_menu_item::pro {
     struct TrailingIcon {
         QString code;
         QString font;
-        explicit TrailingIcon(const QString& code, const QString& font)
-            : code { code }
-            , font { font } { }
+        explicit TrailingIcon(QString code, QString font)
+            : code { std::move(code) }
+            , font { std::move(font) } { }
         friend auto dsl_invoke(DropdownMenuItem& self, const TrailingIcon& prop) -> void {
             self.setTrailingIcon(prop.code, prop.font);
         }
     };
-    template <typename F>
-    using OnClicked = api::helper::SignalInjection<F, &DropdownMenuItem::clicked>;
 
     using api::pro::Disabled;
     using api::pro::Text;

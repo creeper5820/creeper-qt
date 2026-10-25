@@ -2,14 +2,12 @@
 
 #include <qobject.h>
 
-#include <concepts>
 #include <tuple>
-#include <type_traits>
 #include <utility>
 
 namespace creeper::api::helper {
 
-namespace internal {
+namespace details {
 
     template <typename T>
     struct FunctionArgs;
@@ -37,10 +35,10 @@ template <typename F, auto signal>
 struct SignalInjection {
     F f;
 
-    using SignalArgs = typename internal::FunctionArgs<decltype(signal)>::type;
+    using SignalArgs = typename details::FunctionArgs<decltype(signal)>::type;
 
     explicit SignalInjection(F func) noexcept
-        requires internal::tuple_invocable_trait<F, SignalArgs>
+        requires details::tuple_invocable_trait<F, SignalArgs>
         : f { std::forward<F>(func) } { }
 
     friend auto dsl_invoke(auto& widget, const SignalInjection& prop) -> void {

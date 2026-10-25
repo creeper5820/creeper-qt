@@ -1,5 +1,4 @@
 #pragma once
-#include "creeper-qt/utility/wrapper/dsl.hh"
 
 #include <qobject.h>
 
@@ -46,10 +45,11 @@ struct MutableValue final {
         value = std::forward<U>(u);
     }
     template <typename U>
-    auto operator=(U&& u) noexcept -> void
+    auto operator=(U&& u) noexcept -> MutableValue&
         requires requires(T& t, U&& u) { t = std::forward<U>(u); }
     {
         set(std::forward<U>(u));
+        return *this;
     }
 };
 
@@ -141,10 +141,9 @@ struct MutableTransform {
     }
 
     friend auto dsl_invoke(auto& widget, const MutableTransform& prop) noexcept -> void {
-        constexpr auto invocable = requires { //
-            prop.apply_function(widget, prop.mutable_value.get());
-        };
-        static_assert(invocable,
+        constexpr auto kInvocable =
+            requires { prop.apply_function(widget, prop.mutable_value.get()); };
+        static_assert(kInvocable,
             "\nFunction can not be invoked with given widget_type& and const value_type&."
             "\n  the correct signature should be: "
             "\n  [](widget_type& widget, const value_type& v){ ... }");
