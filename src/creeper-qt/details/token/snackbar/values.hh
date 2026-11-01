@@ -7,7 +7,7 @@
 #include "creeper-qt/details/token/sys/elevation.hh"
 #include "creeper-qt/details/token/sys/shape.hh"
 #include "creeper-qt/details/token/sys/typography.hh"
-#include "creeper-qt/details/token/unit.hh"
+#include "creeper-qt/details/token/sys/unit.hh"
 
 namespace creeper::token::snackbar {
 

@@ -3,7 +3,7 @@
 // tokens:SnackbarTokens.kt (VERSION v0_103)
 #pragma once
 
-#include "creeper-qt/details/token/color.hh"
+#include "creeper-qt/details/token/sys/color.hh"
 
 namespace creeper::token::snackbar {
 

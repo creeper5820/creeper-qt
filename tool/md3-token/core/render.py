@@ -141,7 +141,7 @@ def render_component(
         sources: tuple[KotlinFile, ...]) -> str:
     kinds = sorted({value.kind for _, value in values if isinstance(value, SysRef)})
     includes = [f'#include "{include_path(config, "sys", f"{kind}.hh")}"' for kind in kinds]
-    includes.append(f'#include "{include_path(config, "unit.hh")}"')
+    includes.append(f'#include "{include_path(config, "sys", "unit.hh")}"')
     if any(isinstance(value, Millis) for _, value in values):
         includes.append("#include <chrono>")
     if any(isinstance(value, CubicBezier) for _, value in values):
@@ -195,7 +195,7 @@ def render_colors(
         sources: tuple[KotlinFile, ...]) -> str:
     lines = render_header(config, sources)
     lines.append("")
-    lines.append(f'#include "{include_path(config, "color.hh")}"')
+    lines.append(f'#include "{include_path(config, "sys", "color.hh")}"')
     lines.append("")
     lines.append(f"namespace creeper::token::{namespace} {{")
     lines.append("")
@@ -265,7 +265,7 @@ def render_sys(
     path = sys_path(config, kind)
     lines = render_header(config, sources)
     lines.append("")
-    lines.append(f'#include "{include_path(config, "unit.hh")}"')
+    lines.append(f'#include "{include_path(config, "sys", "unit.hh")}"')
     lines.append("")
     lines.append(f"namespace creeper::token::sys::{kind} {{")
     lines.append("")

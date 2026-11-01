@@ -11,7 +11,7 @@
 // ripple:Ripple.kt
 #pragma once
 
-#include "creeper-qt/details/token/unit.hh"
+#include "creeper-qt/details/token/sys/unit.hh"
 #include "creeper-qt/utility/math/cubic-bezier.hh"
 
 #include <chrono>

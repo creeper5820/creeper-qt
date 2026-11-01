@@ -3,7 +3,7 @@
 // tokens:CheckboxTokens.kt (VERSION 14_1_0)
 #pragma once
 
-#include "creeper-qt/details/token/color.hh"
+#include "creeper-qt/details/token/sys/color.hh"
 
 namespace creeper::token::checkbox {
 
