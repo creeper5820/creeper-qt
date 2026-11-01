@@ -1,6 +1,7 @@
 #include "checkbox.hh"
 
 #include "creeper-qt/utility/animation/animatable.hh"
+#include "creeper-qt/utility/animation/state/spring.hh"
 #include "creeper-qt/utility/animation/state/tween.hh"
 #include "creeper-qt/utility/animation/transition.hh"
 #include "creeper-qt/utility/painter/container.hh"
@@ -11,6 +12,7 @@
 #include <qpainterpath.h>
 #include <qpen.h>
 
+#include <cmath>
 #include <utility>
 
 using namespace creeper;
@@ -22,7 +24,7 @@ struct Graphics {
         qt::size size { };
         QPainterPath path;
         qt::color color = Qt::black;
-        qt::real width  = Defaults::kStrokeWidth;
+        qt::real width  = Defaults::kStrokeWidth.value;
 
         Mark(const qt::size& size, QPainterPath path, const qt::color& color, qt::real width)
             : size(size)
@@ -50,7 +52,7 @@ struct Graphics {
 
     static auto outer_rect(const qt::point& origin, double t) -> qt::rect {
         const auto inset = 1.0 - std::abs(t - 0.5) * 2.0;
-        const auto size  = Defaults::kContainerSize - inset * Defaults::kStrokeWidth;
+        const auto size  = Defaults::kContainerSize.value - inset * Defaults::kStrokeWidth.value;
         return qt::rect { origin.x() + inset, origin.y() + inset, size, size };
     }
 
@@ -60,12 +62,12 @@ struct Graphics {
     }
 
     static auto check_path(double t) -> QPainterPath {
-        const auto start =
-            qt::point { Defaults::kContainerSize * 0.25, Defaults::kContainerSize * 0.50 };
-        const auto mid =
-            qt::point { Defaults::kContainerSize * 0.40, Defaults::kContainerSize * 0.65 };
-        const auto end =
-            qt::point { Defaults::kContainerSize * 0.75, Defaults::kContainerSize * 0.30 };
+        const auto start = qt::point { Defaults::kContainerSize.value * 0.25,
+            Defaults::kContainerSize.value * 0.50 };
+        const auto mid   = qt::point { Defaults::kContainerSize.value * 0.40,
+            Defaults::kContainerSize.value * 0.65 };
+        const auto end   = qt::point { Defaults::kContainerSize.value * 0.75,
+            Defaults::kContainerSize.value * 0.30 };
 
         auto path = QPainterPath { };
         if (t < 0.5) {
@@ -80,12 +82,12 @@ struct Graphics {
     }
 
     static auto dash_path(double t) -> QPainterPath {
-        const auto start =
-            qt::point { Defaults::kContainerSize * 0.25, Defaults::kContainerSize * 0.5 };
-        const auto mid =
-            qt::point { Defaults::kContainerSize * 0.50, Defaults::kContainerSize * 0.5 };
-        const auto end =
-            qt::point { Defaults::kContainerSize * 0.75, Defaults::kContainerSize * 0.5 };
+        const auto start = qt::point { Defaults::kContainerSize.value * 0.25,
+            Defaults::kContainerSize.value * 0.5 };
+        const auto mid   = qt::point { Defaults::kContainerSize.value * 0.50,
+            Defaults::kContainerSize.value * 0.5 };
+        const auto end   = qt::point { Defaults::kContainerSize.value * 0.75,
+            Defaults::kContainerSize.value * 0.5 };
 
         auto path = QPainterPath { };
         path.moveTo(start + (mid - start) * (1.0 - t));
@@ -95,7 +97,8 @@ struct Graphics {
 };
 
 struct Checkbox::Impl {
-    using Tween = TransitionValue<TweenState<double>>;
+    using Spring = TransitionValue<SpringState<double>>;
+    using Tween  = TransitionValue<TweenState<double>>;
 
     Checkbox& self;
     Animatable animatable;
@@ -108,7 +111,7 @@ struct Checkbox::Impl {
     Measurements measurements;
     Colors colors;
 
-    std::unique_ptr<Tween> position;
+    std::unique_ptr<Spring> position;
     std::unique_ptr<Tween> reaction;
     std::unique_ptr<Tween> hover_fade;
     std::unique_ptr<Tween> focus_fade;
@@ -116,7 +119,7 @@ struct Checkbox::Impl {
     explicit Impl(Checkbox& self) noexcept
         : self { self }
         , animatable { self } {
-        position   = make_transition(animatable, Tween::make_state());
+        position   = make_transition(animatable, Spring::make_state());
         reaction   = make_transition(animatable, Tween::make_state());
         hover_fade = make_transition(animatable, Tween::make_state());
         focus_fade = make_transition(animatable, Tween::make_state());
@@ -125,36 +128,51 @@ struct Checkbox::Impl {
         set_measurements({ });
 
         position->get_state().config = {
-            .duration = Defaults::kToggleDuration,
-            .easing   = Defaults::kEaseIn,
-        };
-        reaction->get_state().config = {
-            .duration = Defaults::kReactionDuration,
-            .easing   = Defaults::kFastOutSlowIn,
-        };
-        hover_fade->get_state().config = {
-            .duration = Defaults::kReactionFade,
-            .easing   = Defaults::kFastOutSlowIn,
-        };
-        focus_fade->get_state().config = {
-            .duration = Defaults::kReactionFade,
-            .easing   = Defaults::kFastOutSlowIn,
+            .k = Defaults::kSpringDefaultSpatialStiffness,
+            .d = 2 * Defaults::kSpringDefaultSpatialDamping
+                * std::sqrt(Defaults::kSpringDefaultSpatialStiffness),
+            .epsilon = 1e-4,
         };
     }
 
-    auto group() const -> const Colors::CheckStateTokens& {
-        if (disabled) return colors.disabled;
-        if (error) return colors.error;
-        return colors.enabled;
+    auto checkmark_color(CheckState state) const -> QColor {
+        if (disabled) return colors.disabled_checkmark_color;
+        if (error) {
+            return state == CheckState::UNSELECTED ? colors.unchecked_checkmark_color
+                                                   : colors.error_checked_checkmark_color;
+        }
+        return state == CheckState::UNSELECTED ? colors.unchecked_checkmark_color
+                                               : colors.checked_checkmark_color;
+    }
+
+    auto box_color(CheckState state) const -> QColor {
+        if (disabled) {
+            if (state == CheckState::SELECTED) return colors.disabled_checked_box_color;
+            if (state == CheckState::INDETERMINATE) return colors.disabled_indeterminate_box_color;
+            return colors.disabled_unchecked_box_color;
+        }
+        if (error && state != CheckState::UNSELECTED) return colors.error_checked_box_color;
+        return state == CheckState::UNSELECTED ? colors.unchecked_box_color
+                                               : colors.checked_box_color;
+    }
+
+    auto border_color(CheckState state) const -> QColor {
+        if (disabled) {
+            if (state == CheckState::SELECTED) return colors.disabled_border_color;
+            if (state == CheckState::INDETERMINATE)
+                return colors.disabled_indeterminate_border_color;
+            return colors.disabled_unchecked_border_color;
+        }
+        if (error) {
+            return state == CheckState::UNSELECTED ? colors.error_unchecked_border_color
+                                                   : colors.error_checked_border_color;
+        }
+        return state == CheckState::UNSELECTED ? colors.unchecked_border_color
+                                               : colors.checked_border_color;
     }
 
     auto update_check_ui() const -> void {
         const auto on = check_state != CheckState::UNSELECTED;
-
-        position->get_state().config = {
-            .duration = Defaults::kToggleDuration,
-            .easing   = on ? Defaults::kEaseIn : Defaults::kEaseOut,
-        };
 
         if (check_state == CheckState::INDETERMINATE) {
             position->snap_to(0.0);
@@ -177,15 +195,9 @@ struct Checkbox::Impl {
 
     auto paint_event() -> void {
         const auto center = qt::point { self.width() / 2.0, self.height() / 2.0 };
-        const auto origin =
-            center - qt::point { Defaults::kContainerSize / 2.0, Defaults::kContainerSize / 2.0 };
-
-        const auto& state_colors = group();
-        const auto inactive_fill = state_colors.unchecked.box;
-        const auto active_fill   = state_colors.checked.box;
-        const auto check_color   = state_colors.checked.checkmark;
-        const auto inactive_side = state_colors.unchecked.border;
-        const auto active_side   = state_colors.checked.border;
+        const auto origin = center
+            - qt::point { Defaults::kContainerSize.value / 2.0,
+                  Defaults::kContainerSize.value / 2.0 };
 
         const auto t_norm  = *position;
         const auto is_off  = [](CheckState s) { return s == CheckState::UNSELECTED; };
@@ -194,11 +206,18 @@ struct Checkbox::Impl {
             return is_null(s) ? Graphics::dash_path(ts) : Graphics::check_path(ts);
         };
 
-        auto fill         = inactive_fill;
-        auto border_color = inactive_side;
-        auto border_width = Defaults::kStrokeWidth;
-        auto outer        = Graphics::outer_rect(origin, 1.0);
-        auto mark         = QPainterPath { };
+        const auto active_state  = is_off(check_state) ? previous_state : check_state;
+        const auto inactive_fill = box_color(CheckState::UNSELECTED);
+        const auto active_fill   = box_color(active_state);
+        const auto check_color   = checkmark_color(active_state);
+        const auto inactive_side = border_color(CheckState::UNSELECTED);
+        const auto active_side   = border_color(active_state);
+
+        auto fill          = inactive_fill;
+        auto outline_color = inactive_side;
+        auto border_width  = Defaults::kStrokeWidth.value;
+        auto outer         = Graphics::outer_rect(origin, 1.0);
+        auto mark          = QPainterPath { };
 
         if (is_off(previous_state) || is_off(check_state)) {
             const auto& t = t_norm;
@@ -207,11 +226,11 @@ struct Checkbox::Impl {
             fill  = Graphics::color_at(inactive_fill, active_fill, t);
 
             if (t <= 0.5) {
-                border_color = Graphics::lerp_color(inactive_side, active_side, t);
-                border_width = Defaults::kStrokeWidth * (1.0 - t);
+                outline_color = Graphics::lerp_color(inactive_side, active_side, t);
+                border_width  = Defaults::kStrokeWidth.value * (1.0 - t);
             } else {
-                border_color = active_side;
-                border_width = 0.;
+                outline_color = active_side;
+                border_width  = 0.;
 
                 const auto ts = (t - 0.5) * 2.0;
                 const auto s  = is_off(check_state) ? previous_state : check_state;
@@ -221,8 +240,8 @@ struct Checkbox::Impl {
             outer = Graphics::outer_rect(origin, 1.0);
             fill  = active_fill;
 
-            border_color = active_side;
-            border_width = 0.;
+            outline_color = active_side;
+            border_width  = 0.;
 
             if (t_norm <= 0.5) {
                 mark = mark_at(previous_state, 1.0 - t_norm * 2.0);
@@ -231,17 +250,16 @@ struct Checkbox::Impl {
             }
         }
 
-        const auto scale =
-            static_cast<double>(measurements.container_size) / Defaults::kContainerSize;
-        const auto layer_size = 2 * Defaults::kSplashRadius * scale;
+        const auto scale      = measurements.container_size / Defaults::kContainerSize;
+        const auto layer_size = (measurements.state_layer_size * scale).value;
 
-        auto hover_color = state_colors.unchecked.state_layer;
-        hover_color.setAlphaF(0.08 * *hover_fade);
+        auto hover_color = colors.state_layer_color;
+        hover_color.setAlphaF(Defaults::kHoverStateLayerOpacity * *hover_fade);
 
-        auto press_color = state_colors.unchecked.state_layer;
+        auto press_color = colors.state_layer_color;
         press_color.setAlphaF(*reaction);
 
-        auto ring_color = colors.focus_ring;
+        auto ring_color = colors.focus_indicator_color;
         ring_color.setAlphaF(*focus_fade);
 
         using namespace painter;
@@ -261,23 +279,23 @@ struct Checkbox::Impl {
             },
             Paint::RoundedRectangle {
               Size { qt::size { layer_size, layer_size } },
-              Outline { ring_color, Defaults::kFocusRingWidth * scale },
+              Outline { ring_color, (measurements.focus_ring_width * scale).value },
               Radiuses { layer_size / 2.0 },
             },
             Paint::RoundedRectangle {
               Size { qt::size { outer.width() * scale, outer.height() * scale } },
               Fill { fill },
-              Outline { border_color, static_cast<qt::real>(border_width) },
-              Radiuses { static_cast<double>(measurements.container_shape) },
+              Outline { outline_color, static_cast<qt::real>(border_width) },
+              Radiuses { measurements.container_shape.value },
             },
             Graphics::Mark {
               qt::size {
-                Defaults::kContainerSize,
-                Defaults::kContainerSize,
+                Defaults::kContainerSize.value,
+                Defaults::kContainerSize.value,
               },
               mark,
               check_color,
-              Defaults::kStrokeWidth,
+              Defaults::kStrokeWidth.value,
             },
         };
 
@@ -292,13 +310,13 @@ struct Checkbox::Impl {
     auto set_measurements(const Measurements& value) -> void {
         measurements = value;
 
-        const auto target = measurements.touch_target_size;
+        const auto target = measurements.touch_target_size.px();
         self.setMinimumSize(target, target);
         self.updateGeometry();
     }
 
     auto size_hint() const -> QSize {
-        const auto target = measurements.touch_target_size;
+        const auto target = measurements.touch_target_size.px();
         return QSize { target, target };
     }
 
@@ -336,11 +354,19 @@ struct Checkbox::Impl {
     }
 
     auto enter_event() -> void {
+        hover_fade->get_state().config = {
+            .duration = Defaults::kStateLayerDefaultDuration,
+            .easing   = Defaults::kEasingLinearCubicBezier,
+        };
         hover_fade->transition_to(1.0);
         self.update();
     }
 
     auto leave_event() -> void {
+        hover_fade->get_state().config = {
+            .duration = Defaults::kStateLayerDefaultDuration,
+            .easing   = Defaults::kEasingLinearCubicBezier,
+        };
         hover_fade->transition_to(0.0);
         self.update();
     }
@@ -348,21 +374,38 @@ struct Checkbox::Impl {
     auto focus_in_event(QFocusEvent* event) -> void {
         const auto keyboard =
             (event->reason() == Qt::TabFocusReason) || (event->reason() == Qt::BacktabFocusReason);
+        focus_fade->get_state().config = {
+            .duration = keyboard ? Defaults::kStateLayerFocusInDuration
+                                 : Defaults::kStateLayerDefaultDuration,
+            .easing   = Defaults::kEasingLinearCubicBezier,
+        };
         focus_fade->transition_to(keyboard ? 1.0 : 0.0);
         self.update();
     }
 
     auto focus_out_event() -> void {
+        focus_fade->get_state().config = {
+            .duration = Defaults::kStateLayerDefaultDuration,
+            .easing   = Defaults::kEasingLinearCubicBezier,
+        };
         focus_fade->transition_to(0.0);
         self.update();
     }
 
     auto mouse_press_event() -> void {
-        reaction->transition_to(Defaults::kRadialReactionAlpha);
+        reaction->get_state().config = {
+            .duration = Defaults::kFadeInDuration,
+            .easing   = Defaults::kEasingLinearCubicBezier,
+        };
+        reaction->transition_to(Defaults::kPressedStateLayerOpacity);
         self.update();
     }
 
     auto mouse_release_event() -> void {
+        reaction->get_state().config = {
+            .duration = Defaults::kFadeOutDuration,
+            .easing   = Defaults::kEasingLinearCubicBezier,
+        };
         reaction->transition_to(0.0);
         self.update();
     }
@@ -436,51 +479,3 @@ auto Checkbox::mouseReleaseEvent(QMouseEvent* event) -> void {
 }
 
 auto Checkbox::paintEvent(QPaintEvent*) -> void { pimpl->paint_event(); }
-
-auto Checkbox::Defaults::mapColors(const ColorScheme& scheme, Colors& colors) -> void {
-    constexpr auto kDisabledOpacity = 0.38;
-
-    auto disabled_container = scheme.on_surface;
-    disabled_container.setAlphaF(kDisabledOpacity);
-
-    auto disabled_outline = scheme.on_surface;
-    disabled_outline.setAlphaF(kDisabledOpacity);
-
-    colors.enabled.checked.checkmark   = scheme.on_primary;
-    colors.enabled.checked.box         = scheme.primary;
-    colors.enabled.checked.border      = scheme.primary;
-    colors.enabled.checked.state_layer = scheme.primary;
-
-    colors.enabled.unchecked.checkmark   = Qt::transparent;
-    colors.enabled.unchecked.box         = Qt::transparent;
-    colors.enabled.unchecked.border      = scheme.on_surface_variant;
-    colors.enabled.unchecked.state_layer = scheme.on_surface;
-
-    colors.enabled.indeterminate = colors.enabled.checked;
-
-    colors.disabled.checked.checkmark   = scheme.surface;
-    colors.disabled.checked.box         = disabled_container;
-    colors.disabled.checked.border      = disabled_container;
-    colors.disabled.checked.state_layer = scheme.on_surface;
-
-    colors.disabled.unchecked.checkmark   = Qt::transparent;
-    colors.disabled.unchecked.box         = Qt::transparent;
-    colors.disabled.unchecked.border      = disabled_outline;
-    colors.disabled.unchecked.state_layer = scheme.on_surface;
-
-    colors.disabled.indeterminate = colors.disabled.checked;
-
-    colors.error.checked.checkmark   = scheme.on_error;
-    colors.error.checked.box         = scheme.error;
-    colors.error.checked.border      = scheme.error;
-    colors.error.checked.state_layer = scheme.error;
-
-    colors.error.unchecked.checkmark   = Qt::transparent;
-    colors.error.unchecked.box         = Qt::transparent;
-    colors.error.unchecked.border      = scheme.error;
-    colors.error.unchecked.state_layer = scheme.error;
-
-    colors.error.indeterminate = colors.error.checked;
-
-    colors.focus_ring = scheme.secondary;
-}
