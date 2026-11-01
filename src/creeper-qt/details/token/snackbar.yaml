@@ -20,3 +20,17 @@ extract:
   - name: DismissActionPadding
     file: material3:Snackbar.kt
     match: 'modifier\.padding\((\d+)\.dp\)'
+
+measurements:
+  single_line_height: SingleLineContainerHeight
+  cancel_width: IconSize
+  message_padding: HorizontalSpacing
+  action_padding: HorizontalSpacingButtonSide
+  cancel_padding: DismissActionPadding
+
+colors:
+  color: ContainerColor
+  content_color: SupportingTextColor
+  action_color: ActionLabelTextColor
+  action_content_color: ActionLabelTextColor
+  dismiss_action_content_color: IconColor

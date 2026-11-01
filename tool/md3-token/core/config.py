@@ -145,9 +145,10 @@ def load_config(path: Path = CONFIG_PATH) -> Config:
     )
 
 
-COMPONENT_KEYS = frozenset({"namespace", "tokens", "symbols", "extract"})
-UNSUPPORTED_COMPONENT_KEYS = frozenset({"measurements", "colors"})
+COMPONENT_KEYS = frozenset(
+    {"namespace", "tokens", "symbols", "extract", "measurements", "colors"})
 NAMESPACE_PATTERN = re.compile(r"[a-z][a-z0-9_]*")
+FIELD_NAME_PATTERN = re.compile(r"[a-z][a-z0-9_]*")
 EXTRACT_NAME_PATTERN = re.compile(r"[A-Z][A-Za-z0-9]*")
 
 
@@ -171,12 +172,27 @@ class ExtractSource:
 
 
 @dataclass(frozen=True)
+class Measurement:
+    name: str
+    value: str
+
+
+@dataclass(frozen=True)
+class ColorEntry:
+    name: str
+    token: str | None
+    opacity: str | None
+
+
+@dataclass(frozen=True)
 class Component:
     path: Path
     namespace: str
     tokens: TokensSource | None
     symbols: tuple[SymbolsSource, ...]
     extract: tuple[ExtractSource, ...]
+    measurements: tuple[Measurement, ...] | None
+    colors: tuple[ColorEntry, ...] | None
 
 
 def _read_yaml(path: Path) -> Any:
@@ -193,9 +209,6 @@ def _validate_component_keys(
         required: frozenset[str], optional: frozenset[str] = frozenset()) -> None:
     if not isinstance(value, dict):
         _fail(path, field, "must be a mapping")
-    for key in value:
-        if key in UNSUPPORTED_COMPONENT_KEYS:
-            _fail(path, str(key), "not supported yet")
     missing = sorted(required - set(value))
     unexpected = sorted(str(key) for key in set(value) - required - optional)
     details = []
@@ -266,6 +279,63 @@ def _load_extract(config: Config, path: Path, index: int, value: Any) -> Extract
     return ExtractSource(name=name, file=file, match=match)
 
 
+def _field_path(path: Path, section: str, name: Any) -> str:
+    if not isinstance(name, str):
+        _fail(path, section, f"field name must be a string: {name!r}")
+    field = f"{section}.{name}"
+    if not FIELD_NAME_PATTERN.fullmatch(name):
+        _fail(path, field, "must match [a-z][a-z0-9_]*")
+    return field
+
+
+def _load_measurements(path: Path, value: Any) -> tuple[Measurement, ...]:
+    if not isinstance(value, dict):
+        _fail(path, "measurements", "must be a mapping")
+    measurements = []
+    for name, entry in value.items():
+        field = _field_path(path, "measurements", name)
+        if not isinstance(entry, str) or not entry:
+            _fail(path, field, "must be a non-empty value name")
+        measurements.append(Measurement(name=name, value=entry))
+    return tuple(measurements)
+
+
+def _color_value(path: Path, field: str, value: Any) -> tuple[str | None, str | None]:
+    if isinstance(value, str):
+        if not value:
+            _fail(path, field, "must be a non-empty token name")
+        if value == "transparent":
+            return None, None
+        return value, None
+    if isinstance(value, dict):
+        if "color" not in value and "opacity" not in value:
+            _fail(path, field, "nested colors are not supported yet")
+        _validate_keys(path, field, value, frozenset({"color", "opacity"}))
+        color = value["color"]
+        if not isinstance(color, str) or not color:
+            _fail(path, f"{field}.color", "must be a non-empty token name")
+        opacity = value["opacity"]
+        if not isinstance(opacity, str) or not opacity:
+            _fail(
+                path, f"{field}.opacity",
+                "must be a value name string (numeric literals are not allowed)")
+        return color, opacity
+    _fail(
+        path, field,
+        "must be a token name, 'transparent', or a {color, opacity} mapping")
+
+
+def _load_colors(path: Path, value: Any) -> tuple[ColorEntry, ...]:
+    if not isinstance(value, dict):
+        _fail(path, "colors", "must be a mapping")
+    colors = []
+    for name, entry in value.items():
+        field = _field_path(path, "colors", name)
+        token, opacity = _color_value(path, field, entry)
+        colors.append(ColorEntry(name=name, token=token, opacity=opacity))
+    return tuple(colors)
+
+
 def _load_component(config: Config, path: Path) -> Component:
     raw = _read_yaml(path)
     _validate_component_keys(
@@ -288,12 +358,22 @@ def _load_component(config: Config, path: Path) -> Component:
         _load_extract(config, path, index, entry)
         for index, entry in enumerate(_validate_list(path, "extract", raw.get("extract", [])))
     )
+    measurements = None
+    if "measurements" in raw:
+        measurements = _load_measurements(path, raw["measurements"])
+    colors = None
+    if "colors" in raw:
+        if tokens is None:
+            _fail(path, "colors", "requires a tokens section")
+        colors = _load_colors(path, raw["colors"])
     return Component(
         path=path,
         namespace=namespace,
         tokens=tokens,
         symbols=symbols,
         extract=extract,
+        measurements=measurements,
+        colors=colors,
     )
 
 

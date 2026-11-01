@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import argparse
+import difflib
 from dataclasses import dataclass
 from pathlib import Path
+from typing import NoReturn
 
-from core import cache, kotlin, log as log_module, render
+from core import cache, kotlin, log as log_module, render, scheme
 from core.config import (
     REPO_ROOT,
     Component,
@@ -14,7 +16,7 @@ from core.config import (
     load_config,
 )
 from core.kotlin import Declaration, Location, KotlinError, KotlinFile
-from core.model import Unknown, Value
+from core.model import Ref, Unknown, Value
 from core.resolve import Resolver, SysRef
 
 log = log_module.get("generate")
@@ -27,11 +29,27 @@ class Field:
 
 
 @dataclass(frozen=True)
+class CollectedValue:
+    value: Value | SysRef | None
+    file: KotlinFile
+
+
+@dataclass(frozen=True)
 class Collected:
     component: Component
     fields: tuple[Field, ...]
+    values: dict[str, CollectedValue]
     files: tuple[KotlinFile, ...]
     skipped_colors: int
+
+
+@dataclass(frozen=True)
+class Prepared:
+    collected: Collected
+    measurements: tuple[render.MeasurementField, ...] | None
+    measurement_files: tuple[KotlinFile, ...]
+    colors: tuple[render.ColorField, ...] | None
+    color_files: tuple[KotlinFile, ...]
 
 
 def register(sub: argparse._SubParsersAction) -> None:
@@ -122,9 +140,14 @@ def _collect(resolver: Resolver, component: Component) -> Collected:
 
     fields = []
     files: list[KotlinFile] = []
+    values: dict[str, CollectedValue] = {}
     skipped_colors = 0
     for kotlin_file, declaration in declarations:
         resolved = resolver.resolve(declaration)
+        values[declaration.name] = CollectedValue(
+            value=None if resolved is None else resolved.value,
+            file=kotlin_file,
+        )
         if resolved is None:
             skipped_colors += 1
             continue
@@ -136,14 +159,141 @@ def _collect(resolver: Resolver, component: Component) -> Collected:
     return Collected(
         component=component,
         fields=tuple(fields),
+        values=values,
         files=tuple(files),
         skipped_colors=skipped_colors,
     )
 
 
+def _resolved_type(resolved: Value | SysRef | None, resolver: Resolver) -> str:
+    if resolved is None:
+        return "ColorToken"
+    if isinstance(resolved, SysRef):
+        entry = resolver.entries.get((resolved.kind, resolved.name))
+        if entry is None:
+            return resolved.kind
+        return type(entry.value).__name__
+    return type(resolved).__name__
+
+
+def _missing_value(
+        path: Path, field: str, name: str, available: list[str]) -> NoReturn:
+    suggestions = difflib.get_close_matches(name, available, n=3, cutoff=0.6)
+    detail = f"unknown value {name}"
+    if suggestions:
+        detail += f" (did you mean {', '.join(suggestions)}?)"
+    raise ConfigError(f"{path}: {field}: {detail}")
+
+
+def _measurement_fields(
+        resolver: Resolver, collected: Collected
+) -> tuple[tuple[render.MeasurementField, ...] | None, tuple[KotlinFile, ...]]:
+    component = collected.component
+    if component.measurements is None:
+        return None, ()
+    measurements = []
+    files: list[KotlinFile] = []
+    available = sorted(collected.values)
+    for measurement in component.measurements:
+        info = collected.values.get(measurement.value)
+        if info is None:
+            _missing_value(
+                component.path,
+                f"measurements.{measurement.name}",
+                measurement.value,
+                available,
+            )
+        type_name = _resolved_type(info.value, resolver)
+        if type_name not in ("Dp", "Sp"):
+            raise ConfigError(
+                f"{component.path}: measurements.{measurement.name}: "
+                f"{measurement.value} has type {type_name}, expected Dp or Sp")
+        if isinstance(info.value, SysRef):
+            expression = render.render_value(info.value)
+        else:
+            expression = render.cpp_name(measurement.value)
+        measurements.append(render.MeasurementField(
+            name=measurement.name,
+            type_name=type_name,
+            value=expression,
+        ))
+        _add_file(files, info.file)
+    return tuple(measurements), tuple(files)
+
+
+def _color_token(
+        component: Component, tokens: KotlinFile, field: str, token: str,
+        scheme_fields: frozenset[str]) -> str:
+    try:
+        declaration = tokens.get(token)
+    except KotlinError as error:
+        raise ConfigError(f"{component.path}: {field}: {error}") from None
+    value = declaration.value
+    if not isinstance(value, Ref) or value.owner != "ColorSchemeKeyTokens":
+        if isinstance(value, Ref):
+            actual = f"{value.owner}.{value.name}"
+        else:
+            actual = type(value).__name__
+        raise ConfigError(
+            f"{component.path}: {field}: {token} = {declaration.raw}: "
+            f"expected ColorSchemeKeyTokens.<name>, got {actual}")
+    scheme_field = scheme.snake_case(value.name)
+    if scheme_field not in scheme_fields:
+        raise ConfigError(
+            f"{declaration.location.path}:{declaration.location.line}: "
+            f"{token} = {declaration.raw}: ColorScheme has no field {scheme_field}")
+    return scheme_field
+
+
+def _color_fields(
+        resolver: Resolver, collected: Collected, scheme_fields: frozenset[str]
+) -> tuple[tuple[render.ColorField, ...] | None, tuple[KotlinFile, ...]]:
+    component = collected.component
+    if component.colors is None:
+        return None, ()
+    if component.tokens is None:
+        raise ConfigError(f"{component.path}: colors: requires a tokens section")
+    tokens = resolver.by_reference(component.tokens.file)
+    colors = []
+    for entry in component.colors:
+        field = f"colors.{entry.name}"
+        if entry.token is None:
+            colors.append(render.ColorField(
+                name=entry.name,
+                token=None,
+                scheme_field=None,
+                opacity=None,
+            ))
+            continue
+        scheme_field = _color_token(
+            component, tokens, field, entry.token, scheme_fields)
+        if entry.opacity is not None:
+            info = collected.values.get(entry.opacity)
+            if info is None:
+                available = sorted(
+                    name for name, value in collected.values.items()
+                    if _resolved_type(value.value, resolver) in ("Float", "Double")
+                )
+                _missing_value(
+                    component.path, f"{field}.opacity", entry.opacity, available)
+            opacity_type = _resolved_type(info.value, resolver)
+            if opacity_type not in ("Float", "Double"):
+                raise ConfigError(
+                    f"{component.path}: {field}.opacity: {entry.opacity} "
+                    f"has type {opacity_type}, expected Float or Double")
+        colors.append(render.ColorField(
+            name=entry.name,
+            token=entry.token,
+            scheme_field=scheme_field,
+            opacity=entry.opacity,
+        ))
+    return tuple(colors), (tokens,)
+
+
 def build_all(config: Config) -> dict[Path, str]:
     components = load_components(config)
     resolver = Resolver(config)
+    scheme_fields = scheme.color_scheme_fields()
     collected = []
     for component in components:
         result = _collect(resolver, component)
@@ -154,14 +304,51 @@ def build_all(config: Config) -> dict[Path, str]:
         log.info("  skipped %d color tokens", result.skipped_colors)
 
     targets: dict[Path, str] = {}
+    prepared = []
     for result in collected:
-        path = render.component_path(config, result.component.namespace)
+        measurements, measurement_files = _measurement_fields(resolver, result)
+        colors, color_files = _color_fields(resolver, result, scheme_fields)
+        prepared.append(Prepared(
+            collected=result,
+            measurements=measurements,
+            measurement_files=measurement_files,
+            colors=colors,
+            color_files=color_files,
+        ))
+
+    for item in prepared:
+        result = item.collected
+        namespace = result.component.namespace
+        path = render.component_path(config, namespace)
         targets[path] = render.render_component(
             config,
             path,
-            result.component.namespace,
+            namespace,
             tuple((field.name, field.value) for field in result.fields),
             result.files,
+        )
+
+        if item.measurements is not None:
+            path = render.measurements_path(config, namespace)
+            targets[path] = render.render_measurements(
+                config, path, namespace, item.measurements, item.measurement_files)
+
+        if item.colors is not None:
+            path = render.colors_path(config, namespace)
+            targets[path] = render.render_colors(
+                config, path, namespace, item.colors, item.color_files)
+
+        sources = list(result.files)
+        for kotlin_file in item.color_files:
+            _add_file(sources, kotlin_file)
+        path = render.defaults_path(config, namespace)
+        targets[path] = render.render_defaults(
+            config,
+            path,
+            namespace,
+            tuple(field.name for field in result.fields),
+            item.colors,
+            tuple(sources),
         )
 
     for kind in sorted({entry.kind for entry in resolver.entries.values()}):
