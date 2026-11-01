@@ -1,0 +1,22 @@
+namespace: snackbar
+
+tokens:
+  file: tokens:SnackbarTokens.kt
+
+symbols:
+  - file: material3:Snackbar.kt
+    names:
+      - ContainerMaxWidth
+      - HeightToFirstLine
+      - HorizontalSpacing
+      - HorizontalSpacingButtonSide
+      - SeparateButtonExtraY
+      - TextEndExtraSpacing
+      - LongButtonVerticalOffset
+      - SnackbarVerticalPadding
+      - ActionButtonBottomPadding
+
+extract:
+  - name: DismissActionPadding
+    file: material3:Snackbar.kt
+    match: 'modifier\.padding\((\d+)\.dp\)'

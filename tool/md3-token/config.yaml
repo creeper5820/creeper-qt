@@ -6,9 +6,11 @@ sparse:
   - compose/material3/material3/src/commonMain
   - compose/material/material-ripple/src/commonMain
   - compose/animation/animation-core/src/commonMain
+  - compose/ui/ui-text/src/commonMain
 modules:
   material3: compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3
   tokens: compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens
   ripple: compose/material/material-ripple/src/commonMain/kotlin/androidx/compose/material/ripple
   animation: compose/animation/animation-core/src/commonMain/kotlin/androidx/compose/animation/core
+  text: compose/ui/ui-text/src/commonMain/kotlin/androidx/compose/ui/text/font
 output: src/creeper-qt/details/token

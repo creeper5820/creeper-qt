@@ -143,3 +143,162 @@ def load_config(path: Path = CONFIG_PATH) -> Config:
         modules=modules,
         output=REPO_ROOT / output_value,
     )
+
+
+COMPONENT_KEYS = frozenset({"namespace", "tokens", "symbols", "extract"})
+UNSUPPORTED_COMPONENT_KEYS = frozenset({"measurements", "colors"})
+NAMESPACE_PATTERN = re.compile(r"[a-z][a-z0-9_]*")
+EXTRACT_NAME_PATTERN = re.compile(r"[A-Z][A-Za-z0-9]*")
+
+
+@dataclass(frozen=True)
+class TokensSource:
+    file: str
+    include: tuple[str, ...] | None
+
+
+@dataclass(frozen=True)
+class SymbolsSource:
+    file: str
+    names: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class ExtractSource:
+    name: str
+    file: str
+    match: str
+
+
+@dataclass(frozen=True)
+class Component:
+    path: Path
+    namespace: str
+    tokens: TokensSource | None
+    symbols: tuple[SymbolsSource, ...]
+    extract: tuple[ExtractSource, ...]
+
+
+def _read_yaml(path: Path) -> Any:
+    try:
+        return yaml.safe_load(path.read_text(encoding="utf-8"))
+    except OSError as error:
+        _fail(path, "file", f"cannot read: {error}")
+    except yaml.YAMLError as error:
+        _fail(path, "yaml", f"cannot parse: {error}")
+
+
+def _validate_component_keys(
+        path: Path, field: str, value: Any,
+        required: frozenset[str], optional: frozenset[str] = frozenset()) -> None:
+    if not isinstance(value, dict):
+        _fail(path, field, "must be a mapping")
+    for key in value:
+        if key in UNSUPPORTED_COMPONENT_KEYS:
+            _fail(path, str(key), "not supported yet")
+    missing = sorted(required - set(value))
+    unexpected = sorted(str(key) for key in set(value) - required - optional)
+    details = []
+    if missing:
+        details.append(f"missing keys: {missing}")
+    if unexpected:
+        details.append(f"unexpected keys: {unexpected}")
+    if details:
+        _fail(path, field, "; ".join(details))
+
+
+def _validate_list(path: Path, field: str, value: Any) -> list[Any]:
+    if not isinstance(value, list):
+        _fail(path, field, "must be a list")
+    return value
+
+
+def _validate_names(path: Path, field: str, value: Any) -> tuple[str, ...]:
+    if not isinstance(value, list) or not value:
+        _fail(path, field, "must be a non-empty list of strings")
+    for index, entry in enumerate(value):
+        if not isinstance(entry, str) or not entry:
+            _fail(path, f"{field}[{index}]", "must be a non-empty string")
+    duplicates = sorted({entry for entry in value if value.count(entry) > 1})
+    if duplicates:
+        _fail(path, field, f"duplicate entries: {duplicates}")
+    return tuple(value)
+
+
+def _validate_reference(config: Config, path: Path, field: str, value: Any) -> str:
+    if not isinstance(value, str) or not value:
+        _fail(path, field, "must be a non-empty string")
+    try:
+        config.resolve(value)
+    except ConfigError as error:
+        _fail(path, field, str(error))
+    return value
+
+
+def _load_tokens(config: Config, path: Path, value: Any) -> TokensSource:
+    _validate_component_keys(
+        path, "tokens", value, frozenset({"file"}), frozenset({"include"}))
+    file = _validate_reference(config, path, "tokens.file", value["file"])
+    include = None
+    if "include" in value:
+        include = _validate_names(path, "tokens.include", value["include"])
+    return TokensSource(file=file, include=include)
+
+
+def _load_symbols(config: Config, path: Path, index: int, value: Any) -> SymbolsSource:
+    field = f"symbols[{index}]"
+    _validate_component_keys(path, field, value, frozenset({"file", "names"}))
+    file = _validate_reference(config, path, f"{field}.file", value["file"])
+    names = _validate_names(path, f"{field}.names", value["names"])
+    return SymbolsSource(file=file, names=names)
+
+
+def _load_extract(config: Config, path: Path, index: int, value: Any) -> ExtractSource:
+    field = f"extract[{index}]"
+    _validate_component_keys(path, field, value, frozenset({"name", "file", "match"}))
+    name = value["name"]
+    if not isinstance(name, str) or not EXTRACT_NAME_PATTERN.fullmatch(name):
+        _fail(path, f"{field}.name", "must be a PascalCase identifier")
+    file = _validate_reference(config, path, f"{field}.file", value["file"])
+    match = value["match"]
+    if not isinstance(match, str) or not match:
+        _fail(path, f"{field}.match", "must be a non-empty string")
+    return ExtractSource(name=name, file=file, match=match)
+
+
+def _load_component(config: Config, path: Path) -> Component:
+    raw = _read_yaml(path)
+    _validate_component_keys(
+        path, "top-level", raw, frozenset({"namespace"}), COMPONENT_KEYS - {"namespace"})
+
+    namespace = raw["namespace"]
+    if not isinstance(namespace, str) or not NAMESPACE_PATTERN.fullmatch(namespace):
+        _fail(path, "namespace", "must match [a-z][a-z0-9_]*")
+    if namespace != path.stem:
+        _fail(path, "namespace", f"must equal the file name {path.stem!r}")
+
+    tokens = None
+    if "tokens" in raw:
+        tokens = _load_tokens(config, path, raw["tokens"])
+    symbols = tuple(
+        _load_symbols(config, path, index, entry)
+        for index, entry in enumerate(_validate_list(path, "symbols", raw.get("symbols", [])))
+    )
+    extract = tuple(
+        _load_extract(config, path, index, entry)
+        for index, entry in enumerate(_validate_list(path, "extract", raw.get("extract", [])))
+    )
+    return Component(
+        path=path,
+        namespace=namespace,
+        tokens=tokens,
+        symbols=symbols,
+        extract=extract,
+    )
+
+
+def load_components(config: Config) -> tuple[Component, ...]:
+    return tuple(
+        _load_component(config, path)
+        for path in sorted(config.output.glob("*.yaml"))
+    )

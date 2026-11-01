@@ -90,6 +90,16 @@ class FontWeightName:
 
 
 @dataclass(frozen=True)
+class Weight:
+    value: int
+
+
+@dataclass(frozen=True)
+class Alias:
+    name: str
+
+
+@dataclass(frozen=True)
 class Unknown:
     text: str
 
@@ -110,6 +120,8 @@ Value = (
     | CubicBezier
     | Rgb
     | FontWeightName
+    | Weight
+    | Alias
     | Unknown
 )
 
@@ -127,6 +139,8 @@ _FLOAT_ARG = re.compile(rf"^({_NUMBER})[fF]?$")
 _ROUNDED = re.compile(r"^RoundedCornerShape\((.*)\)$")
 _CORNER_SIZE = re.compile(rf"^CornerSize\(\s*({_NUMBER})\.dp\s*,?\s*\)$")
 _CUBIC = re.compile(r"^CubicBezierEasing\((.*)\)$")
+_WEIGHT = re.compile(r"^FontWeight\(\s*(\d+)\s*\)$")
+_IDENTIFIER = re.compile(r"^[A-Za-z_]\w*$")
 _RGB = re.compile(
     r"^Color\(\s*red\s*=\s*(\d+)\s*,\s*green\s*=\s*(\d+)\s*,"
     r"\s*blue\s*=\s*(\d+)\s*,?\s*\)$")
@@ -257,5 +271,12 @@ def classify(text: str) -> Value:
         if owner == "FontWeight":
             return FontWeightName(name)
         return Ref(owner=owner, name=name)
+
+    match = _WEIGHT.fullmatch(compact)
+    if match is not None:
+        return Weight(int(match.group(1)))
+
+    if _IDENTIFIER.fullmatch(compact):
+        return Alias(compact)
 
     return Unknown(compact)
