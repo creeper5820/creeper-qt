@@ -2,6 +2,8 @@
 // androidx 37359fb99db1cb7c3f031e247c3d544f4cf01fa4
 // tokens:SnackbarTokens.kt (VERSION v0_103)
 // material3:Snackbar.kt
+// tokens:StandardMotionTokens.kt (VERSION v0_14_0)
+// material3:SnackbarHost.kt
 #pragma once
 
 #include "creeper-qt/details/token/snackbar/colors.hh"
@@ -11,23 +13,29 @@
 namespace creeper::token::snackbar {
 
 struct Defaults {
-    constexpr static auto kActionLabelTextFont         = snackbar::kActionLabelTextFont;
-    constexpr static auto kContainerElevation          = snackbar::kContainerElevation;
-    constexpr static auto kContainerShape              = snackbar::kContainerShape;
-    constexpr static auto kIconSize                    = snackbar::kIconSize;
-    constexpr static auto kSupportingTextFont          = snackbar::kSupportingTextFont;
-    constexpr static auto kSingleLineContainerHeight   = snackbar::kSingleLineContainerHeight;
-    constexpr static auto kTwoLinesContainerHeight     = snackbar::kTwoLinesContainerHeight;
-    constexpr static auto kContainerMaxWidth           = snackbar::kContainerMaxWidth;
-    constexpr static auto kHeightToFirstLine           = snackbar::kHeightToFirstLine;
-    constexpr static auto kHorizontalSpacing           = snackbar::kHorizontalSpacing;
-    constexpr static auto kHorizontalSpacingButtonSide = snackbar::kHorizontalSpacingButtonSide;
-    constexpr static auto kSeparateButtonExtraY        = snackbar::kSeparateButtonExtraY;
-    constexpr static auto kTextEndExtraSpacing         = snackbar::kTextEndExtraSpacing;
-    constexpr static auto kLongButtonVerticalOffset    = snackbar::kLongButtonVerticalOffset;
-    constexpr static auto kSnackbarVerticalPadding     = snackbar::kSnackbarVerticalPadding;
-    constexpr static auto kActionButtonBottomPadding   = snackbar::kActionButtonBottomPadding;
-    constexpr static auto kDismissActionPadding        = snackbar::kDismissActionPadding;
+    constexpr static auto kActionLabelTextFont           = snackbar::kActionLabelTextFont;
+    constexpr static auto kContainerElevation            = snackbar::kContainerElevation;
+    constexpr static auto kContainerShape                = snackbar::kContainerShape;
+    constexpr static auto kIconSize                      = snackbar::kIconSize;
+    constexpr static auto kSupportingTextFont            = snackbar::kSupportingTextFont;
+    constexpr static auto kSingleLineContainerHeight     = snackbar::kSingleLineContainerHeight;
+    constexpr static auto kTwoLinesContainerHeight       = snackbar::kTwoLinesContainerHeight;
+    constexpr static auto kContainerMaxWidth             = snackbar::kContainerMaxWidth;
+    constexpr static auto kHeightToFirstLine             = snackbar::kHeightToFirstLine;
+    constexpr static auto kHorizontalSpacing             = snackbar::kHorizontalSpacing;
+    constexpr static auto kHorizontalSpacingButtonSide   = snackbar::kHorizontalSpacingButtonSide;
+    constexpr static auto kSeparateButtonExtraY          = snackbar::kSeparateButtonExtraY;
+    constexpr static auto kLegacySnackbarVerticalPadding = snackbar::kLegacySnackbarVerticalPadding;
+    constexpr static auto kTextEndExtraSpacing           = snackbar::kTextEndExtraSpacing;
+    constexpr static auto kLongButtonVerticalOffset      = snackbar::kLongButtonVerticalOffset;
+    constexpr static auto kSpringFastSpatialDamping      = snackbar::kSpringFastSpatialDamping;
+    constexpr static auto kSpringFastSpatialStiffness    = snackbar::kSpringFastSpatialStiffness;
+    constexpr static auto kSpringFastEffectsDamping      = snackbar::kSpringFastEffectsDamping;
+    constexpr static auto kSpringFastEffectsStiffness    = snackbar::kSpringFastEffectsStiffness;
+    constexpr static auto kSnackbarPadding               = snackbar::kSnackbarPadding;
+    constexpr static auto kShortDuration                 = snackbar::kShortDuration;
+    constexpr static auto kLongDuration                  = snackbar::kLongDuration;
+    constexpr static auto kHiddenScale                   = snackbar::kHiddenScale;
 
     static auto mapColors(const ColorScheme& scheme, Colors& colors) -> void {
         colors.color                        = scheme.inverse_surface;

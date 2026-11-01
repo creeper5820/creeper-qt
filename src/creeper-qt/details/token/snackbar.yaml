@@ -11,22 +11,46 @@ symbols:
       - HorizontalSpacing
       - HorizontalSpacingButtonSide
       - SeparateButtonExtraY
+      - LegacySnackbarVerticalPadding
       - TextEndExtraSpacing
       - LongButtonVerticalOffset
-      - SnackbarVerticalPadding
-      - ActionButtonBottomPadding
+  - file: tokens:StandardMotionTokens.kt
+    names:
+      - SpringFastSpatialDamping
+      - SpringFastSpatialStiffness
+      - SpringFastEffectsDamping
+      - SpringFastEffectsStiffness
 
 extract:
-  - name: DismissActionPadding
+  - name: SnackbarPadding
     file: material3:Snackbar.kt
     match: 'modifier\.padding\((\d+)\.dp\)'
+  - name: ShortDuration
+    file: material3:SnackbarHost.kt
+    match: 'SnackbarDuration\.Short\s*->\s*(\d+)L'
+    unit: ms
+  - name: LongDuration
+    file: material3:SnackbarHost.kt
+    match: 'SnackbarDuration\.Long\s*->\s*(\d+)L'
+    unit: ms
+  - name: HiddenScale
+    file: material3:SnackbarHost.kt
+    match: 'Animatable\(if \(!visible\) 1f else (0\.\d+)f\)'
 
 measurements:
-  single_line_height: SingleLineContainerHeight
-  cancel_width: IconSize
-  message_padding: HorizontalSpacing
-  action_padding: HorizontalSpacingButtonSide
-  cancel_padding: DismissActionPadding
+  container_max_width: ContainerMaxWidth
+  container_shape: ContainerShape
+  single_line_container_height: SingleLineContainerHeight
+  two_lines_container_height: TwoLinesContainerHeight
+  icon_size: IconSize
+  horizontal_spacing: HorizontalSpacing
+  horizontal_spacing_button_side: HorizontalSpacingButtonSide
+  text_end_extra_spacing: TextEndExtraSpacing
+  vertical_padding: LegacySnackbarVerticalPadding
+  height_to_first_line: HeightToFirstLine
+  long_button_vertical_offset: LongButtonVerticalOffset
+  separate_button_extra_y: SeparateButtonExtraY
+  snackbar_padding: SnackbarPadding
 
 colors:
   color: ContainerColor

@@ -2,6 +2,8 @@
 // androidx 37359fb99db1cb7c3f031e247c3d544f4cf01fa4
 // tokens:SnackbarTokens.kt (VERSION v0_103)
 // material3:Snackbar.kt
+// tokens:StandardMotionTokens.kt (VERSION v0_14_0)
+// material3:SnackbarHost.kt
 #pragma once
 
 #include "creeper-qt/details/token/sys/elevation.hh"
@@ -9,24 +11,32 @@
 #include "creeper-qt/details/token/sys/typography.hh"
 #include "creeper-qt/details/token/sys/unit.hh"
 
+#include <chrono>
+
 namespace creeper::token::snackbar {
 
-constexpr inline auto kActionLabelTextFont         = sys::typography::kLabelLarge;
-constexpr inline auto kContainerElevation          = sys::elevation::kLevel3;
-constexpr inline auto kContainerShape              = sys::shape::kCornerExtraSmall;
-constexpr inline auto kIconSize                    = 24_dp;
-constexpr inline auto kSupportingTextFont          = sys::typography::kBodyMedium;
-constexpr inline auto kSingleLineContainerHeight   = 48_dp;
-constexpr inline auto kTwoLinesContainerHeight     = 68_dp;
-constexpr inline auto kContainerMaxWidth           = 600_dp;
-constexpr inline auto kHeightToFirstLine           = 30_dp;
-constexpr inline auto kHorizontalSpacing           = 16_dp;
-constexpr inline auto kHorizontalSpacingButtonSide = 8_dp;
-constexpr inline auto kSeparateButtonExtraY        = 2_dp;
-constexpr inline auto kTextEndExtraSpacing         = 8_dp;
-constexpr inline auto kLongButtonVerticalOffset    = 12_dp;
-constexpr inline auto kSnackbarVerticalPadding     = 14_dp;
-constexpr inline auto kActionButtonBottomPadding   = 4_dp;
-constexpr inline auto kDismissActionPadding        = 12_dp;
+constexpr inline auto kActionLabelTextFont           = sys::typography::kLabelLarge;
+constexpr inline auto kContainerElevation            = sys::elevation::kLevel3;
+constexpr inline auto kContainerShape                = sys::shape::kCornerExtraSmall;
+constexpr inline auto kIconSize                      = 24_dp;
+constexpr inline auto kSupportingTextFont            = sys::typography::kBodyMedium;
+constexpr inline auto kSingleLineContainerHeight     = 48_dp;
+constexpr inline auto kTwoLinesContainerHeight       = 68_dp;
+constexpr inline auto kContainerMaxWidth             = 600_dp;
+constexpr inline auto kHeightToFirstLine             = 30_dp;
+constexpr inline auto kHorizontalSpacing             = 16_dp;
+constexpr inline auto kHorizontalSpacingButtonSide   = 8_dp;
+constexpr inline auto kSeparateButtonExtraY          = 2_dp;
+constexpr inline auto kLegacySnackbarVerticalPadding = 6_dp;
+constexpr inline auto kTextEndExtraSpacing           = 8_dp;
+constexpr inline auto kLongButtonVerticalOffset      = 12_dp;
+constexpr inline auto kSpringFastSpatialDamping      = 0.9;
+constexpr inline auto kSpringFastSpatialStiffness    = 1400.0;
+constexpr inline auto kSpringFastEffectsDamping      = 1.0;
+constexpr inline auto kSpringFastEffectsStiffness    = 3800.0;
+constexpr inline auto kSnackbarPadding               = 12_dp;
+constexpr inline auto kShortDuration                 = std::chrono::milliseconds { 4000 };
+constexpr inline auto kLongDuration                  = std::chrono::milliseconds { 10000 };
+constexpr inline auto kHiddenScale                   = 0.8;
 
 }
