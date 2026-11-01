@@ -1,0 +1,82 @@
+namespace: checkbox
+
+tokens:
+  file: tokens:CheckboxTokens.kt
+  include:
+    - ContainerSize
+    - ContainerShape
+    - IconSize
+    - StateLayerSize
+    - SelectedDisabledContainerOpacity
+    - UnselectedDisabledContainerOpacity
+
+symbols:
+  - file: material3:Checkbox.kt
+    names:
+      - StrokeWidth
+  - file: material3:Checkbox.kt
+    unit: ms
+    names:
+      - SnapAnimationDelay
+  - file: tokens:StandardMotionTokens.kt
+    names:
+      - SpringDefaultSpatialDamping
+      - SpringDefaultSpatialStiffness
+  - file: tokens:StateTokens.kt
+    names:
+      - HoverStateLayerOpacity
+      - PressedStateLayerOpacity
+  - file: tokens:MotionTokens.kt
+    names:
+      - EasingLinearCubicBezier
+  - file: ripple:RippleAnimation.kt
+    unit: ms
+    names:
+      - FadeInDuration
+      - FadeOutDuration
+
+extract:
+  - name: MinimumInteractiveComponentSize
+    file: material3:InteractiveComponentSize.kt
+    match: 'staticCompositionLocalOf\s*\{\s*(\d+)\.dp\s*\}'
+  - name: FocusRingWidth
+    file: material3:Ripple.kt
+    match: 'innerStrokeWidth\s*=\s*(\d+)\.dp\b'
+  - name: StateLayerDefaultDuration
+    file: ripple:Ripple.kt
+    match: 'DefaultTweenSpec\s*=\s*TweenSpec<Float>\(durationMillis\s*=\s*(\d+)'
+    unit: ms
+  - name: StateLayerFocusInDuration
+    file: ripple:Ripple.kt
+    match: 'is FocusInteraction\.Focus\s*->\s*TweenSpec\(durationMillis\s*=\s*(\d+)'
+    unit: ms
+
+measurements:
+  container_size: ContainerSize
+  container_shape: ContainerShape
+  icon_size: IconSize
+  state_layer_size: StateLayerSize
+  stroke_width: StrokeWidth
+  touch_target_size: MinimumInteractiveComponentSize
+  focus_ring_width: FocusRingWidth
+
+colors:
+  checked_checkmark_color: SelectedIconColor
+  unchecked_checkmark_color: transparent
+  disabled_checkmark_color: SelectedDisabledIconColor
+  checked_box_color: SelectedContainerColor
+  unchecked_box_color: transparent
+  disabled_checked_box_color: { color: SelectedDisabledContainerColor, opacity: SelectedDisabledContainerOpacity }
+  disabled_unchecked_box_color: transparent
+  disabled_indeterminate_box_color: { color: SelectedDisabledContainerColor, opacity: SelectedDisabledContainerOpacity }
+  checked_border_color: SelectedContainerColor
+  unchecked_border_color: UnselectedOutlineColor
+  disabled_border_color: { color: SelectedDisabledContainerColor, opacity: SelectedDisabledContainerOpacity }
+  disabled_unchecked_border_color: { color: UnselectedDisabledOutlineColor, opacity: UnselectedDisabledContainerOpacity }
+  disabled_indeterminate_border_color: { color: SelectedDisabledContainerColor, opacity: SelectedDisabledContainerOpacity }
+  error_checked_checkmark_color: SelectedErrorIconColor
+  error_checked_box_color: SelectedErrorContainerColor
+  error_checked_border_color: SelectedErrorContainerColor
+  error_unchecked_border_color: UnselectedErrorOutlineColor
+  focus_indicator_color: FocusIndicatorColor
+  state_layer_color: { scheme: OnSurface }
