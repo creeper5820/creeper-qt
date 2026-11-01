@@ -2,31 +2,64 @@
 // androidx 37359fb99db1cb7c3f031e247c3d544f4cf01fa4
 // tokens:SnackbarTokens.kt (VERSION v0_103)
 // material3:Snackbar.kt
+// tokens:StandardMotionTokens.kt (VERSION v0_14_0)
+// material3:Button.kt
+// tokens:StateTokens.kt (VERSION v0_210)
+// tokens:MotionTokens.kt (VERSION v0_103)
+// ripple:RippleAnimation.kt
+// material3:SnackbarHost.kt
+// tokens:ButtonSmallTokens.kt (VERSION v0_11_0)
+// tokens:SmallIconButtonTokens.kt (VERSION 14_1_0)
+// material3:InteractiveComponentSize.kt
+// ripple:Ripple.kt
 #pragma once
 
 #include "creeper-qt/details/token/sys/elevation.hh"
 #include "creeper-qt/details/token/sys/shape.hh"
 #include "creeper-qt/details/token/sys/typography.hh"
 #include "creeper-qt/details/token/sys/unit.hh"
+#include "creeper-qt/utility/math/cubic-bezier.hh"
+
+#include <chrono>
 
 namespace creeper::token::snackbar {
 
-constexpr inline auto kActionLabelTextFont         = sys::typography::kLabelLarge;
-constexpr inline auto kContainerElevation          = sys::elevation::kLevel3;
-constexpr inline auto kContainerShape              = sys::shape::kCornerExtraSmall;
-constexpr inline auto kIconSize                    = 24_dp;
-constexpr inline auto kSupportingTextFont          = sys::typography::kBodyMedium;
-constexpr inline auto kSingleLineContainerHeight   = 48_dp;
-constexpr inline auto kTwoLinesContainerHeight     = 68_dp;
-constexpr inline auto kContainerMaxWidth           = 600_dp;
-constexpr inline auto kHeightToFirstLine           = 30_dp;
-constexpr inline auto kHorizontalSpacing           = 16_dp;
-constexpr inline auto kHorizontalSpacingButtonSide = 8_dp;
-constexpr inline auto kSeparateButtonExtraY        = 2_dp;
-constexpr inline auto kTextEndExtraSpacing         = 8_dp;
-constexpr inline auto kLongButtonVerticalOffset    = 12_dp;
-constexpr inline auto kSnackbarVerticalPadding     = 14_dp;
-constexpr inline auto kActionButtonBottomPadding   = 4_dp;
-constexpr inline auto kDismissActionPadding        = 12_dp;
+constexpr inline auto kActionLabelTextFont             = sys::typography::kLabelLarge;
+constexpr inline auto kContainerElevation              = sys::elevation::kLevel3;
+constexpr inline auto kContainerShape                  = sys::shape::kCornerExtraSmall;
+constexpr inline auto kIconSize                        = 24_dp;
+constexpr inline auto kSupportingTextFont              = sys::typography::kBodyMedium;
+constexpr inline auto kSingleLineContainerHeight       = 48_dp;
+constexpr inline auto kTwoLinesContainerHeight         = 68_dp;
+constexpr inline auto kContainerMaxWidth               = 600_dp;
+constexpr inline auto kHeightToFirstLine               = 30_dp;
+constexpr inline auto kHorizontalSpacing               = 16_dp;
+constexpr inline auto kHorizontalSpacingButtonSide     = 8_dp;
+constexpr inline auto kSeparateButtonExtraY            = 2_dp;
+constexpr inline auto kLegacySnackbarVerticalPadding   = 6_dp;
+constexpr inline auto kTextEndExtraSpacing             = 8_dp;
+constexpr inline auto kLongButtonVerticalOffset        = 12_dp;
+constexpr inline auto kSpringFastSpatialDamping        = 0.9;
+constexpr inline auto kSpringFastSpatialStiffness      = 1400.0;
+constexpr inline auto kSpringFastEffectsDamping        = 1.0;
+constexpr inline auto kSpringFastEffectsStiffness      = 3800.0;
+constexpr inline auto kMinWidth                        = 58_dp;
+constexpr inline auto kTextButtonHorizontalPadding     = 12_dp;
+constexpr inline auto kButtonVerticalPadding           = 8_dp;
+constexpr inline auto kHoverStateLayerOpacity          = 0.08;
+constexpr inline auto kFocusStateLayerOpacity          = 0.1;
+constexpr inline auto kPressedStateLayerOpacity        = 0.1;
+constexpr inline auto kEasingLinearCubicBezier         = CubicBezierSolution { 0.0, 0.0, 1.0, 1.0 };
+constexpr inline auto kFadeInDuration                  = std::chrono::milliseconds { 75 };
+constexpr inline auto kFadeOutDuration                 = std::chrono::milliseconds { 150 };
+constexpr inline auto kSnackbarPadding                 = 12_dp;
+constexpr inline auto kShortDuration                   = std::chrono::milliseconds { 4000 };
+constexpr inline auto kLongDuration                    = std::chrono::milliseconds { 10000 };
+constexpr inline auto kHiddenScale                     = 0.8;
+constexpr inline auto kButtonMinHeight                 = 40_dp;
+constexpr inline auto kIconButtonContainerSize         = 40_dp;
+constexpr inline auto kMinimumInteractiveComponentSize = 48_dp;
+constexpr inline auto kStateLayerDefaultDuration       = std::chrono::milliseconds { 15 };
+constexpr inline auto kStateLayerFocusInDuration       = std::chrono::milliseconds { 45 };
 
 }

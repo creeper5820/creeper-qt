@@ -274,6 +274,58 @@ auto custom = new Checkbox {
 
 ---
 
+### Snackbar 消息条
+
+命名空间：`creeper::snackbar::pro`
+
+继承属性：`creeper::api::scope::common`、`creeper::api::scope::theme`、`creeper::api::scope::widget`
+
+对应 Compose 的 `Snackbar(snackbarData)`：正文、可选的 action 文本按钮和关闭按钮，外层带 12dp 外边距（`snackbar_padding`）。组件只负责外观与交互，显示时长和进出场由宿主负责。
+
+| 属性名 | 类型 | 说明 |
+| --- | --- | --- |
+| `Text` | `QString` | 正文，按宽度自动换行 |
+| `ActionLabel` | `QString` | action 按钮文本，空字符串表示没有 action |
+| `WithDismissAction` | `bool` | 是否显示关闭按钮 |
+| `ActionOnNewLine` | `bool` | action 放到正文下方单独一行，适合较长的 action 文本 |
+| `Measurements` | `Snackbar::Measurements` | 尺寸度量 |
+| `Colors` | `Snackbar::Colors` | 颜色规格 |
+| `OnActionPerformed` | `[]{}` | 点击 action 回调 |
+| `OnDismissed` | `[]{}` | 点击关闭按钮回调 |
+
+`Measurements` 和 `Colors` 由 `details/token/snackbar.yaml` 从 Compose 源码生成（`token::snackbar`）。`Colors` 对应 `SnackbarDefaults`：`color`（容器）、`content_color`（正文）、`action_color` / `action_content_color`（action）、`dismiss_action_content_color`（关闭按钮）；按钮的状态层使用各自的内容色。
+
+布局照搬 Compose 的单行布局与 action 换行布局：
+
+- 单行高度 48dp，正文换行后最小 68dp，内容最大宽度 600dp；
+- 单行时 action 文字与正文首行基线对齐，多行时 action 与关闭按钮垂直居中；
+- 宽度大于最大宽度时容器水平居中。组件实现了 `heightForWidth`，高度随宽度变化。
+
+action 与关闭按钮是组件内部绘制的，鼠标悬停、按压和键盘焦点都有状态层；键盘焦点进入后用 Tab / Shift+Tab 在两个按钮之间切换，Space / Enter 触发。
+
+```cpp
+using namespace creeper;
+
+auto snackbar = new Snackbar {
+    manager,
+    snackbar::pro::Text { "照片已删除" },
+    snackbar::pro::ActionLabel { "撤销" },
+    snackbar::pro::WithDismissAction { true },
+    snackbar::pro::OnActionPerformed { [] { qDebug() << "撤销"; } },
+    snackbar::pro::OnDismissed { [] { qDebug() << "关闭"; } },
+};
+
+// action 文本较长时放到下一行
+auto long_action = new Snackbar {
+    manager,
+    snackbar::pro::Text { "部分照片因为格式不受支持而被跳过" },
+    snackbar::pro::ActionLabel { "查看详情" },
+    snackbar::pro::ActionOnNewLine { true },
+};
+```
+
+---
+
 ### FilledTextField 文本框
 
 <div align="center">
