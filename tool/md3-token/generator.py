@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 
 from __future__ import annotations
-from core.config import ConfigError
-from command import check, fetch, generate
 
-import argparse
 import sys
-from pathlib import Path
+
+sys.dont_write_bytecode = True
+
+from core.config import ConfigError  # noqa: E402
+from command import check, fetch, generate  # noqa: E402
+
+import argparse  # noqa: E402
+from pathlib import Path  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 

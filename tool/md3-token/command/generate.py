@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import sys
 
+from core import cache
 from core.config import load_config
 
 
@@ -13,5 +14,6 @@ def register(sub: argparse._SubParsersAction) -> None:
 
 def run(args: argparse.Namespace) -> int:
     config = load_config()
+    cache.require(config)
     print(f"generate: not implemented (commit {config.androidx.commit})", file=sys.stderr)
     return 2
