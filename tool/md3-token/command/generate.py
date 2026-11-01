@@ -388,8 +388,8 @@ def _write(targets: dict[Path, str]) -> tuple[int, int]:
     return written, unchanged
 
 
-def _clean(config: Config, targets: dict[Path, str]) -> int:
-    removed = 0
+def stale_files(config: Config, targets: dict[Path, str]) -> list[Path]:
+    stale: list[Path] = []
     for path in sorted(config.output.glob("*/*.hh")):
         if path in targets:
             continue
@@ -400,6 +400,13 @@ def _clean(config: Config, targets: dict[Path, str]) -> int:
             continue
         if first_line != render.GENERATED_MARKER:
             continue
+        stale.append(path)
+    return stale
+
+
+def _clean(config: Config, targets: dict[Path, str]) -> int:
+    removed = 0
+    for path in stale_files(config, targets):
         try:
             path.unlink()
         except OSError as error:
