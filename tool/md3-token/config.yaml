@@ -1,0 +1,14 @@
+androidx:
+  remote: https://android.googlesource.com/platform/frameworks/support
+  commit: 37359fb99db1cb7c3f031e247c3d544f4cf01fa4
+cache: build/md3-token/androidx
+sparse:
+  - compose/material3/material3/src/commonMain
+  - compose/material/material-ripple/src/commonMain
+  - compose/animation/animation-core/src/commonMain
+modules:
+  material3: compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3
+  tokens: compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/tokens
+  ripple: compose/material/material-ripple/src/commonMain/kotlin/androidx/compose/material/ripple
+  animation: compose/animation/animation-core/src/commonMain/kotlin/androidx/compose/animation/core
+output: src/creeper-qt/details/token
