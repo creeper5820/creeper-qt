@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 import difflib
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import NoReturn
 
@@ -16,7 +16,7 @@ from core.config import (
     load_config,
 )
 from core.kotlin import Declaration, Location, KotlinError, KotlinFile
-from core.model import Ref, Unknown, Value
+from core.model import Double, Float, Int, Millis, Ref, Unknown, Value
 from core.resolve import Resolver, SysRef
 
 log = log_module.get("generate")
@@ -88,13 +88,31 @@ def _tokens_declarations(
     ]
 
 
+def _apply_unit(declaration: Declaration, unit: str | None) -> Declaration:
+    if unit is None:
+        return declaration
+    value = declaration.value
+    if isinstance(value, Int):
+        millis = value.value
+    elif isinstance(value, (Float, Double)) and value.value.is_integer():
+        millis = int(value.value)
+    else:
+        raise KotlinError(
+            f"{declaration.location.path}:{declaration.location.line}: "
+            f"{declaration.name} = {declaration.raw}: "
+            f"unit {unit} requires an integer value, "
+            f"got {type(value).__name__}")
+    return replace(declaration, value=Millis(millis))
+
+
 def _symbol_declarations(
         resolver: Resolver, component: Component) -> list[tuple[KotlinFile, Declaration]]:
     declarations = []
     for source in component.symbols:
         kotlin_file = resolver.by_reference(source.file)
         declarations.extend(
-            (kotlin_file, kotlin_file.get(name)) for name in source.names)
+            (kotlin_file, _apply_unit(kotlin_file.get(name), source.unit))
+            for name in source.names)
     return declarations
 
 
@@ -104,12 +122,13 @@ def _extract_declarations(
     for source in component.extract:
         kotlin_file = resolver.by_reference(source.file)
         value, location = kotlin.extract(kotlin_file.path, source.match)
-        declarations.append((kotlin_file, Declaration(
+        declaration = Declaration(
             name=source.name,
             value=value,
             raw=_raw(value),
             location=location,
-        )))
+        )
+        declarations.append((kotlin_file, _apply_unit(declaration, source.unit)))
     return declarations
 
 
@@ -245,6 +264,24 @@ def _color_token(
     return scheme_field
 
 
+def _color_opacity(
+        resolver: Resolver, collected: Collected, field: str, opacity: str) -> None:
+    component = collected.component
+    info = collected.values.get(opacity)
+    if info is None:
+        available = sorted(
+            name for name, value in collected.values.items()
+            if _resolved_type(value.value, resolver) in ("Float", "Double")
+        )
+        _missing_value(
+            component.path, f"{field}.opacity", opacity, available)
+    opacity_type = _resolved_type(info.value, resolver)
+    if opacity_type not in ("Float", "Double"):
+        raise ConfigError(
+            f"{component.path}: {field}.opacity: {opacity} "
+            f"has type {opacity_type}, expected Float or Double")
+
+
 def _color_fields(
         resolver: Resolver, collected: Collected, scheme_fields: frozenset[str]
 ) -> tuple[tuple[render.ColorField, ...] | None, tuple[KotlinFile, ...]]:
@@ -257,6 +294,21 @@ def _color_fields(
     colors = []
     for entry in component.colors:
         field = f"colors.{entry.name}"
+        if entry.scheme is not None:
+            scheme_field = scheme.snake_case(entry.scheme)
+            if scheme_field not in scheme_fields:
+                raise ConfigError(
+                    f"{component.path}: {field}: ColorScheme has no field "
+                    f"{scheme_field}")
+            if entry.opacity is not None:
+                _color_opacity(resolver, collected, field, entry.opacity)
+            colors.append(render.ColorField(
+                name=entry.name,
+                token=None,
+                scheme_field=scheme_field,
+                opacity=entry.opacity,
+            ))
+            continue
         if entry.token is None:
             colors.append(render.ColorField(
                 name=entry.name,
@@ -268,19 +320,7 @@ def _color_fields(
         scheme_field = _color_token(
             component, tokens, field, entry.token, scheme_fields)
         if entry.opacity is not None:
-            info = collected.values.get(entry.opacity)
-            if info is None:
-                available = sorted(
-                    name for name, value in collected.values.items()
-                    if _resolved_type(value.value, resolver) in ("Float", "Double")
-                )
-                _missing_value(
-                    component.path, f"{field}.opacity", entry.opacity, available)
-            opacity_type = _resolved_type(info.value, resolver)
-            if opacity_type not in ("Float", "Double"):
-                raise ConfigError(
-                    f"{component.path}: {field}.opacity: {entry.opacity} "
-                    f"has type {opacity_type}, expected Float or Double")
+            _color_opacity(resolver, collected, field, entry.opacity)
         colors.append(render.ColorField(
             name=entry.name,
             token=entry.token,

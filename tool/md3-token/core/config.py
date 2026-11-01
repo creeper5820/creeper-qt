@@ -150,6 +150,8 @@ COMPONENT_KEYS = frozenset(
 NAMESPACE_PATTERN = re.compile(r"[a-z][a-z0-9_]*")
 FIELD_NAME_PATTERN = re.compile(r"[a-z][a-z0-9_]*")
 EXTRACT_NAME_PATTERN = re.compile(r"[A-Z][A-Za-z0-9]*")
+COLOR_SCHEME_NAME_PATTERN = re.compile(r"[A-Z][A-Za-z0-9]*")
+UNITS = frozenset({"ms"})
 
 
 @dataclass(frozen=True)
@@ -162,6 +164,7 @@ class TokensSource:
 class SymbolsSource:
     file: str
     names: tuple[str, ...]
+    unit: str | None = None
 
 
 @dataclass(frozen=True)
@@ -169,6 +172,7 @@ class ExtractSource:
     name: str
     file: str
     match: str
+    unit: str | None = None
 
 
 @dataclass(frozen=True)
@@ -181,6 +185,7 @@ class Measurement:
 class ColorEntry:
     name: str
     token: str | None
+    scheme: str | None
     opacity: str | None
 
 
@@ -260,15 +265,27 @@ def _load_tokens(config: Config, path: Path, value: Any) -> TokensSource:
 
 def _load_symbols(config: Config, path: Path, index: int, value: Any) -> SymbolsSource:
     field = f"symbols[{index}]"
-    _validate_component_keys(path, field, value, frozenset({"file", "names"}))
+    _validate_component_keys(
+        path, field, value, frozenset({"file", "names"}), frozenset({"unit"}))
     file = _validate_reference(config, path, f"{field}.file", value["file"])
     names = _validate_names(path, f"{field}.names", value["names"])
-    return SymbolsSource(file=file, names=names)
+    unit = _load_unit(path, f"{field}.unit", value.get("unit"))
+    return SymbolsSource(file=file, names=names, unit=unit)
+
+
+def _load_unit(path: Path, field: str, value: Any) -> str | None:
+    if value is None:
+        return None
+    if not isinstance(value, str) or value not in UNITS:
+        allowed = ", ".join(sorted(UNITS))
+        _fail(path, field, f"must be one of: {allowed} (got {value!r})")
+    return value
 
 
 def _load_extract(config: Config, path: Path, index: int, value: Any) -> ExtractSource:
     field = f"extract[{index}]"
-    _validate_component_keys(path, field, value, frozenset({"name", "file", "match"}))
+    _validate_component_keys(
+        path, field, value, frozenset({"name", "file", "match"}), frozenset({"unit"}))
     name = value["name"]
     if not isinstance(name, str) or not EXTRACT_NAME_PATTERN.fullmatch(name):
         _fail(path, f"{field}.name", "must be a PascalCase identifier")
@@ -276,7 +293,8 @@ def _load_extract(config: Config, path: Path, index: int, value: Any) -> Extract
     match = value["match"]
     if not isinstance(match, str) or not match:
         _fail(path, f"{field}.match", "must be a non-empty string")
-    return ExtractSource(name=name, file=file, match=match)
+    unit = _load_unit(path, f"{field}.unit", value.get("unit"))
+    return ExtractSource(name=name, file=file, match=match, unit=unit)
 
 
 def _field_path(path: Path, section: str, name: Any) -> str:
@@ -300,29 +318,47 @@ def _load_measurements(path: Path, value: Any) -> tuple[Measurement, ...]:
     return tuple(measurements)
 
 
-def _color_value(path: Path, field: str, value: Any) -> tuple[str | None, str | None]:
+def _color_value(
+        path: Path, field: str, value: Any) -> tuple[str | None, str | None, str | None]:
     if isinstance(value, str):
         if not value:
             _fail(path, field, "must be a non-empty token name")
         if value == "transparent":
-            return None, None
-        return value, None
+            return None, None, None
+        return value, None, None
     if isinstance(value, dict):
-        if "color" not in value and "opacity" not in value:
+        if "scheme" in value:
+            _validate_component_keys(
+                path, field, value, frozenset({"scheme"}), frozenset({"opacity"}))
+            scheme = value["scheme"]
+            if not isinstance(scheme, str) or not COLOR_SCHEME_NAME_PATTERN.fullmatch(scheme):
+                _fail(
+                    path, f"{field}.scheme",
+                    "must be a PascalCase ColorSchemeKeyTokens name")
+            opacity = None
+            if "opacity" in value:
+                opacity = _opacity_value(path, f"{field}.opacity", value["opacity"])
+            return None, scheme, opacity
+        if "color" not in value:
             _fail(path, field, "nested colors are not supported yet")
         _validate_keys(path, field, value, frozenset({"color", "opacity"}))
         color = value["color"]
         if not isinstance(color, str) or not color:
             _fail(path, f"{field}.color", "must be a non-empty token name")
-        opacity = value["opacity"]
-        if not isinstance(opacity, str) or not opacity:
-            _fail(
-                path, f"{field}.opacity",
-                "must be a value name string (numeric literals are not allowed)")
-        return color, opacity
+        opacity = _opacity_value(path, f"{field}.opacity", value["opacity"])
+        return color, None, opacity
     _fail(
         path, field,
-        "must be a token name, 'transparent', or a {color, opacity} mapping")
+        "must be a token name, 'transparent', or a {color, opacity} or "
+        "{scheme, opacity} mapping")
+
+
+def _opacity_value(path: Path, field: str, value: Any) -> str:
+    if not isinstance(value, str) or not value:
+        _fail(
+            path, field,
+            "must be a value name string (numeric literals are not allowed)")
+    return value
 
 
 def _load_colors(path: Path, value: Any) -> tuple[ColorEntry, ...]:
@@ -331,8 +367,8 @@ def _load_colors(path: Path, value: Any) -> tuple[ColorEntry, ...]:
     colors = []
     for name, entry in value.items():
         field = _field_path(path, "colors", name)
-        token, opacity = _color_value(path, field, entry)
-        colors.append(ColorEntry(name=name, token=token, opacity=opacity))
+        token, scheme, opacity = _color_value(path, field, entry)
+        colors.append(ColorEntry(name=name, token=token, scheme=scheme, opacity=opacity))
     return tuple(colors)
 
 

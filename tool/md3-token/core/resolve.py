@@ -15,6 +15,7 @@ from core.model import (
     Float,
     FontWeightName,
     Int,
+    Millis,
     Rectangle,
     Ref,
     RoundedCorner,
@@ -77,7 +78,7 @@ class Resolver:
             return self._reference(declaration, value)
         if isinstance(value, RoundedCorner):
             return Resolved(Dp(value.size.value), ())
-        if isinstance(value, (Dp, Sp, Float, Int, Double, CubicBezier)):
+        if isinstance(value, (Dp, Sp, Float, Int, Millis, Double, CubicBezier)):
             return Resolved(value, ())
         raise self._unsupported(declaration, f"unsupported value {type(value).__name__}")
 

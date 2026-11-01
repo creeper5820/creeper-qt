@@ -25,6 +25,11 @@ class Int:
 
 
 @dataclass(frozen=True)
+class Millis:
+    value: int
+
+
+@dataclass(frozen=True)
 class Double:
     value: float
 
@@ -109,6 +114,7 @@ Value = (
     | Sp
     | Float
     | Int
+    | Millis
     | Double
     | Ref
     | KeyId
