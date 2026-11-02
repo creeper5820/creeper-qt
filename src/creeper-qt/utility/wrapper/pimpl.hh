@@ -1,6 +1,6 @@
 #pragma once
 
-#include <memory>
+#include <memory> // IWYU pragma: keep
 
 #define CREEPER_PIMPL_DEFINITION(Class)                                                            \
 public:                                                                                            \
@@ -14,7 +14,3 @@ public:                                                                         
 private:                                                                                           \
     struct Impl;                                                                                   \
     std::unique_ptr<Impl> pimpl;
-
-namespace creeper::internal {
-inline void use_std_unique_ptr() { auto unique_ptr = std::unique_ptr<int> { }; }
-}

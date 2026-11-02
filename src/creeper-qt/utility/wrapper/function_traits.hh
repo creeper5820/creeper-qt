@@ -30,7 +30,7 @@ struct function_traits<R (C::*)(Args...)> {
     using return_type = R;
     using class_type  = C;
 
-    static constexpr std::size_t arity = sizeof...(Args);
+    static constexpr std::size_t kArity = sizeof...(Args);
 
     template <std::size_t N>
     using arg = std::tuple_element_t<N, std::tuple<Args...>>;
