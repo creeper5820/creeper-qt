@@ -1,0 +1,101 @@
+namespace: snackbar
+
+tokens:
+  file: tokens:SnackbarTokens.kt
+
+symbols:
+  - file: material3:Snackbar.kt
+    names:
+      - ContainerMaxWidth
+      - HeightToFirstLine
+      - HorizontalSpacing
+      - HorizontalSpacingButtonSide
+      - SeparateButtonExtraY
+      - LegacySnackbarVerticalPadding
+      - TextEndExtraSpacing
+      - LongButtonVerticalOffset
+  - file: tokens:StandardMotionTokens.kt
+    names:
+      - SpringFastSpatialDamping
+      - SpringFastSpatialStiffness
+      - SpringFastEffectsDamping
+      - SpringFastEffectsStiffness
+  - file: material3:Button.kt
+    names:
+      - MinWidth
+      - TextButtonHorizontalPadding
+      - ButtonVerticalPadding
+  - file: tokens:StateTokens.kt
+    names:
+      - HoverStateLayerOpacity
+      - FocusStateLayerOpacity
+      - PressedStateLayerOpacity
+  - file: tokens:MotionTokens.kt
+    names:
+      - EasingLinearCubicBezier
+  - file: ripple:RippleAnimation.kt
+    unit: ms
+    names:
+      - FadeInDuration
+      - FadeOutDuration
+
+extract:
+  - name: SnackbarPadding
+    file: material3:Snackbar.kt
+    match: 'modifier\.padding\((\d+)\.dp\)'
+  - name: ShortDuration
+    file: material3:SnackbarHost.kt
+    match: 'SnackbarDuration\.Short\s*->\s*(\d+)L'
+    unit: ms
+  - name: LongDuration
+    file: material3:SnackbarHost.kt
+    match: 'SnackbarDuration\.Long\s*->\s*(\d+)L'
+    unit: ms
+  - name: HiddenScale
+    file: material3:SnackbarHost.kt
+    match: 'Animatable\(if \(!visible\) 1f else (0\.\d+)f\)'
+  - name: ButtonMinHeight
+    file: tokens:ButtonSmallTokens.kt
+    match: 'val ContainerHeight: [\w.]+\s*get\(\) = ([\d.]+)\.dp'
+  - name: IconButtonContainerSize
+    file: tokens:SmallIconButtonTokens.kt
+    match: 'val ContainerHeight: [\w.]+\s*get\(\) = ([\d.]+)\.dp'
+  - name: MinimumInteractiveComponentSize
+    file: material3:InteractiveComponentSize.kt
+    match: 'staticCompositionLocalOf\s*\{\s*(\d+)\.dp\s*\}'
+  - name: StateLayerDefaultDuration
+    file: ripple:Ripple.kt
+    match: 'DefaultTweenSpec\s*=\s*TweenSpec<Float>\(durationMillis\s*=\s*(\d+)'
+    unit: ms
+  - name: StateLayerFocusInDuration
+    file: ripple:Ripple.kt
+    match: 'is FocusInteraction\.Focus\s*->\s*TweenSpec\(durationMillis\s*=\s*(\d+)'
+    unit: ms
+
+measurements:
+  container_max_width: ContainerMaxWidth
+  container_shape: ContainerShape
+  single_line_container_height: SingleLineContainerHeight
+  two_lines_container_height: TwoLinesContainerHeight
+  icon_size: IconSize
+  horizontal_spacing: HorizontalSpacing
+  horizontal_spacing_button_side: HorizontalSpacingButtonSide
+  text_end_extra_spacing: TextEndExtraSpacing
+  vertical_padding: LegacySnackbarVerticalPadding
+  height_to_first_line: HeightToFirstLine
+  long_button_vertical_offset: LongButtonVerticalOffset
+  separate_button_extra_y: SeparateButtonExtraY
+  snackbar_padding: SnackbarPadding
+  action_min_width: MinWidth
+  action_min_height: ButtonMinHeight
+  action_horizontal_padding: TextButtonHorizontalPadding
+  action_vertical_padding: ButtonVerticalPadding
+  dismiss_container_size: IconButtonContainerSize
+  touch_target_size: MinimumInteractiveComponentSize
+
+colors:
+  color: ContainerColor
+  content_color: SupportingTextColor
+  action_color: ActionLabelTextColor
+  action_content_color: ActionLabelTextColor
+  dismiss_action_content_color: IconColor

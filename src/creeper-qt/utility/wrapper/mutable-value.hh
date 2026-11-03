@@ -1,8 +1,8 @@
 #pragma once
-#include "creeper-qt/utility/wrapper/dsl.hh"
 
 #include <qobject.h>
 
+#include <concepts>
 #include <unordered_map>
 
 namespace creeper {
@@ -46,10 +46,11 @@ struct MutableValue final {
         value = std::forward<U>(u);
     }
     template <typename U>
-    auto operator=(U&& u) noexcept -> void
+    auto operator=(U&& u) noexcept -> MutableValue&
         requires requires(T& t, U&& u) { t = std::forward<U>(u); }
     {
         set(std::forward<U>(u));
+        return *this;
     }
 };
 
@@ -92,9 +93,10 @@ struct MutableForward final : public P {
 
         mutable_value.callbacks[&widget] = std::move(functor);
 
-        auto alive = std::weak_ptr { mutable_value.alive };
-        QObject::connect(&widget, &QObject::destroyed, [this, alive](auto* key) {
-            if (alive.lock()) mutable_value.callbacks.erase(key);
+        auto alive  = std::weak_ptr { mutable_value.alive };
+        auto values = &mutable_value;
+        QObject::connect(&widget, &QObject::destroyed, [values, alive](auto* key) {
+            if (alive.lock()) values->callbacks.erase(key);
         });
     }
 
@@ -134,17 +136,17 @@ struct MutableTransform {
 
         mutable_value.callbacks[&widget] = std::move(functor);
 
-        auto alive = std::weak_ptr { mutable_value.alive };
-        QObject::connect(&widget, &QObject::destroyed, [this, alive](auto* key) {
-            if (alive.lock()) mutable_value.callbacks.erase(key);
+        auto alive  = std::weak_ptr { mutable_value.alive };
+        auto values = &mutable_value;
+        QObject::connect(&widget, &QObject::destroyed, [values, alive](auto* key) {
+            if (alive.lock()) values->callbacks.erase(key);
         });
     }
 
     friend auto dsl_invoke(auto& widget, const MutableTransform& prop) noexcept -> void {
-        constexpr auto invocable = requires { //
-            prop.apply_function(widget, prop.mutable_value.get());
-        };
-        static_assert(invocable,
+        constexpr auto kInvocable =
+            requires { prop.apply_function(widget, prop.mutable_value.get()); };
+        static_assert(kInvocable,
             "\nFunction can not be invoked with given widget_type& and const value_type&."
             "\n  the correct signature should be: "
             "\n  [](widget_type& widget, const value_type& v){ ... }");

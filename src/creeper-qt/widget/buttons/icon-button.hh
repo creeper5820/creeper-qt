@@ -38,27 +38,27 @@ public:
     // Extra Small
     static constexpr auto kExtraSmallContainerSize = QSize { 32, 32 };
     static constexpr auto kExtraSmallIconSize      = QSize { 20, 20 };
-    static constexpr auto kExtraSmallFontIconSize  = int { 15 };
+    static constexpr auto kExtraSmallFontIconSize  = 15;
     // Small
     static constexpr auto kSmallContainerSize = QSize { 40, 40 };
     static constexpr auto kSmallIconSize      = QSize { 24, 24 };
-    static constexpr auto kSmallFontIconSize  = int { 18 };
+    static constexpr auto kSmallFontIconSize  = 18;
     // Medium
     static constexpr auto kMediumContainerSize = QSize { 56, 56 };
     static constexpr auto kMediumIconSize      = QSize { 24, 24 };
-    static constexpr auto kMediumFontIconSize  = int { 18 };
+    static constexpr auto kMediumFontIconSize  = 18;
     // Large
     static constexpr auto kLargeContainerSize = QSize { 96, 96 };
     static constexpr auto kLargeIconSize      = QSize { 32, 32 };
-    static constexpr auto kLargeFontIconSize  = int { 24 };
+    static constexpr auto kLargeFontIconSize  = 24;
     // Extra Large
     static constexpr auto kExtraLargeContainerSize = QSize { 136, 136 };
     static constexpr auto kExtraLargeIconSize      = QSize { 40, 40 };
-    static constexpr auto kExtraLargeFontIconSize  = int { 32 };
+    static constexpr auto kExtraLargeFontIconSize  = 32;
 
 public:
     explicit IconButton(auto&&... props)
-        : IconButton { } {
+        : IconButton {} {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 
@@ -81,8 +81,6 @@ public:
     auto selected() const noexcept -> bool;
     auto setSelected(bool) noexcept -> void;
 
-    // TODO: 详细的颜色自定义接口有缘再写
-
 protected:
     auto resizeEvent(QResizeEvent*) -> void override;
     auto enterEvent(qt::EnterEvent*) -> void override;
@@ -92,12 +90,16 @@ protected:
 };
 
 namespace icon_button::pro {
-    using Icon                           = ForwardProp<&IconButton::setIcon>;
-    using FontIcon                       = ForwardProp<&IconButton::setFontIcon>;
-    using Color                          = ForwardProp<&IconButton::setColor>;
-    using Shape                          = ForwardProp<&IconButton::setShape>;
-    using Types                          = ForwardProp<&IconButton::setTypes>;
-    using Width                          = ForwardProp<&IconButton::setWidth>;
+    using Icon     = ForwardProp<&IconButton::setIcon>;
+    using FontIcon = ForwardProp<&IconButton::setFontIcon>;
+    using Color    = ForwardProp<&IconButton::setColor>;
+    using Shape    = ForwardProp<&IconButton::setShape>;
+    using Types    = ForwardProp<&IconButton::setTypes>;
+    using Width    = ForwardProp<&IconButton::setWidth>;
+
+    template <typename Callback>
+    using Clickable = api::pro::Clickable<Callback>;
+
     constexpr auto ColorFilled           = Color { IconButton::Color::DEFAULT_FILLED };
     constexpr auto ColorOutlined         = Color { IconButton::Color::OUTLINED };
     constexpr auto ColorStandard         = Color { IconButton::Color::STANDARD };
@@ -110,12 +112,10 @@ namespace icon_button::pro {
     constexpr auto WidthDefault          = Width { IconButton::Width::DEFAULT };
     constexpr auto WidthNarrow           = Width { IconButton::Width::NARROW };
     constexpr auto WidthWide             = Width { IconButton::Width::WIDE };
-    template <typename Callback>
-    using Clickable = api::pro::Clickable<Callback>;
 
     using namespace api::scope::common;
     using namespace api::scope::theme;
     using namespace api::scope::widget;
-} // namespace icon_button::pro
+}
 
-} // namespace creeper
+}

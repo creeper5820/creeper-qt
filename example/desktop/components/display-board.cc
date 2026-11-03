@@ -1,6 +1,7 @@
 #include "display-board.hh"
 
 #include <creeper-qt/layout/linear.hh>
+#include <creeper-qt/layout/scroll.hh>
 #include <creeper-qt/layout/stacked.hh>
 #include <creeper-qt/utility/material-icon.hh>
 #include <creeper-qt/utility/math/lattice.hh>
@@ -14,6 +15,7 @@
 
 #include "components/control-panel.hh"
 #include "components/display/checkbox.hh"
+#include "components/display/snackbar.hh"
 
 namespace creeper {
 
@@ -23,12 +25,13 @@ namespace {
         namespace cp  = col::pro;
         namespace rp  = row::pro;
         namespace ibp = icon_button::pro;
+        namespace sp  = scroll::pro;
 
         auto index = std::make_shared<MutableValue<int>>(0);
-        auto label = std::make_shared<MutableQString>(QString { "1 / 2" });
+        auto label = std::make_shared<MutableQString>(QString { "1 / 3" });
 
         const auto step = [index, label](int delta) {
-            constexpr auto kCount = 2;
+            constexpr auto kCount = 3;
 
             *index = ((*index + delta) % kCount + kCount) % kCount;
             *label = QString { "%1 / %2" }.arg(*index + 1).arg(kCount);
@@ -67,8 +70,21 @@ namespace {
                   new NavHost {
                     MutableForward { nav_host::pro::CurrentIndex { 0 }, index },
 
-                    new CheckboxBoard { manager },
-                    ControlPanel(manager),
+                    new ScrollArea {
+                      manager,
+                      sp::ScrollBarPolicy { Qt::ScrollBarAsNeeded, Qt::ScrollBarAsNeeded },
+                      sp::ScrollItem<CheckboxBoard> { manager },
+                    },
+                    new ScrollArea {
+                      manager,
+                      sp::ScrollBarPolicy { Qt::ScrollBarAsNeeded, Qt::ScrollBarAsNeeded },
+                      sp::ScrollItem<SnackbarBoard> { manager },
+                    },
+                    new ScrollArea {
+                      manager,
+                      sp::ScrollBarPolicy { Qt::ScrollBarAsNeeded, Qt::ScrollBarAsNeeded },
+                      sp::ScrollItem<FilledCard> { ControlPanel(manager) },
+                    },
                   },
                 } + Col::Placement { 1 },
 

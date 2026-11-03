@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22)
 project(creeper-qt-test LANGUAGES CXX)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
-    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type" FORCE)
+    set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Build type" FORCE)
 endif()
 
 set(QT_VERSION Qt6)
@@ -31,6 +31,11 @@ target_link_libraries(
     ${QT_VERSION}::Widgets
 )
 add_test(NAME mini-bus COMMAND mini-bus)
+
+add_executable(co-lifecycle utility/co-lifecycle.cc)
+target_compile_features(co-lifecycle PRIVATE cxx_std_23)
+target_include_directories(co-lifecycle PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../src)
+add_test(NAME co-lifecycle COMMAND co-lifecycle)
 
 # 逐组件属性实例化测试（每个 props/*.cc 一个 OBJECT 目标，仅编译，不链接运行）
 file(GLOB CREEPER_QT_PROP_TESTS CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/props/*.cc")

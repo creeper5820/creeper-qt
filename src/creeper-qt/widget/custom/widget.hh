@@ -41,6 +41,8 @@ namespace custom::pro {
     /// @note:
     /// - std::invocable<F, CustomWidget&>
     /// - std::invocable<F, CustomWidget&, State&>
+    ///
+    /// 一般情况下，让构造参数自己推导 State，不需要手动指定
     template <typename State = std::monostate>
     struct OnPaint {
 
