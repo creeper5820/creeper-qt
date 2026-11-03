@@ -106,7 +106,7 @@ public:
     };
 
     explicit Checkbox(auto&&... props)
-        : Checkbox { } {
+        : Checkbox {} {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 
@@ -151,10 +151,9 @@ namespace checkbox::pro {
     using OnCheckStateChanged = api::helper::SignalInjection<F, &Checkbox::checkStateChanged>;
 
     using CheckState   = ForwardProp<&Checkbox::setCheckState>;
+    using Error        = ForwardProp<&Checkbox::setError>;
     using Measurements = Checkbox::Measurements;
     using Colors       = Checkbox::Colors;
-
-    using Error = ForwardProp<&Checkbox::setError>;
 
     using api::pro::Checked;
     using api::pro::Clickable;

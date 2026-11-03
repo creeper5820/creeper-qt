@@ -42,7 +42,7 @@ struct ForwardProp;
 /// 单参数版本：存储参数值
 ///
 template <auto MemberFuncPtr>
-    requires(function_traits<decltype(MemberFuncPtr)>::arity == 1)
+    requires(function_traits<decltype(MemberFuncPtr)>::kArity == 1)
 struct ForwardProp<MemberFuncPtr> {
     using traits     = function_traits<decltype(MemberFuncPtr)>;
     using value_type = std::remove_cvref_t<typename traits::template arg<0>>;
@@ -83,7 +83,7 @@ struct ForwardProp<MemberFuncPtr> {
 /// 无参数版本：无需存储，直接调用
 ///
 template <auto MemberFuncPtr>
-    requires(function_traits<decltype(MemberFuncPtr)>::arity == 0)
+    requires(function_traits<decltype(MemberFuncPtr)>::kArity == 0)
 struct ForwardProp<MemberFuncPtr> {
     // dsl_invoke 通过 ADL 查找
     friend auto dsl_invoke(auto& widget, const ForwardProp&) -> void { (widget.*MemberFuncPtr)(); }
@@ -93,7 +93,7 @@ struct ForwardProp<MemberFuncPtr> {
 /// 多参数版本：存储 tuple，apply 时展开
 ///
 template <auto MemberFuncPtr>
-    requires(function_traits<decltype(MemberFuncPtr)>::arity > 1)
+    requires(function_traits<decltype(MemberFuncPtr)>::kArity > 1)
 struct ForwardProp<MemberFuncPtr> {
     using traits     = function_traits<decltype(MemberFuncPtr)>;
     using args_tuple = typename traits::args_tuple;

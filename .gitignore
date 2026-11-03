@@ -18,3 +18,5 @@ CMakeSettings.json
 *.zip
 
 src/creeper-qt/creeper-qt.hh
+src/creeper-qt/props-alias.hh
+src/creeper-qt/props-scope.hh
