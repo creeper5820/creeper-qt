@@ -2,6 +2,7 @@
 
 #include <qobject.h>
 
+#include <concepts>
 #include <unordered_map>
 
 namespace creeper {

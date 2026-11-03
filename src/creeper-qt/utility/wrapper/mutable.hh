@@ -2,6 +2,7 @@
 
 #include <qwidget.h>
 
+#include <concepts>
 #include <functional>
 #include <unordered_map>
 

@@ -1,5 +1,6 @@
 #include <creeper-qt/utility/co/meta/coroutine.hh>
 
+#undef NDEBUG
 #include <cassert>
 #include <print>
 #include <stdexcept>

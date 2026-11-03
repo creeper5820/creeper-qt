@@ -103,26 +103,4 @@ namespace snackbar::pro {
     using namespace api::scope::widget;
 }
 
-class SnackbarHost : public QWidget, DSL {
-    CREEPER_PIMPL_DEFINITION(SnackbarHost);
-
-public:
-    struct State {
-        CREEPER_PIMPL_DEFINITION(State);
-
-    public:
-        auto& showSnackbar();
-
-    private:
-        auto dismiss() noexcept -> void;
-        auto perform() noexcept -> void;
-    };
-
-    explicit SnackbarHost(auto&&... props) noexcept
-        : QWidget { } {
-        construct_with(std::forward<decltype(props)>(props)...);
-    }
-};
-
 }
-namespace creeper::snackbar::host { }

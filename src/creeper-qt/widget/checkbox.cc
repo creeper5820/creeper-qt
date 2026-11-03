@@ -24,7 +24,7 @@ struct Graphics {
         qt::size size { };
         QPainterPath path;
         qt::color color = Qt::black;
-        qt::real width  = Defaults::kStrokeWidth.value;
+        qt::real width;
 
         Mark(const qt::size& size, QPainterPath path, const qt::color& color, qt::real width)
             : size(size)
@@ -50,9 +50,10 @@ struct Graphics {
             a.alphaF() + (b.alphaF() - a.alphaF()) * t);
     }
 
-    static auto outer_rect(const qt::point& origin, double t) -> qt::rect {
+    static auto outer_rect(
+        const qt::point& origin, double container_size, double stroke_width, double t) -> qt::rect {
         const auto inset = 1.0 - std::abs(t - 0.5) * 2.0;
-        const auto size  = Defaults::kContainerSize.value - inset * Defaults::kStrokeWidth.value;
+        const auto size  = container_size - inset * stroke_width;
         return qt::rect { origin.x() + inset, origin.y() + inset, size, size };
     }
 
@@ -61,13 +62,10 @@ struct Graphics {
         return t >= 0.25 ? active : lerp_color(inactive, active, t * 4.0);
     }
 
-    static auto check_path(double t) -> QPainterPath {
-        const auto start = qt::point { Defaults::kContainerSize.value * 0.25,
-            Defaults::kContainerSize.value * 0.50 };
-        const auto mid   = qt::point { Defaults::kContainerSize.value * 0.40,
-            Defaults::kContainerSize.value * 0.65 };
-        const auto end   = qt::point { Defaults::kContainerSize.value * 0.75,
-            Defaults::kContainerSize.value * 0.30 };
+    static auto check_path(double container_size, double t) -> QPainterPath {
+        const auto start = qt::point { container_size * 0.25, container_size * 0.50 };
+        const auto mid   = qt::point { container_size * 0.40, container_size * 0.65 };
+        const auto end   = qt::point { container_size * 0.75, container_size * 0.30 };
 
         auto path = QPainterPath { };
         if (t < 0.5) {
@@ -81,13 +79,10 @@ struct Graphics {
         return path;
     }
 
-    static auto dash_path(double t) -> QPainterPath {
-        const auto start = qt::point { Defaults::kContainerSize.value * 0.25,
-            Defaults::kContainerSize.value * 0.5 };
-        const auto mid   = qt::point { Defaults::kContainerSize.value * 0.50,
-            Defaults::kContainerSize.value * 0.5 };
-        const auto end   = qt::point { Defaults::kContainerSize.value * 0.75,
-            Defaults::kContainerSize.value * 0.5 };
+    static auto dash_path(double container_size, double t) -> QPainterPath {
+        const auto start = qt::point { container_size * 0.25, container_size * 0.5 };
+        const auto mid   = qt::point { container_size * 0.50, container_size * 0.5 };
+        const auto end   = qt::point { container_size * 0.75, container_size * 0.5 };
 
         auto path = QPainterPath { };
         path.moveTo(start + (mid - start) * (1.0 - t));
@@ -194,16 +189,18 @@ struct Checkbox::Impl {
     }
 
     auto paint_event() -> void {
+        const auto container_size = measurements.container_size.value;
+        const auto stroke_width   = measurements.stroke_width.value;
+
         const auto center = qt::point { self.width() / 2.0, self.height() / 2.0 };
-        const auto origin = center
-            - qt::point { Defaults::kContainerSize.value / 2.0,
-                  Defaults::kContainerSize.value / 2.0 };
+        const auto origin = center - qt::point { container_size / 2.0, container_size / 2.0 };
 
         const auto t_norm  = *position;
         const auto is_off  = [](CheckState s) { return s == CheckState::UNSELECTED; };
         const auto is_null = [](CheckState s) { return s == CheckState::INDETERMINATE; };
         const auto mark_at = [&](CheckState s, double ts) {
-            return is_null(s) ? Graphics::dash_path(ts) : Graphics::check_path(ts);
+            return is_null(s) ? Graphics::dash_path(container_size, ts)
+                              : Graphics::check_path(container_size, ts);
         };
 
         const auto active_state  = is_off(check_state) ? previous_state : check_state;
@@ -215,19 +212,19 @@ struct Checkbox::Impl {
 
         auto fill          = inactive_fill;
         auto outline_color = inactive_side;
-        auto border_width  = Defaults::kStrokeWidth.value;
-        auto outer         = Graphics::outer_rect(origin, 1.0);
+        auto border_width  = stroke_width;
+        auto outer         = Graphics::outer_rect(origin, container_size, stroke_width, 1.0);
         auto mark          = QPainterPath { };
 
         if (is_off(previous_state) || is_off(check_state)) {
             const auto& t = t_norm;
 
-            outer = Graphics::outer_rect(origin, t);
+            outer = Graphics::outer_rect(origin, container_size, stroke_width, t);
             fill  = Graphics::color_at(inactive_fill, active_fill, t);
 
             if (t <= 0.5) {
                 outline_color = Graphics::lerp_color(inactive_side, active_side, t);
-                border_width  = Defaults::kStrokeWidth.value * (1.0 - t);
+                border_width  = stroke_width * (1.0 - t);
             } else {
                 outline_color = active_side;
                 border_width  = 0.;
@@ -237,7 +234,7 @@ struct Checkbox::Impl {
                 mark          = mark_at(s, ts);
             }
         } else {
-            outer = Graphics::outer_rect(origin, 1.0);
+            outer = Graphics::outer_rect(origin, container_size, stroke_width, 1.0);
             fill  = active_fill;
 
             outline_color = active_side;
@@ -250,8 +247,7 @@ struct Checkbox::Impl {
             }
         }
 
-        const auto scale      = measurements.container_size / Defaults::kContainerSize;
-        const auto layer_size = (measurements.state_layer_size * scale).value;
+        const auto layer_size = measurements.state_layer_size.value;
 
         auto hover_color = colors.state_layer_color;
         hover_color.setAlphaF(Defaults::kHoverStateLayerOpacity * *hover_fade);
@@ -279,23 +275,20 @@ struct Checkbox::Impl {
             },
             Paint::RoundedRectangle {
               Size { qt::size { layer_size, layer_size } },
-              Outline { ring_color, (measurements.focus_ring_width * scale).value },
+              Outline { ring_color, measurements.focus_ring_width.value },
               Radiuses { layer_size / 2.0 },
             },
             Paint::RoundedRectangle {
-              Size { qt::size { outer.width() * scale, outer.height() * scale } },
+              Size { qt::size { outer.width(), outer.height() } },
               Fill { fill },
               Outline { outline_color, static_cast<qt::real>(border_width) },
               Radiuses { measurements.container_shape.value },
             },
             Graphics::Mark {
-              qt::size {
-                Defaults::kContainerSize.value,
-                Defaults::kContainerSize.value,
-              },
+              qt::size { container_size, container_size },
               mark,
               check_color,
-              Defaults::kStrokeWidth.value,
+              stroke_width,
             },
         };
 

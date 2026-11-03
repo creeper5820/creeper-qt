@@ -3,6 +3,8 @@
 #include <qobject.h>
 #include <qtimer.h>
 
+#include <chrono>
+#include <concepts>
 #include <coroutine>
 
 namespace creeper::qcontext {

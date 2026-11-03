@@ -1,7 +1,9 @@
 #pragma once
 
+#include <qobject.h>
 #include <qthread.h>
 
+#include <concepts>
 #include <coroutine>
 
 #include "creeper-qt/utility/co/meta/cpo.hh"

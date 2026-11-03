@@ -5,10 +5,8 @@
 #include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/animation/state/tween.hh"
 #include "creeper-qt/utility/animation/transition.hh"
-#include "creeper-qt/utility/co/meta/continuation.hh"
 #include "creeper-qt/utility/painter/container.hh"
 #include "creeper-qt/utility/painter/shape.hh"
-#include "creeper-qt/utility/wrapper/mutable-value.hh"
 
 #include <qevent.h>
 #include <qfontmetrics.h>
@@ -16,7 +14,6 @@
 #include <qpainterpath.h>
 #include <qpointer.h>
 #include <qtextlayout.h>
-#include <qtimer.h>
 
 #include <algorithm>
 #include <cmath>
@@ -815,19 +812,3 @@ auto Snackbar::keyReleaseEvent(QKeyEvent* event) -> void {
 }
 
 auto Snackbar::paintEvent(QPaintEvent*) -> void { pimpl->paint_event(); }
-
-namespace creeper {
-
-struct SnackbarHost::State::Impl {
-    co::continuation<SnackbarResult> continuation;
-    QTimer timer;
-
-    struct Data {
-        // ...
-    };
-    MutableValue<Data> data;
-};
-
-struct SnackbarHost::Impl { };
-
-}
