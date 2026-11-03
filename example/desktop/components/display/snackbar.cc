@@ -17,8 +17,7 @@ namespace creeper {
 
 namespace {
 
-    constexpr auto kVariantWidth = 480;
-    constexpr auto kStateWidth   = 360;
+    constexpr auto kSnackbarWidth = 480;
 
     constexpr auto kLongText = "照片已上传到云端相册，但部分照片因为格式不受支持而被跳过，可以稍后"
                                "在设置中重新尝试上传";
@@ -78,7 +77,7 @@ namespace {
             TitleComponent(manager, variant.title),
             new Snackbar {
               manager,
-              sp::FixedWidth { kVariantWidth },
+              sp::FixedWidth { kSnackbarWidth },
               sp::Text { variant.text },
               sp::ActionLabel { variant.action },
               sp::WithDismissAction { variant.dismiss },
@@ -119,7 +118,7 @@ namespace {
             TitleComponent(manager, title),
             new Snackbar {
               manager,
-              sp::FixedWidth { kStateWidth },
+              sp::FixedWidth { kSnackbarWidth },
               sp::Text { "对话已归档" },
               sp::ActionLabel { "撤销" },
               sp::WithDismissAction { true },
@@ -196,7 +195,7 @@ namespace {
               TitleComponent(manager, "交互"),
               new Snackbar {
                 manager,
-                sp::FixedWidth { kStateWidth },
+                sp::FixedWidth { kSnackbarWidth },
                 MutableForward { sp::Text { }, message },
                 sp::ActionLabel { "撤销" },
                 sp::WithDismissAction { true },
@@ -212,24 +211,18 @@ namespace {
 SnackbarBoard::SnackbarBoard(ThemeManager& manager)
     : Widget { } {
     namespace cp = col::pro;
-    namespace rp = row::pro;
 
     setLayout(new Col {
       cp::Stretch { 1 },
 
       new Widget {
-        new Row {
-          rp::Spacing { 24 },
-          rp::Alignment { Qt::AlignTop },
+        new Col {
+          cp::Spacing { 16 },
+          cp::Alignment { Qt::AlignTop },
 
           VariantsComponent(manager),
-          new Col {
-            cp::Spacing { 16 },
-            cp::Alignment { Qt::AlignTop },
-
-            StatesComponent(manager),
-            DemoComponent(manager),
-          },
+          StatesComponent(manager),
+          DemoComponent(manager),
         },
       } + Col::Placement { 0, Qt::AlignHCenter },
 
