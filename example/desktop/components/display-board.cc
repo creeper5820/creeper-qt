@@ -13,13 +13,23 @@
 
 #include <qpainter.h>
 
-#include "components/control-panel.hh"
 #include "components/display/checkbox.hh"
 #include "components/display/snackbar.hh"
+#include "components/display/switch.hh"
 
 namespace creeper {
 
-namespace {
+struct DisplayBoard::Impl {
+    static constexpr auto kCount = 3;
+
+    MutableValue<int> index { 0 };
+    MutableQString label { QString { "1 / 3" } };
+    MutableValue<QColor> dot_color { QColor { } };
+
+    auto step(int delta) -> void {
+        index = ((index.get() + delta) % kCount + kCount) % kCount;
+        label = QString { "%1 / %2" }.arg(index.get() + 1).arg(kCount);
+    }
 
     auto build(ThemeManager& manager) noexcept -> Col* {
         namespace cp  = col::pro;
@@ -27,103 +37,100 @@ namespace {
         namespace ibp = icon_button::pro;
         namespace sp  = scroll::pro;
 
-        auto index = std::make_shared<MutableValue<int>>(0);
-        auto label = std::make_shared<MutableQString>(QString { "1 / 3" });
+        dot_color.set_silent(manager.colorScheme().surface_container_highest);
 
-        const auto step = [index, label](int delta) {
-            constexpr auto kCount = 3;
+        auto* dot_widget = new CustomWidget {
+            custom::pro::OnPaint {
+              [this](CustomWidget& widget) {
+                  auto solution = LatticeSolution { .spacing = 16 };
+                  solution.set_size(widget.size());
 
-            *index = ((*index + delta) % kCount + kCount) % kCount;
-            *label = QString { "%1 / %2" }.arg(*index + 1).arg(kCount);
+                  auto painter = QPainter { &widget };
+                  painter.setRenderHint(QPainter::Antialiasing);
+                  painter.setPen(Qt::NoPen);
+                  painter.setBrush(dot_color.get());
+                  for (auto [point_x, point_y] : solution.solve()) {
+                      painter.drawEllipse(
+                          QPointF { static_cast<qreal>(point_x), static_cast<qreal>(point_y) }, 1.5,
+                          1.5);
+                  }
+              },
+            },
+            MutableTransform { [](CustomWidget&, const QColor&) { }, dot_color },
+            new Col {
+              cp::Spacing { 10 },
+              cp::Margin { 10 },
+
+              new Widget {
+                new NavHost {
+                  MutableForward { nav_host::pro::CurrentIndex { 0 }, index },
+
+                  new ScrollArea {
+                    manager,
+                    sp::ScrollBarPolicy { Qt::ScrollBarAsNeeded, Qt::ScrollBarAsNeeded },
+                    sp::ScrollItem<CheckboxBoard> { manager },
+                  },
+                  new ScrollArea {
+                    manager,
+                    sp::ScrollBarPolicy { Qt::ScrollBarAsNeeded, Qt::ScrollBarAsNeeded },
+                    sp::ScrollItem<SnackbarBoard> { manager },
+                  },
+                  new ScrollArea {
+                    manager,
+                    sp::ScrollBarPolicy { Qt::ScrollBarAsNeeded, Qt::ScrollBarAsNeeded },
+                    sp::ScrollItem<SwitchBoard> { manager },
+                  },
+                },
+              } + Col::Placement { 1 },
+
+              new Row {
+                rp::Alignment { Qt::AlignRight | Qt::AlignVCenter },
+                rp::Spacing { 8 },
+                new IconButton {
+                  manager,
+                  ibp::FixedSize { 36, 36 },
+                  ibp::Color { IconButton::Color::TONAL },
+                  ibp::Font { material::kRoundSmallFont },
+                  ibp::FontIcon { "chevron_left" },
+                  ibp::Clickable { [this] { step(-1); } },
+                },
+                new Text {
+                  manager,
+                  text::pro::Alignment { Qt::AlignCenter },
+                  text::pro::FixedWidth { 64 },
+                  MutableForward { text::pro::Text { }, label },
+                },
+                new IconButton {
+                  manager,
+                  ibp::FixedSize { 36, 36 },
+                  ibp::Color { IconButton::Color::TONAL },
+                  ibp::Font { material::kRoundSmallFont },
+                  ibp::FontIcon { "chevron_right" },
+                  ibp::Clickable { [this] { step(1); } },
+                },
+              } + Col::Placement { 0, Qt::AlignRight },
+            },
         };
 
-        auto dot_color =
-            std::make_shared<MutableValue<QColor>>(manager.colorScheme().surface_container_highest);
-        manager.appendFinalCallback([dot_color](const ThemeManager& m) {
-            *dot_color = m.colorScheme().surface_container_highest;
+        manager.appendHandler(dot_widget, [this](const ThemeManager& theme_manager) {
+            dot_color = theme_manager.colorScheme().surface_container_highest;
         });
 
         return new Col {
-            new CustomWidget {
-              custom::pro::OnPaint {
-                std::shared_ptr { dot_color },
-                [](CustomWidget& widget, std::shared_ptr<MutableValue<QColor>>& color) {
-                    auto solution = LatticeSolution { .spacing = 16 };
-                    solution.set_size(widget.size());
-
-                    auto painter = QPainter { &widget };
-                    painter.setRenderHint(QPainter::Antialiasing);
-                    painter.setPen(Qt::NoPen);
-                    painter.setBrush(color->get());
-                    for (auto [px, py] : solution.solve()) {
-                        painter.drawEllipse(
-                            QPointF { static_cast<qreal>(px), static_cast<qreal>(py) }, 1.5, 1.5);
-                    }
-                },
-              },
-              MutableTransform { [](CustomWidget&, const QColor&) {}, *dot_color },
-              new Col {
-                cp::Spacing { 10 },
-                cp::Margin { 10 },
-
-                new Widget {
-                  new NavHost {
-                    MutableForward { nav_host::pro::CurrentIndex { 0 }, index },
-
-                    new ScrollArea {
-                      manager,
-                      sp::ScrollBarPolicy { Qt::ScrollBarAsNeeded, Qt::ScrollBarAsNeeded },
-                      sp::ScrollItem<CheckboxBoard> { manager },
-                    },
-                    new ScrollArea {
-                      manager,
-                      sp::ScrollBarPolicy { Qt::ScrollBarAsNeeded, Qt::ScrollBarAsNeeded },
-                      sp::ScrollItem<SnackbarBoard> { manager },
-                    },
-                    new ScrollArea {
-                      manager,
-                      sp::ScrollBarPolicy { Qt::ScrollBarAsNeeded, Qt::ScrollBarAsNeeded },
-                      sp::ScrollItem<FilledCard> { ControlPanel(manager) },
-                    },
-                  },
-                } + Col::Placement { 1 },
-
-                new Row {
-                  rp::Alignment { Qt::AlignRight | Qt::AlignVCenter },
-                  rp::Spacing { 8 },
-                  new IconButton {
-                    manager,
-                    ibp::FixedSize { 36, 36 },
-                    ibp::Color { IconButton::Color::TONAL },
-                    ibp::Font { material::kRoundSmallFont },
-                    ibp::FontIcon { "chevron_left" },
-                    ibp::Clickable { [step] { step(-1); } },
-                  },
-                  new Text {
-                    manager,
-                    text::pro::Alignment { Qt::AlignCenter },
-                    text::pro::FixedWidth { 64 },
-                    MutableForward { text::pro::Text {}, label },
-                  },
-                  new IconButton {
-                    manager,
-                    ibp::FixedSize { 36, 36 },
-                    ibp::Color { IconButton::Color::TONAL },
-                    ibp::Font { material::kRoundSmallFont },
-                    ibp::FontIcon { "chevron_right" },
-                    ibp::Clickable { [step] { step(1); } },
-                  },
-                } + Col::Placement { 0, Qt::AlignRight },
-              },
-            } + Col::Placement { 1 },
+            dot_widget + Col::Placement { 1 },
         };
     }
+};
 
-} // namespace
+DisplayBoard::DisplayBoard()
+    : pimpl(std::make_unique<Impl>()) { }
 
 DisplayBoard::DisplayBoard(ThemeManager& manager)
-    : FilledCard { manager } {
-    setLayout(build(manager));
+    : DisplayBoard { } {
+    bindThemeManager(manager);
+    setLayout(pimpl->build(manager));
 }
+
+DisplayBoard::~DisplayBoard() = default;
 
 }

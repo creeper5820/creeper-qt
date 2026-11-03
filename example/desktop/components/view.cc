@@ -344,7 +344,7 @@ auto ViewComponent(ViewComponentState& state) noexcept -> raw_pointer<QWidget> {
         return new Row {
             new Switch {
               state.manager,
-              _switch::pro::FixedSize { 70, 40 },
+              switch_::pro::Clickable { [](Switch& self) { self.setChecked(!self.checked()); } },
             },
             new FilledCard {
               state.manager,

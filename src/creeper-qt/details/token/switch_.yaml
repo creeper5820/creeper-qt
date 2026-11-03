@@ -1,0 +1,82 @@
+namespace: switch_
+
+tokens:
+  file: tokens:SwitchTokens.kt
+  include:
+    - DisabledSelectedHandleOpacity
+    - DisabledSelectedIconOpacity
+    - DisabledTrackOpacity
+    - DisabledUnselectedHandleOpacity
+    - DisabledUnselectedIconOpacity
+    - PressedHandleWidth
+    - SelectedHandleWidth
+    - StateLayerSize
+    - TrackHeight
+    - TrackOutlineWidth
+    - TrackWidth
+    - UnselectedHandleWidth
+
+symbols:
+  - file: material3:Switch.kt
+    names:
+      - IconSize
+  - file: tokens:ExpressiveMotionTokens.kt
+    names:
+      - SpringFastSpatialDamping
+      - SpringFastSpatialStiffness
+  - file: tokens:StateTokens.kt
+    names:
+      - HoverStateLayerOpacity
+      - FocusStateLayerOpacity
+      - PressedStateLayerOpacity
+  - file: tokens:MotionTokens.kt
+    names:
+      - EasingLinearCubicBezier
+  - file: ripple:RippleAnimation.kt
+    unit: ms
+    names:
+      - FadeInDuration
+      - FadeOutDuration
+
+extract:
+  - name: MinimumInteractiveComponentSize
+    file: material3:InteractiveComponentSize.kt
+    match: 'staticCompositionLocalOf\s*\{\s*(\d+)\.dp\s*\}'
+  - name: StateLayerDefaultDuration
+    file: ripple:Ripple.kt
+    match: 'DefaultTweenSpec\s*=\s*TweenSpec<Float>\(durationMillis\s*=\s*(\d+)'
+    unit: ms
+  - name: StateLayerFocusInDuration
+    file: ripple:Ripple.kt
+    match: 'is FocusInteraction\.Focus\s*->\s*TweenSpec\(durationMillis\s*=\s*(\d+)'
+    unit: ms
+
+measurements:
+  track_width: TrackWidth
+  track_height: TrackHeight
+  track_outline_width: TrackOutlineWidth
+  thumb_diameter: SelectedHandleWidth
+  unchecked_thumb_diameter: UnselectedHandleWidth
+  pressed_thumb_diameter: PressedHandleWidth
+  thumb_icon_size: IconSize
+  state_layer_size: StateLayerSize
+  touch_target_size: MinimumInteractiveComponentSize
+
+colors:
+  checked_thumb_color: SelectedHandleColor
+  checked_track_color: SelectedTrackColor
+  checked_border_color: transparent
+  checked_icon_color: SelectedIconColor
+  unchecked_thumb_color: UnselectedHandleColor
+  unchecked_track_color: UnselectedTrackColor
+  unchecked_border_color: UnselectedFocusTrackOutlineColor
+  unchecked_icon_color: UnselectedIconColor
+  disabled_checked_thumb_color: { color: DisabledSelectedHandleColor, opacity: DisabledSelectedHandleOpacity }
+  disabled_checked_track_color: { color: DisabledSelectedTrackColor, opacity: DisabledTrackOpacity }
+  disabled_checked_border_color: transparent
+  disabled_checked_icon_color: { color: DisabledSelectedIconColor, opacity: DisabledSelectedIconOpacity }
+  disabled_unchecked_thumb_color: { color: DisabledUnselectedHandleColor, opacity: DisabledUnselectedHandleOpacity }
+  disabled_unchecked_track_color: { color: DisabledUnselectedTrackColor, opacity: DisabledTrackOpacity }
+  disabled_unchecked_border_color: { color: DisabledUnselectedTrackOutlineColor, opacity: DisabledTrackOpacity }
+  disabled_unchecked_icon_color: { color: DisabledUnselectedIconColor, opacity: DisabledUnselectedIconOpacity }
+  state_layer_color: { scheme: OnSurface }

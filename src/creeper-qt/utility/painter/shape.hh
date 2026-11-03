@@ -53,6 +53,32 @@ struct Rectangle : public CommonProps, public ShapeProps, public DSL {
     }
 };
 
+struct Ellipse : public CommonProps, public ShapeProps, public DSL {
+    explicit Ellipse(auto&&... props) { construct_with(std::forward<decltype(props)>(props)...); }
+
+    auto operator()(qt::painter& painter) const noexcept {
+        painter.save();
+        painter.setRenderHint(QPainter::Antialiasing);
+
+        const auto rectangle = qt::rect { origin, size };
+
+        painter.setBrush(container_color);
+        painter.setPen(Qt::NoPen);
+        painter.drawEllipse(rectangle);
+
+        if (outline_width > 0) {
+            const auto thickness = outline_width / 2;
+            const auto inliner   = rectangle.adjusted(thickness, thickness, -thickness, -thickness);
+
+            painter.setPen({ outline_color, outline_width });
+            painter.setBrush(Qt::NoBrush);
+            painter.drawEllipse(inliner);
+        }
+
+        painter.restore();
+    }
+};
+
 struct RoundedRectangle : public CommonProps, public ShapeProps, public DSL {
     double radius_tl = 0;
     double radius_tr = 0;
@@ -326,6 +352,7 @@ namespace Paint { // NOLINT
 
     using EraseRectangle   = internal::EraseRectangle;
     using Rectangle        = internal::Rectangle;
+    using Ellipse          = internal::Ellipse;
     using RoundedRectangle = internal::RoundedRectangle;
     using Text             = internal::Text;
     using Icon             = internal::Icon;

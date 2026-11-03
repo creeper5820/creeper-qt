@@ -1,11 +1,18 @@
 #pragma once
 #include "creeper-qt/utility/animation/animatable.hh"
+#include "creeper-qt/utility/animation/math.hh"
 #include "creeper-qt/utility/animation/state/pid.hh"
 #include "creeper-qt/utility/animation/state/spring.hh"
+#include "creeper-qt/utility/animation/state/tween.hh"
 #include "creeper-qt/utility/animation/transition.hh"
-#include "creeper-qt/utility/painter/helper.hh"
+#include "creeper-qt/utility/painter/container.hh"
+#include "creeper-qt/utility/painter/shape.hh"
 
+#include <qevent.h>
 #include <qpainter.h>
+
+#include <algorithm>
+#include <cmath>
 
 #include "switch.hh"
 
@@ -15,28 +22,12 @@ struct Switch::Impl {
 
     bool checked  = false;
     bool disabled = false;
-    bool hovered  = false;
 
-    QColor track_unchecked;
-    QColor track_checked;
-    QColor track_unchecked_disabled;
-    QColor track_checked_disabled;
+    Measurements measurements;
+    Colors colors;
 
-    QColor handle_unchecked;
-    QColor handle_checked;
-    QColor handle_unchecked_disabled;
-    QColor handle_checked_disabled;
-
-    QColor outline_unchecked;
-    QColor outline_checked;
-    QColor outline_unchecked_disabled;
-    QColor outline_checked_disabled;
-
-    QColor hover_unchecked;
-    QColor hover_checked;
-
-    static constexpr double position_unchecked = 0.0;
-    static constexpr double position_checked   = 1.0;
+    static constexpr double kPositionUnchecked = 0.0;
+    static constexpr double kPositionChecked   = 1.0;
 
     Animatable animatable;
 
@@ -46,19 +37,26 @@ struct Switch::Impl {
 
     std::unique_ptr<TransitionValue<SpringState<double>>> position;
 
+    // 状态层各自独立：hover / focus / press 的不透明度进度，press_expansion 驱动 handle 放大
+    std::unique_ptr<TransitionValue<TweenState<double>>> hover;
+    std::unique_ptr<TransitionValue<TweenState<double>>> focus;
+    std::unique_ptr<TransitionValue<TweenState<double>>> press;
+    std::unique_ptr<TransitionValue<SpringState<double>>> press_expansion;
+
     explicit Impl(Switch& self) noexcept
         : animatable(self) {
 
-        // @TODO: 适配进 MotionScheme
-        constexpr double kp = 15.0, ki = 0.0, kd = 0.0, hz = 90;
-        constexpr double k = 400, d = 22;
+        const auto stiffness = Defaults::kSpringFastSpatialStiffness;
+        const auto damping   = 2 * Defaults::kSpringFastSpatialDamping * std::sqrt(stiffness);
+
+        const auto proportional_gain = damping / 2;
         {
-            constexpr auto make_state = [] {
+            const auto make_state = [proportional_gain] {
                 auto state = std::make_shared<PidState<Eigen::Vector4d>>();
 
-                state->config.kp = kp;
-                state->config.ki = ki;
-                state->config.kd = kd;
+                state->config.kp = proportional_gain;
+                state->config.ki = 0.0;
+                state->config.kd = 0.0;
 
                 return state;
             };
@@ -67,138 +65,229 @@ struct Switch::Impl {
             outline = make_transition(animatable, make_state());
         }
         {
-            auto state = std::make_shared<SpringState<double>>();
+            const auto make_state = [stiffness, damping] {
+                auto state = std::make_shared<SpringState<double>>();
 
-            state->config.k = k;
-            state->config.d = d;
+                state->config.k       = stiffness;
+                state->config.d       = damping;
+                state->config.epsilon = 1e-4;
 
-            position = make_transition(animatable, std::move(state));
+                return state;
+            };
+            position        = make_transition(animatable, make_state());
+            press_expansion = make_transition(animatable, make_state());
+        }
+        {
+            const auto make_state = [] {
+                auto state = std::make_shared<TweenState<double>>();
+
+                state->config.duration = Defaults::kStateLayerDefaultDuration;
+                state->config.easing   = Defaults::kEasingLinearCubicBezier;
+
+                return state;
+            };
+            hover = make_transition(animatable, make_state());
+            focus = make_transition(animatable, make_state());
+            press = make_transition(animatable, make_state());
         }
 
-        QObject::connect(&self, &Switch::clicked, [this, &self] { set_checked(self, !checked); });
+        self.setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        set_measurements(self, measurements);
     }
 
-    void loadColorScheme(Switch& self, const ColorScheme& scheme) {
-        track_unchecked          = scheme.surface_variant;
-        track_checked            = scheme.primary;
-        track_unchecked_disabled = scheme.surface_variant;
-        track_checked_disabled   = scheme.on_surface;
+    void load_colorscheme(Switch& self, const ColorScheme& scheme) {
+        Defaults::mapColors(scheme, colors);
+        update_switch_ui(self);
+    }
 
-        handle_unchecked          = scheme.outline;
-        handle_checked            = scheme.on_primary;
-        handle_unchecked_disabled = scheme.on_surface;
-        handle_checked_disabled   = scheme.surface;
+    void set_measurements(Switch& self, const Measurements& value) {
+        measurements = value;
+        self.setMinimumSize(size_hint());
+        self.updateGeometry();
+    }
 
-        outline_unchecked          = scheme.outline;
-        outline_checked            = scheme.primary;
-        outline_unchecked_disabled = scheme.on_surface;
-        outline_checked_disabled   = Qt::transparent;
+    auto size_hint() const -> QSize {
+        const auto width =
+            measurements.track_width + (measurements.state_layer_size - measurements.track_height);
+        const auto height = std::max(measurements.state_layer_size, measurements.touch_target_size);
 
-        hover_checked   = scheme.primary;
-        hover_unchecked = scheme.on_surface;
+        return QSize { width.px(), height.px() };
+    }
 
-        constexpr auto disabled_track_opacity = 0.12;
-        track_unchecked_disabled.setAlphaF(disabled_track_opacity);
-        track_checked_disabled.setAlphaF(disabled_track_opacity);
-        outline_unchecked_disabled.setAlphaF(disabled_track_opacity);
-
-        constexpr auto disabled_handle_opacity = 0.38;
-        handle_unchecked_disabled.setAlphaF(disabled_handle_opacity);
-        handle_checked_disabled.setAlphaF(disabled_handle_opacity);
-
-        constexpr auto hover_opacity = 0.08;
-        hover_checked.setAlphaF(hover_opacity);
-        hover_unchecked.setAlphaF(hover_opacity);
-
-        update_switch_ui(self, checked, disabled);
+    void set_colors(Switch& self, const Colors& value) {
+        colors = value;
+        update_switch_ui(self);
     }
 
     void set_disabled(Switch& self, bool on) {
         if (disabled == on) return;
 
         disabled = on;
-        update_switch_ui(self, checked, on);
+        update_switch_ui(self);
     }
 
     void set_checked(Switch& self, bool on) {
-        if (disabled || checked == on) return;
+        if (checked == on) return;
 
         checked = on;
-        update_switch_ui(self, on);
+        update_switch_ui(self);
     }
 
     void enter_event(Switch& self, const QEvent& event) {
-        if (!disabled) self.setCursor(Qt::PointingHandCursor);
-        hovered = true;
+        if (disabled) return;
+
+        self.setCursor(Qt::PointingHandCursor);
+        hover->transition_to(1.0);
+        self.update();
     }
 
-    void leave_event(Switch& self, const QEvent& event) { hovered = false; }
+    void leave_event(Switch& self, const QEvent& event) {
+        hover->transition_to(0.0);
+        self.update();
+    }
 
-    void paint_event(Switch& self, const QPaintEvent& event) {
-        const auto rect = extract_rect(self.rect(), 13, 8);
+    void focus_in_event(Switch& self, const QFocusEvent& event) {
+        const auto keyboard =
+            (event.reason() == Qt::TabFocusReason) || (event.reason() == Qt::BacktabFocusReason);
 
-        // 外轮廓相关变量计算
-        const auto hover_radius = std::min<double>(rect.width(), rect.height()) / 2;
+        focus->get_state().config.duration =
+            keyboard ? Defaults::kStateLayerFocusInDuration : Defaults::kStateLayerDefaultDuration;
+        focus->transition_to(keyboard ? 1.0 : 0.0);
+        self.update();
+    }
 
-        const auto outline_radius = hover_radius * 4 / 5;
-        const auto outline_width  = outline_radius / 8;
-        const auto outline_error  = hover_radius - outline_radius;
-        const auto outline_rect   = rect.adjusted( //
-            outline_error, outline_error, -outline_error, -outline_error);
+    void focus_out_event(Switch& self, const QFocusEvent& event) {
+        focus->get_state().config.duration = Defaults::kStateLayerDefaultDuration;
+        focus->transition_to(0.0);
+        self.update();
+    }
 
-        // 计算 handle 半径
-        const auto handle_radius_checked   = outline_radius / 4 * 3;
-        const auto handle_radius_unchecked = outline_radius / 2 * 1;
+    void mouse_press_event(Switch& self, const QMouseEvent& event) {
+        if (disabled) return;
 
+        press->get_state().config.duration = Defaults::kFadeInDuration;
+        press->transition_to(1.0);
+
+        press_expansion->snap_to(1.0);
+        self.update();
+    }
+
+    void mouse_release_event(Switch& self, const QMouseEvent& event) {
+        press->get_state().config.duration = Defaults::kFadeOutDuration;
+        press->transition_to(0.0);
+
+        press_expansion->transition_to(0.0);
+        self.update();
+    }
+
+    void paint_event(Switch& self, const QPaintEvent& event) const {
+        const auto track_width   = measurements.track_width.value;
+        const auto track_height  = measurements.track_height.value;
+        const auto outline_width = measurements.track_outline_width.value;
+        const auto track_radius  = track_height / 2;
+        const auto layer_radius  = measurements.state_layer_size.value / 2;
+
+        // handle 直径在未选中与选中之间插值，按下时再放大到 pressed_thumb_diameter
+        const auto handle_radius_unchecked = measurements.unchecked_thumb_diameter.value / 2;
+        const auto handle_radius_checked   = measurements.thumb_diameter.value / 2;
+        const auto handle_radius_pressed   = measurements.pressed_thumb_diameter.value / 2;
+
+        const auto check_progress = double { *position };
+        const auto press_progress = std::clamp(double { *press_expansion }, 0.0, 1.0);
+
+        const auto handle_radius_base =
+            std::lerp(handle_radius_unchecked, handle_radius_checked, check_progress);
         const auto handle_radius =
-            handle_radius_unchecked + *position * (handle_radius_checked - handle_radius_unchecked);
+            std::lerp(handle_radius_base, handle_radius_pressed, press_progress);
 
-        // 计算 handle 坐标
-        const auto handle_point_begin = rect.topLeft() + QPointF { hover_radius, hover_radius };
-        const auto handle_point_end =
-            rect.topLeft() + QPointF { rect.width() - hover_radius, rect.height() - hover_radius };
+        // handle 中心在 track 坐标系内，从左 / 右各内缩 track_radius 的位置之间插值
+        const auto handle_point_begin = QPointF { track_radius, track_radius };
+        const auto handle_point_final = QPointF { track_width - track_radius, track_radius };
 
         const auto handle_point =
-            handle_point_begin + *position * (handle_point_end - handle_point_begin);
+            handle_point_begin + check_progress * (handle_point_final - handle_point_begin);
 
-        // 选择 hover 颜色
-        const auto hover_color =
-            (!disabled && hovered) ? (checked ? hover_checked : hover_unchecked) : Qt::transparent;
+        auto hover_color = colors.state_layer_color;
+        auto focus_color = colors.state_layer_color;
+        auto press_color = colors.state_layer_color;
+
+        hover_color.setAlphaF(Defaults::kHoverStateLayerOpacity * double { *hover });
+        focus_color.setAlphaF(Defaults::kFocusStateLayerOpacity * double { *focus });
+        press_color.setAlphaF(Defaults::kPressedStateLayerOpacity * double { *press });
+
+        const auto size_track  = qt::size { track_width, track_height };
+        const auto size_handle = qt::size { handle_radius * 2, handle_radius * 2 };
+        const auto size_layer  = qt::size { layer_radius * 2, layer_radius * 2 };
+
+        const auto origin_layer = handle_point - QPointF { layer_radius, layer_radius };
+
+        using namespace painter;
+        using namespace painter::common::pro;
+
+        auto paint = Paint::Box {
+            BoxImpl { self.size(), Qt::AlignCenter },
+            Paint::Surface {
+              SurfaceImpl { size_track },
+              Paint::RoundedRectangle {
+                Size { size_track },
+                Fill { from_vector4(*track) },
+                Outline { from_vector4(*outline), outline_width },
+                Radiuses { track_radius },
+              },
+              Paint::Box {
+                BoxImpl { size_layer, Qt::AlignCenter, origin_layer },
+                Paint::Ellipse {
+                  Size { size_handle },
+                  Fill { from_vector4(*handle) },
+                },
+                Paint::Ellipse {
+                  Size { size_layer },
+                  Fill { hover_color },
+                },
+                Paint::Ellipse {
+                  Size { size_layer },
+                  Fill { focus_color },
+                },
+                Paint::Ellipse {
+                  Size { size_layer },
+                  Fill { press_color },
+                },
+              },
+            },
+        };
 
         auto painter = QPainter { &self };
-        util::PainterHelper { painter }
-            .set_render_hint(QPainter::RenderHint::Antialiasing)
-            .rounded_rectangle(from_vector4(*track), from_vector4(*outline), outline_width,
-                outline_rect, outline_radius, outline_radius)
-            .ellipse(from_vector4(*handle), Qt::transparent, 0, handle_point, handle_radius,
-                handle_radius)
-            .ellipse(hover_color, Qt::transparent, 0, handle_point, hover_radius, hover_radius)
-            .done();
+        paint(painter);
     }
 
 private:
-    auto update_switch_ui(Switch&, bool checked, bool disabled = false) -> void {
+    auto update_switch_ui(Switch& self) -> void {
 
         // 添加 Switch 轨道颜色动画
         const auto track_target = disabled
-            ? (checked ? track_checked_disabled : track_unchecked_disabled)
-            : (checked ? track_checked : track_unchecked);
+            ? (checked ? colors.disabled_checked_track_color
+                       : colors.disabled_unchecked_track_color)
+            : (checked ? colors.checked_track_color : colors.unchecked_track_color);
         track->transition_to(from_color(track_target));
 
         // 添加 Switch 指示器颜色动画
         const auto handle_target = disabled
-            ? (checked ? handle_checked_disabled : handle_unchecked_disabled)
-            : (checked ? handle_checked : handle_unchecked);
+            ? (checked ? colors.disabled_checked_thumb_color
+                       : colors.disabled_unchecked_thumb_color)
+            : (checked ? colors.checked_thumb_color : colors.unchecked_thumb_color);
         handle->transition_to(from_color(handle_target));
 
         // 添加 Switch 外边框颜色动画
         const auto outline_target = disabled
-            ? (checked ? outline_checked_disabled : outline_unchecked_disabled)
-            : (checked ? outline_checked : outline_unchecked);
+            ? (checked ? colors.disabled_checked_border_color
+                       : colors.disabled_unchecked_border_color)
+            : (checked ? colors.checked_border_color : colors.unchecked_border_color);
         outline->transition_to(from_color(outline_target));
 
         // 添加 Switch 运动动画
-        const auto position_target = checked ? position_checked : position_unchecked;
+        const auto position_target = checked ? kPositionChecked : kPositionUnchecked;
         position->transition_to(position_target);
+
+        self.update();
     }
 };

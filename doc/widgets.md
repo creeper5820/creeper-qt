@@ -178,32 +178,44 @@ auto text_button     = TextButton { properties };
 
 ### Switch 开关
 
-<div align="center">
-<img src="https://r2.creeper5820.com/creeper-qt/switch-working.gif" width="500" alt="Switch 组件动画">
-</div>
+命名空间：`creeper::switch_::pro`
 
-命名空间：`creeper::_switch::pro`
+继承属性：`creeper::api::scope::common`、`creeper::api::scope::theme`、`creeper::api::scope::widget`
 
-实现此组件时经过多次权衡。原 Material Design 3 的 Switch 规则过于复杂，一些参数（如 Handle 的膨胀拉伸形变系数）未给出明确定义。基于曲线函数的动画在打断时表现不自然。最终决定大体复现 MD3 外观设计，使用弹簧物理模拟替代曲线动画，简化了按压和拉伸动画。
+| 属性名 | 类型 | 说明 |
+| --- | --- | --- |
+| `Checked` | `bool` | 是否选中（映射到 `setChecked`） |
+| `Disabled` | `bool` | 是否禁用 |
+| `Measurements` | `Switch::Measurements` | 尺寸度量 |
+| `Colors` | `Switch::Colors` | 颜色规格 |
+| `Clickable` | `[](self){}` | 点击回调 |
 
-继承属性：`creeper::api::scope::theme`、`creeper::api::scope::widget`
+Switch 是受控组件：点击只发出 `clicked`，不会自行切换，由调用方在回调里调用 `setChecked`。
 
-完整属性列表参考[源代码](../creeper-qt/widget/switch.hh#L60-L106)，主要属性包括：
+`Measurements` 和 `Colors` 由 `details/token/switch_.yaml` 从 Compose 源码生成（`token::switch_`）。轨道 52×32dp，handle 未选中 16dp、选中 24dp、按下 28dp，状态层 40dp，组件 `sizeHint` 为 60×48dp。
 
-- `Clickable` - 点击回调函数
-- `Checked` / `Disabled` - 状态控制
-- `TrackColor*` - 轨道颜色系列（Checked/Unchecked/Disabled 状态）
-- `HandleColor*` - 手柄颜色系列（Checked/Unchecked/Disabled 状态）
-- `OutlineColor*` - 轮廓颜色系列（Checked/Unchecked/Disabled 状态）
-- `HoverColor*` - 悬停颜色系列（Checked/Unchecked 状态）
+`Colors` 是扁平结构，前 16 项对应 Compose `SwitchDefaults.colors()`：
+
+- `checked_` / `unchecked_` × `thumb_color` / `track_color` / `border_color` / `icon_color`
+- `disabled_checked_` / `disabled_unchecked_` × `thumb_color` / `track_color` / `border_color` / `icon_color`
+
+另有 hover / 焦点 / 按压状态层 `state_layer_color`。`*_icon_color` 对应 Compose 的 `thumbContent`，当前不绘制图标。
 
 ```cpp
 using namespace creeper;
 
 auto switch_widget = new Switch {
-    _switch::pro::TrackColorChecked { QColor("#2196F3") },
-    _switch::pro::HandleColorChecked { QColor("#FFFFFF") },
-    _switch::pro::Clickable { [](auto& self) { qDebug() << "开关状态:" << self.isChecked(); } },
+    manager,
+    switch_::pro::Checked { false },
+    switch_::pro::Clickable { [](Switch& self) { self.setChecked(!self.checked()); } },
+};
+
+// 与 MutableValue 绑定
+auto enabled = std::make_shared<MutableBool>(false);
+auto bound   = new Switch {
+    manager,
+    MutableForward { switch_::pro::Checked { false }, enabled },
+    switch_::pro::Clickable { [enabled](auto&) { *enabled = !enabled->get(); } },
 };
 ```
 
