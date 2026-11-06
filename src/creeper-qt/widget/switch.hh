@@ -57,6 +57,9 @@ protected:
     auto mousePressEvent(QMouseEvent* event) -> void override;
     auto mouseReleaseEvent(QMouseEvent* event) -> void override;
 
+    // 点击不自行翻转状态，保持外部受控
+    auto nextCheckState() -> void override;
+
     // 实现视觉效果
     auto paintEvent(QPaintEvent* event) -> void override;
 };

@@ -191,10 +191,8 @@ namespace {
                 manager,
                 MutableForward { switch_::pro::Checked { false }, disabled_toggle },
                 switch_::pro::Disabled { true },
-                switch_::pro::Clickable { [disabled_toggle](Switch& self) {
-                    if (self.disabled()) return;
-                    *disabled_toggle = !disabled_toggle->get();
-                } },
+                switch_::pro::Clickable {
+                  [disabled_toggle](Switch&) { *disabled_toggle = !disabled_toggle->get(); } },
               } + Col::Placement { 0, Qt::AlignHCenter },
             },
         };

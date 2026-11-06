@@ -58,4 +58,6 @@ auto Switch::mouseReleaseEvent(QMouseEvent* event) -> void {
     QAbstractButton::mouseReleaseEvent(event);
 }
 
+auto Switch::nextCheckState() -> void { }
+
 auto Switch::paintEvent(QPaintEvent* event) -> void { pimpl->paint_event(*this, *event); }

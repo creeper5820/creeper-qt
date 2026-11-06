@@ -37,7 +37,6 @@ struct Switch::Impl {
 
     std::unique_ptr<TransitionValue<SpringState<double>>> position;
 
-    // 状态层各自独立：hover / focus / press 的不透明度进度，press_expansion 驱动 handle 放大
     std::unique_ptr<TransitionValue<TweenState<double>>> hover;
     std::unique_ptr<TransitionValue<TweenState<double>>> focus;
     std::unique_ptr<TransitionValue<TweenState<double>>> press;
@@ -91,7 +90,9 @@ struct Switch::Impl {
             press = make_transition(animatable, make_state());
         }
 
+        self.setCheckable(true);
         self.setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+
         set_measurements(self, measurements);
     }
 
@@ -123,6 +124,15 @@ struct Switch::Impl {
         if (disabled == on) return;
 
         disabled = on;
+        self.setEnabled(!on);
+
+        if (on) {
+            hover->transition_to(0.0);
+            focus->transition_to(0.0);
+            press->transition_to(0.0);
+            press_expansion->transition_to(0.0);
+        }
+
         update_switch_ui(self);
     }
 
@@ -130,6 +140,7 @@ struct Switch::Impl {
         if (checked == on) return;
 
         checked = on;
+        self.QAbstractButton::setChecked(on);
         update_switch_ui(self);
     }
 
@@ -163,6 +174,7 @@ struct Switch::Impl {
     }
 
     void mouse_press_event(Switch& self, const QMouseEvent& event) {
+        if (event.button() != Qt::LeftButton) return;
         if (disabled) return;
 
         press->get_state().config.duration = Defaults::kFadeInDuration;
@@ -173,6 +185,8 @@ struct Switch::Impl {
     }
 
     void mouse_release_event(Switch& self, const QMouseEvent& event) {
+        if (event.button() != Qt::LeftButton) return;
+
         press->get_state().config.duration = Defaults::kFadeOutDuration;
         press->transition_to(0.0);
 
@@ -263,28 +277,28 @@ struct Switch::Impl {
 private:
     auto update_switch_ui(Switch& self) -> void {
 
-        // 添加 Switch 轨道颜色动画
+        // 轨道颜色动画
         const auto track_target = disabled
             ? (checked ? colors.disabled_checked_track_color
                        : colors.disabled_unchecked_track_color)
             : (checked ? colors.checked_track_color : colors.unchecked_track_color);
         track->transition_to(from_color(track_target));
 
-        // 添加 Switch 指示器颜色动画
+        // 指示器颜色动画
         const auto handle_target = disabled
             ? (checked ? colors.disabled_checked_thumb_color
                        : colors.disabled_unchecked_thumb_color)
             : (checked ? colors.checked_thumb_color : colors.unchecked_thumb_color);
         handle->transition_to(from_color(handle_target));
 
-        // 添加 Switch 外边框颜色动画
+        // 外边框颜色动画
         const auto outline_target = disabled
             ? (checked ? colors.disabled_checked_border_color
                        : colors.disabled_unchecked_border_color)
             : (checked ? colors.checked_border_color : colors.unchecked_border_color);
         outline->transition_to(from_color(outline_target));
 
-        // 添加 Switch 运动动画
+        // 运动动画
         const auto position_target = checked ? kPositionChecked : kPositionUnchecked;
         position->transition_to(position_target);
 
