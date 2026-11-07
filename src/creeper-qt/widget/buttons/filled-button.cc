@@ -72,7 +72,8 @@ public:
     void mouse_press_event(QAbstractButton& self, QMouseEvent* event) {
         if (enable_water_ripple) {
             const auto center_point = event->pos();
-            water_ripple.press(center_point, self.size());
+            const auto max_distance = std::max<double>(self.width(), self.height());
+            water_ripple.press(center_point, max_distance);
         }
     }
 

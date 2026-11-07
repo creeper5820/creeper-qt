@@ -92,7 +92,8 @@ struct IconButton::Impl {
         QObject::connect(&self, &IconButton::pressed, [this, &self] {
             if (types == Types::DEFAULT) {
                 const auto center_point = self.mapFromGlobal(QCursor::pos());
-                water_ripple.press(center_point, self.size());
+                const auto max_distance = std::max(self.width(), self.height());
+                water_ripple.press(center_point, max_distance);
             }
         });
         QObject::connect(&self, &IconButton::released, [this] {
