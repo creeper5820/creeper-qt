@@ -230,7 +230,7 @@ struct DropdownMenuItem::Impl {
         if (event->button() == Qt::LeftButton && !is_disabled) {
             is_pressed = true;
             if (enable_water_ripple)
-                water_ripple.press(event->pos(), std::max(self.width(), self.height()));
+                water_ripple.press(event->pos(), self.size());
             self.update();
         }
     }
