@@ -1,12 +1,12 @@
 #pragma once
 
+#include "creeper-qt/details/dsl/core.hh"
 #include "creeper-qt/utility/api/pro/opacity.hh"  // IWYU pragma: keep
 #include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
 #include "creeper-qt/utility/api/scope/shape.hh"  // IWYU pragma: keep
 #include "creeper-qt/utility/api/scope/widget.hh" // IWYU pragma: keep
 #include "creeper-qt/utility/content-scale.hh"
 #include "creeper-qt/utility/painter-resource.hh"
-#include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 

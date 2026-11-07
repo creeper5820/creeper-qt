@@ -1,12 +1,12 @@
 #pragma once
 
+#include "creeper-qt/details/dsl/core.hh"
 #include "creeper-qt/utility/api/pro/clickable.hh" // IWYU pragma: keep
 #include "creeper-qt/utility/api/scope/common.hh"  // IWYU pragma: keep
 #include "creeper-qt/utility/api/scope/theme.hh"   // IWYU pragma: keep
 #include "creeper-qt/utility/api/scope/widget.hh"  // IWYU pragma: keep
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
-#include "creeper-qt/utility/wrapper/dsl.hh"
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 
