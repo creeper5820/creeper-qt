@@ -1,0 +1,18 @@
+namespace: outlined_button
+
+tokens:
+  file: tokens:OutlinedButtonTokens.kt
+  include:
+    - LabelTextColor
+    - OutlineColor
+    - DisabledLabelTextColor
+    - DisabledLabelTextOpacity
+    - DisabledContainerOpacity
+
+colors:
+  container_color: transparent
+  content_color: LabelTextColor
+  disabled_container_color: transparent
+  disabled_content_color: { color: DisabledLabelTextColor, opacity: DisabledLabelTextOpacity }
+  outline_color: OutlineColor
+  disabled_outline_color: { color: OutlineColor, opacity: DisabledContainerOpacity }

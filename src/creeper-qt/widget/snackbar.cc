@@ -35,7 +35,7 @@ struct Paragraph {
     int baseline    = 0;
     bool has_layout = false;
 
-    auto set(const QString& text, const creeper::Font& font) -> void {
+    auto set(const QString& text, const Font& font) -> void {
         layout.setText(text);
         layout.setFont(font);
 
@@ -164,7 +164,7 @@ struct Snackbar::Impl {
     };
 
     Snackbar& self;
-    Animatable animatable;
+    Animatable animatable { self };
 
     QString text;
     QString action_label;
@@ -174,11 +174,11 @@ struct Snackbar::Impl {
     Measurements measurements;
     Colors colors;
 
-    creeper::Font supporting_font;
-    creeper::Font action_font;
+    Font supporting_font;
+    Font action_font;
     Paragraph paragraph;
 
-    QPointer<Elevation> elevation;
+    QPointer<Elevation> elevation = new Elevation { Defaults::kContainerElevation };
 
     Indication action_indication;
     Indication dismiss_indication;
@@ -190,15 +190,14 @@ struct Snackbar::Impl {
     bool focus_visible = false;
 
     explicit Impl(Snackbar& self) noexcept
-        : self { self }
-        , animatable { self } {
+        : self { self } {
+
         for (auto* indication : { &action_indication, &dismiss_indication }) {
             indication->hover = make_transition(animatable, Tween::make_state());
             indication->focus = make_transition(animatable, Tween::make_state());
             indication->press = make_transition(animatable, Tween::make_state());
         }
 
-        elevation = new Elevation { Defaults::kContainerElevation };
         self.setGraphicsEffect(elevation);
 
         auto policy = QSizePolicy { QSizePolicy::Preferred, QSizePolicy::Preferred };
@@ -254,8 +253,6 @@ struct Snackbar::Impl {
         const auto target = measurements.touch_target_size.px();
         return QSize { std::max(visual.width(), target), std::max(visual.height(), target) };
     }
-
-    // 布局：照搬 LegacyOneRowSnackbar / LegacyNewLineButtonSnackbar
 
     auto compute(int widget_width) -> Geometry {
         const auto margin    = measurements.snackbar_padding.px();
@@ -375,8 +372,8 @@ struct Snackbar::Impl {
     // 状态
 
     auto update_fonts() -> void {
-        supporting_font = creeper::Font { Defaults::kSupportingTextFont, self.font() };
-        action_font     = creeper::Font { Defaults::kActionLabelTextFont, self.font() };
+        supporting_font = Font { Defaults::kSupportingTextFont, self.font() };
+        action_font     = Font { Defaults::kActionLabelTextFont, self.font() };
         paragraph.set(text, supporting_font);
         relayout();
     }

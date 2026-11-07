@@ -6,7 +6,6 @@
 
 namespace creeper {
 
-/// @brief 由 TypeScale 构造的字体，额外携带行高（Qt 字体本身没有行高）
 struct Font : QFont {
     double line_height = 0;
 

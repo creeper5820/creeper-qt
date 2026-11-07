@@ -1,0 +1,23 @@
+namespace: filled_button
+
+tokens:
+  file: tokens:FilledButtonTokens.kt
+  include:
+    - ContainerColor
+    - ContainerElevation
+    - HoveredContainerElevation
+    - LabelTextColor
+    - DisabledContainerColor
+    - DisabledContainerOpacity
+    - DisabledLabelTextColor
+    - DisabledLabelTextOpacity
+
+measurements:
+  container_elevation: ContainerElevation
+  hovered_container_elevation: HoveredContainerElevation
+
+colors:
+  container_color: ContainerColor
+  content_color: LabelTextColor
+  disabled_container_color: { color: DisabledContainerColor, opacity: DisabledContainerOpacity }
+  disabled_content_color: { color: DisabledLabelTextColor, opacity: DisabledLabelTextOpacity }

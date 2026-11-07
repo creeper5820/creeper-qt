@@ -1,4 +1,5 @@
 #pragma once
+
 #include "creeper-qt/utility/animation/animatable.hh"
 #include "creeper-qt/utility/animation/math.hh"
 #include "creeper-qt/utility/animation/state/pid.hh"
@@ -19,15 +20,14 @@
 using namespace creeper;
 
 struct Switch::Impl {
+    static constexpr double kPositionUnchecked = 0.0;
+    static constexpr double kPositionChecked   = 1.0;
 
     bool checked  = false;
     bool disabled = false;
 
     Measurements measurements;
     Colors colors;
-
-    static constexpr double kPositionUnchecked = 0.0;
-    static constexpr double kPositionChecked   = 1.0;
 
     Animatable animatable;
 

@@ -22,12 +22,14 @@ public:
     using T::T;
     using Placement = LinearPlacement;
 
-    explicit BoxLayout(auto&&... args) { construct_with(std::forward<decltype(args)>(args)...); }
+    explicit BoxLayout(auto&&... args) {
+        construct_with(std::forward<decltype(args)>(args)...);
+    }
 
 private:
     template <widget_pointer_trait W>
     friend auto dsl_invoke(BoxLayout& self, W widget) {
-        self.addWidget(widget, 0, { });
+        self.addWidget(widget, 0, {});
     }
     template <layout_pointer_trait L>
     friend auto dsl_invoke(BoxLayout& self, L layout) {

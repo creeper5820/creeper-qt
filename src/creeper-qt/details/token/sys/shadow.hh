@@ -6,10 +6,6 @@
 
 namespace creeper {
 
-/// @brief 按 elevation（dp）投射阴影
-///
-/// Compose 在 Android 上使用系统的环境光 + 主光源双阴影，Qt 只有单层投影，
-/// 这里用单层投影近似：模糊半径 = 2 × elevation，纵向偏移 = elevation / 2。
 struct Elevation : QGraphicsDropShadowEffect {
     static constexpr auto kShadowOpacity = 0.3;
 

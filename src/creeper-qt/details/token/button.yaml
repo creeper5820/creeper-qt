@@ -1,0 +1,45 @@
+namespace: button
+
+tokens:
+  file: tokens:BaselineButtonTokens.kt
+  include:
+    - ContainerHeight
+    - LeadingSpace
+    - TrailingSpace
+
+symbols:
+  - file: material3:Button.kt
+    names:
+      - MinWidth
+  - file: tokens:ButtonSmallTokens.kt
+    names:
+      - OutlinedOutlineWidth
+  - file: tokens:StateTokens.kt
+    names:
+      - HoverStateLayerOpacity
+      - FocusStateLayerOpacity
+      - PressedStateLayerOpacity
+  - file: tokens:MotionTokens.kt
+    names:
+      - EasingLinearCubicBezier
+
+extract:
+  - name: ButtonVerticalPadding
+    file: material3:Button.kt
+    match: 'private val ButtonVerticalPadding = (\d+)\.dp'
+  - name: StateLayerDefaultDuration
+    file: ripple:Ripple.kt
+    match: 'DefaultTweenSpec\s*=\s*TweenSpec<Float>\(durationMillis\s*=\s*(\d+)'
+    unit: ms
+  - name: StateLayerFocusInDuration
+    file: ripple:Ripple.kt
+    match: 'is FocusInteraction\.Focus\s*->\s*TweenSpec\(durationMillis\s*=\s*(\d+)'
+    unit: ms
+
+measurements:
+  container_height: ContainerHeight
+  leading_space: LeadingSpace
+  trailing_space: TrailingSpace
+  vertical_padding: ButtonVerticalPadding
+  min_width: MinWidth
+  outlined_outline_width: OutlinedOutlineWidth

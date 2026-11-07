@@ -7,6 +7,8 @@
 
 namespace creeper::token::sys::elevation {
 
+constexpr inline auto kLevel0 = 0_dp;
+constexpr inline auto kLevel1 = 1_dp;
 constexpr inline auto kLevel3 = 6_dp;
 
 }

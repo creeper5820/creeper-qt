@@ -1,6 +1,6 @@
 #pragma once
-#include "creeper-qt/utility/wrapper/dsl.hh"
 
+#include <ranges>
 #include <vector>
 
 namespace creeper::Util {
@@ -21,7 +21,7 @@ constexpr auto ForEach(const R& range, Generator&& generator) {
     return std::forward<decltype(range)>(range) | std::views::enumerate
         | std::views::transform([&](auto&& pair) {
               auto&& [index, value] = pair;
-              return generator(index, value);
+              return std::forward<Generator>(generator)(index, value);
           })
         | std::ranges::to<std::vector>();
 }

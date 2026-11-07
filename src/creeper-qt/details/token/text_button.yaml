@@ -1,0 +1,21 @@
+namespace: text_button
+
+tokens:
+  file: tokens:TextButtonTokens.kt
+  include:
+    - DisabledLabelColor
+    - DisabledLabelOpacity
+
+symbols:
+  - file: material3:Button.kt
+    names:
+      - TextButtonHorizontalPadding
+
+measurements:
+  horizontal_padding: TextButtonHorizontalPadding
+
+colors:
+  container_color: transparent
+  content_color: { scheme: Primary }
+  disabled_container_color: transparent
+  disabled_content_color: { color: DisabledLabelColor, opacity: DisabledLabelOpacity }

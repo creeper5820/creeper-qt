@@ -30,7 +30,7 @@ ColumnLimit: 100
 # 是否允许短的函数，语句块等单独一行
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 AllowShortBlocksOnASingleLine: Empty
-AllowShortFunctionsOnASingleLine: All
+AllowShortFunctionsOnASingleLine: Empty
 
 BreakBeforeBinaryOperators: NonAssignment
 PenaltyBreakAssignment: 2
@@ -45,13 +45,13 @@ IncludeCategories:
   # 项目头（含 .impl.hh）
   - Regex: '^"(creeper-qt/|.*\.impl\.hh")'
     Priority: 1
-  - Regex: '^<(creeper-qt/)'
+  - Regex: "^<(creeper-qt/)"
     Priority: 1
   # Qt
-  - Regex: '^<Q'
+  - Regex: "^<Q"
     Priority: 2
   # 标准库
-  - Regex: '^<[a-z_]+>'
+  - Regex: "^<[a-z_]+>"
     Priority: 3
-  - Regex: '.*'
+  - Regex: ".*"
     Priority: 4
