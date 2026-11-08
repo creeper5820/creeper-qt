@@ -1,6 +1,6 @@
 #pragma once
 
-#include "creeper-qt/utility/wrapper/pimpl.hh"
+#include "creeper-qt/details/wrapper/pimpl.hh"
 
 #include <qwidget.h>
 

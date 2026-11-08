@@ -1,11 +1,11 @@
 #pragma once
 
+#include "creeper-qt/details/api/scope/common.hh" // IWYU pragma: keep
+#include "creeper-qt/details/api/scope/shape.hh"  // IWYU pragma: keep
+#include "creeper-qt/details/api/scope/widget.hh" // IWYU pragma: keep
 #include "creeper-qt/details/drawable/core.hh"
 #include "creeper-qt/details/drawable/shape/ellipse.hh"
 #include "creeper-qt/details/dsl/core.hh"
-#include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
-#include "creeper-qt/utility/api/scope/shape.hh"  // IWYU pragma: keep
-#include "creeper-qt/utility/api/scope/widget.hh" // IWYU pragma: keep
 #include "creeper-qt/widget/shape/shape.hh"
 
 namespace creeper {

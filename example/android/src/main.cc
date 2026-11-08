@@ -4,6 +4,7 @@
 /// 导航选中态由 MutableValue 驱动，悬浮工具条最右侧按钮轮切主题。
 
 #include <creeper-qt/core/application.hh>
+#include <creeper-qt/details/wrapper/mutable-value.hh>
 #include <creeper-qt/layout/grid.hh>
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/layout/scroll.hh>
@@ -12,7 +13,6 @@
 #include <creeper-qt/utility/theme/preset/gloden-harvest.hh>
 #include <creeper-qt/utility/theme/preset/green.hh>
 #include <creeper-qt/utility/theme/theme.hh>
-#include <creeper-qt/utility/wrapper/mutable-value.hh>
 #include <creeper-qt/widget/buttons/icon-button.hh>
 #include <creeper-qt/widget/buttons/outlined-button.hh>
 #include <creeper-qt/widget/cards/elevated-card.hh>

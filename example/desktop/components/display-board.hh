@@ -1,6 +1,6 @@
 #pragma once
+#include <creeper-qt/details/wrapper/pimpl.hh>
 #include <creeper-qt/utility/theme/theme.hh>
-#include <creeper-qt/utility/wrapper/pimpl.hh>
 #include <creeper-qt/widget/cards/filled-card.hh>
 
 namespace creeper {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "creeper-qt/utility/api/pro/bind-theme.hh" // IWYU pragma: keep
+#include "creeper-qt/details/api/pro/bind-theme.hh" // IWYU pragma: keep
 
 namespace creeper::api::scope::theme {
 

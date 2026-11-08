@@ -1,7 +1,7 @@
 #pragma once
 
+#include "creeper-qt/details/wrapper/pimpl.hh"
 #include "creeper-qt/utility/theme/color-scheme.hh"
-#include "creeper-qt/utility/wrapper/pimpl.hh"
 
 #include <qwidget.h>
 

@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "function_traits.hh"
+#include "function-traits.hh"
 
 namespace creeper {
 

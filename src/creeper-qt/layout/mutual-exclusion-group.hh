@@ -1,7 +1,7 @@
 #pragma once
 
-#include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
-#include "creeper-qt/utility/api/scope/layout.hh" // IWYU pragma: keep
+#include "creeper-qt/details/api/scope/common.hh" // IWYU pragma: keep
+#include "creeper-qt/details/api/scope/layout.hh" // IWYU pragma: keep
 #include <creeper-qt/layout/group.hh>
 
 #include <ranges>

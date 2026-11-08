@@ -1,8 +1,8 @@
 #include "switch.hh"
 
+#include <creeper-qt/details/wrapper/foreach.hh>
+#include <creeper-qt/details/wrapper/mutable-value.hh>
 #include <creeper-qt/layout/linear.hh>
-#include <creeper-qt/utility/wrapper/foreach.hh>
-#include <creeper-qt/utility/wrapper/mutable-value.hh>
 #include <creeper-qt/widget/cards/outlined-card.hh>
 #include <creeper-qt/widget/switch.hh>
 #include <creeper-qt/widget/text.hh>

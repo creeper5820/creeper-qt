@@ -1,11 +1,11 @@
 #include "display-board.hh"
 
+#include <creeper-qt/details/wrapper/mutable-value.hh>
 #include <creeper-qt/layout/linear.hh>
 #include <creeper-qt/layout/scroll.hh>
 #include <creeper-qt/layout/stacked.hh>
 #include <creeper-qt/utility/material-icon.hh>
 #include <creeper-qt/utility/math/lattice.hh>
-#include <creeper-qt/utility/wrapper/mutable-value.hh>
 #include <creeper-qt/widget/buttons/icon-button.hh>
 #include <creeper-qt/widget/custom/widget.hh>
 #include <creeper-qt/widget/text.hh>

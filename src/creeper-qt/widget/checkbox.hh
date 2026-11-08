@@ -1,19 +1,19 @@
 #pragma once
 
+#include "creeper-qt/details/api/helper/signal-injection.hh" // IWYU pragma: keep
+#include "creeper-qt/details/api/pro/checked.hh"             // IWYU pragma: keep
+#include "creeper-qt/details/api/pro/clickable.hh"           // IWYU pragma: keep
+#include "creeper-qt/details/api/pro/disabled.hh"            // IWYU pragma: keep
+#include "creeper-qt/details/api/scope/common.hh"            // IWYU pragma: keep
+#include "creeper-qt/details/api/scope/theme.hh"             // IWYU pragma: keep
+#include "creeper-qt/details/api/scope/widget.hh"            // IWYU pragma: keep
 #include "creeper-qt/details/dsl/core.hh"
 #include "creeper-qt/details/token/checkbox/defaults.hh"
 #include "creeper-qt/details/token/checkbox/measurements.hh"
-#include "creeper-qt/utility/api/helper/signal-injection.hh" // IWYU pragma: keep
-#include "creeper-qt/utility/api/pro/checked.hh"             // IWYU pragma: keep
-#include "creeper-qt/utility/api/pro/clickable.hh"           // IWYU pragma: keep
-#include "creeper-qt/utility/api/pro/disabled.hh"            // IWYU pragma: keep
-#include "creeper-qt/utility/api/scope/common.hh"            // IWYU pragma: keep
-#include "creeper-qt/utility/api/scope/theme.hh"             // IWYU pragma: keep
-#include "creeper-qt/utility/api/scope/widget.hh"            // IWYU pragma: keep
+#include "creeper-qt/details/wrapper/forward-prop.hh"
+#include "creeper-qt/details/wrapper/pimpl.hh"
 #include "creeper-qt/utility/qt_wrapper/enter-event.hh"
 #include "creeper-qt/utility/theme/theme.hh"
-#include "creeper-qt/utility/wrapper/forward_prop.hh"
-#include "creeper-qt/utility/wrapper/pimpl.hh"
 
 #include <qabstractbutton.h>
 

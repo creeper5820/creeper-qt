@@ -1,9 +1,9 @@
 #pragma once
 
+#include "creeper-qt/details/api/scope/common.hh" // IWYU pragma: keep
+#include "creeper-qt/details/api/scope/layout.hh" // IWYU pragma: keep
 #include "creeper-qt/details/dsl/core.hh"
-#include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
-#include "creeper-qt/utility/api/scope/layout.hh" // IWYU pragma: keep
-#include "creeper-qt/utility/wrapper/pimpl.hh"
+#include "creeper-qt/details/wrapper/pimpl.hh"
 
 #include <qlayout.h>
 
