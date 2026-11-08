@@ -34,7 +34,9 @@ public:
             , align { align } { }
     };
 
-    explicit Grid(auto&&... args) { construct_with(std::forward<decltype(args)>(args)...); }
+    explicit Grid(auto&&... args) {
+        construct_with(std::forward<decltype(args)>(args)...);
+    }
 };
 
 namespace grid::pro {

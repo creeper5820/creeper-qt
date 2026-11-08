@@ -46,7 +46,9 @@ public:
 
         int inset_icon_size = 0;
 
-        constexpr auto minimumHeight() const { return handle_height; }
+        constexpr auto minimumHeight() const {
+            return handle_height;
+        }
 
         static constexpr auto Xs() {
             return Measurements {

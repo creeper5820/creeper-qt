@@ -43,14 +43,18 @@ concept drawable_trait = common_trait<T> && std::invocable<T, qt::painter&>;
 struct CommonProps {
     qt::point origin = qt::point { 0, 0 };
     qt::size size    = qt::size { 0, 0 };
-    auto rect() const { return qt::rect { origin, size }; }
+    auto rect() const {
+        return qt::rect { origin, size };
+    }
 };
 
 struct ContainerProps {
     qt::size size    = qt::size { 0, 0 };
     qt::align align  = qt::align { };
     qt::point origin = qt::point { 0, 0 };
-    auto rect() const { return qt::rect { origin, size }; }
+    auto rect() const {
+        return qt::rect { origin, size };
+    }
 };
 
 struct ShapeProps {
@@ -66,14 +70,18 @@ struct Size {
     qt::size value;
     explicit Size(const qt::size& v)
         : value { v } { }
-    friend auto dsl_invoke(auto& self, const Size& prop) -> void { self.size = prop.value; }
+    friend auto dsl_invoke(auto& self, const Size& prop) -> void {
+        self.size = prop.value;
+    }
 };
 
 struct Origin {
     qt::point value;
     explicit Origin(const qt::point& v)
         : value { v } { }
-    friend auto dsl_invoke(auto& self, const Origin& prop) -> void { self.origin = prop.value; }
+    friend auto dsl_invoke(auto& self, const Origin& prop) -> void {
+        self.origin = prop.value;
+    }
 };
 
 struct ContainerColor {

@@ -3,6 +3,7 @@
 
 namespace creeper {
 
+// TODO: 使用 tag_invoke 来提供定制点
 template <class T>
 concept transition_state_trait = requires(T& t) {
     typename T::ValueT;
@@ -53,13 +54,21 @@ public:
         : animatable { animatable }
         , state { std::make_shared<State>() } { }
 
-    auto get_state() const noexcept -> State& { return *state; }
+    auto get_state() const noexcept -> State& {
+        return *state;
+    }
 
-    auto get_value() const noexcept { return state->get_value(); }
+    auto get_value() const noexcept {
+        return state->get_value();
+    }
 
-    auto get_target() const noexcept { return state->get_target(); }
+    auto get_target() const noexcept {
+        return state->get_target();
+    }
 
-    operator T() const noexcept { return state->get_value(); }
+    operator T() const noexcept {
+        return state->get_value();
+    }
 
     auto transition_to(const T& to) noexcept -> void {
         // Update target of state

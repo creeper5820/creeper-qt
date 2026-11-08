@@ -24,7 +24,7 @@ struct Icon {
     friend auto dsl_invoke(details::draw_t, const Icon& self, QPainter& handler) {
         handler.save();
         {
-            const auto rect = QRectF { QPointF {}, self.size };
+            const auto rect = QRectF { QPointF { }, self.size };
             if (!self.text.isEmpty()) {
                 handler.setRenderHint(QPainter::TextAntialiasing);
                 handler.setPen(self.color);

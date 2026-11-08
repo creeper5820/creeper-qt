@@ -13,8 +13,6 @@
 #include "creeper-qt/utility/wrapper/forward_prop.hh"
 #include "creeper-qt/utility/wrapper/pimpl.hh"
 
-#include <qwidget.h>
-
 namespace creeper {
 
 enum class SnackbarResult { DISMISSED, ACTION_PERFORMED };
@@ -46,7 +44,6 @@ public:
     auto setText(const QString& text) -> void;
     auto text() const -> QString;
 
-    /// @brief action 按钮文本，空字符串表示没有 action
     auto setActionLabel(const QString& label) -> void;
     auto actionLabel() const -> QString;
 

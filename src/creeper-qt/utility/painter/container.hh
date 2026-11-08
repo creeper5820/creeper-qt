@@ -43,7 +43,7 @@ struct MakeLayoutFunction {
 
 /// @brief SurfaceImpl
 struct SurfaceImpl : public MakeLayoutFunction, ContainerProps {
-    constexpr explicit SurfaceImpl(const qt::size& size, const qt::point& origin = {})
+    constexpr explicit SurfaceImpl(const qt::size& size, const qt::point& origin = { })
         : ContainerProps {
             .size   = size,
             .origin = origin,
@@ -105,7 +105,7 @@ struct BufferImpl : public MakeLayoutFunction, ContainerProps {
 struct BoxImpl : public MakeLayoutFunction, ContainerProps {
 
     constexpr explicit BoxImpl(
-        const qt::size& size, const qt::align& align, const qt::point& origin = {})
+        const qt::size& size, const qt::align& align, const qt::point& origin = { })
         : ContainerProps {
             .size   = size,
             .align  = align,

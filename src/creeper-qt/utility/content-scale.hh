@@ -15,7 +15,9 @@ public:
         INSIDE,
     } data;
 
-    operator decltype(data)() const noexcept { return data; }
+    operator decltype(data)() const noexcept {
+        return data;
+    }
 
     auto transform(const QPixmap& pixmap, const QSize& size) const -> QPixmap {
         if (pixmap.isNull()) return { };

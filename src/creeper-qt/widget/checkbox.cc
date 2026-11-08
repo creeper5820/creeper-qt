@@ -322,7 +322,9 @@ struct Checkbox::Impl {
         set_check_state(on ? CheckState::SELECTED : CheckState::UNSELECTED);
     }
 
-    auto checked() const -> bool { return check_state == CheckState::SELECTED; }
+    auto checked() const -> bool {
+        return check_state == CheckState::SELECTED;
+    }
 
     auto set_disabled(bool on) -> void {
         if (disabled == on) return;
@@ -331,7 +333,9 @@ struct Checkbox::Impl {
         self.update();
     }
 
-    auto get_disabled() const -> bool { return disabled; }
+    auto get_disabled() const -> bool {
+        return disabled;
+    }
 
     auto set_error(bool on) -> void {
         if (error == on) return;
@@ -339,7 +343,9 @@ struct Checkbox::Impl {
         self.update();
     }
 
-    auto get_error() const -> bool { return error; }
+    auto get_error() const -> bool {
+        return error;
+    }
 
     auto bind_theme_manager(ThemeManager& manager) -> void {
         manager.appendHandler(
@@ -421,25 +427,45 @@ auto Checkbox::setMeasurements(const Measurements& measurements) -> void {
     pimpl->set_measurements(measurements);
 }
 
-auto Checkbox::setColors(const Colors& colors) -> void { pimpl->set_colors(colors); }
+auto Checkbox::setColors(const Colors& colors) -> void {
+    pimpl->set_colors(colors);
+}
 
-auto Checkbox::checkState() const -> CheckState { return pimpl->check_state; }
+auto Checkbox::checkState() const -> CheckState {
+    return pimpl->check_state;
+}
 
-auto Checkbox::sizeHint() const -> QSize { return pimpl->size_hint(); }
+auto Checkbox::sizeHint() const -> QSize {
+    return pimpl->size_hint();
+}
 
-auto Checkbox::setCheckState(CheckState state) -> void { pimpl->set_check_state(state); }
+auto Checkbox::setCheckState(CheckState state) -> void {
+    pimpl->set_check_state(state);
+}
 
-auto Checkbox::setChecked(bool on) -> void { pimpl->set_checked(on); }
+auto Checkbox::setChecked(bool on) -> void {
+    pimpl->set_checked(on);
+}
 
-auto Checkbox::checked() const -> bool { return pimpl->checked(); }
+auto Checkbox::checked() const -> bool {
+    return pimpl->checked();
+}
 
-auto Checkbox::setDisabled(bool on) -> void { pimpl->set_disabled(on); }
+auto Checkbox::setDisabled(bool on) -> void {
+    pimpl->set_disabled(on);
+}
 
-auto Checkbox::disabled() const -> bool { return pimpl->get_disabled(); }
+auto Checkbox::disabled() const -> bool {
+    return pimpl->get_disabled();
+}
 
-auto Checkbox::setError(bool on) -> void { pimpl->set_error(on); }
+auto Checkbox::setError(bool on) -> void {
+    pimpl->set_error(on);
+}
 
-auto Checkbox::error() const -> bool { return pimpl->get_error(); }
+auto Checkbox::error() const -> bool {
+    return pimpl->get_error();
+}
 
 auto Checkbox::enterEvent(qt::EnterEvent* event) -> void {
     pimpl->enter_event();
@@ -471,4 +497,6 @@ auto Checkbox::mouseReleaseEvent(QMouseEvent* event) -> void {
     QAbstractButton::mouseReleaseEvent(event);
 }
 
-auto Checkbox::paintEvent(QPaintEvent*) -> void { pimpl->paint_event(); }
+auto Checkbox::paintEvent(QPaintEvent*) -> void {
+    pimpl->paint_event();
+}

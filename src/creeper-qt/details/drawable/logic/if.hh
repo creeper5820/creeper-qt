@@ -21,7 +21,7 @@ struct If {
         }
     }
     friend auto dsl_invoke(details::size_t, const If& self) -> QSizeF {
-        return self.flag ? QSizeF { details::size(self.unit) } : QSizeF {};
+        return self.flag ? QSizeF { details::size(self.unit) } : QSizeF { };
     }
 };
 

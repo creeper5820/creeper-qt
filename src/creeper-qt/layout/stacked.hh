@@ -15,7 +15,9 @@ class Stacked : public QStackedLayout, public DSL {
 public:
     using QStackedLayout::QStackedLayout;
 
-    explicit Stacked(auto&&... props) { construct_with(std::forward<decltype(props)>(props)...); }
+    explicit Stacked(auto&&... props) {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 
 private:
     template <widget_pointer_trait W>

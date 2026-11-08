@@ -43,7 +43,9 @@ struct Bind {
         requires std::is_pointer_v<Final*>
         : widget(widget) { }
 
-    friend auto dsl_invoke(Final& self, const Bind& prop) -> void { prop.widget = &self; }
+    friend auto dsl_invoke(Final& self, const Bind& prop) -> void {
+        prop.widget = &self;
+    }
 };
 
 }

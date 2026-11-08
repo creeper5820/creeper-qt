@@ -97,12 +97,12 @@ auto paint_xxx(QPaintEvent*) -> void {
     DrawHere {
         painter,
         Rect {
-          .size  = QSizeF { self.size() },
+          .size  = self.size() ,
           .color = colors.background,
         },
         Box {
           {
-            .size  = QSizeF { self.size() },
+            .size  = self.size(),
             .align = Qt::AlignCenter,
           },
           Surface {

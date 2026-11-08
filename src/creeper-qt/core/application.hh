@@ -55,9 +55,17 @@ public:
 
 using init = Application;
 
-inline auto exec() { return ::QApplication::exec(); }
-inline auto quit() { return ::QApplication::quit(); }
+inline auto exec() {
+    return ::QApplication::exec();
+}
+inline auto quit() {
+    return ::QApplication::quit();
+}
 
-inline auto focusWidget() { return ::QApplication::focusWidget(); }
-inline auto focusObject() { return ::QApplication::focusObject(); }
+inline auto focusWidget() {
+    return ::QApplication::focusWidget();
+}
+inline auto focusObject() {
+    return ::QApplication::focusObject();
+}
 }

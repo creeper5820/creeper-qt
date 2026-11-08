@@ -35,7 +35,9 @@ public:
         });
     }
 
-    static auto receiver_count() { return actions.size(); }
+    static auto receiver_count() {
+        return actions.size();
+    }
 
     static auto broadcast(const MessageT& msg) {
         std::ranges::for_each(actions, [&](const Action& action) {
@@ -59,7 +61,9 @@ namespace creeper::bus::pro {
 
 template <typename MessageT, class Token>
 struct Subscribe : Token {
-    static auto apply(auto& self) { MiniBus<MessageT>::append_receiver(&self); }
+    static auto apply(auto& self) {
+        MiniBus<MessageT>::append_receiver(&self);
+    }
 };
 
 }

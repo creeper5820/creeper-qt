@@ -11,32 +11,40 @@ using namespace creeper::co;
 struct Tracker {
     static inline int alive = 0;
 
-    Tracker() { ++alive; }
-    Tracker(const Tracker&) { ++alive; }
-    Tracker(Tracker&&) noexcept { ++alive; }
-    ~Tracker() { --alive; }
+    Tracker() {
+        ++alive;
+    }
+    Tracker(const Tracker&) {
+        ++alive;
+    }
+    Tracker(Tracker&&) noexcept {
+        ++alive;
+    }
+    ~Tracker() {
+        --alive;
+    }
 };
 
 // 场景 1：挂起中析构 —— 帧内局部变量必须随帧销毁
 auto suspend_forever() -> coroutine<> {
-    auto tracker = Tracker {};
-    co_await std::suspend_always {};
+    auto tracker = Tracker { };
+    co_await std::suspend_always { };
     co_return;
 }
 
 // 场景 2：正常跑完 —— final_suspend 挂起，帧由 coroutine 对象析构回收
 auto complete_with_locals() -> coroutine<int> {
-    auto tracker = Tracker {};
+    auto tracker = Tracker { };
     co_return 1;
 }
 
 // 场景 3：co_await 组合 —— 子任务临时对象在语句结束时销毁子帧
 auto child() -> coroutine<int> {
-    auto tracker = Tracker {};
+    auto tracker = Tracker { };
     co_return 7;
 }
 auto parent() -> coroutine<int> {
-    auto tracker = Tracker {};
+    auto tracker = Tracker { };
     auto r       = co_await child();
     assert(Tracker::alive == 1); // 只剩父帧
     co_return *r;
@@ -44,7 +52,7 @@ auto parent() -> coroutine<int> {
 
 // 场景 4：异常路径 —— 帧同样由析构回收
 auto throwing() -> coroutine<> {
-    auto tracker = Tracker {};
+    auto tracker = Tracker { };
     throw std::runtime_error { "boom" };
     co_return;
 }

@@ -21,12 +21,12 @@ description: creeper-qt 的使用规范：声明式构造、prop 命名空间、
 - 优先使用局部命名空间别名，以提高可读性和 IDE 补全体验：
 
 ```cpp
-namespace cp  = creeper::card::pro;
+namespace cap = creeper::card::pro; ///< 一般取三个字母
 namespace fbp = creeper::filled_button::pro;
 
 auto content = FilledCard {
     manager,
-    cp::Layout<Col> {
+    cap::Layout<Col> {
       new FilledButton {
         manager,
         fbp::Text { "OK" },
@@ -35,8 +35,6 @@ auto content = FilledCard {
     },
 };
 ```
-
-- 避免在应用代码中依赖全局 `using namespace ...::pro`。局部别名能更清楚地表达 prop 来源组件和可用的属性集合。
 
 ## 声明式构造
 

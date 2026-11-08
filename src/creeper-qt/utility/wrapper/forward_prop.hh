@@ -86,7 +86,9 @@ template <auto MemberFuncPtr>
     requires(function_traits<decltype(MemberFuncPtr)>::kArity == 0)
 struct ForwardProp<MemberFuncPtr> {
     // dsl_invoke 通过 ADL 查找
-    friend auto dsl_invoke(auto& widget, const ForwardProp&) -> void { (widget.*MemberFuncPtr)(); }
+    friend auto dsl_invoke(auto& widget, const ForwardProp&) -> void {
+        (widget.*MemberFuncPtr)();
+    }
 };
 
 /// @brief

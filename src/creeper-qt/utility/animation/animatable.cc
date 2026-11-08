@@ -18,7 +18,9 @@ struct Animatable::Impl {
         scheduler.setInterval(1'000 / hz);
     }
 
-    auto set_frame_rate(int hz) noexcept -> void { scheduler.setInterval(1'000 / hz); }
+    auto set_frame_rate(int hz) noexcept -> void {
+        scheduler.setInterval(1'000 / hz);
+    }
 
     auto push_transition_task(std::unique_ptr<ITransitionTask> task) noexcept -> void {
         transition_tasks.push_back(std::move(task));

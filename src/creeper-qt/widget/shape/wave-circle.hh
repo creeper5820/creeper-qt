@@ -20,7 +20,9 @@ class WaveCircle : public Shape, public DSL {
 public:
     using Shape::Shape;
 
-    explicit WaveCircle(auto&&... args) { construct_with(std::forward<decltype(args)>(args)...); }
+    explicit WaveCircle(auto&&... args) {
+        construct_with(std::forward<decltype(args)>(args)...);
+    }
 
     auto setFlangeNumber(uint8_t number) noexcept -> void {
         generate_request_ = true;

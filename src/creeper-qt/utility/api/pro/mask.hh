@@ -14,7 +14,9 @@ namespace creeper::api::pro {
 struct ClearMask {
     explicit ClearMask() noexcept = default;
 
-    friend auto dsl_invoke(QWidget& widget, const ClearMask&) -> void { widget.clearMask(); }
+    friend auto dsl_invoke(QWidget& widget, const ClearMask&) -> void {
+        widget.clearMask();
+    }
 };
 
 /**

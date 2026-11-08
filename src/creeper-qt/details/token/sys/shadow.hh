@@ -22,7 +22,9 @@ struct Elevation : QGraphicsDropShadowEffect {
         QGraphicsEffect::setEnabled(level.value > 0);
     }
 
-    auto getLevel() const -> Dp { return level; }
+    auto getLevel() const -> Dp {
+        return level;
+    }
 
     auto setShadowColor(const QColor& color) -> void {
         auto shadow = color;

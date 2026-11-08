@@ -249,7 +249,7 @@ struct Switch::Impl {
               Surface {
                 {
                   .size   = size_track,
-                  .origin = {},
+                  .origin = { },
                 },
                 Rect {
                   .size  = size_track,

@@ -29,7 +29,9 @@ struct EraseRectangle : public CommonProps, public DSL {
 };
 
 struct Rectangle : public CommonProps, public ShapeProps, public DSL {
-    explicit Rectangle(auto&&... props) { construct_with(std::forward<decltype(props)>(props)...); }
+    explicit Rectangle(auto&&... props) {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 
     auto operator()(qt::painter& painter) const noexcept {
         painter.save();
@@ -54,7 +56,9 @@ struct Rectangle : public CommonProps, public ShapeProps, public DSL {
 };
 
 struct Ellipse : public CommonProps, public ShapeProps, public DSL {
-    explicit Ellipse(auto&&... props) { construct_with(std::forward<decltype(props)>(props)...); }
+    explicit Ellipse(auto&&... props) {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 
     auto operator()(qt::painter& painter) const noexcept {
         painter.save();
@@ -126,7 +130,7 @@ struct RoundedRectangle : public CommonProps, public ShapeProps, public DSL {
     static constexpr auto make_rounded_rect_path(
         const qt::rect& rect, qreal tl, qreal tr, qreal br, qreal bl) noexcept -> QPainterPath {
 
-        auto path = QPainterPath {};
+        auto path = QPainterPath { };
 
         const auto max_radius = std::min(rect.width(), rect.height()) / 2.0;
         const auto clamp      = [&](qreal r) -> qreal {
@@ -176,7 +180,9 @@ struct Text : public CommonProps, public DSL {
     qt::text_option text_option;
     qt::real scale = 1.;
 
-    explicit Text(auto&&... props) { construct_with(std::forward<decltype(props)>(props)...); }
+    explicit Text(auto&&... props) {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 
     auto operator()(qt::painter& painter) const noexcept {
         painter.save();
@@ -212,7 +218,9 @@ struct Icon : public CommonProps, public DSL {
     MutiSource source;
     qt::color color = Qt::black;
 
-    explicit Icon(auto&&... props) { construct_with(std::forward<decltype(props)>(props)...); }
+    explicit Icon(auto&&... props) {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 
     auto operator()(qt::painter& painter) const noexcept {
         if (size.isEmpty()) return;
@@ -230,7 +238,7 @@ struct Icon : public CommonProps, public DSL {
                     auto font = qt::font { font_family };
                     font.setPointSizeF(std::min(size.height(), size.width()));
 
-                    auto option = qt::text_option {};
+                    auto option = qt::text_option { };
                     option.setAlignment(Qt::AlignCenter);
 
                     painter.setFont(font);
@@ -300,28 +308,36 @@ struct Text {
     qt::string value;
     explicit Text(qt::string v)
         : value { std::move(v) } { }
-    friend auto dsl_invoke(auto& self, const Text& prop) -> void { self.text = prop.value; }
+    friend auto dsl_invoke(auto& self, const Text& prop) -> void {
+        self.text = prop.value;
+    }
 };
 
 struct Font {
     qt::font value;
     explicit Font(const qt::font& v)
         : value { v } { }
-    friend auto dsl_invoke(auto& self, const Font& prop) -> void { self.font = prop.value; }
+    friend auto dsl_invoke(auto& self, const Font& prop) -> void {
+        self.font = prop.value;
+    }
 };
 
 struct Color {
     qt::color value;
     explicit Color(const qt::color& v)
         : value { v } { }
-    friend auto dsl_invoke(auto& self, const Color& prop) -> void { self.color = prop.value; }
+    friend auto dsl_invoke(auto& self, const Color& prop) -> void {
+        self.color = prop.value;
+    }
 };
 
 struct Scale {
     qt::real value;
     explicit Scale(qt::real v)
         : value { v } { }
-    friend auto dsl_invoke(auto& self, const Scale& prop) -> void { self.scale = prop.value; }
+    friend auto dsl_invoke(auto& self, const Scale& prop) -> void {
+        self.scale = prop.value;
+    }
 };
 
 struct TextOption {

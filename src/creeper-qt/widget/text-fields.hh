@@ -71,7 +71,9 @@ public:
         int supporting_text_and_character_counter_top_padding = 4;
         int supporting_text_and_character_counter_row_padding = 16;
 
-        auto iconSize() const { return QSize { icon_rect_size, icon_rect_size }; }
+        auto iconSize() const {
+            return QSize { icon_rect_size, icon_rect_size };
+        }
 
         friend auto dsl_invoke(BasicTextField& self, const Measurements& measurements) -> void {
             self.setMeasurements(measurements);

@@ -48,9 +48,9 @@ struct DropdownMenuItem::Impl {
         , water_ripple { animatable }
         , self { self } {
         self.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-        set_measurements(Measurements {});
+        set_measurements(Measurements { });
 
-        auto clip = QPainterPath {};
+        auto clip = QPainterPath { };
         clip.addRect(self.rect());
 
         water_ripple.setSize(self.size());
@@ -185,8 +185,8 @@ struct DropdownMenuItem::Impl {
         };
 
         const auto text_left  = has_leading
-             ? leading_rect.right() + 1 + measurements.icon_text_spacing
-             : measurements.horizontal_padding * 1.;
+            ? leading_rect.right() + 1 + measurements.icon_text_spacing
+            : measurements.horizontal_padding * 1.;
         const auto text_right = trailing_width > 0
             ? trailing_rect.left() - measurements.icon_text_spacing
             : w - measurements.horizontal_padding;
@@ -376,7 +376,7 @@ auto DropdownMenuItem::paintEvent(QPaintEvent* event) -> void {
 }
 
 auto DropdownMenuItem::resizeEvent(QResizeEvent* event) -> void {
-    auto clip = QPainterPath {};
+    auto clip = QPainterPath { };
     clip.addRect(rect());
 
     pimpl->water_ripple.setSize(size());

@@ -23,7 +23,7 @@ struct Text {
             handler.setPen(self.color);
             handler.setBrush(Qt::NoBrush);
             handler.setFont(self.font);
-            handler.drawText(QRectF { QPointF {}, self.size }, self.align, self.text);
+            handler.drawText(QRectF { QPointF { }, self.size }, self.align, self.text);
         }
         handler.restore();
     }

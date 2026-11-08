@@ -43,7 +43,9 @@ class Group : public T,
 public:
     using T::T;
 
-    explicit Group(auto&&... args) { this->construct_with(std::forward<decltype(args)>(args)...); }
+    explicit Group(auto&&... args) {
+        this->construct_with(std::forward<decltype(args)>(args)...);
+    }
 
     std::vector<W*> widgets;
 

@@ -72,9 +72,15 @@ struct Paragraph {
         has_layout = true;
     }
 
-    auto height() const -> int { return lines * line_height; }
-    auto first_baseline() const -> int { return baseline; }
-    auto last_baseline() const -> int { return (lines - 1) * line_height + baseline; }
+    auto height() const -> int {
+        return lines * line_height;
+    }
+    auto first_baseline() const -> int {
+        return baseline;
+    }
+    auto last_baseline() const -> int {
+        return (lines - 1) * line_height + baseline;
+    }
 };
 
 struct Geometry {
@@ -367,7 +373,9 @@ struct Snackbar::Impl {
         return QSize { minimum_width(), compute(preferred_width()).height };
     }
 
-    auto height_for_width(int width) -> int { return compute(width).height; }
+    auto height_for_width(int width) -> int {
+        return compute(width).height;
+    }
 
     // 状态
 
@@ -542,7 +550,9 @@ struct Snackbar::Impl {
         if (event->type() == QEvent::FontChange) update_fonts();
     }
 
-    auto leave_event() -> void { set_hovered(Button::NONE); }
+    auto leave_event() -> void {
+        set_hovered(Button::NONE);
+    }
 
     auto mouse_move_event(QMouseEvent* event) -> void {
         set_hovered(hit_test(event->position().toPoint()));
@@ -728,31 +738,57 @@ auto Snackbar::setMeasurements(const Measurements& measurements) -> void {
     pimpl->set_measurements(measurements);
 }
 
-auto Snackbar::setColors(const Colors& colors) -> void { pimpl->set_colors(colors); }
+auto Snackbar::setColors(const Colors& colors) -> void {
+    pimpl->set_colors(colors);
+}
 
-auto Snackbar::setText(const QString& text) -> void { pimpl->set_text(text); }
+auto Snackbar::setText(const QString& text) -> void {
+    pimpl->set_text(text);
+}
 
-auto Snackbar::text() const -> QString { return pimpl->text; }
+auto Snackbar::text() const -> QString {
+    return pimpl->text;
+}
 
-auto Snackbar::setActionLabel(const QString& label) -> void { pimpl->set_action_label(label); }
+auto Snackbar::setActionLabel(const QString& label) -> void {
+    pimpl->set_action_label(label);
+}
 
-auto Snackbar::actionLabel() const -> QString { return pimpl->action_label; }
+auto Snackbar::actionLabel() const -> QString {
+    return pimpl->action_label;
+}
 
-auto Snackbar::setWithDismissAction(bool on) -> void { pimpl->set_with_dismiss_action(on); }
+auto Snackbar::setWithDismissAction(bool on) -> void {
+    pimpl->set_with_dismiss_action(on);
+}
 
-auto Snackbar::withDismissAction() const -> bool { return pimpl->with_dismiss_action; }
+auto Snackbar::withDismissAction() const -> bool {
+    return pimpl->with_dismiss_action;
+}
 
-auto Snackbar::setActionOnNewLine(bool on) -> void { pimpl->set_action_on_new_line(on); }
+auto Snackbar::setActionOnNewLine(bool on) -> void {
+    pimpl->set_action_on_new_line(on);
+}
 
-auto Snackbar::actionOnNewLine() const -> bool { return pimpl->action_on_new_line; }
+auto Snackbar::actionOnNewLine() const -> bool {
+    return pimpl->action_on_new_line;
+}
 
-auto Snackbar::sizeHint() const -> QSize { return pimpl->size_hint(); }
+auto Snackbar::sizeHint() const -> QSize {
+    return pimpl->size_hint();
+}
 
-auto Snackbar::minimumSizeHint() const -> QSize { return pimpl->minimum_size_hint(); }
+auto Snackbar::minimumSizeHint() const -> QSize {
+    return pimpl->minimum_size_hint();
+}
 
-auto Snackbar::hasHeightForWidth() const -> bool { return true; }
+auto Snackbar::hasHeightForWidth() const -> bool {
+    return true;
+}
 
-auto Snackbar::heightForWidth(int width) const -> int { return pimpl->height_for_width(width); }
+auto Snackbar::heightForWidth(int width) const -> int {
+    return pimpl->height_for_width(width);
+}
 
 auto Snackbar::resizeEvent(QResizeEvent* event) -> void {
     QWidget::resizeEvent(event);
@@ -764,7 +800,9 @@ auto Snackbar::changeEvent(QEvent* event) -> void {
     QWidget::changeEvent(event);
 }
 
-auto Snackbar::enterEvent(qt::EnterEvent* event) -> void { QWidget::enterEvent(event); }
+auto Snackbar::enterEvent(qt::EnterEvent* event) -> void {
+    QWidget::enterEvent(event);
+}
 
 auto Snackbar::leaveEvent(QEvent* event) -> void {
     pimpl->leave_event();
@@ -808,4 +846,6 @@ auto Snackbar::keyReleaseEvent(QKeyEvent* event) -> void {
     if (!pimpl->key_release_event(event)) QWidget::keyReleaseEvent(event);
 }
 
-auto Snackbar::paintEvent(QPaintEvent*) -> void { pimpl->paint_event(); }
+auto Snackbar::paintEvent(QPaintEvent*) -> void {
+    pimpl->paint_event();
+}

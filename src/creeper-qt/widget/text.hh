@@ -16,7 +16,9 @@ class Text : public QLabel, public DSL {
 public:
     using QLabel::QLabel;
 
-    explicit Text(auto&&... props) { construct_with(std::forward<decltype(props)>(props)...); }
+    explicit Text(auto&&... props) {
+        construct_with(std::forward<decltype(props)>(props)...);
+    }
 
     auto loadColorScheme(const ColorScheme& scheme) noexcept -> void {
         setColor(scheme.on_surface);

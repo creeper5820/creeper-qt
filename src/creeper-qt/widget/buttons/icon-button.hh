@@ -58,7 +58,7 @@ public:
 
 public:
     explicit IconButton(auto&&... props)
-        : IconButton {} {
+        : IconButton { } {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 

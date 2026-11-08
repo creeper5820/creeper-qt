@@ -65,7 +65,7 @@ public:
             handler.setPen(Qt::NoPen);
             if (self.bounded) {
                 if (self.clip_path.isEmpty()) {
-                    handler.setClipRect(QRectF { QPointF {}, self.size });
+                    handler.setClipRect(QRectF { QPointF { }, self.size });
                 } else {
                     handler.setClipPath(self.clip_path);
                 }
@@ -173,7 +173,7 @@ private:
     auto start(std::optional<QPointF> origin) noexcept -> void {
         const auto state = std::make_shared<State>();
         const auto bounds =
-            clip_path.isEmpty() ? QRectF { QPointF {}, size } : clip_path.boundingRect();
+            clip_path.isEmpty() ? QRectF { QPointF { }, size } : clip_path.boundingRect();
         const auto center = bounds.center();
 
         state->origin   = origin.value_or(center);

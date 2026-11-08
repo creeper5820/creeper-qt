@@ -108,7 +108,9 @@ Flow::~Flow() {
         delete item;
 }
 
-auto Flow::addItem(Item* item) -> void { pimpl->items.append(item); }
+auto Flow::addItem(Item* item) -> void {
+    pimpl->items.append(item);
+}
 
 auto Flow::setGeometry(const QRect& rect) -> void {
     QLayout::setGeometry(rect);
@@ -120,17 +122,25 @@ auto Flow::takeAt(int index) -> Item* {
     return (index < 0 || index > items.size() - 1) ? nullptr : items.takeAt(index);
 }
 
-auto Flow::expandingDirections() const -> Qt::Orientations { return { }; }
+auto Flow::expandingDirections() const -> Qt::Orientations {
+    return { };
+}
 
-auto Flow::hasHeightForWidth() const -> bool { return true; }
+auto Flow::hasHeightForWidth() const -> bool {
+    return true;
+}
 
 auto Flow::heightForWidth(int width) const -> int {
     return pimpl->calculate_layout({ 0, 0, width, 0 }, false);
 }
 
-auto Flow::itemAt(int index) const -> Item* { return pimpl->items.value(index); }
+auto Flow::itemAt(int index) const -> Item* {
+    return pimpl->items.value(index);
+}
 
-auto Flow::count() const -> int { return pimpl->items.size(); }
+auto Flow::count() const -> int {
+    return pimpl->items.size();
+}
 
 auto Flow::minimumSize() const -> QSize {
     auto result = QSize { };
@@ -145,13 +155,27 @@ auto Flow::minimumSize() const -> QSize {
     return result;
 }
 
-auto Flow::sizeHint() const -> QSize { return Flow::minimumSize(); }
+auto Flow::sizeHint() const -> QSize {
+    return Flow::minimumSize();
+}
 
-auto Flow::setRowSpacing(int spacing) noexcept -> void { pimpl->row_spacing = spacing; }
-auto Flow::rowSpacing() const noexcept -> int { return pimpl->row_spacing; }
+auto Flow::setRowSpacing(int spacing) noexcept -> void {
+    pimpl->row_spacing = spacing;
+}
+auto Flow::rowSpacing() const noexcept -> int {
+    return pimpl->row_spacing;
+}
 
-auto Flow::setColSpacing(int spacing) noexcept -> void { pimpl->col_spacing = spacing; }
-auto Flow::colSpacing() const noexcept -> int { return pimpl->col_spacing; }
+auto Flow::setColSpacing(int spacing) noexcept -> void {
+    pimpl->col_spacing = spacing;
+}
+auto Flow::colSpacing() const noexcept -> int {
+    return pimpl->col_spacing;
+}
 
-auto Flow::setRowLimit(int limit) noexcept -> void { pimpl->row_limit = limit; }
-auto Flow::rowLimit() const noexcept -> int { return pimpl->row_limit; }
+auto Flow::setRowLimit(int limit) noexcept -> void {
+    pimpl->row_limit = limit;
+}
+auto Flow::rowLimit() const noexcept -> int {
+    return pimpl->row_limit;
+}

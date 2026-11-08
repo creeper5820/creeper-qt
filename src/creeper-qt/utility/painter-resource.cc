@@ -29,10 +29,16 @@ PainterResource::PainterResource(
     }
 }
 
-PainterResource::~PainterResource() noexcept { *resource_exiting = false; }
+PainterResource::~PainterResource() noexcept {
+    *resource_exiting = false;
+}
 
-auto PainterResource::is_loading() const noexcept -> bool { return is_loading_; }
-auto PainterResource::is_error() const noexcept -> bool { return is_error_; }
+auto PainterResource::is_loading() const noexcept -> bool {
+    return is_loading_;
+}
+auto PainterResource::is_error() const noexcept -> bool {
+    return is_error_;
+}
 
 auto PainterResource::download_resource_from_network(
     const QUrl& url, std::function<void(PainterResource&)> callback) noexcept -> void {

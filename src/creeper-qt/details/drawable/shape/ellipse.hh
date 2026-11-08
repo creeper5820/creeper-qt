@@ -14,7 +14,7 @@ struct Ellipse {
     friend auto dsl_invoke(details::draw_t, const Ellipse& self, QPainter& handler) {
         handler.save();
         {
-            const auto rect = QRectF { QPointF {}, self.size };
+            const auto rect = QRectF { QPointF { }, self.size };
             handler.setRenderHint(QPainter::Antialiasing);
 
             handler.setPen(Qt::NoPen);

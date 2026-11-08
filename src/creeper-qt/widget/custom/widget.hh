@@ -21,7 +21,9 @@ public:
 
     using QWidget::QWidget;
 
-    explicit CustomWidget(auto&&... args) { construct_with(std::forward<decltype(args)>(args)...); }
+    explicit CustomWidget(auto&&... args) {
+        construct_with(std::forward<decltype(args)>(args)...);
+    }
 
     std::unique_ptr<OnPaint> on_paint = nullptr;
 

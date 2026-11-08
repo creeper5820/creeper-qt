@@ -26,7 +26,9 @@ struct ThemeManager::Impl {
         QObject::connect(key, &QObject::destroyed, [this, key] { removeHandler(key); });
     }
 
-    void removeHandler(Key key) { handlers.erase(key); }
+    void removeHandler(Key key) {
+        handlers.erase(key);
+    }
 };
 
 ThemeManager::ThemeManager()
@@ -40,7 +42,9 @@ ThemeManager::ThemeManager(const ThemePack& pack, ColorMode mode)
 
 ThemeManager::~ThemeManager() = default;
 
-void ThemeManager::applyTheme() const { pimpl->applyTheme(*this); }
+void ThemeManager::applyTheme() const {
+    pimpl->applyTheme(*this);
+}
 
 void ThemeManager::appendHandler(const QObject* key, const Handler& handler) {
     pimpl->appendHandler(key, handler);
@@ -53,10 +57,16 @@ auto ThemeManager::appendFinalCallback(const Handler& callback) noexcept -> void
     pimpl->final_callbacks.push_back(callback);
 }
 
-void ThemeManager::removeHandler(const QObject* key) { pimpl->removeHandler(key); }
+void ThemeManager::removeHandler(const QObject* key) {
+    pimpl->removeHandler(key);
+}
 
-void ThemeManager::setThemePack(const ThemePack& pack) { pimpl->theme_pack = pack; }
-void ThemeManager::setColorMode(const ColorMode& mode) { pimpl->color_mode = mode; }
+void ThemeManager::setThemePack(const ThemePack& pack) {
+    pimpl->theme_pack = pack;
+}
+void ThemeManager::setColorMode(const ColorMode& mode) {
+    pimpl->color_mode = mode;
+}
 
 void ThemeManager::toggleColorMode() {
     pimpl->color_mode = (pimpl->color_mode == ColorMode::LIGHT) //
@@ -64,8 +74,12 @@ void ThemeManager::toggleColorMode() {
         : ColorMode::LIGHT;
 }
 
-ThemePack ThemeManager::themePack() const { return pimpl->theme_pack; }
-ColorMode ThemeManager::colorMode() const { return pimpl->color_mode; }
+ThemePack ThemeManager::themePack() const {
+    return pimpl->theme_pack;
+}
+ColorMode ThemeManager::colorMode() const {
+    return pimpl->color_mode;
+}
 
 ColorScheme ThemeManager::colorScheme() const {
     return pimpl->theme_pack.colorScheme(pimpl->color_mode);

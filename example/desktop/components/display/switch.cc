@@ -185,7 +185,7 @@ namespace {
                 manager,
                 MutableForward { switch_::pro::Checked { false }, click_toggle },
                 switch_::pro::Clickable {
-                  [click_toggle](auto&) { *click_toggle = !click_toggle->get(); } },
+                  [click_toggle](auto&) { *click_toggle         = !click_toggle->get(); } },
               } + Col::Placement { 0, Qt::AlignHCenter },
               new Switch {
                 manager,

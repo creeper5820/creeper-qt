@@ -28,8 +28,12 @@ struct MutableValue final {
         requires std::constructible_from<T, Args&&...>
         : value { std::forward<Args>(args)... } { }
 
-    constexpr auto get() const noexcept -> T { return value; }
-    constexpr operator T() const noexcept { return get(); }
+    constexpr auto get() const noexcept -> T {
+        return value;
+    }
+    constexpr operator T() const noexcept {
+        return get();
+    }
 
     template <typename U>
     auto set(U&& u) noexcept -> void

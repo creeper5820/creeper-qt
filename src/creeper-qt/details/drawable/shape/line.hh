@@ -14,7 +14,7 @@ struct Line {
         {
             handler.setPen(QPen { line.color, line.width });
             handler.setBrush(Qt::NoBrush);
-            handler.drawLine(QPoint {}, line.point);
+            handler.drawLine(QPoint { }, line.point);
         }
         handler.restore();
     }

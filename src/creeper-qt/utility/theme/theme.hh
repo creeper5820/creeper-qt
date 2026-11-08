@@ -36,7 +36,9 @@ public:
     ///   to remove the associated handler.
     void appendHandler(const QObject* key, const Handler& handler);
 
-    auto appendHandler(color_scheme_setter_trait auto& widget) { appendHandler(&widget, widget); }
+    auto appendHandler(color_scheme_setter_trait auto& widget) {
+        appendHandler(&widget, widget);
+    }
     auto appendHandler(const QObject* key, color_scheme_setter_trait auto& widget) {
         const auto handler = [&widget](const ThemeManager& manager) {
             const auto color_mode = manager.colorMode();
