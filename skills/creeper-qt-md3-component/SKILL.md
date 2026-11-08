@@ -60,16 +60,19 @@ description: 在 creeper-qt 中按 Material Design 3 规格实现或审查组件
 
 ## 5. 绘制
 
-- `Graphics` 结构收拢绘制节点与 `static make_*` 辅助；用声明式 `Paint::Box` / `Paint::RoundedRectangle` + `Size`/`Fill`/`Outline`/`Radiuses`，先算值再进树。
-- 自定义节点需满足 `drawable_trait`（`origin`/`size`/`operator()(QPainter&)`）；路径用相对坐标，位置交给 `Paint::Box`。
+- 用一棵 `DrawHere` 树表达整个画面，先算值再进树；`Box` 负责对齐，`Surface` 负责嵌套局部坐标系，`If` 负责条件裁剪。
+- 形状使用 `Rect`、`Ellipse`、`Line`；`Rect` 通过 `radius_tl / radius_tr / radius_br / radius_bl` 表达圆角。
+- 自定义节点需满足 `details::DrawUnit`；路径使用相对坐标，位置交给 `Box` 和 `Surface`。
+- 自定义 UI 类型采用大写开头，优先继承现有节点并通过构造函数配置；UI 对象使用 `{}` 构造，`State` 等具名配置展开为多行。
+- 不在节点树外手动调用 painter 的绘制或变换接口；动画只负责计算当前帧参数。
 - 转发到 `Impl` 的实现不含逻辑，参数原样转发。
 - focus ring 只在键盘焦点（`Tab`/`BacktabFocusReason`）显示（focus-visible）。
 
 ## 6. 常见坑
 
 - `QColor::fromRgbF` 收到负 alpha 会返回无效色，Qt 会画成黑色；插值前 `std::clamp(t, 0, 1)`。
-- `const auto paint = Paint::Box{...}` 调不动（`Container::operator()` 非 const）——用非 const 或 lambda。
-- `Paint::Box` 按节点的 `size` 居中；自定义节点漏设 `size` 会被摆到盒外。
+- `Box` 按节点的 `size()` 对齐；自定义节点遗漏尺寸实现或返回错误尺寸会导致布局偏移。
+- 嵌套 `Surface` 的 `origin` 会逐级相加；需要兄弟坐标系隔离时，不要手动累积 painter 变换。
 - `INDETERMINATE` 这类「snap + 重放」不要放进共享更新（会被 hover/focus 反复触发）。
 - Qt 焦点：点击 NoFocus 的空白处不会自动 `focusOut`；环的去留靠 focus-visible 判定，而不是指望失焦。
 

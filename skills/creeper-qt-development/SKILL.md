@@ -52,6 +52,7 @@ public:
 
     void loadColorScheme(const ColorScheme&);
     void bindThemeManager(ThemeManager&);
+
     void setLabelText(const QString&);
 
 protected:
@@ -77,61 +78,77 @@ using namespace api::scope::widget;
 - prop 的 `dsl_invoke` 只做声明式配置，不应启动复杂业务流程；复杂状态应先被封装成组件 setter 或内部方法，再由 prop 调用。
 - 转发到 `Impl` 的实现不含逻辑（不在转发层做 `update()`、lambda、参数改写）；逻辑放进 `Impl`，参数原样转发。
 
-绘制函数建议按固定顺序组织：
+## 声明式绘制
+
+绘制函数先更新组件状态，再集中计算尺寸、padding、位置、动画进度、字体和文本测量，最后用一棵对象树表达整个画面：
 
 ```cpp
+// 具体接口看 `creeper-qt/details/drawable/core.hh`
 auto paint_xxx(QPaintEvent*) -> void {
-    const auto& measurements = this->measurements;
-    const auto& color_tokens = get_color_tokens();
+    using namespace drawable; ///< 一般放该 Scope 的首行
 
-    update_component_status(...);
+    // 提前计算好绘制过程中需要的数值
+    const auto content_origin = ...;
+    const auto show_ellipse   = ...;
 
-    using namespace painter;
-    using namespace painter::common::pro;
-    auto painter = qt::painter { &self };
+    // 声明式描述一颗绘制的对象树
+    auto painter = QPainter { &self };
 
-    // 先集中计算尺寸、padding、位置、动画进度、字体和文本测量。
-
-    Paint::Box {
-        BoxImpl { self.size(), Qt::AlignCenter },
-        Paint::Surface {
-          SurfaceImpl { container_size },
-          // 绘制节点树
+    DrawHere {
+        painter,
+        Rect {
+          .size  = QSizeF { self.size() },
+          .color = colors.background,
         },
-    }(painter);
+        Box {
+          {
+            .size  = QSizeF { self.size() },
+            .align = Qt::AlignCenter,
+          },
+          Surface {
+            {
+              .size   = measurements.content_size,
+              .origin = content_origin,
+            },
+            Rect { ///< 不同参数组用空行划分，增加可读性
+              .size  = measurements.content_size,
+              .color = colors.container,
+
+              .outline_color = colors.outline,
+              .outline_width = measurements.outline_width,
+
+              .radius_tl = measurements.radius,
+              .radius_tr = measurements.radius,
+              .radius_br = measurements.radius,
+              .radius_bl = measurements.radius,
+            },
+            If {
+              show_ellipse,
+              Ellipse {
+                .size  = measurements.overlay_size,
+                .color = colors.state_layer,
+              },
+            },
+          },
+        },
+    };
 }
 ```
 
-- 绘制函数应先更新组件状态，再集中计算尺寸、padding、位置、动画进度、文本测量等缓存变量，最后用声明式 `Paint::*` 树表达绘制结构。
-- 避免在 `Paint::*` 构造列表里穿插复杂计算；构造列表应尽量只呈现 UI 层级、绘制元素和必要 prop，复杂逻辑应在进入绘制树前完成并命名。
-- 颜色选择优先通过 `get_color_tokens()` 之类的函数完成，让绘制树只消费当前状态下的 token，而不是在每个绘制节点里重复判断 focus/error/disabled。
-- 尺寸选择优先来自 `Measurements` 或局部缓存变量；不要在多个绘制节点中重复硬编码同一个 magic number。
-- 字体、文本宽度、动画位置、label 缩放等中间值应在绘制树外命名，保证声明式树读起来像结构描述，而不是计算过程。
+### 命名与构造
 
-`Paint::*` 绘制树职责划分：
-
-- `Paint::Surface` 负责坐标偏移，适合把一组元素移动到同一个局部坐标系中。
-- `Paint::Box` 负责对齐定位，适合把单个子节点放进指定大小区域内，如居中图标、定位 label 背景区域。
-- `Paint::Row` 和 `Paint::Col` 负责流式布局，适合多个同级绘制节点按主轴排列。
-- `Paint::Buffer` 负责离屏合成，适合需要透明混合、擦除、镂空、遮罩等效果的组合绘制。
-- `Paint::RoundedRectangle`、`Paint::Rectangle`、`Paint::Text`、`Paint::Icon` 等形状节点只描述实际绘制内容，不应承担布局决策。
-- `Paint::EraseRectangle` 应优先放在 `Paint::Buffer` 内使用，用于通过 `CompositionMode_DestinationOut` 擦除缓冲层内容。
-
-从 `paint_outlined` 提炼的可复用模式：
-
-- 轮廓组件可以先在 `Paint::Buffer` 中绘制完整轮廓，再用 `Paint::EraseRectangle` 擦出 label 缺口，最后在缓冲层之外绘制 label 文本。
-- 带浮动 label 的组件应把 label 动画抽象成一个 `TransitionValue`，绘制时只读取当前位置并插值 origin、size、scale。
-- 输入框、选择框等状态型组件应在 `focusInEvent()`、`focusOutEvent()`、`enterEvent()`、`leaveEvent()` 中只更新状态并触发重绘，不要直接在事件函数里做绘制计算。
-- `update_component_status()` 适合集中同步 Qt 自身状态，如 `setTextMargins()`、`setFont()`、缓存 icon 字体；它应由尺寸、图标启用状态或字段类型变化触发，避免每帧重复做不必要 setter。
-- 当组件有 filled/outlined/elevated 等变体时，优先复用基础状态、主题、测量和事件逻辑，只拆分最终绘制函数或少量变体专属参数。
+- 形状主体颜色使用 `color`；描边使用对称的 `outline_color / outline_width`。
+- 四角圆角使用 `radius_tl / radius_tr / radius_br / radius_bl`，按顺时针方向阅读。
+- 返回 UI 对象的自定义类型采用大写开头。优先继承现有节点，并通过构造函数参数完成配置，而不是编写小写工厂函数。
+- UI 对象统一使用 `{}` 构造。
+- `State` 等具名配置必须展开为多行，不写成单行。
+- 无名构造参数只要求使用 `{}`，不强制添加具名字段或参数末尾逗号。
+- 只有一个条件时不要使用提前返回；使用正向 `if` 或条件表达式，让主流程保持直观。
 
 开发组件时的检查清单：
 
 - 公开 prop 是否都能从组件自己的 `xxx::pro` 命名空间补全到。
 - 组件 `pro` 是否导入了它支持的全部共享 scope（`api::scope::*`）。
 - prop 是否最终调用明确 setter，而不是直接接触内部字段。
-- 主题色是否按 enabled/focused/error/disabled 等状态归档，而不是散落在绘制逻辑中。
-- 绘制树是否只表达结构，复杂计算是否已提前命名。
-- 绘制节点是否职责单一：容器管布局，形状管绘制，Buffer 管合成。
 - 是否保留 Qt 父子所有权、事件投递、布局和信号/槽语义。
 - 是否优先使用 LSP 单文件诊断确认模板错误，而不是一开始就完整编译。
