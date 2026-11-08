@@ -49,7 +49,7 @@ public:
     };
 
     explicit DropdownMenuItem(auto&&... props)
-        : DropdownMenuItem {} {
+        : DropdownMenuItem { } {
         construct_with(std::forward<decltype(props)>(props)...);
     }
 
@@ -87,6 +87,7 @@ protected:
     auto mouseReleaseEvent(QMouseEvent*) -> void override;
 
     auto paintEvent(QPaintEvent*) -> void override;
+    auto resizeEvent(QResizeEvent*) -> void override;
 };
 
 namespace dropdown_menu_item::pro {

@@ -1,0 +1,26 @@
+namespace: ripple
+
+symbols:
+  - file: ripple:RippleAnimation.kt
+    unit: ms
+    names:
+      - FadeInDuration
+      - RadiusDuration
+      - FadeOutDuration
+  - file: animation:Easing.kt
+    names:
+      - FastOutSlowInEasing
+  - file: tokens:MotionTokens.kt
+    names:
+      - EasingLinearCubicBezier
+  - file: tokens:StateTokens.kt
+    names:
+      - PressedStateLayerOpacity
+
+extract:
+  - name: StartRadiusScale
+    file: ripple:RippleAnimation.kt
+    match: 'getRippleStartRadius\(size: Size\) = max\(size.width, size.height\) \* ([\d.]+)f'
+  - name: BoundedRippleExtraRadius
+    file: ripple:RippleAnimation.kt
+    match: 'BoundedRippleExtraRadius\s*\n\s*get\(\) = ([\d.]+)\.dp'

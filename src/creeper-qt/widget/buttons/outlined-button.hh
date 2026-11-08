@@ -30,7 +30,6 @@ public:
         } else {
             water_color = color_scheme.primary.lighter(130);
         }
-        water_color.setAlphaF(0.25);
         setWaterColor(water_color);
 
         update();

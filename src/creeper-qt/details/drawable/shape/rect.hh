@@ -23,7 +23,7 @@ struct Rect {
     friend auto dsl_invoke(details::draw_t, const Rect& self, QPainter& handler) {
         handler.save();
         {
-            const auto rect    = QRectF { QPointF {}, QSizeF { self.size } };
+            const auto rect    = QRectF { QPointF { }, QSizeF { self.size } };
             const auto rounded = self.radius_tl != 0 || self.radius_tr != 0 || self.radius_br != 0
                 || self.radius_bl != 0;
             handler.setRenderHint(QPainter::Antialiasing, rounded);
@@ -70,7 +70,7 @@ private:
             const auto max_radius = std::min(rect.width(), rect.height()) / 2;
 
             const auto clamp = [=](qreal radius) {
-                return std::clamp(radius, qreal { 0 }, max_radius);
+                return radius < 0 ? max_radius : std::min(radius, max_radius);
             };
             tl = clamp(tl);
             tr = clamp(tr);

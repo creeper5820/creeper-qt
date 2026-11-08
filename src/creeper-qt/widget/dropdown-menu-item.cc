@@ -1,7 +1,11 @@
 #include "dropdown-menu-item.hh"
 
+#include "creeper-qt/details/drawable/core.hh"
+#include "creeper-qt/details/drawable/layout/surface.hh"
+#include "creeper-qt/details/drawable/logic/if.hh"
+#include "creeper-qt/details/drawable/shape/rect.hh"
+#include "creeper-qt/details/drawable/shape/text.hh"
 #include "creeper-qt/utility/animation/water-ripple.hh"
-#include "creeper-qt/utility/painter/helper.hh"
 
 #include <qevent.h>
 #include <qpainter.h>
@@ -33,7 +37,7 @@ struct DropdownMenuItem::Impl {
     QFont label_font;
 
     Animatable animatable;
-    WaterRippleRenderer water_ripple;
+    WaterRipple water_ripple;
     QColor water_color;
     bool enable_water_ripple = true;
 
@@ -45,6 +49,13 @@ struct DropdownMenuItem::Impl {
         , self { self } {
         self.setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         set_measurements(Measurements {});
+
+        auto clip = QPainterPath {};
+        clip.addRect(self.rect());
+
+        water_ripple.setSize(self.size());
+        water_ripple.setClipPath(clip);
+        water_ripple.setColor(water_color);
     }
 
     auto loadColorScheme(const ColorScheme& scheme) -> void {
@@ -63,12 +74,15 @@ struct DropdownMenuItem::Impl {
         color_space.pressed_state_layer.setAlphaF(0.12);
 
         water_color = scheme.on_surface;
-        water_color.setAlphaF(0.12);
+
+        water_ripple.setColor(water_color);
 
         self.update();
     }
 
-    auto bindThemeManager(ThemeManager& manager) -> void { manager.appendHandler(self); }
+    auto bindThemeManager(ThemeManager& manager) -> void {
+        manager.appendHandler(self);
+    }
 
     auto set_measurements(const Measurements& value) noexcept -> void {
         measurements = value;
@@ -138,27 +152,13 @@ struct DropdownMenuItem::Impl {
     }
 
     auto paint_event(QPaintEvent*) -> void {
-        const auto& tokens = is_disabled ? color_space.disabled : color_space.enabled;
+        using namespace drawable;
 
-        auto painter = QPainter { &self };
-
-        if (!is_disabled && is_pressed) {
-            util::PainterHelper { painter }
-                .set_render_hint(QPainter::Antialiasing)
-                .rounded_rectangle(
-                    color_space.pressed_state_layer, Qt::transparent, 0, self.rect(), 0, 0);
-        } else if (!is_disabled && is_hovered) {
-            util::PainterHelper { painter }
-                .set_render_hint(QPainter::Antialiasing)
-                .rounded_rectangle(
-                    color_space.hover_state_layer, Qt::transparent, 0, self.rect(), 0, 0);
-        }
-
-        if (!is_disabled) {
-            auto clip = QPainterPath {};
-            clip.addRect(self.rect());
-            util::PainterHelper { painter }.apply(water_ripple.renderer(clip, water_color));
-        }
+        const auto& tokens     = is_disabled ? color_space.disabled : color_space.enabled;
+        const auto state_layer = is_disabled ? QColor { Qt::transparent }
+            : is_pressed                     ? color_space.pressed_state_layer
+            : is_hovered                     ? color_space.hover_state_layer
+                                             : QColor { Qt::transparent };
 
         const auto w = self.width() * 1.;
         const auto h = self.height() * 1.;
@@ -191,28 +191,81 @@ struct DropdownMenuItem::Impl {
             ? trailing_rect.left() - measurements.icon_text_spacing
             : w - measurements.horizontal_padding;
         const auto text_rect  = QRectF { text_left, 0, text_right - text_left, h };
+        const auto show_text  = !text.isEmpty() && text_rect.width() > 0;
+        const auto elided =
+            QFontMetricsF { label_font }.elidedText(text, Qt::ElideRight, text_rect.width());
 
-        auto helper = util::PainterHelper { painter }.set_render_hint(QPainter::Antialiasing);
-
-        if (has_leading) {
-            helper.simple_text(leading_icon_code, leading_icon_font, tokens.leading_icon,
-                leading_rect, Qt::AlignCenter);
-        }
-
-        if (!text.isEmpty() && text_rect.width() > 0) {
-            const auto elided =
-                QFontMetricsF { label_font }.elidedText(text, Qt::ElideRight, text_rect.width());
-            helper.simple_text(
-                elided, label_font, tokens.label_text, text_rect, Qt::AlignVCenter | Qt::AlignLeft);
-        }
-
-        if (trailing_kind == Trailing::ICON) {
-            helper.simple_text(trailing_icon_code, trailing_icon_font, tokens.trailing_icon,
-                trailing_rect, Qt::AlignCenter);
-        } else if (trailing_kind == Trailing::TEXT) {
-            helper.simple_text(trailing_text, label_font, tokens.trailing_icon, trailing_rect,
-                Qt::AlignVCenter | Qt::AlignLeft);
-        }
+        auto painter = QPainter { &self };
+        DrawHere {
+            painter,
+            Rect {
+              .size  = self.size(),
+              .color = state_layer,
+            },
+            If { !is_disabled, water_ripple },
+            If {
+              has_leading,
+              Surface {
+                {
+                  .size   = leading_rect.size(),
+                  .origin = leading_rect.topLeft(),
+                },
+                Text {
+                  .text  = leading_icon_code,
+                  .font  = leading_icon_font,
+                  .size  = leading_rect.size(),
+                  .color = tokens.leading_icon,
+                },
+              },
+            },
+            If {
+              show_text,
+              Surface {
+                {
+                  .size   = text_rect.size(),
+                  .origin = text_rect.topLeft(),
+                },
+                Text {
+                  .text  = elided,
+                  .font  = label_font,
+                  .size  = text_rect.size(),
+                  .color = tokens.label_text,
+                  .align = Qt::AlignVCenter | Qt::AlignLeft,
+                },
+              },
+            },
+            If {
+              trailing_kind == Trailing::ICON,
+              Surface {
+                {
+                  .size   = trailing_rect.size(),
+                  .origin = trailing_rect.topLeft(),
+                },
+                Text {
+                  .text  = trailing_icon_code,
+                  .font  = trailing_icon_font,
+                  .size  = trailing_rect.size(),
+                  .color = tokens.trailing_icon,
+                },
+              },
+            },
+            If {
+              trailing_kind == Trailing::TEXT,
+              Surface {
+                {
+                  .size   = trailing_rect.size(),
+                  .origin = trailing_rect.topLeft(),
+                },
+                Text {
+                  .text  = trailing_text,
+                  .font  = label_font,
+                  .size  = trailing_rect.size(),
+                  .color = tokens.trailing_icon,
+                  .align = Qt::AlignVCenter | Qt::AlignLeft,
+                },
+              },
+            },
+        };
     }
 
     auto enter_event(qt::EnterEvent*) -> void {
@@ -229,8 +282,7 @@ struct DropdownMenuItem::Impl {
     auto mouse_press_event(QMouseEvent* event) -> void {
         if (event->button() == Qt::LeftButton && !is_disabled) {
             is_pressed = true;
-            if (enable_water_ripple)
-                water_ripple.press(event->pos(), std::max(self.width(), self.height()));
+            if (enable_water_ripple) water_ripple.press(event->pos());
             self.update();
         }
     }
@@ -265,7 +317,9 @@ auto DropdownMenuItem::setMeasurements(const Measurements& measurements) noexcep
     pimpl->set_measurements(measurements);
 }
 
-auto DropdownMenuItem::setText(const QString& text) -> void { pimpl->set_text(text); }
+auto DropdownMenuItem::setText(const QString& text) -> void {
+    pimpl->set_text(text);
+}
 
 auto DropdownMenuItem::setLeadingIcon(const QString& code, const QString& font) -> void {
     pimpl->set_leading_icon(code, font);
@@ -279,10 +333,13 @@ auto DropdownMenuItem::setTrailingText(const QString& text) -> void {
     pimpl->set_trailing_text(text);
 }
 
-auto DropdownMenuItem::setDisabled(bool disabled) -> void { pimpl->set_disabled(disabled); }
+auto DropdownMenuItem::setDisabled(bool disabled) -> void {
+    pimpl->set_disabled(disabled);
+}
 
 auto DropdownMenuItem::setWaterColor(const QColor& color) -> void {
     pimpl->water_color = color;
+    pimpl->water_ripple.setColor(color);
     update();
 }
 
@@ -314,4 +371,16 @@ auto DropdownMenuItem::mouseReleaseEvent(QMouseEvent* event) -> void {
     QWidget::mouseReleaseEvent(event);
 }
 
-auto DropdownMenuItem::paintEvent(QPaintEvent* event) -> void { pimpl->paint_event(event); }
+auto DropdownMenuItem::paintEvent(QPaintEvent* event) -> void {
+    pimpl->paint_event(event);
+}
+
+auto DropdownMenuItem::resizeEvent(QResizeEvent* event) -> void {
+    auto clip = QPainterPath {};
+    clip.addRect(rect());
+
+    pimpl->water_ripple.setSize(size());
+    pimpl->water_ripple.setClipPath(clip);
+
+    QWidget::resizeEvent(event);
+}

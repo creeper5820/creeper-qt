@@ -1,10 +1,11 @@
 #pragma once
 
+#include "creeper-qt/details/drawable/core.hh"
+#include "creeper-qt/details/drawable/shape/ellipse.hh"
 #include "creeper-qt/details/dsl/core.hh"
 #include "creeper-qt/utility/api/scope/common.hh" // IWYU pragma: keep
 #include "creeper-qt/utility/api/scope/shape.hh"  // IWYU pragma: keep
 #include "creeper-qt/utility/api/scope/widget.hh" // IWYU pragma: keep
-#include "creeper-qt/utility/painter/helper.hh"
 #include "creeper-qt/widget/shape/shape.hh"
 
 namespace creeper {
@@ -13,14 +14,25 @@ class Ellipse : public Shape, public DSL {
 public:
     using Shape::Shape;
 
-    explicit Ellipse(auto&&... args) { construct_with(std::forward<decltype(args)>(args)...); }
+    explicit Ellipse(auto&&... args) {
+        construct_with(std::forward<decltype(args)>(args)...);
+    }
 
 protected:
     auto paintEvent(QPaintEvent*) -> void override {
-        auto painter = QPainter { this };
-        painter.setRenderHint(QPainter::Antialiasing);
+        using namespace drawable;
 
-        util::PainterHelper { painter }.ellipse(background_, border_color_, border_width_, rect());
+        auto painter = QPainter { this };
+        DrawHere {
+            painter,
+            drawable::Ellipse {
+              .size  = size(),
+              .color = background_,
+
+              .outline_color = border_color_,
+              .outline_width = border_width_,
+            },
+        };
     }
 };
 

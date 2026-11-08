@@ -27,7 +27,6 @@ public:
             water_color = color_scheme.primary.lighter(130);
             setHoverColor(QColor { 255, 255, 255, 30 });
         }
-        water_color.setAlphaF(0.25);
         setWaterColor(water_color);
 
         update();
